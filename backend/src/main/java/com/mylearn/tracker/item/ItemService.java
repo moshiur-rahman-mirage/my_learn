@@ -12,11 +12,11 @@ import com.mylearn.tracker.item.dto.ItemResponse;
 import com.mylearn.tracker.item.dto.MoveItemRequest;
 import com.mylearn.tracker.item.dto.TreeNode;
 import com.mylearn.tracker.item.dto.UpdateItemRequest;
-import com.mylearn.tracker.note.ItemNoteRepository;
 import com.mylearn.tracker.plan.LearningPlan;
 import com.mylearn.tracker.plan.PlanService;
 import com.mylearn.tracker.progress.Progress;
 import com.mylearn.tracker.progress.ProgressQueries;
+import com.mylearn.tracker.review.ReviewService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,12 +46,15 @@ public class ItemService {
     private final PlanService planService;
     private final HierarchyQueries hierarchy;
     private final ProgressQueries progress;
-    private final ItemNoteRepository notes;
+    private final ItemExtrasQueries extras;
+    private final ReviewService reviews;
 
     public ItemService(LearningItemRepository items, PlanService planService,
-                       HierarchyQueries hierarchy, ProgressQueries progress, ItemNoteRepository notes) {
+                       HierarchyQueries hierarchy, ProgressQueries progress, ItemExtrasQueries extras,
+                       ReviewService reviews) {
         this.items = items;
-        this.notes = notes;
+        this.extras = extras;
+        this.reviews = reviews;
         this.planService = planService;
         this.hierarchy = hierarchy;
         this.progress = progress;
@@ -81,7 +84,7 @@ public class ItemService {
     /** The whole roadmap of a plan as a tree with rolled-up progress (one query). */
     public List<TreeNode> tree(Long planId) {
         planService.findPlan(planId); // 404 for an unknown plan rather than an empty tree
-        return TreeBuilder.build(items.findAllByPlan(planId), notes.findItemIdsWithNotes(planId));
+        return TreeBuilder.build(items.findAllByPlan(planId), extras.forPlan(planId));
     }
 
     public ItemDetailResponse detail(Long id) {
@@ -109,6 +112,7 @@ public class ItemService {
         // Modules are never checkable, so turning a ticked topic into a module drops the tick.
         if (request.type() == ItemType.MODULE && item.isCompleted()) {
             item.clearCompletion();
+            reviews.cancel(id);
         }
         item.setType(request.type());
         item.setName(request.name().strip());
@@ -130,8 +134,10 @@ public class ItemService {
         }
         if (completed && !item.isCompleted()) {
             item.markCompleted(Timestamps.now());
+            reviews.schedule(id);
         } else if (!completed) {
             item.clearCompletion();
+            reviews.cancel(id);
         }
         planService.touch(item.getPlanId());
         return ItemResponse.from(item);
@@ -224,6 +230,7 @@ public class ItemService {
         }
         if (parent.isCompleted()) {
             parent.clearCompletion();
+            reviews.cancel(parentId);
         }
         return parent;
     }

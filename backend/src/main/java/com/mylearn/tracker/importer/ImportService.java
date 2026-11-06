@@ -138,7 +138,8 @@ public class ImportService {
             if (!existing.isEmpty()) {
                 List<Issue> errors = new ArrayList<>(parsed.errors());
                 errors.add(new Issue(0, ("%d row(s) have ids of items that already exist (this looks like an edited export). "
-                        + "Import only adds new content and never overwrites; clear the id column to import them as copies.")
+                        + "Import only adds new content and never overwrites. To apply your edits use Sync (plan menu → Sync from edited file); "
+                        + "to import them as copies, clear the id column.")
                         .formatted(existing.size())));
                 return new ParsedSheet(parsed.sheetName(), parsed.headerRow(), parsed.columns(), parsed.roots(), errors,
                         parsed.warnings(), parsed.stats(), parsed.contentHash());

@@ -54,6 +54,13 @@ final class Tray {
                     menu.add(autostart);
                 }
 
+                Path updateScript = SourceUpdate.script();
+                if (updateScript != null) {
+                    MenuItem update = new MenuItem("Update from source code…");
+                    update.addActionListener(e -> SourceUpdate.start(updateScript));
+                    menu.add(update);
+                }
+
                 menu.addSeparator();
                 MenuItem quit = new MenuItem("Quit");
                 quit.addActionListener(e -> {

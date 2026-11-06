@@ -11,6 +11,9 @@ import com.mylearn.tracker.progress.ProgressQueries;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
+import java.time.Instant;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -31,19 +34,40 @@ public class PlanService {
     @Transactional
     public PlanResponse create(CreatePlanRequest request) {
         LearningPlan plan = createEntity(request.name(), request.description());
-        return PlanResponse.from(plan, Progress.NONE);
+        plan.setTargetDate(request.targetDate());
+        return PlanResponse.from(plan, Progress.NONE, pace(plan, Progress.NONE, Map.of()));
     }
 
     public List<PlanResponse> search(String search, PlanStatus status) {
         String term = search == null || search.isBlank() ? null : escapeLike(search.strip());
+        return withProgress(plans.search(term, status));
+    }
+
+    /** Plans as API responses with progress and pace (two queries in total). */
+    public List<PlanResponse> withProgress(List<LearningPlan> list) {
         Map<Long, Progress> byPlan = progress.progressByPlan();
-        return plans.search(term, status).stream()
-                .map(p -> PlanResponse.from(p, byPlan.get(p.getId())))
-                .toList();
+        Map<Long, Integer> recent = recentCompletions();
+        return list.stream().map(p -> {
+            Progress pr = byPlan.getOrDefault(p.getId(), Progress.NONE);
+            return PlanResponse.from(p, pr, pace(p, pr, recent));
+        }).toList();
     }
 
     public PlanResponse get(Long id) {
-        return PlanResponse.from(findPlan(id), progress.progressOfPlan(id));
+        return response(findPlan(id));
+    }
+
+    private PlanResponse response(LearningPlan plan) {
+        Progress pr = progress.progressOfPlan(plan.getId());
+        return PlanResponse.from(plan, pr, pace(plan, pr, plan.getTargetDate() == null ? Map.of() : recentCompletions()));
+    }
+
+    private Map<Long, Integer> recentCompletions() {
+        return progress.completedSinceByPlan(Instant.now().minus(Duration.ofDays(Pace.RECENT_DAYS)));
+    }
+
+    private static Pace pace(LearningPlan plan, Progress pr, Map<Long, Integer> recent) {
+        return Pace.of(plan.getTargetDate(), pr, recent.getOrDefault(plan.getId(), 0), LocalDate.now());
     }
 
     public Progress progressOf(Long id) {
@@ -62,9 +86,10 @@ public class PlanService {
         plan.setName(name);
         plan.setDescription(blankToNull(request.description()));
         plan.setStatus(request.status());
+        plan.setTargetDate(request.targetDate());
         // Flush now so the response carries the incremented version.
         plans.saveAndFlush(plan);
-        return PlanResponse.from(plan, progress.progressOfPlan(id));
+        return response(plan);
     }
 
     /** Deletes the plan; the database cascades the delete to all of its items. */

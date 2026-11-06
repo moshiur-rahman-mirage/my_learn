@@ -3,6 +3,7 @@ package com.mylearn.tracker.note;
 import com.mylearn.tracker.common.exception.NotFoundException;
 import com.mylearn.tracker.common.persistence.Timestamps;
 import com.mylearn.tracker.item.LearningItemRepository;
+import com.mylearn.tracker.search.SearchIndexer;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,10 +24,12 @@ public class NoteService {
 
     private final ItemNoteRepository notes;
     private final LearningItemRepository items;
+    private final SearchIndexer searchIndex;
 
-    public NoteService(ItemNoteRepository notes, LearningItemRepository items) {
+    public NoteService(ItemNoteRepository notes, LearningItemRepository items, SearchIndexer searchIndex) {
         this.notes = notes;
         this.items = items;
+        this.searchIndex = searchIndex;
     }
 
     public NoteResponse get(Long itemId) {
@@ -42,6 +45,7 @@ public class NoteService {
         requireItem(itemId);
         if (isEmpty(content)) {
             notes.deleteById(itemId);
+            searchIndex.indexNote(itemId, null);
             return new NoteResponse(itemId, null, null);
         }
         Instant now = Timestamps.now();
@@ -51,6 +55,7 @@ public class NoteService {
         } else {
             note.update(content, now);
         }
+        searchIndex.indexNote(itemId, content);
         return new NoteResponse(itemId, note.getContent(), note.getUpdatedAt());
     }
 

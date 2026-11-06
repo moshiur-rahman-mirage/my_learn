@@ -30,10 +30,27 @@ public class ImportExportController {
 
     private final ImportService imports;
     private final ExportService exports;
+    private final SyncService sync;
 
-    public ImportExportController(ImportService imports, ExportService exports) {
+    public ImportExportController(ImportService imports, ExportService exports, SyncService sync) {
         this.imports = imports;
         this.exports = exports;
+        this.sync = sync;
+    }
+
+    // --- sync an edited export back into its plan ---------------------------------------------
+
+    @PostMapping(path = "/plans/{planId}/sync/preview", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public SyncService.SyncPreview syncPreview(@PathVariable Long planId, @RequestPart("file") MultipartFile file)
+            throws IOException {
+        return sync.preview(planId, file.getOriginalFilename(), file.getBytes());
+    }
+
+    /** @param selected keys of the changes to apply (repeat the parameter, one key each) */
+    @PostMapping(path = "/plans/{planId}/sync/apply", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public SyncService.SyncResult syncApply(@PathVariable Long planId, @RequestPart("file") MultipartFile file,
+                                            @RequestParam(required = false) List<String> selected) throws IOException {
+        return sync.apply(planId, file.getOriginalFilename(), file.getBytes(), selected == null ? List.of() : selected);
     }
 
     // --- import into an existing plan ---------------------------------------------------------

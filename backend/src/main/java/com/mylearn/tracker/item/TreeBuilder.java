@@ -20,11 +20,15 @@ public final class TreeBuilder {
     }
 
     public static List<TreeNode> build(List<LearningItem> items) {
-        return build(items, Set.of());
+        return build(items, TreeExtras.NONE);
     }
 
     /** @param withNotes ids of items that have a note */
     public static List<TreeNode> build(List<LearningItem> items, Set<Long> withNotes) {
+        return build(items, TreeExtras.notesOnly(withNotes));
+    }
+
+    public static List<TreeNode> build(List<LearningItem> items, TreeExtras extras) {
         Map<Long, List<LearningItem>> childrenByParent = new HashMap<>();
         for (LearningItem item : items) {
             childrenByParent.computeIfAbsent(item.getParentId(), k -> new ArrayList<>()).add(item);
@@ -33,14 +37,19 @@ public final class TreeBuilder {
                 .thenComparing(LearningItem::getId);
         childrenByParent.values().forEach(list -> list.sort(order));
 
-        return toNodes(childrenByParent.getOrDefault(null, List.of()), childrenByParent, withNotes);
+        return toNodes(childrenByParent.getOrDefault(null, List.of()), childrenByParent, extras);
     }
 
     private static List<TreeNode> toNodes(List<LearningItem> items, Map<Long, List<LearningItem>> childrenByParent,
-                                          Set<Long> withNotes) {
+                                          TreeExtras extras) {
         List<TreeNode> nodes = new ArrayList<>(items.size());
         for (LearningItem item : items) {
-            List<TreeNode> children = toNodes(childrenByParent.getOrDefault(item.getId(), List.of()), childrenByParent, withNotes);
+            List<TreeNode> children = toNodes(childrenByParent.getOrDefault(item.getId(), List.of()), childrenByParent, extras);
+            int ownMinutes = extras.minutes().getOrDefault(item.getId(), 0);
+            int totalMinutes = ownMinutes;
+            for (TreeNode child : children) {
+                totalMinutes += child.totalMinutes();
+            }
             boolean leaf = children.isEmpty();
             boolean checkable = leaf && item.getType() == ItemType.TOPIC;
 
@@ -60,7 +69,12 @@ public final class TreeBuilder {
                     item.getName(), item.getDescription(), item.getPriority(),
                     checkable && item.isCompleted(), checkable ? item.getCompletedAt() : null,
                     item.getDisplayOrder(), item.getVersion(), leaf, checkable, progress, descendants,
-                    withNotes.contains(item.getId()), children));
+                    extras.withNotes().contains(item.getId()),
+                    extras.links().getOrDefault(item.getId(), List.of()),
+                    extras.tags().getOrDefault(item.getId(), List.of()),
+                    ownMinutes, totalMinutes,
+                    checkable && item.isCompleted() ? extras.reviewDue().get(item.getId()) : null,
+                    children));
         }
         return nodes;
     }

@@ -6,10 +6,11 @@ import { errorMessage } from '../api/client'
 import type { TreeNode } from '../types/api'
 import { relativeTime } from '../lib/format'
 import NoteEditor from './NoteEditor.vue'
+import ItemDetails from './ItemDetails.vue'
 
 /** Slide-over with the note of one module/topic. Saves automatically while you type. */
-const props = defineProps<{ node: TreeNode | null }>()
-const emit = defineEmits<{ close: []; saved: [itemId: number, hasNotes: boolean] }>()
+const props = defineProps<{ node: TreeNode | null; planId: number; allTags: string[] }>()
+const emit = defineEmits<{ close: []; saved: [itemId: number, hasNotes: boolean]; changed: [] }>()
 
 type Status = 'loading' | 'idle' | 'pending' | 'saving' | 'saved' | 'error'
 const SAVE_DELAY_MS = 800
@@ -145,7 +146,7 @@ onBeforeUnmount(() => {
           <div class="min-w-0 flex-1">
             <p class="muted flex items-center gap-1 text-xs">
               <component :is="node.type === 'MODULE' ? Folder : FileText" class="size-3.5" />
-              {{ node.type === 'MODULE' ? 'Module' : 'Topic' }} notes
+              {{ node.type === 'MODULE' ? 'Module' : 'Topic' }} details &amp; notes
             </p>
             <h2 class="truncate text-lg font-semibold" :title="node.name">{{ node.name }}</h2>
           </div>
@@ -162,7 +163,9 @@ onBeforeUnmount(() => {
           <button class="icon-btn" aria-label="Close notes (Esc)" title="Close (Esc)" @click="close"><X class="size-4" /></button>
         </header>
 
-        <div class="flex-1 overflow-y-auto p-4">
+        <div class="flex-1 overflow-y-auto">
+          <ItemDetails :node="node" :plan-id="planId" :all-tags="allTags" @changed="emit('changed')" />
+          <div class="p-4">
           <div v-if="error" class="mb-3 flex items-start gap-2 rounded-lg border border-red-300 p-3 text-sm text-red-700 dark:border-red-900 dark:text-red-300">
             <CircleAlert class="mt-0.5 size-4 shrink-0" />
             <span class="flex-1">{{ error }}</span>
@@ -175,6 +178,7 @@ onBeforeUnmount(() => {
             :placeholder="`Summary of “${node.name}”: key ideas, examples, links, things to remember…`"
           />
           <p class="muted mt-2 text-xs">Saved automatically as you type (Ctrl+S saves immediately). Formatting: use the toolbar, or Markdown shortcuts like <code>## </code>, <code>- </code>, <code>1. </code>, <code>[ ] </code>, <code>**bold**</code>.</p>
+          </div>
         </div>
       </aside>
     </Transition>

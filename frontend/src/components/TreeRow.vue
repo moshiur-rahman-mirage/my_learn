@@ -11,14 +11,16 @@ import {
   FolderOpen,
   FolderPlus,
   GripVertical,
+  Link2,
   MoveRight,
+  RotateCcw,
   NotebookPen,
   Pencil,
   Trash2,
 } from 'lucide-vue-next'
 import type { TreeNode } from '../types/api'
 import { TREE_CONTEXT, type DropZone } from '../lib/treeContext'
-import { percentLabel } from '../lib/format'
+import { minutesLabel, percentLabel, todayIso } from '../lib/format'
 import PriorityBadge from './PriorityBadge.vue'
 import ActionMenu, { type MenuAction } from './ActionMenu.vue'
 
@@ -37,6 +39,61 @@ const shownChildren = computed(() =>
 const dimmed = computed(() => filtering.value && !ctx.matched.value!.has(props.node.id))
 const isPending = computed(() => ctx.pending.value.has(props.node.id))
 const dropZone = computed(() => (ctx.dropTarget.value?.id === props.node.id ? ctx.dropTarget.value.zone : null))
+const reviewDue = computed(() => props.node.reviewDueOn !== null && props.node.reviewDueOn <= todayIso())
+const highlighted = computed(() => ctx.highlightId.value === props.node.id)
+
+// --- keyboard: the row is focusable; arrows move between rows like a file tree ---------------
+
+function rows(): HTMLElement[] {
+  return Array.from(document.querySelectorAll<HTMLElement>('[data-tree-row]'))
+}
+function focusRow(offset: number, from: HTMLElement) {
+  const list = rows()
+  list[list.indexOf(from) + offset]?.focus()
+}
+function onKeydown(e: KeyboardEvent) {
+  if (e.target !== e.currentTarget || e.ctrlKey || e.metaKey || e.altKey) return // typing in the checkbox etc.
+  const el = e.currentTarget as HTMLElement
+  const n = props.node
+  switch (e.key) {
+    case 'ArrowDown':
+      focusRow(1, el)
+      break
+    case 'ArrowUp':
+      focusRow(-1, el)
+      break
+    case 'ArrowRight':
+      if (hasChildren.value && !open.value) ctx.toggle(n.id)
+      else if (open.value) focusRow(1, el)
+      break
+    case 'ArrowLeft':
+      if (open.value && !filtering.value) ctx.toggle(n.id)
+      else if (n.parentId !== null) document.querySelector<HTMLElement>(`[data-tree-row="${n.parentId}"]`)?.focus()
+      break
+    case ' ':
+    case 'x':
+      if (!n.checkable) return
+      ctx.onToggleComplete(n)
+      break
+    case 'Enter':
+      ctx.onNotes(n)
+      break
+    case 'e':
+    case 'F2':
+      ctx.onEdit(n)
+      break
+    case 'n':
+      ctx.onAdd(n, 'TOPIC')
+      break
+    case 'Delete':
+      ctx.onDelete(n)
+      break
+    default:
+      return
+  }
+  e.preventDefault()
+  e.stopPropagation()
+}
 
 const actions = computed<MenuAction[]>(() => {
   const n = props.node
@@ -95,14 +152,18 @@ function onDragEnd() {
 <template>
   <li role="treeitem" :aria-expanded="hasChildren ? open : undefined" :aria-selected="false">
     <div
-      class="group relative flex items-center gap-1.5 rounded-lg py-1 pr-1 hover:bg-slate-100 dark:hover:bg-slate-800/60"
+      class="group relative flex items-center gap-1.5 rounded-lg py-1 pr-1 outline-none hover:bg-slate-100 focus-visible:ring-2 focus-visible:ring-emerald-500 dark:hover:bg-slate-800/60"
       :class="[
+        highlighted ? 'animate-pulse bg-amber-100 dark:bg-amber-500/20' : '',
         dimmed ? 'opacity-60' : '',
         ctx.dragId.value === node.id ? 'opacity-40' : '',
         dropZone === 'inside' ? 'bg-emerald-50 ring-2 ring-emerald-500 dark:bg-emerald-500/10' : '',
       ]"
       :style="{ paddingLeft: `${depth * 1.25 + 0.25}rem` }"
       draggable="true"
+      tabindex="0"
+      :data-tree-row="node.id"
+      @keydown="onKeydown"
       @dragstart="onDragStart"
       @dragover="onDragOver"
       @dragleave="onDragLeave"
@@ -162,6 +223,39 @@ function onDragEnd() {
           >
             <NotebookPen class="size-3.5" />
           </button>
+          <a
+            v-if="node.links.length === 1"
+            :href="node.links[0].url"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="inline-flex shrink-0 items-center rounded p-0.5 text-sky-600 hover:bg-slate-200 dark:text-sky-400 dark:hover:bg-slate-700"
+            :title="`Open ${node.links[0].title || node.links[0].url}`"
+            @click.stop
+            ><Link2 class="size-3.5"
+          /></a>
+          <button
+            v-else-if="node.links.length > 1"
+            class="inline-flex shrink-0 items-center gap-0.5 rounded p-0.5 text-xs text-sky-600 hover:bg-slate-200 dark:text-sky-400 dark:hover:bg-slate-700"
+            :title="`${node.links.length} links`"
+            @click.stop="ctx.onNotes(node)"
+          >
+            <Link2 class="size-3.5" />{{ node.links.length }}
+          </button>
+          <span
+            v-for="t in node.tags"
+            :key="t"
+            class="hidden shrink-0 rounded-full bg-sky-100 px-1.5 text-[11px] font-medium text-sky-800 sm:inline dark:bg-sky-500/15 dark:text-sky-300"
+            >#{{ t }}</span
+          >
+          <span
+            v-if="reviewDue"
+            class="inline-flex shrink-0 items-center gap-0.5 rounded-full bg-violet-100 px-1.5 text-[11px] font-medium text-violet-800 dark:bg-violet-500/15 dark:text-violet-300"
+            title="Due for review (see Today)"
+            ><RotateCcw class="size-3" /> review</span
+          >
+          <span v-if="node.totalMinutes > 0" class="muted hidden shrink-0 text-[11px] tabular-nums sm:inline" :title="`Time spent: ${minutesLabel(node.totalMinutes)}`"
+            >{{ minutesLabel(node.totalMinutes) }}</span
+          >
         </div>
         <p v-if="node.description" class="muted truncate text-xs" :title="node.description">{{ node.description }}</p>
       </div>

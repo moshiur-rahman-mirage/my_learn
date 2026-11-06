@@ -9,7 +9,14 @@ A small, locally hosted web app that replaces spreadsheet learning roadmaps.
 - **Notes** on any module or topic: a formatted summary of what you learned, saved automatically
 - **Charts** on the dashboard: overall % over time, topics completed per day, streaks
 - **Import** your existing CSV / Excel roadmaps (several sheets at once, or pasted text), **export** to CSV
-- Automatic daily backups to a folder you choose, and **restore** from the Settings page
+- Automatic daily backups to a folder you choose, an optional **second copy** (OneDrive, USB drive), and **restore** from the Settings page
+- **Target dates** per plan with pacing: topics/week needed, your recent pace, on track / behind
+- **Today** view: reviews due, the next topics of each plan (Must first), streaks and a year-long activity grid
+- **Spaced-repetition reviews**: a topic you tick comes back after 1, 7 and 30 days ("Remembered" / "Forgot")
+- **Search across all plans** (names, descriptions and note text; word prefixes, e.g. `sprin boo`), **tags** shared by all plans
+- **Links** on items (videos, docs) opened with one click, **time spent** per item (+15/+25/+50 min or a Pomodoro timer)
+- **Sync**: edit an export in Excel, upload it, review every change (added, changed, moved, deleted, conflicts) and apply what you choose
+- **Keyboard shortcuts** (press `?`), and on Windows a tray item *Update from source code…*
 
 Stack: Java 21 · Spring Boot 3.5 · JPA/Hibernate · SQLite · Flyway · Vue 3 · TypeScript · Vite · Tailwind CSS.
 Design notes: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
@@ -51,8 +58,7 @@ The app itself still runs: its Java runtime is signed. Install it with the scrip
 (Start-menu and desktop shortcuts, an entry in *Installed apps*, same folders):
 
 ```powershell
-.\scripts\build-installer.ps1 -AppImageOnly                                   # or -SkipBuild if already built
-powershell -ExecutionPolicy Bypass -File deploy\windows\install-app.ps1       # install or update (stops the running app first)
+powershell -ExecutionPolicy Bypass -File deploy\windows\install-app.ps1       # rebuild from source, then install or update (stops the running app first)
 powershell -ExecutionPolicy Bypass -File deploy\windows\install-app.ps1 -Uninstall
 ```
 
@@ -220,6 +226,7 @@ Hibernate never alters the schema (`ddl-auto: none`).
   - Errors are shown before anything is saved.
   - Re-importing the same content needs an explicit "import anyway".
   - Import only **adds** items. It never changes or deletes existing ones.
+- **Editing an existing plan in Excel:** use **Sync** instead (plan menu → *Sync from edited file…*). Export the plan as CSV, edit it (keep the `id` column), upload it and pick the changes to apply. Deletions and *conflicts* (items edited in the app after the export, detected via the `version` column) are never pre-selected.
 - **Templates:** at the top of the Import page:
   - **Blank CSV (headers only):** `level,type,name,description,priority,completed`. Fill it in and import it.
   - **Example CSV:** the same columns plus sample rows that show the nesting.
@@ -232,7 +239,7 @@ Hibernate never alters the schema (`ddl-auto: none`).
 ```bash
 cd backend && mvn spring-boot:run    # API on :8080, dev DB in backend/data/
 cd frontend && npm install && npm run dev   # UI on :5173, proxies /api to :8080
-cd backend && mvn test               # 100 tests (JUnit 5, Mockito, Spring integration on real SQLite)
+cd backend && mvn test               # 119 tests (JUnit 5, Mockito, Spring integration on real SQLite)
 ```
 
 ### REST API (summary)
@@ -243,10 +250,14 @@ cd backend && mvn test               # 100 tests (JUnit 5, Mockito, Spring integ
 | Items | `GET/POST /api/plans/{planId}/items` (GET = tree) · `GET/PUT/DELETE /api/items/{id}` |
 | Structure | `PATCH /api/items/{id}/completion` · `/move` · `/reorder` · `GET /api/items/{id}/progress` |
 | Notes | `GET/PUT /api/items/{id}/notes` (HTML; empty content deletes the note) |
-| Dashboard | `GET /api/dashboard/summary` · `GET /api/dashboard/activity?days=90&tz=Asia/Dhaka[&planId=]` (`days=0` = all) |
+| Dashboard | `GET /api/dashboard/summary` · `GET /api/dashboard/activity?days=90&tz=Asia/Dhaka[&planId=]` (`days=0` = all) · `GET /api/dashboard/today?tz=` |
+| Learning | `GET/POST /api/items/{id}/links` · `DELETE /api/links/{id}` · `GET/POST /api/items/{id}/time` · `DELETE /api/time/{id}` · `GET /api/tags` · `PUT /api/items/{id}/tags` |
+| Reviews | `GET /api/reviews/due` · `POST /api/reviews/{itemId}` `{remembered}` · `DELETE /api/reviews/{itemId}` (stop) |
+| Search | `GET /api/search?q=&tag=` |
+| Sync | `POST /api/plans/{id}/sync/preview` (file) · `POST /api/plans/{id}/sync/apply` (file + `selected` keys) |
 | Import | `POST /api/plans/{id}/import/preview\|confirm` · `POST /api/import/preview\|confirm` · `GET /api/import/template` |
 | Export | `GET /api/plans/{id}/export` · `GET /api/items/{id}/export` |
-| Admin | `POST /api/admin/backup` · `GET /api/admin/backups` · `GET/PUT /api/admin/backup-settings` · `GET /api/admin/folders?path=` · `POST /api/admin/backups/{file}/restore` · `POST /api/admin/restore` (upload) |
+| Admin | `POST /api/admin/backup` · `GET /api/admin/backups` · `GET/PUT /api/admin/backup-settings` · `GET /api/admin/folders?path=` · `POST /api/admin/backups/{file}/restore` · `POST /api/admin/restore` (upload) · `DELETE /api/admin/backups/{file}` · `PUT /api/admin/backup-mirror` |
 
 Errors always have the shape `{status, error, message, fieldErrors[], path, timestamp}`.
 "# my_learn" 

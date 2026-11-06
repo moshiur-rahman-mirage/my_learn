@@ -88,6 +88,7 @@ Write-Host "==> Creating app folder (version $version, port $Port)"
     --jlink-options '--strip-debug --no-man-pages --no-header-files --strip-native-commands --compress=zip-6' `
     --java-options '-Dapp.desktop=true' `
     --java-options "-Dserver.port=$Port" `
+    --java-options "-Dapp.source-dir=$($root.Replace('\', '/'))" `
     --java-options '-Xmx256m' `
     --java-options '-XX:+UseSerialGC' `
     --java-options '-XX:TieredStopAtLevel=1'

@@ -65,7 +65,8 @@ public final class ImportParser {
             Map.entry("code", ColumnRole.IGNORE), Map.entry("serial", ColumnRole.IGNORE),
             Map.entry("#", ColumnRole.IGNORE), Map.entry("no", ColumnRole.IGNORE),
             Map.entry("no.", ColumnRole.IGNORE), Map.entry("sl", ColumnRole.IGNORE),
-            Map.entry("s/n", ColumnRole.IGNORE), Map.entry("sn", ColumnRole.IGNORE));
+            Map.entry("s/n", ColumnRole.IGNORE), Map.entry("sn", ColumnRole.IGNORE),
+            Map.entry("version", ColumnRole.IGNORE));
 
     /** Roles of which only the first matching column is used. */
     private static final Set<ColumnRole> SINGLE = EnumSet.of(ColumnRole.DEPTH, ColumnRole.TYPE, ColumnRole.ID,

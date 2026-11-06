@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
-import { Database, FolderOpen, History, LoaderCircle, Monitor, Moon, RotateCcw, Sun, Upload } from 'lucide-vue-next'
+import { Database, FolderOpen, History, LoaderCircle, Monitor, Moon, RotateCcw, Sun, Trash2, Upload } from 'lucide-vue-next'
 import { adminApi } from '../api'
 import { errorMessage } from '../api/client'
 import type { BackupFile, BackupSettings, RestoreResult } from '../types/api'
@@ -19,7 +19,11 @@ const folderInput = ref('')
 const working = ref(false)
 const savingFolder = ref(false)
 const restoring = ref<string | null>(null) // file name being restored
+const deleting = ref<string | null>(null) // file name being deleted
 const pickerOpen = ref(false)
+const mirrorInput = ref('')
+const savingMirror = ref(false)
+const mirrorPickerOpen = ref(false)
 const fileInput = ref<HTMLInputElement | null>(null)
 
 const themes: { value: ThemeMode; label: string; icon: typeof Sun }[] = [
@@ -35,6 +39,7 @@ async function loadSettings() {
   try {
     settings.value = await adminApi.backupSettings()
     folderInput.value = settings.value.directory
+    mirrorInput.value = settings.value.mirrorDirectory ?? ''
   } catch (e) {
     toast.error(errorMessage(e))
   }
@@ -71,6 +76,23 @@ function onPicked(path: string) {
   void saveFolder(path)
 }
 
+async function saveMirror(directory: string) {
+  savingMirror.value = true
+  try {
+    settings.value = await adminApi.setBackupMirror(directory)
+    mirrorInput.value = settings.value.mirrorDirectory ?? ''
+    toast.success(settings.value.mirrorDirectory ? `Backups will also be copied to ${settings.value.mirrorDirectory}` : 'Backups are no longer copied')
+  } catch (e) {
+    toast.error(errorMessage(e))
+  } finally {
+    savingMirror.value = false
+  }
+}
+function onMirrorPicked(path: string) {
+  mirrorPickerOpen.value = false
+  void saveMirror(path)
+}
+
 function restoredMessage(r: RestoreResult) {
   return `Restored from ${r.restoredFrom}: ${r.plans} plan(s), ${r.items} item(s). Your previous data was saved as ${r.safetyBackup}.`
 }
@@ -95,6 +117,26 @@ async function restoreBackup(b: BackupFile) {
   } catch (e) {
     toast.error(errorMessage(e))
     restoring.value = null
+  }
+}
+
+async function deleteBackup(b: BackupFile) {
+  const ok = await confirm({
+    title: 'Delete this backup?',
+    message: `The backup from ${dateTime(b.createdAt)} will be permanently deleted:\n${b.path}`,
+    confirmLabel: 'Delete',
+    danger: true,
+  })
+  if (!ok) return
+  deleting.value = b.fileName
+  try {
+    await adminApi.deleteBackup(b.fileName)
+    toast.success(`Backup deleted: ${b.fileName}`)
+    await loadBackups()
+  } catch (e) {
+    toast.error(errorMessage(e))
+  } finally {
+    deleting.value = null
   }
 }
 
@@ -182,6 +224,30 @@ onMounted(() => {
           Backups already in the old folder stay there.
         </p>
       </div>
+
+      <div>
+        <label class="label" for="mirror-folder">Also copy each backup to <span class="font-normal">(optional)</span></label>
+        <form class="flex flex-wrap gap-2" @submit.prevent="saveMirror(mirrorInput)">
+          <input
+            id="mirror-folder"
+            v-model="mirrorInput"
+            class="input min-w-0 flex-1 font-mono text-xs"
+            placeholder="A second place, e.g. your OneDrive folder or a USB drive"
+          />
+          <button type="button" class="btn-secondary" @click="mirrorPickerOpen = true"><FolderOpen class="size-4" /> Browse…</button>
+          <button type="submit" class="btn-primary" :disabled="savingMirror || !mirrorInput.trim() || mirrorInput.trim() === settings?.mirrorDirectory">
+            <LoaderCircle v-if="savingMirror" class="size-4 animate-spin" /> Save
+          </button>
+        </form>
+        <p class="muted mt-1 text-xs">
+          <template v-if="settings?.mirrorDirectory">
+            Every new backup is also copied to <code>{{ settings.mirrorDirectory }}</code> (the {{ settings.keep }} newest are kept there too) ·
+            <button class="underline" :disabled="savingMirror" @click="saveMirror('')">Stop copying</button>
+          </template>
+          <template v-else>If this computer's disk fails, a copy somewhere else still has your data.</template>
+        </p>
+        <p v-if="settings?.mirrorError" class="mt-1 text-xs text-red-600 dark:text-red-400">{{ settings.mirrorError }}. Is the drive connected?</p>
+      </div>
     </section>
 
     <!-- restore -->
@@ -211,11 +277,26 @@ onMounted(() => {
           <button class="btn-secondary shrink-0" :disabled="restoring !== null" :aria-label="`Restore backup from ${dateTime(b.createdAt)}`" @click="restoreBackup(b)">
             <LoaderCircle v-if="restoring === b.fileName" class="size-4 animate-spin" /><RotateCcw v-else class="size-4" /> Restore
           </button>
+          <button
+            class="btn-secondary shrink-0 text-red-600 dark:text-red-400"
+            :disabled="restoring !== null || deleting !== null"
+            :title="`Delete backup from ${dateTime(b.createdAt)}`"
+            :aria-label="`Delete backup from ${dateTime(b.createdAt)}`"
+            @click="deleteBackup(b)"
+          >
+            <LoaderCircle v-if="deleting === b.fileName" class="size-4 animate-spin" /><Trash2 v-else class="size-4" />
+          </button>
         </li>
       </ul>
       <p v-if="restoring" class="muted flex items-center gap-2 text-sm"><LoaderCircle class="size-4 animate-spin" /> Restoring {{ restoring }}…</p>
     </section>
 
     <FolderPickerDialog :open="pickerOpen" :start="settings?.directory ?? null" @close="pickerOpen = false" @pick="onPicked" />
+    <FolderPickerDialog
+      :open="mirrorPickerOpen"
+      :start="settings?.mirrorDirectory ?? null"
+      @close="mirrorPickerOpen = false"
+      @pick="onMirrorPicked"
+    />
   </div>
 </template>

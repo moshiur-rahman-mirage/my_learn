@@ -14,6 +14,7 @@ import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -53,9 +54,13 @@ public class BackupService {
         this.automatic = automatic;
     }
 
+    private volatile String mirrorError;
+
     public BackupSettings settings() {
+        Path mirror = settings.mirrorDir();
         return new BackupSettings(settings.backupDir().toString(), settings.defaultBackupDir().toString(),
-                settings.isCustomBackupDir(), automatic, keep);
+                settings.isCustomBackupDir(), automatic, keep, mirror == null ? null : mirror.toString(),
+                mirror == null ? null : mirrorError);
     }
 
     /**
@@ -69,6 +74,39 @@ public class BackupService {
             settings.setBackupDir(null);
             return settings();
         }
+        Path dir = writableFolder(directory);
+        settings.setBackupDir(dir);
+        log.info("Backup folder changed to {}", dir);
+        return settings();
+    }
+
+    /**
+     * Sets the second folder each new backup is also copied to, and copies the newest backup
+     * there right away.
+     *
+     * @param directory absolute path; blank = stop copying
+     */
+    public synchronized BackupSettings changeMirror(String directory) {
+        if (directory == null || directory.isBlank()) {
+            settings.setMirrorDir(null);
+            mirrorError = null;
+            return settings();
+        }
+        Path dir = writableFolder(directory);
+        if (dir.equals(settings.backupDir().toAbsolutePath().normalize())) {
+            throw new BusinessRuleException("Choose a different folder than the backup folder itself.");
+        }
+        settings.setMirrorDir(dir);
+        log.info("Backups will also be copied to {}", dir);
+        List<BackupFile> existing = list();
+        if (!existing.isEmpty()) {
+            mirror(Path.of(existing.getFirst().path()));
+        }
+        return settings();
+    }
+
+    /** Checks that the folder can be created and written to. */
+    private static Path writableFolder(String directory) {
         Path dir;
         try {
             dir = Path.of(directory.strip());
@@ -90,9 +128,7 @@ public class BackupService {
         } catch (IOException | SecurityException e) {
             throw new BusinessRuleException("Can't write to " + dir + " (" + e.getClass().getSimpleName() + ")");
         }
-        settings.setBackupDir(dir);
-        log.info("Backup folder changed to {}", dir);
-        return settings();
+        return dir;
     }
 
     /** Creates a backup now; must not run inside a transaction (VACUUM can't). */
@@ -108,6 +144,7 @@ public class BackupService {
             jdbc.execute("VACUUM INTO '" + target.toAbsolutePath().toString().replace("'", "''") + "'");
             prune(dir);
             log.info("Backup written to {}", target.toAbsolutePath());
+            mirror(target);
             return describe(target);
         } catch (IOException e) {
             throw new UncheckedIOException("Backup failed: can't write to " + dir, e);
@@ -139,6 +176,17 @@ public class BackupService {
         return file;
     }
 
+    /** Deletes one backup in the current folder, by file name only (same rules as restore). */
+    public synchronized void delete(String fileName) {
+        Path file = resolveBackup(fileName);
+        try {
+            Files.delete(file);
+            log.info("Backup deleted: {}", file);
+        } catch (IOException e) {
+            throw new BusinessRuleException("Couldn't delete " + fileName + " (" + e.getClass().getSimpleName() + ")");
+        }
+    }
+
     @Scheduled(initialDelayString = "PT1M", fixedDelayString = "PT6H")
     public void backupIfDue() {
         if (!automatic) {
@@ -153,6 +201,36 @@ public class BackupService {
             }
         } catch (RuntimeException e) {
             log.error("Automatic backup failed", e);
+        }
+    }
+
+    /**
+     * Copies a backup to the second folder, if one is set, and keeps the newest {@code keep}
+     * there too. A failure (e.g. the USB drive is unplugged) never fails the backup itself;
+     * it is shown on the Settings page until the next copy succeeds.
+     */
+    private void mirror(Path backup) {
+        Path dir = settings.mirrorDir();
+        if (dir == null) {
+            return;
+        }
+        try {
+            Files.createDirectories(dir);
+            Path tmp = dir.resolve(backup.getFileName() + ".part");
+            Files.copy(backup, tmp, StandardCopyOption.REPLACE_EXISTING);
+            Files.move(tmp, dir.resolve(backup.getFileName()), StandardCopyOption.REPLACE_EXISTING);
+            try (Stream<Path> files = Files.list(dir)) {
+                List<Path> backups = files.filter(BackupService::isBackup)
+                        .sorted(Comparator.comparing(Path::getFileName).reversed()).toList();
+                for (Path old : backups.subList(Math.min(keep, backups.size()), backups.size())) {
+                    Files.deleteIfExists(old);
+                }
+            }
+            mirrorError = null;
+        } catch (IOException | SecurityException e) {
+            mirrorError = "Last copy to " + dir + " failed: " + e.getClass().getSimpleName()
+                    + (e.getMessage() == null ? "" : " (" + e.getMessage() + ")");
+            log.warn(mirrorError);
         }
     }
 
@@ -184,8 +262,10 @@ public class BackupService {
      * @param directory        where backups are written now
      * @param defaultDirectory {@code <data-dir>/backups}
      * @param custom           a folder was chosen on the Settings page
+     * @param mirrorDirectory  second folder every backup is copied to (null = none)
+     * @param mirrorError      why the last copy failed (null = fine)
      */
     public record BackupSettings(String directory, String defaultDirectory, boolean custom,
-                                 boolean automatic, int keep) {
+                                 boolean automatic, int keep, String mirrorDirectory, String mirrorError) {
     }
 }

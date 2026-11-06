@@ -1,6 +1,6 @@
 # Personal Learning Tracker — Architecture
 
-> Status: phases 1–7 implemented (CSV sync/merge, §6.4, is still a later phase). Run/deploy instructions: [README](../README.md).
+> Status: phases 1–9 implemented, including CSV sync/merge (§6.4, `importer/SyncService`) and the learning features of migration V3 (target dates, reviews, links, time log, tags, FTS5 search). Run/deploy instructions: [README](../README.md).
 
 ## 1. Overview
 
@@ -321,7 +321,7 @@ runs. It is called on demand (`POST /api/admin/backup`, Settings page) and autom
 | 6 | Import (CSV/XLSX, preview, append-only, duplicate detection), CSV export (plan/subtree), template |
 | 7 | Docker Compose, native install, backup/restore |
 | 8 | End-to-end checks, performance, docs |
-| 9 *(later)* | CSV sync/merge with diff preview (§6.4). The `external_id` column is in place from Phase 2. |
+| 9 | CSV sync/merge with diff preview (§6.4): `importer/SyncService`. Exports carry a `version` column for conflict detection. |
 
 ## 9. Decisions recap
 * SQLite + Flyway + single connection: simple and correct transactional behavior.

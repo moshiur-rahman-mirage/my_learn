@@ -12,6 +12,7 @@ import { usePlanList } from '../composables/usePlanList'
 import ProgressBar from '../components/ProgressBar.vue'
 import ActionMenu, { type MenuAction } from '../components/ActionMenu.vue'
 import PlanFormDialog from '../components/PlanFormDialog.vue'
+import PaceBadge from '../components/PaceBadge.vue'
 import EmptyState from '../components/EmptyState.vue'
 import LoadingState from '../components/LoadingState.vue'
 
@@ -51,15 +52,15 @@ onMounted(() => {
   }
 })
 
-async function save(name: string, description: string | null) {
+async function save(name: string, description: string | null, targetDate: string | null) {
   busy.value = true
   try {
     const editing = dialog.value.plan
     if (editing) {
-      await plansApi.update({ ...editing, name, description })
+      await plansApi.update({ ...editing, name, description, targetDate })
       toast.success('Plan saved')
     } else {
-      const created = await plansApi.create(name, description)
+      const created = await plansApi.create(name, description, targetDate)
       toast.success('Plan created')
       dialog.value.open = false
       void planList.refresh()
@@ -180,6 +181,7 @@ function actionsFor(p: Plan): MenuAction[] {
           </div>
         </div>
         <p v-if="p.description" class="muted mt-1 line-clamp-2 text-sm">{{ p.description }}</p>
+        <PaceBadge v-if="p.pace && p.status === 'ACTIVE'" class="mt-2" :pace="p.pace" />
         <div class="mt-auto pt-4">
           <ProgressBar :progress="p.progress" />
           <p class="muted mt-1.5 flex justify-between text-xs">

@@ -6,6 +6,7 @@ import com.mylearn.tracker.admin.FolderBrowser.FolderListing;
 import com.mylearn.tracker.admin.RestoreService.RestoreResult;
 import com.mylearn.tracker.common.exception.BusinessRuleException;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -56,6 +57,12 @@ public class AdminController {
         return backups.changeDirectory(request.directory());
     }
 
+    /** Second folder every backup is also copied to; blank directory = stop copying. */
+    @PutMapping("/backup-mirror")
+    public BackupSettings changeMirror(@RequestBody BackupSettingsRequest request) {
+        return backups.changeMirror(request.directory());
+    }
+
     @GetMapping("/folders")
     public FolderListing folders(@RequestParam(required = false) String path) {
         return folders.list(path);
@@ -65,6 +72,12 @@ public class AdminController {
     @PostMapping("/backups/{fileName}/restore")
     public RestoreResult restoreBackup(@PathVariable String fileName) {
         return restore.restoreBackup(fileName);
+    }
+
+    @DeleteMapping("/backups/{fileName}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteBackup(@PathVariable String fileName) {
+        backups.delete(fileName);
     }
 
     /** Restore from a .db file chosen on this computer (e.g. a copy kept on a USB drive). */

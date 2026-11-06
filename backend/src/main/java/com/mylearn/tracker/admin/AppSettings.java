@@ -22,6 +22,7 @@ import java.util.Properties;
 public class AppSettings {
 
     private static final String BACKUP_DIR = "backup.dir";
+    private static final String MIRROR_DIR = "backup.mirror.dir";
 
     private final Path file;
     private final Path defaultBackupDir;
@@ -60,6 +61,22 @@ public class AppSettings {
             props.remove(BACKUP_DIR);
         } else {
             props.setProperty(BACKUP_DIR, dir.toString());
+        }
+        save();
+    }
+
+    /** Second folder every backup is also copied to (e.g. OneDrive or a USB drive); null = none. */
+    public synchronized Path mirrorDir() {
+        String dir = props.getProperty(MIRROR_DIR);
+        return dir == null || dir.isBlank() ? null : Path.of(dir);
+    }
+
+    /** @param dir null turns copying off */
+    public synchronized void setMirrorDir(Path dir) {
+        if (dir == null) {
+            props.remove(MIRROR_DIR);
+        } else {
+            props.setProperty(MIRROR_DIR, dir.toString());
         }
         save();
     }

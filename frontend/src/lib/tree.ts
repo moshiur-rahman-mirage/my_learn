@@ -98,16 +98,28 @@ export interface TreeFilter {
   priorities: Priority[]
   status: 'all' | 'completed' | 'pending'
   types: ItemType[]
+  /** items carrying any of these tags */
+  tags: string[]
 }
 
 export function isFilterActive(f: TreeFilter): boolean {
-  return f.text.trim() !== '' || f.priorities.length > 0 || f.status !== 'all' || f.types.length > 0
+  return f.text.trim() !== '' || f.priorities.length > 0 || f.status !== 'all' || f.types.length > 0 || f.tags.length > 0
+}
+
+/** Every tag used in the tree, alphabetical. */
+export function tagsIn(nodes: TreeNode[], out = new Set<string>()): string[] {
+  for (const n of nodes) {
+    n.tags.forEach((t) => out.add(t))
+    tagsIn(n.children, out)
+  }
+  return [...out].sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }))
 }
 
 function matches(n: TreeNode, f: TreeFilter, text: string): boolean {
   if (text && !n.name.toLowerCase().includes(text) && !(n.description ?? '').toLowerCase().includes(text)) return false
   if (f.priorities.length && (!n.priority || !f.priorities.includes(n.priority))) return false
   if (f.types.length && !f.types.includes(n.type)) return false
+  if (f.tags.length && !n.tags.some((t) => f.tags.includes(t))) return false
   if (f.status === 'completed' && !(n.checkable && n.completed)) return false
   if (f.status === 'pending' && !(n.checkable && !n.completed)) return false
   return true

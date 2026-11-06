@@ -1,5 +1,6 @@
 package com.mylearn.tracker.progress;
 
+import com.mylearn.tracker.common.persistence.InstantText;
 import jakarta.persistence.EntityManager;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -68,6 +69,23 @@ public class ProgressQueries {
             String done = rs.getString("completed_at");
             return new LeafTimes(Instant.parse(rs.getString("created_at")), done == null ? null : Instant.parse(done));
         }, args);
+    }
+
+    /**
+     * Topics completed by you since {@code since}, per plan. Topics that arrived already ticked
+     * (completed within 5 seconds of being created, i.e. by an import) don't count.
+     */
+    public Map<Long, Integer> completedSinceByPlan(Instant since) {
+        em.flush();
+        Map<Long, Integer> result = new HashMap<>();
+        jdbc.query("SELECT i.plan_id, COUNT(*) AS n FROM learning_item i "
+                        + "WHERE i.is_completed = 1 AND i.completed_at >= ? "
+                        + "AND abs(julianday(i.completed_at) - julianday(i.created_at)) * 86400 > 5 AND " + IS_LEAF_TOPIC
+                        + "GROUP BY i.plan_id",
+                rs -> {
+                    result.put(rs.getLong("plan_id"), rs.getInt("n"));
+                }, InstantText.format(since));
+        return result;
     }
 
     /** @param completedAt null when not completed */

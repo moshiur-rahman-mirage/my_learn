@@ -25,6 +25,7 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -116,21 +117,75 @@ class BackupRestoreIntegrationTest {
     void backupFromAnOlderVersionIsUpgradedAfterRestore() throws Exception {
         plans.create(new CreatePlanRequest("Old times", null));
         Path old = Path.of(backups.backupNow().path());
-        // turn it into a backup made before notes existed (schema V1)
+        // turn it into a backup made before notes (V2) and the learning features (V3) existed: schema V1
         JdbcTemplate oldDb = new JdbcTemplate(new org.springframework.jdbc.datasource.DriverManagerDataSource("jdbc:sqlite:" + old));
-        oldDb.execute("DROP TABLE item_note");
-        oldDb.update("DELETE FROM flyway_schema_history WHERE version = '2'");
+        for (String trigger : new String[]{"trg_search_item_insert", "trg_search_item_update", "trg_search_item_delete",
+                "trg_search_note_delete"}) {
+            oldDb.execute("DROP TRIGGER " + trigger);
+        }
+        for (String table : new String[]{"search_index", "item_review", "item_tag", "tag", "time_log", "item_link", "item_note"}) {
+            oldDb.execute("DROP TABLE " + table);
+        }
+        oldDb.execute("ALTER TABLE learning_plan DROP COLUMN target_date");
+        oldDb.update("DELETE FROM flyway_schema_history WHERE version IN ('2', '3')");
 
         restore.restoreUpload("v1.db", Files.newInputStream(old));
 
         assertThat(plans.search(null, null)).extracting(PlanResponse::name).containsExactly("Old times");
         assertThat(jdbc.queryForObject("SELECT COUNT(*) FROM sqlite_master WHERE name = 'item_note'", Integer.class)).isEqualTo(1);
+        // the search index is built from the restored data
+        assertThat(jdbc.queryForObject("SELECT COUNT(*) FROM search_index WHERE search_index MATCH 'times'", Integer.class))
+                .isEqualTo(0); // plans aren't indexed, items are
+        assertThat(jdbc.queryForObject("SELECT COUNT(*) FROM sqlite_master WHERE name = 'search_index'", Integer.class)).isEqualTo(1);
     }
 
     @Test
     void backupNamesCantEscapeTheFolder() {
         assertThatThrownBy(() -> restore.restoreBackup("../learning-tracker.db")).isInstanceOf(NotFoundException.class);
         assertThatThrownBy(() -> restore.restoreBackup("whatever.db")).isInstanceOf(NotFoundException.class);
+    }
+
+    @Test
+    void deleteBackup_removesOnlyThatFile_andCantEscapeTheFolder() throws Exception {
+        BackupFile keep = backups.backupNow();
+        BackupFile gone = backups.backupNow();
+
+        mvc.perform(delete("/api/admin/backups/{name}", gone.fileName())).andExpect(status().isNoContent());
+
+        assertThat(Files.exists(Path.of(gone.path()))).isFalse();
+        assertThat(backups.list()).extracting(BackupFile::fileName).contains(keep.fileName()).doesNotContain(gone.fileName());
+        mvc.perform(delete("/api/admin/backups/{name}", gone.fileName())).andExpect(status().isNotFound());
+        assertThatThrownBy(() -> backups.delete("../learning-tracker.db")).isInstanceOf(NotFoundException.class);    }
+
+    @Test
+    void backupsAreAlsoCopiedToTheSecondFolder_andAFailedCopyNeverFailsTheBackup() throws Exception {
+        Path mirror = DATA_DIR.resolve("usb-" + UUID.randomUUID());
+        BackupFile first = backups.backupNow();
+        backups.changeMirror(mirror.toString());
+        assertThat(mirror.resolve(first.fileName())).exists(); // newest backup copied right away
+
+        BackupFile second = backups.backupNow();
+        assertThat(mirror.resolve(second.fileName())).exists();
+        assertThat(backups.settings().mirrorDirectory()).isEqualTo(mirror.toString());
+        assertThat(backups.settings().mirrorError()).isNull();
+        assertThatThrownBy(() -> backups.changeMirror(backups.settings().directory()))
+                .isInstanceOf(BusinessRuleException.class).hasMessageContaining("different folder");
+
+        // the "drive" disappears: the backup still works, the problem is reported
+        try (var files = Files.list(mirror)) {
+            for (Path f : files.toList()) {
+                Files.delete(f);
+            }
+        }
+        Files.delete(mirror);
+        Files.writeString(mirror, "not a folder any more");
+        BackupFile third = backups.backupNow();
+        assertThat(Path.of(third.path())).exists();
+        assertThat(backups.settings().mirrorError()).contains("failed");
+
+        Files.delete(mirror);
+        backups.changeMirror("");
+        assertThat(backups.settings().mirrorDirectory()).isNull();
     }
 
     @Test

@@ -16,9 +16,17 @@ import java.time.ZoneId;
 public class DashboardController {
 
     private final DashboardService dashboard;
+    private final TodayService today;
 
-    public DashboardController(DashboardService dashboard) {
+    public DashboardController(DashboardService dashboard, TodayService today) {
         this.dashboard = dashboard;
+        this.today = today;
+    }
+
+    /** @param tz IANA time zone of the viewer, for "time spent today" */
+    @GetMapping("/today")
+    public TodayService.Today today(@RequestParam(required = false) String tz) {
+        return today.today(zoneOf(tz));
     }
 
     /**

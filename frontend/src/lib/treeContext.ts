@@ -11,6 +11,8 @@ export interface TreeContext {
   visible: Ref<Set<number> | null>
   matched: Ref<Set<number> | null>
   pending: Ref<Set<number>>
+  /** Item to draw attention to (opened from search or Today). */
+  highlightId: Ref<number | null>
   onToggleComplete: (node: TreeNode) => void
   onAdd: (parent: TreeNode, type: 'MODULE' | 'TOPIC') => void
   onEdit: (node: TreeNode) => void

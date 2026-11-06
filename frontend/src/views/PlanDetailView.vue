@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { computed, defineAsyncComponent, provide, ref, watch } from 'vue'
-import { RouterLink, useRouter } from 'vue-router'
+import { computed, defineAsyncComponent, nextTick, onBeforeUnmount, onMounted, provide, ref, watch } from 'vue'
+import { RouterLink, useRoute, useRouter } from 'vue-router'
 import {
   Archive,
   ArchiveRestore,
@@ -12,12 +12,13 @@ import {
   FolderPlus,
   ListChecks,
   Pencil,
+  RefreshCw,
   Search,
   Trash2,
   Upload,
   X,
 } from 'lucide-vue-next'
-import { itemsApi, plansApi } from '../api'
+import { itemsApi, plansApi, tagsApi } from '../api'
 import { ApiError, errorMessage } from '../api/client'
 import type { ItemType, Plan, Priority, TreeNode } from '../types/api'
 import {
@@ -28,6 +29,7 @@ import {
   isSelfOrDescendant,
   locate,
   rollup,
+  tagsIn,
   totalProgress,
   type TreeFilter,
 } from '../lib/tree'
@@ -44,6 +46,8 @@ import MoveDialog from '../components/MoveDialog.vue'
 import PlanFormDialog from '../components/PlanFormDialog.vue'
 import EmptyState from '../components/EmptyState.vue'
 import LoadingState from '../components/LoadingState.vue'
+import PaceBadge from '../components/PaceBadge.vue'
+import { minutesLabel } from '../lib/format'
 
 // the rich-text editor is large: load it the first time a note is opened
 const NotesPanel = defineAsyncComponent(() => import('../components/NotesPanel.vue'))
@@ -51,6 +55,7 @@ const NotesPanel = defineAsyncComponent(() => import('../components/NotesPanel.v
 const props = defineProps<{ id: string }>()
 const planId = computed(() => Number(props.id))
 const router = useRouter()
+const route = useRoute()
 const toast = useToast()
 const { confirm } = useConfirm()
 const planList = usePlanList()
@@ -90,6 +95,10 @@ async function load(showSpinner = true) {
   } finally {
     loading.value = false
   }
+  if (route.query.item && !loadError.value) {
+    await nextTick()
+    await revealFromQuery()
+  }
 }
 
 /** Reload after a structural change, keeping the expanded state; refresh sidebar figures too. */
@@ -109,10 +118,23 @@ watch(
 )
 
 const progress = computed(() => totalProgress(tree.value))
+const totalMinutes = computed(() => tree.value.reduce((sum, n) => sum + n.totalMinutes, 0))
+
+/** Links, tags or time of an item changed in the side panel. */
+async function onDetailsChanged() {
+  await load(false)
+  void loadTags()
+}
 
 // --- filtering ----------------------------------------------------------------------------
 
-const filter = ref<TreeFilter>({ text: '', priorities: [], status: 'all', types: [] })
+const filter = ref<TreeFilter>({ text: '', priorities: [], status: 'all', types: [], tags: [] })
+const planTags = computed(() => tagsIn(tree.value))
+const allTags = ref<string[]>([])
+async function loadTags() {
+  allTags.value = (await tagsApi.all().catch(() => [])).map((t) => t.name)
+}
+onMounted(loadTags)
 const filtered = computed(() => (isFilterActive(filter.value) ? filterTree(tree.value, filter.value) : null))
 const visible = computed(() => filtered.value?.visible ?? null)
 const matched = computed(() => filtered.value?.matched ?? null)
@@ -126,9 +148,61 @@ function toggleType(t: ItemType) {
   const list = filter.value.types
   filter.value.types = list.includes(t) ? list.filter((x) => x !== t) : [...list, t]
 }
-function clearFilter() {
-  filter.value = { text: '', priorities: [], status: 'all', types: [] }
+function toggleTag(t: string) {
+  const list = filter.value.tags
+  filter.value.tags = list.includes(t) ? list.filter((x) => x !== t) : [...list, t]
 }
+function clearFilter() {
+  filter.value = { text: '', priorities: [], status: 'all', types: [], tags: [] }
+}
+
+// --- jump to an item (from search or Today: /plans/1?item=42) -------------------------------
+
+const highlightId = ref<number | null>(null)
+
+async function revealFromQuery() {
+  const id = Number(route.query.item)
+  if (!id || !findNode(tree.value, id)) return
+  // open every ancestor
+  let parentId = findNode(tree.value, id)!.parentId
+  while (parentId !== null) {
+    expandedState.expand(parentId)
+    parentId = findNode(tree.value, parentId)?.parentId ?? null
+  }
+  expandedVersion.value++
+  highlightId.value = id
+  if (route.query.notes) notesItemId.value = id
+  void router.replace({ query: {} })
+  await nextTick()
+  const row = document.querySelector<HTMLElement>(`[data-tree-row="${id}"]`)
+  row?.scrollIntoView({ block: 'center', behavior: 'smooth' })
+  row?.focus({ preventScroll: true })
+  setTimeout(() => {
+    if (highlightId.value === id) highlightId.value = null
+  }, 2500)
+}
+
+// already on this plan (e.g. a second search result in the same plan)
+watch(
+  () => route.query.item,
+  (item) => {
+    if (item && !loading.value) void revealFromQuery()
+  },
+)
+
+// --- page shortcuts: n = new topic, m = new module ------------------------------------------
+
+function onPageKey(e: KeyboardEvent) {
+  const t = e.target as HTMLElement | null
+  if (e.ctrlKey || e.metaKey || e.altKey || itemDialog.value.open || moveDialog.value.open || planDialog.value) return
+  if (t && (t.closest('input, textarea, select, [contenteditable="true"], [role="dialog"]') || t.dataset.treeRow)) return
+  if (e.key === 'n') openAdd(null, 'TOPIC')
+  else if (e.key === 'm') openAdd(null, 'MODULE')
+  else return
+  e.preventDefault()
+}
+onMounted(() => document.addEventListener('keydown', onPageKey))
+onBeforeUnmount(() => document.removeEventListener('keydown', onPageKey))
 
 // --- completion (optimistic) ----------------------------------------------------------------
 
@@ -279,11 +353,11 @@ async function onDrop(target: TreeNode, zone: DropZone) {
 
 const planDialog = ref(false)
 
-async function savePlan(name: string, description: string | null) {
+async function savePlan(name: string, description: string | null, targetDate: string | null) {
   if (!plan.value) return
   busy.value = true
   try {
-    plan.value = await plansApi.update({ ...plan.value, name, description })
+    plan.value = await plansApi.update({ ...plan.value, name, description, targetDate })
     planDialog.value = false
     toast.success('Plan saved')
     void planList.refresh()
@@ -335,6 +409,7 @@ const planActions = computed<MenuAction[]>(() => [
   { label: 'Edit plan', icon: Pencil, run: () => (planDialog.value = true) },
   { label: 'Import into this plan', icon: Upload, run: () => router.push({ path: '/import', query: { plan: planId.value } }) },
   { label: 'Export CSV', icon: Download, run: () => download(plansApi.exportUrl(planId.value)) },
+  { label: 'Sync from edited file…', icon: RefreshCw, run: () => router.push(`/plans/${planId.value}/sync`) },
   {
     label: plan.value?.status === 'ACTIVE' ? 'Archive' : 'Activate',
     icon: plan.value?.status === 'ACTIVE' ? Archive : ArchiveRestore,
@@ -365,6 +440,7 @@ provide(TREE_CONTEXT, {
   visible,
   matched,
   pending,
+  highlightId,
   onToggleComplete: toggleComplete,
   onAdd: (parent, type) => openAdd(parent, type),
   onEdit: openEdit,
@@ -416,7 +492,10 @@ provide(TREE_CONTEXT, {
             {{ progress.total - progress.completed }} remaining
           </template>
           <template v-else>No checkable topics yet.</template>
+          <template v-if="totalMinutes"> · {{ minutesLabel(totalMinutes) }} spent</template>
         </p>
+        <PaceBadge v-if="plan.pace" class="mt-2" :pace="plan.pace" detailed />
+        <button v-else class="muted mt-1 text-xs underline" @click="planDialog = true">Set a target date</button>
       </div>
     </div>
 
@@ -425,7 +504,7 @@ provide(TREE_CONTEXT, {
       <div class="flex flex-wrap items-center gap-2">
         <div class="relative min-w-48 flex-1">
           <Search class="absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-slate-400" />
-          <input v-model="filter.text" class="input pl-8" placeholder="Search names and descriptions…" aria-label="Search in plan" />
+          <input v-model="filter.text" class="input pl-8" placeholder="Filter this plan…  (press /)" aria-label="Filter this plan" data-shortcut-search />
         </div>
         <button class="btn-primary" @click="openAdd(null, 'MODULE')"><FolderPlus class="size-4" /> Module</button>
         <button class="btn-secondary" @click="openAdd(null, 'TOPIC')"><FilePlus class="size-4" /> Topic</button>
@@ -463,6 +542,19 @@ provide(TREE_CONTEXT, {
         >
           {{ t === 'MODULE' ? 'Modules' : 'Topics' }}
         </button>
+        <template v-if="planTags.length">
+          <span class="mx-1 h-4 w-px bg-slate-200 dark:bg-slate-700" />
+          <button
+            v-for="t in planTags"
+            :key="t"
+            class="chip"
+            :class="{ 'chip-on': filter.tags.includes(t) }"
+            :aria-pressed="filter.tags.includes(t)"
+            @click="toggleTag(t)"
+          >
+            #{{ t }}
+          </button>
+        </template>
         <button v-if="filtered" class="chip" @click="clearFilter"><X class="size-3" /> Clear · {{ filtered.matched.size }} match(es)</button>
         <span class="flex-1" />
         <button class="btn-ghost px-2 py-1 text-xs" :disabled="!!filtered" @click="expandAll"><ChevronsUpDown class="size-3.5" /> Expand all</button>
@@ -495,7 +587,7 @@ provide(TREE_CONTEXT, {
           :sibling-count="tree.length"
         />
       </ul>
-      <p class="muted px-2 pt-2 text-xs">Tip: drag rows to reorder; drop onto the middle of a row to move inside it. Double-click to edit. Click the note icon to write a summary.</p>
+      <p class="muted px-2 pt-2 text-xs">Tip: drag rows to reorder; drop onto the middle of a row to move inside it. Double-click to edit. Keyboard: ↑↓ move, ←→ collapse/expand, Space ticks, Enter opens details, e edits, n adds inside. Press ? for all shortcuts.</p>
     </div>
 
     <ItemFormDialog
@@ -509,6 +601,14 @@ provide(TREE_CONTEXT, {
     />
     <MoveDialog :open="moveDialog.open" :tree="tree" :item="moveDialog.item" :busy="busy" @close="moveDialog.open = false" @submit="submitMove" />
     <PlanFormDialog :open="planDialog" :plan="plan" :busy="busy" @close="planDialog = false" @submit="savePlan" />
-    <NotesPanel v-if="notesItemId !== null" :node="notesNode" @close="notesItemId = null" @saved="onNoteSaved" />
+    <NotesPanel
+      v-if="notesItemId !== null"
+      :node="notesNode"
+      :plan-id="planId"
+      :all-tags="allTags"
+      @close="notesItemId = null"
+      @saved="onNoteSaved"
+      @changed="onDetailsChanged"
+    />
   </div>
 </template>

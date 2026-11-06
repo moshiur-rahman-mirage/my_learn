@@ -11,6 +11,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
 
+import java.time.LocalDate;
+
 /**
  * A learning roadmap. Its items reference it via {@code learning_item.plan_id}. There is
  * deliberately no {@code items} collection here: the database cascades deletes, and hierarchy
@@ -32,6 +34,10 @@ public class LearningPlan extends TimestampedEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private PlanStatus status = PlanStatus.ACTIVE;
+
+    /** Optional "finish by" day. */
+    @Column(name = "target_date")
+    private LocalDate targetDate;
 
     @Version
     private long version;
@@ -71,6 +77,14 @@ public class LearningPlan extends TimestampedEntity {
 
     public void setStatus(PlanStatus status) {
         this.status = status;
+    }
+
+    public LocalDate getTargetDate() {
+        return targetDate;
+    }
+
+    public void setTargetDate(LocalDate targetDate) {
+        this.targetDate = targetDate;
     }
 
     public long getVersion() {

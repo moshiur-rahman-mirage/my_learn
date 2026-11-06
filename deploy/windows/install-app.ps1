@@ -7,13 +7,15 @@ Use this when Windows Smart App Control blocks the unsigned installer: the app i
   powershell -ExecutionPolicy Bypass -File deploy\windows\install-app.ps1 -Uninstall   # remove (data is kept)
 
 What it does:
+  - rebuilds the app from the source code every time (scripts\build-installer.ps1 -AppImageOnly:
+    clean frontend + backend build, all tests, fresh dist\Learning Tracker\); an old build is never reused.
+    If the build fails, nothing is installed and the running app is left alone.
   - copies dist\Learning Tracker\  ->  %LOCALAPPDATA%\Learning Tracker\  (stops the running app first)
   - Start-menu shortcut (and a desktop shortcut unless -NoDesktopShortcut)
   - an entry under Settings > Apps > Installed apps, so it can be uninstalled from there too
 Your data stays in %LOCALAPPDATA%\LearningTracker\data and is never touched by this script.
 #>
 param(
-    [string]$Source = (Join-Path $PSScriptRoot '..\..\dist\Learning Tracker'),
     # same folder the .exe installer uses, so this updates an existing install instead of adding a copy
     [string]$InstallDir = (Join-Path $env:LOCALAPPDATA 'Learning Tracker'),
     [switch]$NoDesktopShortcut,
@@ -22,9 +24,19 @@ param(
     # for testing: where shortcuts go, and whether to touch the registry
     [string]$StartMenuDir = (Join-Path $env:APPDATA 'Microsoft\Windows\Start Menu\Programs'),
     [string]$DesktopDir = [Environment]::GetFolderPath('Desktop'),
-    [switch]$NoRegistry
+    [switch]$NoRegistry,
+    # wait for Enter before closing (used by the tray's "Update from source code", so you can read the result)
+    [switch]$PauseAtEnd
 )
 $ErrorActionPreference = 'Stop'
+trap {
+    if ($PauseAtEnd) {
+        Write-Host "`nUpdate FAILED: $_" -ForegroundColor Red
+        Read-Host 'Press Enter to close' | Out-Null
+        exit 1
+    }
+    break
+}
 $AppName = 'Learning Tracker'
 $Exe = Join-Path $InstallDir "$AppName.exe"
 $UninstallKey = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall\LearningTracker'
@@ -63,9 +75,20 @@ if ($Uninstall) {
     return
 }
 
-$Source = (Resolve-Path $Source -ErrorAction SilentlyContinue).Path
-if (-not $Source -or -not (Test-Path (Join-Path $Source "$AppName.exe"))) {
-    throw "App folder not found. Build it first:  .\scripts\build-installer.ps1 -AppImageOnly"
+# Always build fresh from the source code; never install an existing dist folder.
+$RepoRoot = Join-Path $PSScriptRoot '..\..'
+$BuildScript = Join-Path $RepoRoot 'scripts\build-installer.ps1'
+if (-not (Test-Path $BuildScript)) {
+    throw "Source code not found ($BuildScript). Run this script from the project's deploy\windows folder."
+}
+$RepoRoot = (Resolve-Path $RepoRoot).Path
+$Source = Join-Path $RepoRoot "dist\$AppName"
+Remove-Item -Recurse -Force $Source -ErrorAction SilentlyContinue
+Write-Host '==> Building the app from source (frontend, backend, tests, app folder)...'
+# separate process: the build script changes directory and stops on errors on its own
+& powershell.exe -NoProfile -ExecutionPolicy Bypass -File $BuildScript -AppImageOnly
+if ($LASTEXITCODE -or -not (Test-Path (Join-Path $Source "$AppName.exe"))) {
+    throw 'Build failed - nothing was installed and the current app is unchanged.'
 }
 
 Stop-RunningApp
@@ -101,4 +124,8 @@ if (-not $NoRegistry) {
 if (-not $NoStart) {
     Start-Process $Exe
     Write-Host 'Starting Learning Tracker (it opens in your browser; look for the tray icon by the clock).'
+}
+if ($PauseAtEnd) {
+    Write-Host "`nUpdate finished." -ForegroundColor Green
+    Read-Host 'Press Enter to close' | Out-Null
 }

@@ -10,6 +10,7 @@ import ProgressBar from '../components/ProgressBar.vue'
 import EmptyState from '../components/EmptyState.vue'
 import LoadingState from '../components/LoadingState.vue'
 import ProgressCharts from '../components/ProgressCharts.vue'
+import PaceBadge from '../components/PaceBadge.vue'
 
 const summary = ref<DashboardSummary | null>(null)
 const error = ref<string | null>(null)
@@ -86,6 +87,7 @@ onMounted(load)
                   <span class="muted shrink-0 text-xs">{{ p.progress.completed }}/{{ p.progress.total }}</span>
                 </div>
                 <ProgressBar :progress="p.progress" size="sm" />
+                <PaceBadge v-if="p.pace" class="mt-1.5" :pace="p.pace" />
               </RouterLink>
             </li>
           </ul>

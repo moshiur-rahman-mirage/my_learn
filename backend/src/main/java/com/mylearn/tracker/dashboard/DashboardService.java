@@ -3,6 +3,7 @@ package com.mylearn.tracker.dashboard;
 import com.mylearn.tracker.common.exception.NotFoundException;
 import com.mylearn.tracker.dashboard.ActivityCalculator.Activity;
 import com.mylearn.tracker.plan.LearningPlanRepository;
+import com.mylearn.tracker.plan.PlanService;
 import com.mylearn.tracker.plan.PlanStatus;
 import com.mylearn.tracker.plan.dto.PlanResponse;
 import com.mylearn.tracker.progress.Progress;
@@ -15,7 +16,6 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 
 @Service
 @Transactional(readOnly = true)
@@ -26,10 +26,12 @@ public class DashboardService {
 
     private final LearningPlanRepository plans;
     private final ProgressQueries progress;
+    private final PlanService planService;
 
-    public DashboardService(LearningPlanRepository plans, ProgressQueries progress) {
+    public DashboardService(LearningPlanRepository plans, ProgressQueries progress, PlanService planService) {
         this.plans = plans;
         this.progress = progress;
+        this.planService = planService;
     }
 
     /**
@@ -37,10 +39,7 @@ public class DashboardService {
      * weighted by leaf count (Σ completed / Σ leaves), never an average of plan percentages.
      */
     public DashboardSummary summary() {
-        Map<Long, Progress> byPlan = progress.progressByPlan();
-        List<PlanResponse> all = plans.findAll().stream()
-                .map(p -> PlanResponse.from(p, byPlan.get(p.getId())))
-                .toList();
+        List<PlanResponse> all = planService.withProgress(plans.findAll());
 
         List<PlanResponse> active = all.stream()
                 .filter(p -> p.status() == PlanStatus.ACTIVE)

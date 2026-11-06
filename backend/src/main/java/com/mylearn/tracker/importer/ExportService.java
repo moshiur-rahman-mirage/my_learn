@@ -19,7 +19,8 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * CSV export in the app's own format: one row per item in tree order.
+ * CSV export in the app's own format: one row per item in tree order. {@code version} lets sync
+ * notice items edited in the app after the export (conflicts).
  * {@code id} (stable external id) + {@code level} + row order fully describe the hierarchy,
  * and the file opens and edits cleanly in Excel / Google Sheets.
  */
@@ -27,7 +28,7 @@ import java.util.Optional;
 @Transactional(readOnly = true)
 public class ExportService {
 
-    static final String[] HEADER = {"id", "level", "type", "name", "description", "priority", "completed"};
+    static final String[] HEADER = {"id", "level", "type", "name", "description", "priority", "completed", "version"};
 
     private final PlanService planService;
     private final LearningItemRepository items;
@@ -94,7 +95,7 @@ public class ExportService {
         csv.printRecord(node.externalId(), level, node.type(), node.name(),
                 node.description() == null ? "" : node.description(),
                 node.priority() == null ? "" : node.priority(),
-                node.checkable() ? (node.completed() ? "TRUE" : "FALSE") : "");
+                node.checkable() ? (node.completed() ? "TRUE" : "FALSE") : "", node.version());
         for (TreeNode child : node.children()) {
             write(csv, child, level + 1);
         }
