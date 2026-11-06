@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN 2.0//EN" "https://www.springframework.org/dtd/spring-beans-2.0.dtd">
+<!--
+  Spring ships no error-code mapping for SQLite, so constraint violations would surface as
+  UncategorizedSQLException. This maps them to Spring's standard DataAccessException types.
+  Primary result codes plus extended codes: https://www.sqlite.org/rescode.html
+-->
+<beans>
+    <bean id="SQLite" class="org.springframework.jdbc.support.SQLErrorCodes">
+        <property name="databaseProductName" value="SQLite"/>
+        <!-- 19 SQLITE_CONSTRAINT; 275 CHECK, 787 FOREIGNKEY, 1299 NOTNULL, 1555 PRIMARYKEY, 2067 UNIQUE -->
+        <property name="dataIntegrityViolationCodes" value="19,275,787,1299,1555,2067"/>
+        <!-- 5 SQLITE_BUSY, 6 SQLITE_LOCKED -->
+        <property name="cannotAcquireLockCodes" value="5,6"/>
+    </bean>
+</beans>

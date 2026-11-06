@@ -1,0 +1,17 @@
+# Profile used by the installed Windows app (scripts/build-installer.ps1 → DesktopLauncher).
+# The port is passed by the launcher as -Dserver.port (default 38427).
+app:
+  # The install folder is not writable, so data lives in the user's profile.
+  data-dir: ${LOCALAPPDATA:${user.home}}/LearningTracker/data
+
+server:
+  address: 127.0.0.1   # this PC only
+
+logging:
+  # No console window: log to a file instead.
+  file:
+    name: ${app.data-dir}/logs/learning-tracker.log
+  logback:
+    rollingpolicy:
+      max-file-size: 5MB
+      max-history: 7

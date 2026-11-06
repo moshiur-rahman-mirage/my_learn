@@ -1,0 +1,26 @@
+# Local database & backups — never commit
+data/
+*.db
+*.db-shm
+*.db-wal
+
+# Backend
+backend/target/
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+
+# IDE / OS
+.idea/
+.vscode/
+*.iml
+.DS_Store
+Thumbs.db
+
+# Personal source spreadsheets
+*.xlsx
+
+# Windows installer output and local build tools
+/dist/
+/.tools/

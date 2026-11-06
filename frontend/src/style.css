@@ -1,0 +1,137 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+/* Dark mode follows a `dark` class on <html> (set by useTheme: system / light / dark). */
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans", "Noto Sans Bengali", sans-serif;
+}
+
+html,
+body {
+  @apply bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100;
+}
+
+/* --- small shared building blocks ------------------------------------------------- */
+
+/* A utility (not a component class) so the button variants below can @apply it. */
+@utility btn {
+  @apply inline-flex items-center justify-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium
+    transition-colors disabled:cursor-not-allowed disabled:opacity-50
+    focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-500;
+}
+
+@layer components {
+  .card {
+    @apply rounded-xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900;
+  }
+
+  .btn-primary {
+    @apply btn bg-emerald-600 text-white hover:bg-emerald-700;
+  }
+  .btn-secondary {
+    @apply btn border border-slate-300 bg-white text-slate-700 hover:bg-slate-50
+      dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800;
+  }
+  .btn-ghost {
+    @apply btn text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800;
+  }
+  .btn-danger {
+    @apply btn bg-red-600 text-white hover:bg-red-700;
+  }
+  .icon-btn {
+    @apply inline-flex size-7 items-center justify-center rounded-md text-slate-500 hover:bg-slate-100
+      hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100
+      focus-visible:outline-2 focus-visible:outline-emerald-500;
+  }
+
+  .input {
+    @apply w-full rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-sm placeholder:text-slate-400
+      focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/30 focus:outline-none
+      dark:border-slate-700 dark:bg-slate-900 dark:placeholder:text-slate-500;
+  }
+  .label {
+    @apply mb-1 block text-xs font-medium text-slate-600 dark:text-slate-400;
+  }
+
+  .chip {
+    @apply inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-xs font-medium transition-colors
+      border-slate-300 text-slate-600 hover:bg-slate-100
+      dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800;
+  }
+  .chip-on {
+    @apply border-emerald-600 bg-emerald-600 text-white hover:bg-emerald-700
+      dark:border-emerald-500 dark:bg-emerald-600 dark:text-white;
+  }
+
+  .muted {
+    @apply text-slate-500 dark:text-slate-400;
+  }
+}
+
+/* --- charts (single series; colors validated for both surfaces) ----------------- */
+
+:root {
+  --chart-series: #2a78d6;
+  --chart-grid: #e2e8f0;
+  --chart-baseline: #cbd5e1;
+  --chart-text: #64748b;
+  --chart-surface: #ffffff;
+}
+.dark {
+  --chart-series: #3987e5;
+  --chart-grid: #1e293b;
+  --chart-baseline: #334155;
+  --chart-text: #94a3b8;
+  --chart-surface: #0f172a;
+}
+
+.chart-grid { stroke: var(--chart-grid); stroke-width: 1; }
+.chart-baseline { stroke: var(--chart-baseline); }
+.chart-axis-text { fill: var(--chart-text); font-size: 11px; font-variant-numeric: tabular-nums; }
+.chart-line { fill: none; stroke: var(--chart-series); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+.chart-dot { fill: var(--chart-series); stroke: var(--chart-surface); stroke-width: 2; }
+.chart-bar { fill: var(--chart-series); transition: opacity 120ms; }
+.chart-crosshair { stroke: var(--chart-text); stroke-width: 1; stroke-dasharray: 3 3; }
+.chart-tooltip {
+  @apply pointer-events-none absolute z-10 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs whitespace-nowrap shadow-md
+    dark:border-slate-700 dark:bg-slate-800;
+}
+
+/* --- note editor (TipTap) --------------------------------------------------------- */
+
+.note-content p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  @apply pointer-events-none float-left h-0 text-slate-400 dark:text-slate-500;
+}
+.note-content ul[data-type="taskList"] {
+  @apply list-none pl-1;
+}
+.note-content ul[data-type="taskList"] li {
+  @apply my-1 flex items-start gap-2;
+}
+.note-content ul[data-type="taskList"] li > label {
+  @apply mt-1 shrink-0;
+}
+.note-content ul[data-type="taskList"] li > label input {
+  @apply size-4 accent-emerald-600;
+}
+.note-content ul[data-type="taskList"] li > div {
+  @apply min-w-0 flex-1;
+}
+.note-content ul[data-type="taskList"] li > div > p {
+  @apply my-0;
+}
+.note-content ul[data-type="taskList"] li[data-checked="true"] > div {
+  @apply text-slate-400 line-through;
+}
+.note-content mark {
+  @apply rounded-sm bg-yellow-200 px-0.5 dark:bg-yellow-500/40 dark:text-inherit;
+}
+.note-content a {
+  @apply text-emerald-700 dark:text-emerald-400;
+}
+.note-content pre {
+  @apply bg-slate-900 text-slate-100;
+}

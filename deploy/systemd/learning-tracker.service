@@ -1,0 +1,40 @@
+# Personal Learning Tracker: systemd unit (native install, Option B).
+# Installed by deploy/install-linux.sh to /etc/systemd/system/learning-tracker.service
+#
+#   sudo systemctl status learning-tracker
+#   journalctl -u learning-tracker -f
+#
+# Change the port or data folder in /etc/learning-tracker.env (not here), then:
+#   sudo systemctl restart learning-tracker
+
+[Unit]
+Description=Personal Learning Tracker
+After=network.target
+
+[Service]
+Type=simple
+User=learntracker
+Group=learntracker
+# Creates /var/lib/learning-tracker (owned by the user above) for the database and backups.
+StateDirectory=learning-tracker
+WorkingDirectory=/var/lib/learning-tracker
+Environment=SERVER_PORT=8080
+Environment=SERVER_ADDRESS=127.0.0.1
+Environment=APP_DATA_DIR=/var/lib/learning-tracker
+# Optional overrides (the leading '-' means the file may be missing).
+EnvironmentFile=-/etc/learning-tracker.env
+ExecStart=/usr/bin/java -Xmx256m -jar /opt/learning-tracker/learning-tracker.jar
+# The JVM exits with 143 on SIGTERM: a normal stop, not a failure.
+SuccessExitStatus=143
+Restart=on-failure
+RestartSec=5
+
+# Hardening: the app only needs its own state directory.
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+ReadWritePaths=/var/lib/learning-tracker
+
+[Install]
+WantedBy=multi-user.target

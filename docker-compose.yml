@@ -1,0 +1,37 @@
+# Personal Learning Tracker: Docker Compose (Option A).
+#
+#   docker compose up -d --build      # first start / after updating the code
+#   docker compose ps                 # health status
+#   docker compose logs -f backend
+#   docker compose down               # stop (data stays in ./data)
+#
+# The SQLite database lives in ./data on YOUR disk (bind mount), never only inside a container.
+# Change the published port with LT_PORT, e.g.  LT_PORT=9000 docker compose up -d
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: deploy/docker/backend.Dockerfile
+    image: learning-tracker-backend
+    restart: unless-stopped
+    environment:
+      APP_DATA_DIR: /data
+    volumes:
+      - ./data:/data
+    # Not published: only reachable through the frontend's /api proxy.
+    expose:
+      - "8080"
+
+  frontend:
+    build:
+      context: .
+      dockerfile: deploy/docker/frontend.Dockerfile
+    image: learning-tracker-frontend
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      # 127.0.0.1 = only this computer can open the app
+      - "127.0.0.1:${LT_PORT:-8088}:80"
