@@ -99,6 +99,38 @@ class NoteIntegrationTest extends IntegrationTest {
     }
 
     @Test
+    void markdownNotesKeepTheirSourceAndFormat() {
+        seed();
+        String md = "## Summary\n\n- `List<String>` is **generic**\n- [ ] review";
+        var saved = notes.save(topic.id(), md, NoteFormat.MARKDOWN);
+        assertThat(saved.content()).isEqualTo(md);
+        assertThat(saved.format()).isEqualTo(NoteFormat.MARKDOWN);
+        assertThat(notes.get(topic.id()).format()).isEqualTo(NoteFormat.MARKDOWN);
+
+        // switching formats is allowed (the UI converts the content)
+        assertThat(notes.save(topic.id(), "<p>rich</p>", NoteFormat.HTML).format()).isEqualTo(NoteFormat.HTML);
+
+        assertThat(notes.save(topic.id(), "  \n\n ", NoteFormat.MARKDOWN).content()).isNull();
+        assertThat(noteRepository.findById(topic.id())).isEmpty();
+        assertThat(NoteService.isEmpty("<p></p>", NoteFormat.MARKDOWN)).isFalse(); // literal text in Markdown
+    }
+
+    @Test
+    void markdownHttpRoundTrip_formatDefaultsToHtml() throws Exception {
+        seed();
+        mvc.perform(put("/api/items/" + topic.id() + "/notes").contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"content\":\"# Title\\n\\n*hi*\",\"format\":\"MARKDOWN\"}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.format").value("MARKDOWN"));
+        mvc.perform(get("/api/items/" + topic.id() + "/notes"))
+                .andExpect(jsonPath("$.content").value("# Title\n\n*hi*"))
+                .andExpect(jsonPath("$.format").value("MARKDOWN"));
+        mvc.perform(put("/api/items/" + topic.id() + "/notes").contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"content\":\"<p>x</p>\"}"))
+                .andExpect(jsonPath("$.format").value("HTML"));
+    }
+
+    @Test
     void unknownItemIs404() throws Exception {
         assertThatThrownBy(() -> notes.get(999_999L)).isInstanceOf(NotFoundException.class);
         mvc.perform(get("/api/items/999999/notes")).andExpect(status().isNotFound());

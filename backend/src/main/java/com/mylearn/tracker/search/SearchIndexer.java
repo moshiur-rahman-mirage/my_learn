@@ -1,6 +1,7 @@
 package com.mylearn.tracker.search;
 
 import com.mylearn.tracker.common.HtmlText;
+import com.mylearn.tracker.note.NoteFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -25,19 +26,23 @@ public class SearchIndexer {
         this.jdbc = jdbc;
     }
 
-    /** @param html null or empty when the note was deleted */
+    /** @param content null or empty when the note was deleted */
     @Transactional
-    public void indexNote(Long itemId, String html) {
-        jdbc.update("UPDATE search_index SET note = ? WHERE rowid = ?", HtmlText.toPlainText(html), itemId);
+    public void indexNote(Long itemId, String content, NoteFormat format) {
+        String text = format == NoteFormat.MARKDOWN
+                ? (content == null ? "" : content.replaceAll("\\s+", " ").strip())
+                : HtmlText.toPlainText(content);
+        jdbc.update("UPDATE search_index SET note = ? WHERE rowid = ?", text, itemId);
     }
 
     @EventListener(ApplicationReadyEvent.class)
     @Transactional
     public void reindexNotes() {
         jdbc.update("UPDATE search_index SET note = '' WHERE note <> ''");
-        var notes = jdbc.queryForList("SELECT item_id, content FROM item_note");
+        var notes = jdbc.queryForList("SELECT item_id, content, format FROM item_note");
         for (var note : notes) {
-            indexNote(((Number) note.get("item_id")).longValue(), (String) note.get("content"));
+            indexNote(((Number) note.get("item_id")).longValue(), (String) note.get("content"),
+                    NoteFormat.valueOf((String) note.get("format")));
         }
         log.debug("Search index: {} note(s) indexed", notes.size());
     }

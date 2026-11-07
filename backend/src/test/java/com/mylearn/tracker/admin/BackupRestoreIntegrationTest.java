@@ -127,7 +127,8 @@ class BackupRestoreIntegrationTest {
             oldDb.execute("DROP TABLE " + table);
         }
         oldDb.execute("ALTER TABLE learning_plan DROP COLUMN target_date");
-        oldDb.update("DELETE FROM flyway_schema_history WHERE version IN ('2', '3')");
+        // every later migration (V2 notes, V3 features, V4 note format, …) is undone by the drops above
+        oldDb.update("DELETE FROM flyway_schema_history WHERE version IS NOT NULL AND version <> '1'");
 
         restore.restoreUpload("v1.db", Files.newInputStream(old));
 

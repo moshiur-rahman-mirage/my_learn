@@ -27,10 +27,12 @@ public class NoteController {
 
     @PutMapping
     public NoteResponse save(@PathVariable Long id, @Valid @RequestBody SaveNoteRequest request) {
-        return notes.save(id, request.content());
+        return notes.save(id, request.content(), request.format());
     }
 
     /** About 100 pages of text; images aren't embedded, so real notes stay far below this. */
-    public record SaveNoteRequest(@Size(max = 500_000, message = "Note is too long") String content) {
+    /** {@code format} defaults to HTML (rich text) when omitted. */
+    public record SaveNoteRequest(@Size(max = 500_000, message = "Note is too long") String content,
+                                  NoteFormat format) {
     }
 }

@@ -14,6 +14,7 @@ import type {
   ItemType,
   Link,
   Note,
+  NoteFormat,
   Plan,
   PlanStatus,
   Priority,
@@ -76,7 +77,8 @@ export const itemsApi = {
 
 export const notesApi = {
   get: (itemId: number) => request<Note>('GET', `/api/items/${itemId}/notes`),
-  save: (itemId: number, content: string) => request<Note>('PUT', `/api/items/${itemId}/notes`, { content }),
+  save: (itemId: number, content: string, format: NoteFormat) =>
+    request<Note>('PUT', `/api/items/${itemId}/notes`, { content, format }),
 }
 
 export const dashboardApi = {

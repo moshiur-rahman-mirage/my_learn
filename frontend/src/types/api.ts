@@ -192,9 +192,14 @@ export interface RestoreResult {
 // --- notes ------------------------------------------------------------------
 
 /** content (sanitized HTML) and updatedAt are null when the item has no note. */
+/** HTML = rich-text editor; MARKDOWN = Markdown source, shown formatted on demand. */
+export type NoteFormat = 'HTML' | 'MARKDOWN'
+
 export interface Note {
   itemId: number
   content: string | null
+  /** null when the item has no note */
+  format: NoteFormat | null
   updatedAt: string | null
 }
 

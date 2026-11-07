@@ -135,3 +135,24 @@ body {
 .note-content pre {
   @apply bg-slate-900 text-slate-100;
 }
+
+/* --- Markdown note preview ---------------------------------------------------------- */
+
+.md-preview li:has(> input[type="checkbox"]),
+.md-preview li:has(> p > input[type="checkbox"]) {
+  @apply list-none;
+}
+.md-preview ul:has(> li > input[type="checkbox"]) {
+  @apply pl-1;
+}
+.md-preview li > input[type="checkbox"],
+.md-preview li > p > input[type="checkbox"] {
+  @apply my-0 mr-2 size-4 align-[-2px] accent-emerald-600;
+}
+.md-preview table {
+  @apply block overflow-x-auto;
+}
+.md-preview th,
+.md-preview td {
+  @apply border border-slate-200 px-2 py-1 dark:border-slate-700;
+}

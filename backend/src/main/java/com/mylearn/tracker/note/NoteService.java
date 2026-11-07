@@ -35,38 +35,52 @@ public class NoteService {
     public NoteResponse get(Long itemId) {
         requireItem(itemId);
         return notes.findById(itemId)
-                .map(n -> new NoteResponse(itemId, n.getContent(), n.getUpdatedAt()))
-                .orElse(new NoteResponse(itemId, null, null));
+                .map(n -> new NoteResponse(itemId, n.getContent(), n.getFormat(), n.getUpdatedAt()))
+                .orElse(new NoteResponse(itemId, null, null, null));
     }
 
-    /** Saves the note; an empty editor (e.g. {@code <p></p>}) deletes it. */
+    /** Saves rich-text (HTML) content; kept for callers that predate Markdown notes. */
     @Transactional
     public NoteResponse save(Long itemId, String content) {
+        return save(itemId, content, NoteFormat.HTML);
+    }
+
+    /** Saves the note; an empty editor (e.g. {@code <p></p>} or blank Markdown) deletes it. */
+    @Transactional
+    public NoteResponse save(Long itemId, String content, NoteFormat format) {
         requireItem(itemId);
-        if (isEmpty(content)) {
+        NoteFormat fmt = format == null ? NoteFormat.HTML : format;
+        if (isEmpty(content, fmt)) {
             notes.deleteById(itemId);
-            searchIndex.indexNote(itemId, null);
-            return new NoteResponse(itemId, null, null);
+            searchIndex.indexNote(itemId, null, fmt);
+            return new NoteResponse(itemId, null, null, null);
         }
         Instant now = Timestamps.now();
         ItemNote note = notes.findById(itemId).orElse(null);
         if (note == null) {
-            note = notes.save(new ItemNote(itemId, content, now));
+            note = notes.save(new ItemNote(itemId, content, fmt, now));
         } else {
-            note.update(content, now);
+            note.update(content, fmt, now);
         }
-        searchIndex.indexNote(itemId, content);
-        return new NoteResponse(itemId, note.getContent(), note.getUpdatedAt());
+        searchIndex.indexNote(itemId, content, fmt);
+        return new NoteResponse(itemId, note.getContent(), note.getFormat(), note.getUpdatedAt());
     }
 
     static boolean isEmpty(String html) {
-        if (html == null || html.isBlank()) {
+        return isEmpty(html, NoteFormat.HTML);
+    }
+
+    static boolean isEmpty(String content, NoteFormat format) {
+        if (content == null || content.isBlank()) {
             return true;
         }
-        if (NON_TEXT_CONTENT.matcher(html).find()) {
+        if (format == NoteFormat.MARKDOWN) {
             return false;
         }
-        return TAG.matcher(html).replaceAll("").replace("&nbsp;", " ").isBlank();
+        if (NON_TEXT_CONTENT.matcher(content).find()) {
+            return false;
+        }
+        return TAG.matcher(content).replaceAll("").replace("&nbsp;", " ").isBlank();
     }
 
     private void requireItem(Long itemId) {
@@ -75,7 +89,7 @@ public class NoteService {
         }
     }
 
-    /** {@code content} and {@code updatedAt} are null when the item has no note. */
-    public record NoteResponse(Long itemId, String content, Instant updatedAt) {
+    /** {@code content}, {@code format} and {@code updatedAt} are null when the item has no note. */
+    public record NoteResponse(Long itemId, String content, NoteFormat format, Instant updatedAt) {
     }
 }
