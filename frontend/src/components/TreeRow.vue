@@ -11,11 +11,12 @@ import {
   FolderOpen,
   FolderPlus,
   GripVertical,
+  Layers,
   Link2,
   MoveRight,
-  RotateCcw,
   NotebookPen,
   Pencil,
+  RotateCcw,
   Trash2,
 } from 'lucide-vue-next'
 import type { TreeNode } from '../types/api'
@@ -223,6 +224,21 @@ function onDragEnd() {
           >
             <NotebookPen class="size-3.5" />
           </button>
+          <span
+            v-if="node.flashcards"
+            class="inline-flex shrink-0 items-center gap-0.5 text-[11px] text-violet-600 tabular-nums dark:text-violet-400"
+            :title="`${node.flashcards} flashcard(s) in the note`"
+          >
+            <Layers class="size-3" />{{ node.flashcards }}
+          </span>
+          <span
+            v-if="node.confidence"
+            class="inline-block size-2 shrink-0 rounded-full"
+            :class="['', 'bg-red-500', 'bg-orange-500', 'bg-amber-400', 'bg-lime-500', 'bg-emerald-600'][node.confidence]"
+            :title="`Confidence ${node.confidence}/5: ${['', 'no idea', 'shaky', 'okay', 'good', 'solid'][node.confidence]}`"
+            :aria-label="`Confidence ${node.confidence} of 5`"
+            role="img"
+          />
           <a
             v-if="node.links.length === 1"
             :href="node.links[0].url"

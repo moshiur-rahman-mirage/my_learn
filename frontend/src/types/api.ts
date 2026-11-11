@@ -89,6 +89,10 @@ export interface TreeNode {
   totalMinutes: number
   /** next spaced-repetition review (yyyy-MM-dd), null when not being reviewed */
   reviewDueOn: string | null
+  /** 1 (shaky) – 5 (solid); null = not rated */
+  confidence: number | null
+  /** flashcards in the item's note */
+  flashcards: number
   children: TreeNode[]
 }
 
@@ -114,7 +118,17 @@ export interface DashboardSummary {
 
 // --- import -----------------------------------------------------------------
 
-export type ColumnRole = 'LEVEL' | 'DEPTH' | 'TYPE' | 'ID' | 'DESCRIPTION' | 'PRIORITY' | 'COMPLETED' | 'IGNORE'
+export type ColumnRole =
+  | 'LEVEL'
+  | 'DEPTH'
+  | 'TYPE'
+  | 'ID'
+  | 'DESCRIPTION'
+  | 'PRIORITY'
+  | 'COMPLETED'
+  | 'NOTE'
+  | 'NOTE_FORMAT'
+  | 'IGNORE'
 
 export interface ImportColumn {
   index: number
@@ -134,6 +148,7 @@ export interface PreviewNode {
   description: string | null
   priority: Priority | null
   completed: boolean
+  hasNote: boolean
   children: PreviewNode[]
 }
 
@@ -144,7 +159,7 @@ export interface ImportPreview {
   headerRow: number
   columns: ImportColumn[]
   tree: PreviewNode[]
-  stats: { modules: number; topics: number; leafTopics: number; completed: number }
+  stats: { modules: number; topics: number; leafTopics: number; completed: number; notes: number }
   errors: ImportIssue[]
   warnings: ImportIssue[]
   duplicateOf: { planId: number; planName: string; importedAt: string } | null
@@ -160,6 +175,31 @@ export interface BackupFile {
   path: string
   sizeBytes: number
   createdAt: string
+  /** null = never checked (made by an older version) */
+  check: BackupCheck | null
+}
+
+export interface BackupCheck {
+  ok: boolean
+  message: string
+  plans: number
+  items: number
+  notes: number
+  checkedAt: string
+}
+
+export interface BackupStatus {
+  lastBackupAt: string | null
+  lastCheck: BackupCheck | null
+  /** something needing attention; null = all is well */
+  warning: string | null
+}
+
+export interface Retention {
+  recent: number
+  daily: number
+  weekly: number
+  monthly: number
 }
 
 export interface BackupSettings {
@@ -168,6 +208,7 @@ export interface BackupSettings {
   custom: boolean
   automatic: boolean
   keep: number
+  retention: Retention
   /** second folder every backup is also copied to (null = none) */
   mirrorDirectory: string | null
   /** why the last copy failed (null = fine) */
@@ -327,4 +368,71 @@ export interface Activity {
   completedLast30Days: number
   currentStreak: number
   bestStreak: number
+}
+
+export interface DueCard {
+  id: number
+  itemId: number
+  itemName: string
+  planId: number
+  planName: string
+  question: string
+  answer: string
+  format: NoteFormat
+  stage: number
+  dueOn: string
+}
+
+export interface ItemCard {
+  id: number
+  question: string
+  stage: number
+  dueOn: string
+}
+
+export interface CardReviewOutcome {
+  id: number
+  stage: number
+  nextDue: string
+}
+
+export interface Backlink {
+  itemId: number
+  name: string
+  type: ItemType
+}
+
+export interface ShakyItem {
+  itemId: number
+  name: string
+  planId: number
+  planName: string
+  level: number
+  ratedAt: string
+}
+
+export interface ConfidenceRated {
+  itemId: number
+  level: number | null
+  /** set when the rating brought the topic's review forward to this day */
+  reviewOn: string | null
+}
+
+export interface PlanBackupPreview {
+  fileName: string
+  planName: string
+  suggestedName: string
+  nameTaken: boolean
+  exportedAt: string | null
+  modules: number
+  topics: number
+  completed: number
+  notes: number
+  tags: number
+  links: number
+  timeEntries: number
+  minutes: number
+  reviews: number
+  ratings: number
+  flashcards: number
 }

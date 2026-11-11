@@ -4,7 +4,7 @@ app:
   data-dir: ./data
   backup:
     automatic: true   # VACUUM INTO <data-dir>/backups when the newest backup is older than 20h
-    keep: 14          # number of backup files to keep
+    keep: 7           # newest backups always kept; Settings adds one per day/week/month (and can change this)
 
 server:
   port: 8080

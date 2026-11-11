@@ -2,6 +2,7 @@ package com.mylearn.tracker.admin;
 
 import com.mylearn.tracker.admin.BackupService.BackupFile;
 import com.mylearn.tracker.common.exception.BusinessRuleException;
+import com.mylearn.tracker.note.NoteDerivedIndexer;
 import com.mylearn.tracker.search.SearchIndexer;
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.MigrationInfo;
@@ -54,10 +55,12 @@ public class RestoreService {
     private final JdbcTemplate jdbc;
     private final Path dataDir;
     private final SearchIndexer searchIndex;
+    private final NoteDerivedIndexer noteIndex;
 
     public RestoreService(DataSource dataSource, BackupService backups, Flyway flyway, JdbcTemplate jdbc,
-                          SearchIndexer searchIndex, @Value("${app.data-dir}") String dataDir) {
+                          SearchIndexer searchIndex, NoteDerivedIndexer noteIndex, @Value("${app.data-dir}") String dataDir) {
         this.searchIndex = searchIndex;
+        this.noteIndex = noteIndex;
         this.dataSource = dataSource;
         this.backups = backups;
         this.flyway = flyway;
@@ -112,6 +115,7 @@ public class RestoreService {
         }
         flyway.migrate();
         searchIndex.reindexNotes();
+        noteIndex.rebuild();
 
         Integer plans = jdbc.queryForObject("SELECT COUNT(*) FROM learning_plan", Integer.class);
         Integer items = jdbc.queryForObject("SELECT COUNT(*) FROM learning_item", Integer.class);

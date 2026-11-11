@@ -21,6 +21,8 @@ import java.util.List;
  * @param minutes         time logged on this item itself
  * @param totalMinutes    time logged on this item and everything below it
  * @param reviewDueOn     next spaced-repetition review day (null = not being reviewed)
+ * @param confidence      how well it's known, 1 (shaky) to 5 (solid); null = not rated
+ * @param flashcards      number of flashcards in the item's note
  */
 public record TreeNode(
         Long id,
@@ -44,5 +46,7 @@ public record TreeNode(
         int minutes,
         int totalMinutes,
         LocalDate reviewDueOn,
+        Integer confidence,
+        int flashcards,
         List<TreeNode> children) {
 }

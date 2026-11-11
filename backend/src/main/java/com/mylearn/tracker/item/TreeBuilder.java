@@ -74,6 +74,8 @@ public final class TreeBuilder {
                     extras.tags().getOrDefault(item.getId(), List.of()),
                     ownMinutes, totalMinutes,
                     checkable && item.isCompleted() ? extras.reviewDue().get(item.getId()) : null,
+                    extras.confidence().get(item.getId()),
+                    extras.flashcards().getOrDefault(item.getId(), 0),
                     children));
         }
         return nodes;

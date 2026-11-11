@@ -1,5 +1,6 @@
 package com.mylearn.tracker.importer;
 
+import com.mylearn.tracker.common.HtmlText;
 import com.mylearn.tracker.common.exception.BusinessRuleException;
 import com.mylearn.tracker.common.persistence.Timestamps;
 import com.mylearn.tracker.importer.ParsedSheet.Node;
@@ -9,6 +10,10 @@ import com.mylearn.tracker.item.LearningItemRepository;
 import com.mylearn.tracker.item.Priority;
 import com.mylearn.tracker.item.TreeBuilder;
 import com.mylearn.tracker.item.dto.TreeNode;
+import com.mylearn.tracker.note.ItemNote;
+import com.mylearn.tracker.note.ItemNoteRepository;
+import com.mylearn.tracker.note.NoteFormat;
+import com.mylearn.tracker.note.NoteService;
 import com.mylearn.tracker.plan.LearningPlan;
 import com.mylearn.tracker.plan.PlanService;
 import com.mylearn.tracker.review.ReviewService;
@@ -40,6 +45,10 @@ import static com.mylearn.tracker.common.Text.blankToNull;
  * selected by default. If the {@code version} column shows an item was edited in the app after
  * the export, its update is a <b>conflict</b> and is also not selected by default.
  *
+ * <p>Notes are compared only when the file has a {@code note} column (older exports don't), so a
+ * file without notes never deletes them. Notes don't change an item's version, so a note-only
+ * difference is never a conflict.
+ *
  * <p>Like import, preview and apply are stateless: apply re-reads the file and re-compares it with
  * the current data, then applies the selected changes in one transaction.
  */
@@ -52,11 +61,16 @@ public class SyncService {
     private final PlanService planService;
     private final LearningItemRepository items;
     private final ReviewService reviews;
+    private final ItemNoteRepository noteRepository;
+    private final NoteService notes;
 
-    public SyncService(PlanService planService, LearningItemRepository items, ReviewService reviews) {
+    public SyncService(PlanService planService, LearningItemRepository items, ReviewService reviews,
+                       ItemNoteRepository noteRepository, NoteService notes) {
         this.planService = planService;
         this.items = items;
         this.reviews = reviews;
+        this.noteRepository = noteRepository;
+        this.notes = notes;
     }
 
     public SyncPreview preview(Long planId, String fileName, byte[] content) {
@@ -95,7 +109,9 @@ public class SyncService {
         final List<SyncChange> changes = new ArrayList<>();
         final List<Entry> entries = new ArrayList<>(); // file rows in tree (pre-)order
         final List<LearningItem> current = new ArrayList<>();
+        final Map<Long, ItemNote> currentNotes = new HashMap<>();
         boolean versionColumn;
+        boolean noteColumn;
 
         Set<String> keys() {
             Set<String> keys = new HashSet<>();
@@ -124,6 +140,10 @@ public class SyncService {
                 .filter(c -> "version".equals(ImportParser.normalize(c.header())))
                 .map(ParsedSheet.Column::index).findFirst().orElse(null);
         diff.versionColumn = versionCol != null;
+        diff.noteColumn = parsed.columns().stream().anyMatch(c -> c.role() == ColumnRole.NOTE);
+        if (diff.noteColumn) {
+            noteRepository.findAllByPlan(planId).forEach(n -> diff.currentNotes.put(n.getItemId(), n));
+        }
 
         diff.current.addAll(items.findAllByPlan(planId));
         Map<String, LearningItem> byExternalId = new HashMap<>();
@@ -150,7 +170,7 @@ public class SyncService {
                 diff.changes.add(addition(e));
                 continue;
             }
-            SyncChange update = update(e);
+            SyncChange update = update(e, diff);
             if (update != null) {
                 diff.changes.add(update);
             }
@@ -217,13 +237,16 @@ public class SyncService {
         if (e.node.completed) {
             fields.add(new FieldChange("completed", null, "yes"));
         }
+        if (e.node.note != null) {
+            fields.add(new FieldChange("note", null, noteSummary(e.node.note, e.node.noteFormat)));
+        }
         String dependsOn = e.parent != null && e.parent.existing == null ? e.parent.key() : null;
         return new SyncChange(e.key(), ChangeKind.ADD, e.node.name, filePath(e), fields, false, true, e.node.row,
                 dependsOn, null);
     }
 
     /** Field-by-field comparison of a row with its item; null when nothing changed. */
-    private static SyncChange update(Entry e) {
+    private static SyncChange update(Entry e, Diff diff) {
         LearningItem item = e.existing;
         Node n = e.node;
         List<FieldChange> fields = new ArrayList<>();
@@ -246,6 +269,12 @@ public class SyncService {
         }
         if (item.isCompleted() != n.completed) {
             fields.add(new FieldChange("completed", item.isCompleted() ? "yes" : "no", n.completed ? "yes" : "no"));
+        }
+        if (diff.noteColumn && noteDiffers(diff.currentNotes.get(item.getId()), n)) {
+            ItemNote current = diff.currentNotes.get(item.getId());
+            fields.add(new FieldChange("note",
+                    current == null ? null : noteSummary(current.getContent(), current.getFormat()),
+                    n.note == null ? null : noteSummary(n.note, n.noteFormat)));
         }
         if (fields.isEmpty()) {
             return null;
@@ -368,6 +397,9 @@ public class SyncService {
             }
             item.setDescription(blankToNull(n.description));
             item.setPriority(n.priority);
+            if (diff.noteColumn && noteDiffers(diff.currentNotes.get(item.getId()), n)) {
+                notes.save(item.getId(), n.note, n.noteFormat); // a null note deletes it
+            }
             updated++;
         }
 
@@ -388,6 +420,9 @@ public class SyncService {
                     e.node.name.strip(), blankToNull(e.node.description), e.node.priority);
             created.setDisplayOrder(appendAt++);
             items.save(created);
+            if (e.node.note != null) {
+                notes.save(created.getId(), e.node.note, e.node.noteFormat);
+            }
             loseCompletion(parent);
             resolved.put(e, created);
             all.add(created);
@@ -545,6 +580,27 @@ public class SyncService {
     }
 
     // --- helpers ------------------------------------------------------------------------------
+
+    private static boolean noteDiffers(ItemNote current, Node n) {
+        if (current == null || n.note == null) {
+            return current != null || n.note != null;
+        }
+        // spreadsheet cells are read trimmed, so outer whitespace never counts as a change
+        return current.getFormat() != n.noteFormat || !normalizeNewlines(current.getContent()).strip().equals(n.note.strip());
+    }
+
+    private static String normalizeNewlines(String s) {
+        return s.replace("\r\n", "\n").replace('\r', '\n');
+    }
+
+    /** A short, readable stand-in for a note in the preview: its first words and its size. */
+    static String noteSummary(String content, NoteFormat format) {
+        String text = format == NoteFormat.HTML ? HtmlText.toPlainText(content) : content;
+        text = text == null ? "" : text.replaceAll("\\s+", " ").strip();
+        String head = text.length() > 60 ? text.substring(0, 60).strip() + "…" : text;
+        return "%s (%s, %,d chars)".formatted(head.isEmpty() ? "—" : "“" + head + "”",
+                format == NoteFormat.HTML ? "rich text" : "Markdown", content.length());
+    }
 
     private static Map<Long, LearningItem> byIdOf(List<LearningItem> list) {
         Map<Long, LearningItem> map = new HashMap<>();

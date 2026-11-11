@@ -81,6 +81,37 @@ public class AppSettings {
         save();
     }
 
+    // --- backup retention -----------------------------------------------------------------
+
+    /**
+     * How many backups to keep: the newest {@code recent}, plus the newest of each of the last
+     * {@code daily} days, {@code weekly} weeks and {@code monthly} months that have a backup.
+     */
+    public record Retention(int recent, int daily, int weekly, int monthly) {
+    }
+
+    public synchronized Retention retention(int defaultRecent) {
+        return new Retention(intProp("backup.keep.recent", defaultRecent), intProp("backup.keep.daily", 14),
+                intProp("backup.keep.weekly", 8), intProp("backup.keep.monthly", 12));
+    }
+
+    public synchronized void setRetention(Retention r) {
+        props.setProperty("backup.keep.recent", String.valueOf(r.recent()));
+        props.setProperty("backup.keep.daily", String.valueOf(r.daily()));
+        props.setProperty("backup.keep.weekly", String.valueOf(r.weekly()));
+        props.setProperty("backup.keep.monthly", String.valueOf(r.monthly()));
+        save();
+    }
+
+    private int intProp(String key, int fallback) {
+        try {
+            String v = props.getProperty(key);
+            return v == null ? fallback : Math.max(0, Integer.parseInt(v.strip()));
+        } catch (NumberFormatException e) {
+            return fallback;
+        }
+    }
+
     private void save() {
         try {
             Files.createDirectories(file.getParent());

@@ -9,6 +9,7 @@ import { dateTime } from '../lib/format'
 import { useToast } from '../composables/useToast'
 import { usePlanList } from '../composables/usePlanList'
 import PreviewTree from '../components/PreviewTree.vue'
+import PlanBackupRestore from '../components/PlanBackupRestore.vue'
 
 type Target = 'new' | 'existing' | 'allSheets'
 type Source = 'file' | 'paste'
@@ -45,6 +46,8 @@ const TEMPLATE_COLUMNS = [
   { name: 'description', help: 'Optional. What to learn, notes, links.' },
   { name: 'priority', help: 'Optional. MUST, SHOULD or NICE.' },
   { name: 'completed', help: 'Optional. TRUE if already done. Only counts for topics without sub-rows.' },
+  { name: 'note', help: 'Optional (add the column yourself). The item\'s note, in Markdown. Exports include it, so an exported plan imports back with its notes.' },
+  { name: 'note_format', help: 'Optional. MARKDOWN or HTML; detected from the note when left empty.' },
 ]
 
 const ROLES: { value: ColumnRole; label: string }[] = [
@@ -53,6 +56,8 @@ const ROLES: { value: ColumnRole; label: string }[] = [
   { value: 'DESCRIPTION', label: 'Description' },
   { value: 'PRIORITY', label: 'Priority' },
   { value: 'COMPLETED', label: 'Completed' },
+  { value: 'NOTE', label: 'Note (Markdown / rich text)' },
+  { value: 'NOTE_FORMAT', label: 'Note format' },
   { value: 'TYPE', label: 'Type (module/topic)' },
   { value: 'ID', label: 'Id (from an export)' },
   { value: 'IGNORE', label: 'Ignore' },
@@ -213,6 +218,8 @@ async function confirmImport() {
       <p class="muted text-sm">CSV or Excel (.xlsx). Hierarchy, descriptions, priorities and ticks are kept. Existing content is never changed.</p>
     </div>
 
+    <PlanBackupRestore />
+
     <!-- 0. template -->
     <section class="card space-y-3 p-4">
       <div class="flex flex-wrap items-center justify-between gap-3">
@@ -345,6 +352,7 @@ async function confirmImport() {
           <span class="chip">{{ preview.stats.topics }} topics</span>
           <span class="chip">{{ preview.stats.leafTopics }} checkable</span>
           <span class="chip">{{ preview.stats.completed }} already done</span>
+          <span v-if="preview.stats.notes" class="chip">{{ preview.stats.notes }} with notes</span>
         </div>
       </div>
 

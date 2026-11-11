@@ -1,9 +1,25 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
-import { Database, FolderOpen, History, LoaderCircle, Monitor, Moon, RotateCcw, Sun, Trash2, Upload } from 'lucide-vue-next'
+import {
+  Brush,
+  CircleAlert,
+  CircleCheck,
+  CircleHelp,
+  Database,
+  FolderOpen,
+  History,
+  LoaderCircle,
+  Monitor,
+  Moon,
+  RotateCcw,
+  ShieldCheck,
+  Sun,
+  Trash2,
+  Upload,
+} from 'lucide-vue-next'
 import { adminApi } from '../api'
 import { errorMessage } from '../api/client'
-import type { BackupFile, BackupSettings, RestoreResult } from '../types/api'
+import type { BackupFile, BackupSettings, RestoreResult, Retention } from '../types/api'
 import { dateTime, fileSize } from '../lib/format'
 import { useTheme, type ThemeMode } from '../composables/useTheme'
 import { useToast } from '../composables/useToast'
@@ -25,6 +41,73 @@ const mirrorInput = ref('')
 const savingMirror = ref(false)
 const mirrorPickerOpen = ref(false)
 const fileInput = ref<HTMLInputElement | null>(null)
+const checking = ref<string | null>(null) // file name being checked
+const retention = ref<Retention>({ recent: 7, daily: 14, weekly: 8, monthly: 12 })
+const savingRetention = ref(false)
+const cleaning = ref(false)
+
+function checkTitle(b: BackupFile): string {
+  if (!b.check) return 'Not checked yet (made by an older version). Click to check it.'
+  const c = b.check
+  return c.ok
+    ? `Checked ${dateTime(c.checkedAt)}: OK, ${c.plans} plan(s), ${c.items} item(s), ${c.notes} note(s). Click to check again.`
+    : `Check failed ${dateTime(c.checkedAt)}: ${c.message}`
+}
+
+async function checkBackup(b: BackupFile) {
+  checking.value = b.fileName
+  try {
+    const c = await adminApi.checkBackup(b.fileName)
+    if (c.ok) toast.success(`Backup is OK: ${c.plans} plan(s), ${c.items} item(s), ${c.notes} note(s).`)
+    else toast.error(`This backup is damaged: ${c.message}`)
+    await loadBackups()
+  } catch (e) {
+    toast.error(errorMessage(e))
+  } finally {
+    checking.value = null
+  }
+}
+
+async function saveRetention() {
+  savingRetention.value = true
+  try {
+    settings.value = await adminApi.setRetention(retention.value)
+    retention.value = { ...settings.value.retention }
+    toast.success('Clean-up rule saved. It is applied with the next backup, or now with “Clean up now”.')
+  } catch (e) {
+    toast.error(errorMessage(e))
+  } finally {
+    savingRetention.value = false
+  }
+}
+
+async function cleanupNow() {
+  cleaning.value = true
+  try {
+    const doomed = await adminApi.cleanup(true)
+    if (!doomed.length) {
+      toast.info('Nothing to clean up: every backup is kept by the current rule.')
+      return
+    }
+    const ok = await confirm({
+      title: `Delete ${doomed.length} old backup${doomed.length === 1 ? '' : 's'}?`,
+      message:
+        `These backups are not kept by the rule and will be permanently deleted:\n\n` +
+        doomed.slice(0, 12).map((b) => `• ${dateTime(b.createdAt)}`).join('\n') +
+        (doomed.length > 12 ? `\n… and ${doomed.length - 12} more` : ''),
+      confirmLabel: 'Delete',
+      danger: true,
+    })
+    if (!ok) return
+    const removed = await adminApi.cleanup(false)
+    toast.success(`Deleted ${removed.length} old backup(s).`)
+    await loadBackups()
+  } catch (e) {
+    toast.error(errorMessage(e))
+  } finally {
+    cleaning.value = false
+  }
+}
 
 const themes: { value: ThemeMode; label: string; icon: typeof Sun }[] = [
   { value: 'system', label: 'System', icon: Monitor },
@@ -40,6 +123,7 @@ async function loadSettings() {
     settings.value = await adminApi.backupSettings()
     folderInput.value = settings.value.directory
     mirrorInput.value = settings.value.mirrorDirectory ?? ''
+    retention.value = { ...settings.value.retention }
   } catch (e) {
     toast.error(errorMessage(e))
   }
@@ -202,8 +286,9 @@ onMounted(() => {
         </button>
       </div>
       <p class="muted text-sm">
-        A backup is taken automatically about once a day<template v-if="settings">, and the {{ settings.keep }} newest are kept</template>.
-        Each file is a complete copy of your data (plans, items, notes).
+        A backup is taken automatically about once a day. Each file is a complete copy of your data (plans, items, notes, flashcards…),
+        and every new backup is <strong>checked</strong> right away: it is opened and integrity-checked, and a backup that fails is removed and
+        reported.
       </p>
 
       <div>
@@ -248,6 +333,40 @@ onMounted(() => {
         </p>
         <p v-if="settings?.mirrorError" class="mt-1 text-xs text-red-600 dark:text-red-400">{{ settings.mirrorError }}. Is the drive connected?</p>
       </div>
+
+      <div>
+        <p class="label flex items-center gap-1.5"><Brush class="size-4" /> Clean-up: which old backups to keep</p>
+        <form class="grid grid-cols-2 gap-2 sm:grid-cols-4" @submit.prevent="saveRetention">
+          <label class="text-xs">
+            <span class="muted">Newest</span>
+            <input v-model.number="retention.recent" type="number" min="1" max="500" class="input mt-0.5" required />
+          </label>
+          <label class="text-xs">
+            <span class="muted">+ one per day, for</span>
+            <span class="flex items-center gap-1"><input v-model.number="retention.daily" type="number" min="0" max="3650" class="input mt-0.5" required /> days</span>
+          </label>
+          <label class="text-xs">
+            <span class="muted">+ one per week, for</span>
+            <span class="flex items-center gap-1"><input v-model.number="retention.weekly" type="number" min="0" max="520" class="input mt-0.5" required /> weeks</span>
+          </label>
+          <label class="text-xs">
+            <span class="muted">+ one per month, for</span>
+            <span class="flex items-center gap-1"><input v-model.number="retention.monthly" type="number" min="0" max="240" class="input mt-0.5" required /> months</span>
+          </label>
+          <div class="col-span-2 flex flex-wrap gap-2 sm:col-span-4">
+            <button type="submit" class="btn-primary" :disabled="savingRetention">
+              <LoaderCircle v-if="savingRetention" class="size-4 animate-spin" /> Save rule
+            </button>
+            <button type="button" class="btn-secondary" :disabled="cleaning" @click="cleanupNow">
+              <LoaderCircle v-if="cleaning" class="size-4 animate-spin" /><Trash2 v-else class="size-4" /> Clean up now…
+            </button>
+          </div>
+        </form>
+        <p class="muted mt-1 text-xs">
+          Applied after every backup, in the backup folder and the second folder. Days, weeks and months count those that have a backup, so time
+          the computer was off doesn't use them up. You always see what will be deleted before “Clean up now” deletes it.
+        </p>
+      </div>
     </section>
 
     <!-- restore -->
@@ -267,10 +386,25 @@ onMounted(() => {
       <p v-if="backups.length === 0" class="muted text-sm">No backups in this folder yet.</p>
       <ul v-else class="divide-y divide-slate-200 text-sm dark:divide-slate-800">
         <li v-for="b in backups" :key="b.fileName" class="flex items-center gap-3 py-2">
+          <button
+            class="icon-btn shrink-0"
+            :disabled="checking !== null"
+            :title="checkTitle(b)"
+            :aria-label="`Check backup from ${dateTime(b.createdAt)}`"
+            @click="checkBackup(b)"
+          >
+            <LoaderCircle v-if="checking === b.fileName" class="size-4 animate-spin" />
+            <CircleHelp v-else-if="!b.check" class="size-4 text-slate-400" />
+            <CircleCheck v-else-if="b.check.ok" class="size-4 text-emerald-600" />
+            <CircleAlert v-else class="size-4 text-red-600" />
+          </button>
           <div class="min-w-0 flex-1">
             <div class="flex justify-between gap-2">
               <span class="font-medium">{{ dateTime(b.createdAt) }}</span>
-              <span class="muted">{{ fileSize(b.sizeBytes) }}</span>
+              <span class="muted text-xs">
+                <template v-if="b.check?.ok">{{ b.check.plans }} plans · {{ b.check.items }} items · {{ b.check.notes }} notes · </template>
+                <span v-else-if="b.check" class="text-red-600 dark:text-red-400">damaged · </span>{{ fileSize(b.sizeBytes) }}
+              </span>
             </div>
             <code class="muted block truncate text-xs" :title="b.path">{{ b.path }}</code>
           </div>
@@ -289,6 +423,7 @@ onMounted(() => {
         </li>
       </ul>
       <p v-if="restoring" class="muted flex items-center gap-2 text-sm"><LoaderCircle class="size-4 animate-spin" /> Restoring {{ restoring }}…</p>
+      <p class="muted flex items-center gap-1 text-xs"><ShieldCheck class="size-3.5" /> The icon on the left shows each backup's check; click it to check that file again.</p>
     </section>
 
     <FolderPickerDialog :open="pickerOpen" :start="settings?.directory ?? null" @close="pickerOpen = false" @pick="onPicked" />

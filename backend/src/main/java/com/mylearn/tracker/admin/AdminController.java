@@ -63,6 +63,30 @@ public class AdminController {
         return backups.changeMirror(request.directory());
     }
 
+    /** Clean-up rule: newest N, plus one per day / week / month going back. */
+    @PutMapping("/backup-retention")
+    public BackupSettings changeRetention(@RequestBody AppSettings.Retention retention) {
+        return backups.changeRetention(retention);
+    }
+
+    /** Is everything fine with backups (recent, checked, copied)? Shown on the dashboard. */
+    @GetMapping("/backup-status")
+    public BackupService.BackupStatus status() {
+        return backups.status();
+    }
+
+    /** Re-runs the integrity check of one backup. */
+    @PostMapping("/backups/{fileName}/check")
+    public BackupService.BackupCheck check(@PathVariable String fileName) {
+        return backups.checkFile(fileName);
+    }
+
+    /** {@code ?dryRun=true} lists what the clean-up rule would delete without deleting it. */
+    @PostMapping("/backups/cleanup")
+    public List<BackupFile> cleanup(@RequestParam(defaultValue = "false") boolean dryRun) {
+        return dryRun ? backups.cleanupPreview() : backups.cleanup();
+    }
+
     @GetMapping("/folders")
     public FolderListing folders(@RequestParam(required = false) String path) {
         return folders.list(path);

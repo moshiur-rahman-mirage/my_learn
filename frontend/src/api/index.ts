@@ -1,8 +1,18 @@
 import { request } from './client'
 import type {
   Activity,
+  BackupCheck,
   BackupFile,
   BackupSettings,
+  BackupStatus,
+  Backlink,
+  CardReviewOutcome,
+  ConfidenceRated,
+  DueCard,
+  ItemCard,
+  PlanBackupPreview,
+  Retention,
+  ShakyItem,
   ColumnRole,
   DashboardSummary,
   DueReview,
@@ -59,6 +69,8 @@ export const plansApi = {
   remove: (id: number) => request<void>('DELETE', `/api/plans/${id}`),
   progress: (id: number) => request<Progress>('GET', `/api/plans/${id}/progress`),
   exportUrl: (id: number) => `/api/plans/${id}/export`,
+  /** Full backup of the plan as JSON (notes, tags, links, time, schedules, ratings). */
+  backupUrl: (id: number) => `/api/plans/${id}/backup`,
 }
 
 export const itemsApi = {
@@ -77,6 +89,7 @@ export const itemsApi = {
 
 export const notesApi = {
   get: (itemId: number) => request<Note>('GET', `/api/items/${itemId}/notes`),
+  backlinks: (itemId: number) => request<Backlink[]>('GET', `/api/items/${itemId}/notes/backlinks`),
   save: (itemId: number, content: string, format: NoteFormat) =>
     request<Note>('PUT', `/api/items/${itemId}/notes`, { content, format }),
 }
@@ -138,6 +151,11 @@ export const adminApi = {
   /** blank directory = stop copying backups to a second folder */
   setBackupMirror: (directory: string) => request<BackupSettings>('PUT', '/api/admin/backup-mirror', { directory }),
   deleteBackup: (fileName: string) => request<void>('DELETE', `/api/admin/backups/${encodeURIComponent(fileName)}`),
+  backupStatus: () => request<BackupStatus>('GET', '/api/admin/backup-status'),
+  checkBackup: (fileName: string) => request<BackupCheck>('POST', `/api/admin/backups/${encodeURIComponent(fileName)}/check`),
+  setRetention: (r: Retention) => request<BackupSettings>('PUT', '/api/admin/backup-retention', r),
+  /** dryRun: list what would be deleted without deleting */
+  cleanup: (dryRun: boolean) => request<BackupFile[]>('POST', `/api/admin/backups/cleanup?dryRun=${dryRun}`),
   restoreFile: (file: File) => {
     const form = new FormData()
     form.append('file', file)
@@ -188,5 +206,32 @@ export const syncApi = {
     form.append('file', file)
     selected.forEach((k) => form.append('selected', k))
     return request<SyncResult>('POST', `/api/plans/${planId}/sync/apply`, form)
+  },
+}
+
+export const flashcardsApi = {
+  due: (planId: number | null = null) =>
+    request<DueCard[]>('GET', '/api/flashcards/due' + (planId ? `?planId=${planId}` : '')),
+  review: (id: number, remembered: boolean) => request<CardReviewOutcome>('POST', `/api/flashcards/${id}/review`, { remembered }),
+  forItem: (itemId: number) => request<ItemCard[]>('GET', `/api/items/${itemId}/flashcards`),
+}
+
+export const confidenceApi = {
+  /** level null clears the rating */
+  rate: (itemId: number, level: number | null) => request<ConfidenceRated>('PUT', `/api/items/${itemId}/confidence`, { level }),
+  shaky: () => request<ShakyItem[]>('GET', '/api/confidence/shaky'),
+}
+
+export const planBackupApi = {
+  preview: (file: File) => {
+    const form = new FormData()
+    form.append('file', file)
+    return request<PlanBackupPreview>('POST', '/api/import/backup/preview', form)
+  },
+  restore: (file: File, newPlanName: string | null) => {
+    const form = new FormData()
+    form.append('file', file)
+    if (newPlanName) form.append('newPlanName', newPlanName)
+    return request<ImportResult>('POST', '/api/import/backup/confirm', form)
   },
 }

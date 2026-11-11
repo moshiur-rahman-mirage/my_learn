@@ -2,6 +2,7 @@ package com.mylearn.tracker.note;
 
 import com.mylearn.tracker.common.exception.NotFoundException;
 import com.mylearn.tracker.common.persistence.Timestamps;
+import com.mylearn.tracker.flashcard.FlashcardService;
 import com.mylearn.tracker.item.LearningItemRepository;
 import com.mylearn.tracker.search.SearchIndexer;
 import org.springframework.stereotype.Service;
@@ -25,11 +26,16 @@ public class NoteService {
     private final ItemNoteRepository notes;
     private final LearningItemRepository items;
     private final SearchIndexer searchIndex;
+    private final FlashcardService flashcards;
+    private final NoteLinks links;
 
-    public NoteService(ItemNoteRepository notes, LearningItemRepository items, SearchIndexer searchIndex) {
+    public NoteService(ItemNoteRepository notes, LearningItemRepository items, SearchIndexer searchIndex,
+                       FlashcardService flashcards, NoteLinks links) {
         this.notes = notes;
         this.items = items;
         this.searchIndex = searchIndex;
+        this.flashcards = flashcards;
+        this.links = links;
     }
 
     public NoteResponse get(Long itemId) {
@@ -53,6 +59,8 @@ public class NoteService {
         if (isEmpty(content, fmt)) {
             notes.deleteById(itemId);
             searchIndex.indexNote(itemId, null, fmt);
+            flashcards.syncFromNote(itemId, null, fmt);
+            links.update(itemId, null, fmt);
             return new NoteResponse(itemId, null, null, null);
         }
         Instant now = Timestamps.now();
@@ -63,6 +71,8 @@ public class NoteService {
             note.update(content, fmt, now);
         }
         searchIndex.indexNote(itemId, content, fmt);
+        flashcards.syncFromNote(itemId, content, fmt);
+        links.update(itemId, content, fmt);
         return new NoteResponse(itemId, note.getContent(), note.getFormat(), note.getUpdatedAt());
     }
 

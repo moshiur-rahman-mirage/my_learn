@@ -6,6 +6,7 @@ import com.mylearn.tracker.importer.ParsedSheet.Node;
 import com.mylearn.tracker.importer.ParsedSheet.Stats;
 import com.mylearn.tracker.item.ItemType;
 import com.mylearn.tracker.item.Priority;
+import com.mylearn.tracker.note.NoteFormat;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -66,11 +67,23 @@ public final class ImportParser {
             Map.entry("#", ColumnRole.IGNORE), Map.entry("no", ColumnRole.IGNORE),
             Map.entry("no.", ColumnRole.IGNORE), Map.entry("sl", ColumnRole.IGNORE),
             Map.entry("s/n", ColumnRole.IGNORE), Map.entry("sn", ColumnRole.IGNORE),
-            Map.entry("version", ColumnRole.IGNORE));
+            Map.entry("version", ColumnRole.IGNORE),
+            Map.entry("note_format", ColumnRole.NOTE_FORMAT), Map.entry("note format", ColumnRole.NOTE_FORMAT),
+            Map.entry("note_content", ColumnRole.NOTE), Map.entry("note content", ColumnRole.NOTE),
+            Map.entry("note body", ColumnRole.NOTE));
+
+    /**
+     * "Note"/"Notes" headers mean the item's note when the sheet also has a real description column
+     * (as in this app's export); on their own they stay the description, as in hand-made sheets.
+     */
+    private static final Set<String> NOTE_HEADERS = Set.of("note", "notes");
+
+    /** Same limit as saving a note in the app. */
+    static final int MAX_NOTE_LENGTH = 500_000;
 
     /** Roles of which only the first matching column is used. */
     private static final Set<ColumnRole> SINGLE = EnumSet.of(ColumnRole.DEPTH, ColumnRole.TYPE, ColumnRole.ID,
-            ColumnRole.DESCRIPTION, ColumnRole.PRIORITY, ColumnRole.COMPLETED);
+            ColumnRole.DESCRIPTION, ColumnRole.PRIORITY, ColumnRole.COMPLETED, ColumnRole.NOTE, ColumnRole.NOTE_FORMAT);
 
     private ImportParser() {
     }
@@ -128,12 +141,12 @@ public final class ImportParser {
                 errors.add(new Issue(0, "No items found below the header row."));
             }
 
-            int[] counts = new int[4];
+            int[] counts = new int[5];
             StringBuilder hashInput = new StringBuilder();
             for (Node root : roots) {
                 finish(root, 0, counts, hashInput);
             }
-            return result(new Stats(counts[0], counts[1], counts[2], counts[3]), sha256(hashInput.toString()));
+            return result(new Stats(counts[0], counts[1], counts[2], counts[3], counts[4]), sha256(hashInput.toString()));
         }
 
         // --- header & columns ------------------------------------------------------------------
@@ -159,9 +172,17 @@ public final class ImportParser {
         private List<Column> detectColumns() {
             List<Column> result = new ArrayList<>();
             Set<ColumnRole> used = EnumSet.noneOf(ColumnRole.class);
+            boolean realDescription = false;
+            for (int c = 0; c < sheet.columnCount(); c++) {
+                String n = normalize(sheet.cell(header, c));
+                realDescription |= ALIASES.get(n) == ColumnRole.DESCRIPTION && !NOTE_HEADERS.contains(n);
+            }
             for (int c = 0; c < sheet.columnCount(); c++) {
                 String headerText = sheet.cell(header, c);
                 ColumnRole role = ALIASES.get(normalize(headerText));
+                if (realDescription && NOTE_HEADERS.contains(normalize(headerText))) {
+                    role = ColumnRole.NOTE;
+                }
                 if (role == null) {
                     // e.g. a checkbox column whose header cell is itself a checkbox (no text)
                     role = !used.contains(ColumnRole.COMPLETED) && isBooleanColumn(c) ? ColumnRole.COMPLETED : ColumnRole.IGNORE;
@@ -285,7 +306,7 @@ public final class ImportParser {
 
         private void reportNameless(int r) {
             boolean hasDetails = columns.stream()
-                    .filter(c -> c.role() == ColumnRole.DESCRIPTION || c.role() == ColumnRole.PRIORITY)
+                    .filter(c -> c.role() == ColumnRole.DESCRIPTION || c.role() == ColumnRole.PRIORITY || c.role() == ColumnRole.NOTE)
                     .anyMatch(c -> !sheet.cell(r, c.index()).isBlank());
             if (hasDetails) {
                 errors.add(new Issue(r + 1, "Row has a description or priority but no name"));
@@ -326,6 +347,8 @@ public final class ImportParser {
                 }
             }
 
+            applyNote(r, node);
+
             String id = text(r, ColumnRole.ID);
             if (id != null) {
                 if (UUID_PATTERN.matcher(id).matches()) {
@@ -334,6 +357,28 @@ public final class ImportParser {
                     warnings.add(new Issue(r + 1, "Id '%s' is not a valid id; ignored".formatted(id)));
                 }
             }
+        }
+
+        private void applyNote(int r, Node node) {
+            Integer col = first(ColumnRole.NOTE);
+            if (col == null) {
+                return;
+            }
+            String note = sheet.cell(r, col).replace("\r\n", "\n").replace('\r', '\n');
+            if (note.isBlank()) {
+                return;
+            }
+            if (note.length() > MAX_NOTE_LENGTH) {
+                warnings.add(new Issue(r + 1, "The note of '%s' is longer than %,d characters; skipped".formatted(node.name, MAX_NOTE_LENGTH)));
+                return;
+            }
+            String format = text(r, ColumnRole.NOTE_FORMAT);
+            NoteFormat parsed = format == null ? null : parseNoteFormat(format);
+            if (format != null && parsed == null) {
+                warnings.add(new Issue(r + 1, "Unknown note format '%s'; detected from the content instead".formatted(format)));
+            }
+            node.note = note;
+            node.noteFormat = parsed != null ? parsed : guessNoteFormat(note);
         }
 
         // --- post-processing -------------------------------------------------------------------
@@ -357,8 +402,15 @@ public final class ImportParser {
                     counts[3]++;
                 }
             }
+            if (node.note != null) {
+                counts[4]++;
+            }
             hash.append(depth).append('|').append(node.type).append('|').append(node.name).append('|')
-                    .append(node.description).append('|').append(node.priority).append('|').append(node.completed).append('\n');
+                    .append(node.description).append('|').append(node.priority).append('|').append(node.completed);
+            if (node.note != null) {
+                hash.append('|').append(node.noteFormat).append('|').append(node.note);
+            }
+            hash.append('\n');
             for (Node child : node.children) {
                 finish(child, depth + 1, counts, hash);
             }
@@ -440,6 +492,22 @@ public final class ImportParser {
             case "topic", "subtopic", "sub-topic", "lesson" -> ItemType.TOPIC;
             default -> null;
         };
+    }
+
+    static NoteFormat parseNoteFormat(String s) {
+        return switch (normalize(s)) {
+            case "markdown", "md" -> NoteFormat.MARKDOWN;
+            case "html", "rich text", "rich-text", "richtext" -> NoteFormat.HTML;
+            default -> null;
+        };
+    }
+
+    private static final Pattern HTML_START =
+            Pattern.compile("^\\s*<(p|h[1-6]|ul|ol|blockquote|pre|div|table|hr|img)\\b", Pattern.CASE_INSENSITIVE);
+
+    /** Notes written with the rich-text editor start with an HTML block element; anything else is Markdown. */
+    static NoteFormat guessNoteFormat(String note) {
+        return HTML_START.matcher(note).find() ? NoteFormat.HTML : NoteFormat.MARKDOWN;
     }
 
     private static String sha256(String s) {

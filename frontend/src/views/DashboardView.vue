@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 import { RouterLink } from 'vue-router'
-import { CircleCheck, Clock, GraduationCap, Plus, Upload } from 'lucide-vue-next'
-import { dashboardApi } from '../api'
+import { CircleCheck, Clock, GraduationCap, Plus, ShieldAlert, ShieldCheck, Upload } from 'lucide-vue-next'
+import { adminApi, dashboardApi } from '../api'
 import { errorMessage } from '../api/client'
-import type { DashboardSummary } from '../types/api'
+import type { BackupStatus, DashboardSummary } from '../types/api'
 import { percentLabel, relativeTime } from '../lib/format'
 import ProgressBar from '../components/ProgressBar.vue'
 import EmptyState from '../components/EmptyState.vue'
@@ -14,6 +14,7 @@ import PaceBadge from '../components/PaceBadge.vue'
 
 const summary = ref<DashboardSummary | null>(null)
 const error = ref<string | null>(null)
+const backup = ref<BackupStatus | null>(null)
 
 async function load() {
   error.value = null
@@ -23,12 +24,38 @@ async function load() {
     error.value = errorMessage(e)
   }
 }
-onMounted(load)
+onMounted(() => {
+  void load()
+  adminApi
+    .backupStatus()
+    .then((b) => (backup.value = b))
+    .catch(() => undefined) // the banner is non-essential
+})
 </script>
 
 <template>
   <div class="space-y-6">
-    <h1 class="text-2xl font-semibold">Dashboard</h1>
+    <div class="flex flex-wrap items-center justify-between gap-2">
+      <h1 class="text-2xl font-semibold">Dashboard</h1>
+      <RouterLink
+        v-if="backup && !backup.warning && backup.lastBackupAt"
+        to="/settings"
+        class="muted flex items-center gap-1 text-xs hover:underline"
+        :title="backup.lastCheck ? `Checked: ${backup.lastCheck.plans} plans, ${backup.lastCheck.items} items, ${backup.lastCheck.notes} notes` : undefined"
+      >
+        <ShieldCheck class="size-3.5 text-emerald-600" /> Last backup {{ relativeTime(backup.lastBackupAt) }}<template v-if="backup.lastCheck?.ok">, checked</template>
+      </RouterLink>
+    </div>
+
+    <div
+      v-if="backup?.warning"
+      class="flex flex-wrap items-center gap-3 rounded-lg border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-900 dark:border-amber-500/40 dark:bg-amber-500/10 dark:text-amber-200"
+      role="alert"
+    >
+      <ShieldAlert class="size-5 shrink-0" />
+      <span class="flex-1">Backups need attention: {{ backup.warning }}</span>
+      <RouterLink to="/settings" class="btn-secondary py-1">Open backup settings</RouterLink>
+    </div>
 
     <EmptyState v-if="error" :icon="GraduationCap" title="Couldn't load the dashboard" :text="error">
       <button class="btn-primary" @click="load">Retry</button>

@@ -2,6 +2,7 @@ package com.mylearn.tracker.importer;
 
 import com.mylearn.tracker.item.ItemType;
 import com.mylearn.tracker.item.Priority;
+import com.mylearn.tracker.note.NoteFormat;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +25,11 @@ public record ParsedSheet(
     public record Issue(int row, String message) {
     }
 
-    public record Stats(int modules, int topics, int leafTopics, int completed) {
+    public record Stats(int modules, int topics, int leafTopics, int completed, int notes) {
+
+        public Stats(int modules, int topics, int leafTopics, int completed) {
+            this(modules, topics, leafTopics, completed, 0);
+        }
     }
 
     /** Mutable while parsing; read-only afterwards. */
@@ -36,6 +41,9 @@ public record ParsedSheet(
         public Priority priority;
         public boolean completed;
         public String externalId;
+        /** Note content, or null when the row has none. */
+        public String note;
+        public NoteFormat noteFormat;
         public final List<Node> children = new ArrayList<>();
 
         Node(int row, String name) {

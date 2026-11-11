@@ -31,11 +31,39 @@ public class ImportExportController {
     private final ImportService imports;
     private final ExportService exports;
     private final SyncService sync;
+    private final PlanBackupService planBackups;
 
-    public ImportExportController(ImportService imports, ExportService exports, SyncService sync) {
+    public ImportExportController(ImportService imports, ExportService exports, SyncService sync,
+                                  PlanBackupService planBackups) {
         this.imports = imports;
         this.exports = exports;
         this.sync = sync;
+        this.planBackups = planBackups;
+    }
+
+    // --- full plan backup (JSON) --------------------------------------------------------------
+
+    /** Everything in the plan (notes, tags, links, time log, schedules, ratings) as one JSON file. */
+    @GetMapping("/plans/{planId}/backup")
+    public ResponseEntity<byte[]> backupPlan(@PathVariable Long planId) {
+        Export export = planBackups.export(planId);
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.CONTENT_DISPOSITION, ContentDisposition.attachment()
+                        .filename(export.fileName(), StandardCharsets.UTF_8).build().toString())
+                .body(export.content());
+    }
+
+    @PostMapping(path = "/import/backup/preview", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public PlanBackupService.BackupPreview previewBackup(@RequestPart("file") MultipartFile file) throws IOException {
+        return planBackups.preview(file.getOriginalFilename(), file.getBytes());
+    }
+
+    /** Restores a plan backup as a new plan. */
+    @PostMapping(path = "/import/backup/confirm", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ImportResult restoreBackup(@RequestPart("file") MultipartFile file,
+                                      @RequestParam(required = false) String newPlanName) throws IOException {
+        return planBackups.restore(file.getOriginalFilename(), file.getBytes(), newPlanName);
     }
 
     // --- sync an edited export back into its plan ---------------------------------------------

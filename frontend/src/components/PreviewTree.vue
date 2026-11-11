@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Check, FileText, Folder } from 'lucide-vue-next'
+import { Check, FileText, Folder, NotebookPen } from 'lucide-vue-next'
 import type { PreviewNode } from '../types/api'
 import PriorityBadge from './PriorityBadge.vue'
 
@@ -16,6 +16,7 @@ defineProps<{ nodes: PreviewNode[]; depth?: number }>()
         <span class="truncate" :class="n.type === 'MODULE' ? 'font-medium' : ''" :title="n.description ?? n.name">{{ n.name }}</span>
         <PriorityBadge :priority="n.priority" />
         <Check v-if="n.completed" class="size-3.5 shrink-0 text-emerald-600" aria-label="completed" />
+        <NotebookPen v-if="n.hasNote" class="size-3.5 shrink-0 text-emerald-600" aria-label="has a note" title="Has a note" />
         <span class="muted ml-auto shrink-0 pl-2 text-[11px] tabular-nums">row {{ n.row }}</span>
       </div>
       <PreviewTree v-if="n.children.length" :nodes="n.children" :depth="(depth ?? 0) + 1" />

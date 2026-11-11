@@ -5,6 +5,7 @@ import {
   CheckCheck,
   GraduationCap,
   Keyboard,
+  Layers,
   LayoutDashboard,
   ListChecks,
   Menu,
@@ -23,6 +24,7 @@ import { usePlanList } from './composables/usePlanList'
 import { useTheme } from './composables/useTheme'
 import { usePomodoro } from './composables/usePomodoro'
 import { useDueReviews } from './composables/useDueReviews'
+import { useDueCards } from './composables/useDueCards'
 import { percentLabel } from './lib/format'
 import ToastHost from './components/ToastHost.vue'
 import ConfirmDialog from './components/ConfirmDialog.vue'
@@ -34,12 +36,14 @@ const { state: planList, refresh } = usePlanList()
 const { mode, cycle } = useTheme()
 const pomodoro = usePomodoro()
 const dueReviews = useDueReviews()
+const dueCards = useDueCards()
 const mobileOpen = ref(false)
 const shortcutsOpen = ref(false)
 
 const nav = [
   { to: '/today', label: 'Today', icon: Sunrise, exact: true },
   { to: '/', label: 'Dashboard', icon: LayoutDashboard, exact: true },
+  { to: '/flashcards', label: 'Flashcards', icon: Layers, exact: true },
   { to: '/plans', label: 'Plans', icon: ListChecks, exact: false },
   { to: '/search', label: 'Search', icon: Search, exact: true },
   { to: '/import', label: 'Import', icon: Upload, exact: false },
@@ -96,6 +100,7 @@ watch(
   () => {
     mobileOpen.value = false
     void dueReviews.refresh() // reviews become due at midnight and change as you tick topics
+    void dueCards.refresh()
   },
 )
 onMounted(refresh)
@@ -139,6 +144,12 @@ onMounted(refresh)
             class="rounded-full bg-violet-600 px-1.5 text-[11px] font-semibold text-white tabular-nums"
             :title="`${dueReviews.count.value} review(s) due`"
             >{{ dueReviews.count.value }}</span
+          >
+          <span
+            v-if="item.to === '/flashcards' && dueCards.count.value > 0"
+            class="rounded-full bg-violet-600 px-1.5 text-[11px] font-semibold text-white tabular-nums"
+            :title="`${dueCards.count.value} flashcard(s) due`"
+            >{{ dueCards.count.value }}</span
           >
         </RouterLink>
       </nav>

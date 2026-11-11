@@ -4,6 +4,8 @@ import com.mylearn.tracker.common.exception.NotFoundException;
 import com.mylearn.tracker.item.LearningItemRepository;
 import com.mylearn.tracker.item.TreeBuilder;
 import com.mylearn.tracker.item.dto.TreeNode;
+import com.mylearn.tracker.note.ItemNote;
+import com.mylearn.tracker.note.ItemNoteRepository;
 import com.mylearn.tracker.plan.LearningPlan;
 import com.mylearn.tracker.plan.PlanService;
 import org.apache.commons.csv.CSVFormat;
@@ -16,37 +18,46 @@ import java.io.StringWriter;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * CSV export in the app's own format: one row per item in tree order. {@code version} lets sync
  * notice items edited in the app after the export (conflicts).
  * {@code id} (stable external id) + {@code level} + row order fully describe the hierarchy,
  * and the file opens and edits cleanly in Excel / Google Sheets.
+ * {@code note_format} + {@code note} carry each item's note, so the file is a complete backup of the
+ * plan's content that import (new plan) or sync (same plan) can restore.
  */
 @Service
 @Transactional(readOnly = true)
 public class ExportService {
 
-    static final String[] HEADER = {"id", "level", "type", "name", "description", "priority", "completed", "version"};
+    static final String[] HEADER = {"id", "level", "type", "name", "description", "priority", "completed", "version",
+            "note_format", "note"};
 
     private final PlanService planService;
     private final LearningItemRepository items;
+    private final ItemNoteRepository notes;
 
-    public ExportService(PlanService planService, LearningItemRepository items) {
+    public ExportService(PlanService planService, LearningItemRepository items, ItemNoteRepository notes) {
         this.planService = planService;
         this.items = items;
+        this.notes = notes;
     }
 
     public Export exportPlan(Long planId) {
         LearningPlan plan = planService.findPlan(planId);
-        return new Export(slug(plan.getName()) + ".csv", csv(TreeBuilder.build(items.findAllByPlan(planId))));
+        return new Export(slug(plan.getName()) + ".csv", csv(TreeBuilder.build(items.findAllByPlan(planId)), notesOf(planId)));
     }
 
     public Export exportSubtree(Long itemId) {
         var item = items.findById(itemId).orElseThrow(() -> new NotFoundException("Item", itemId));
         TreeNode node = find(TreeBuilder.build(items.findAllByPlan(item.getPlanId())), itemId).orElseThrow();
-        return new Export(slug(item.getPlan().getName() + "-" + item.getName()) + ".csv", csv(List.of(node)));
+        return new Export(slug(item.getPlan().getName() + "-" + item.getName()) + ".csv",
+                csv(List.of(node), notesOf(item.getPlanId())));
     }
 
     /**
@@ -79,11 +90,15 @@ public class ExportService {
         return new Export(name, withBom(out.toString()));
     }
 
-    private static byte[] csv(List<TreeNode> roots) {
+    private Map<Long, ItemNote> notesOf(Long planId) {
+        return notes.findAllByPlan(planId).stream().collect(Collectors.toMap(ItemNote::getItemId, Function.identity()));
+    }
+
+    private static byte[] csv(List<TreeNode> roots, Map<Long, ItemNote> notes) {
         StringWriter out = new StringWriter();
         try (CSVPrinter csv = new CSVPrinter(out, CSVFormat.DEFAULT.builder().setHeader(HEADER).get())) {
             for (TreeNode root : roots) {
-                write(csv, root, 1);
+                write(csv, root, 1, notes);
             }
         } catch (IOException e) {
             throw new UncheckedIOException(e);
@@ -91,13 +106,15 @@ public class ExportService {
         return withBom(out.toString());
     }
 
-    private static void write(CSVPrinter csv, TreeNode node, int level) throws IOException {
+    private static void write(CSVPrinter csv, TreeNode node, int level, Map<Long, ItemNote> notes) throws IOException {
+        ItemNote note = notes.get(node.id());
         csv.printRecord(node.externalId(), level, node.type(), node.name(),
                 node.description() == null ? "" : node.description(),
                 node.priority() == null ? "" : node.priority(),
-                node.checkable() ? (node.completed() ? "TRUE" : "FALSE") : "", node.version());
+                node.checkable() ? (node.completed() ? "TRUE" : "FALSE") : "", node.version(),
+                note == null ? "" : note.getFormat(), note == null ? "" : note.getContent());
         for (TreeNode child : node.children()) {
-            write(csv, child, level + 1);
+            write(csv, child, level + 1, notes);
         }
     }
 

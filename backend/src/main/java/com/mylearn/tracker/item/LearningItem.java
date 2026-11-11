@@ -91,6 +91,17 @@ public class LearningItem extends TimestampedEntity {
         this.priority = priority;
     }
 
+    /**
+     * Keeps the id an item had in a restored plan backup, so later exports and syncs still match.
+     * Only before the item is first saved; the caller checks that the id is not in use.
+     */
+    public void restoreExternalId(String externalId) {
+        if (this.id != null) {
+            throw new IllegalStateException("The external id of a saved item can't change");
+        }
+        this.externalId = externalId;
+    }
+
     // --- completion -------------------------------------------------------------------------
     // The "who may be completed" rules live in the service; the entity just keeps both fields in sync.
 

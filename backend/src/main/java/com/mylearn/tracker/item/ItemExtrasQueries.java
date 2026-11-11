@@ -66,6 +66,24 @@ public class ItemExtrasQueries {
                     reviews.put(rs.getLong("item_id"), LocalDate.parse(rs.getString("due_on")));
                 }, planId);
 
-        return new TreeExtras(notes.findItemIdsWithNotes(planId), links, tags, minutes, reviews);
+        Map<Long, Integer> confidence = new HashMap<>();
+        jdbc.query("""
+                        SELECT c.item_id, c.level FROM item_confidence c
+                        JOIN learning_item i ON i.id = c.item_id
+                        WHERE i.plan_id = ?""",
+                rs -> {
+                    confidence.put(rs.getLong("item_id"), rs.getInt("level"));
+                }, planId);
+
+        Map<Long, Integer> flashcards = new HashMap<>();
+        jdbc.query("""
+                        SELECT f.item_id, COUNT(*) AS n FROM flashcard f
+                        JOIN learning_item i ON i.id = f.item_id
+                        WHERE i.plan_id = ? GROUP BY f.item_id""",
+                rs -> {
+                    flashcards.put(rs.getLong("item_id"), rs.getInt("n"));
+                }, planId);
+
+        return new TreeExtras(notes.findItemIdsWithNotes(planId), links, tags, minutes, reviews, confidence, flashcards);
     }
 }

@@ -6,6 +6,7 @@ export const router = createRouter({
   routes: [
     { path: '/', name: 'dashboard', component: DashboardView, meta: { title: 'Dashboard' } },
     { path: '/today', name: 'today', component: () => import('../views/TodayView.vue'), meta: { title: 'Today' } },
+    { path: '/flashcards', name: 'flashcards', component: () => import('../views/FlashcardsView.vue'), meta: { title: 'Flashcards' } },
     { path: '/search', name: 'search', component: () => import('../views/SearchView.vue'), meta: { title: 'Search' } },
     { path: '/plans/:id(\\d+)/sync', name: 'sync', component: () => import('../views/SyncView.vue'), props: true, meta: { title: 'Sync' } },
     { path: '/plans', name: 'plans', component: () => import('../views/PlansView.vue'), meta: { title: 'Plans' } },

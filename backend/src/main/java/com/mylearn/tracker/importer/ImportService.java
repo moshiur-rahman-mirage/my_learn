@@ -13,6 +13,7 @@ import com.mylearn.tracker.importer.ParsedSheet.Node;
 import com.mylearn.tracker.item.ItemType;
 import com.mylearn.tracker.item.LearningItem;
 import com.mylearn.tracker.item.LearningItemRepository;
+import com.mylearn.tracker.note.NoteService;
 import com.mylearn.tracker.plan.LearningPlan;
 import com.mylearn.tracker.plan.PlanService;
 import org.springframework.stereotype.Service;
@@ -40,11 +41,14 @@ public class ImportService {
     private final PlanService planService;
     private final LearningItemRepository items;
     private final ImportBatchRepository batches;
+    private final NoteService notes;
 
-    public ImportService(PlanService planService, LearningItemRepository items, ImportBatchRepository batches) {
+    public ImportService(PlanService planService, LearningItemRepository items, ImportBatchRepository batches,
+                         NoteService notes) {
         this.planService = planService;
         this.items = items;
         this.batches = batches;
+        this.notes = notes;
     }
 
     // --- preview ----------------------------------------------------------------------------
@@ -189,6 +193,9 @@ public class ImportService {
             item.markCompleted(now);
         }
         items.save(item);
+        if (node.note != null) {
+            notes.save(item.getId(), node.note, node.noteFormat);
+        }
         count[0]++;
         for (int i = 0; i < node.children.size(); i++) {
             save(plan, item, node.children.get(i), i, now, count);

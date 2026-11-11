@@ -14,5 +14,9 @@ public enum ColumnRole {
     DESCRIPTION,
     PRIORITY,
     COMPLETED,
+    /** The item's note (Markdown or rich-text HTML), as written by this app's export. */
+    NOTE,
+    /** MARKDOWN or HTML: how to read the NOTE column (guessed from the content when missing). */
+    NOTE_FORMAT,
     IGNORE
 }

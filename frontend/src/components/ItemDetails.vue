@@ -1,18 +1,42 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
-import { Clock, ExternalLink, Link2, LoaderCircle, Play, Plus, Square, Tag, Timer, Trash2, X } from 'lucide-vue-next'
-import { linksApi, tagsApi, timeApi } from '../api'
+import { Clock, ExternalLink, Gauge, Link2, LoaderCircle, Play, Plus, Square, Tag, Timer, Trash2, X } from 'lucide-vue-next'
+import { confidenceApi, linksApi, tagsApi, timeApi } from '../api'
 import { errorMessage } from '../api/client'
 import type { ItemTime, TreeNode } from '../types/api'
 import { hostOf, minutesLabel, relativeTime } from '../lib/format'
 import { useToast } from '../composables/useToast'
 import { usePomodoro } from '../composables/usePomodoro'
+import ConfidenceRating from './ConfidenceRating.vue'
 
 /** Links, tags and time spent of one item (top of the notes panel). */
 const props = defineProps<{ node: TreeNode; planId: number; allTags: string[] }>()
 const emit = defineEmits<{ changed: [] }>()
 const toast = useToast()
 const pomodoro = usePomodoro()
+
+// --- confidence -----------------------------------------------------------------------------
+const rating = ref<number | null>(props.node.confidence)
+watch(
+  () => [props.node.id, props.node.confidence] as const,
+  ([, c]) => (rating.value = c),
+)
+const savingRating = ref(false)
+async function rate(level: number | null) {
+  const before = rating.value
+  rating.value = level
+  savingRating.value = true
+  try {
+    const r = await confidenceApi.rate(props.node.id, level)
+    if (r.reviewOn) toast.info('Review moved to tomorrow so this topic comes back sooner.')
+    emit('changed')
+  } catch (e) {
+    rating.value = before
+    toast.error(errorMessage(e))
+  } finally {
+    savingRating.value = false
+  }
+}
 
 // --- links ----------------------------------------------------------------------------------
 const linkUrl = ref('')
@@ -118,6 +142,12 @@ const timerHere = computed(() => pomodoro.running.value?.itemId === props.node.i
 
 <template>
   <section class="space-y-4 border-b border-slate-200 px-4 py-3 text-sm dark:border-slate-800">
+    <!-- confidence -->
+    <div class="flex flex-wrap items-center justify-between gap-2">
+      <h3 class="muted flex items-center gap-1 text-xs font-semibold tracking-wide uppercase"><Gauge class="size-3.5" /> Confidence</h3>
+      <ConfidenceRating :model-value="rating" :disabled="savingRating" @update:model-value="rate" />
+    </div>
+
     <!-- links -->
     <div>
       <div class="mb-1.5 flex items-center justify-between">

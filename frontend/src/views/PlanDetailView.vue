@@ -10,6 +10,7 @@ import {
   Download,
   FilePlus,
   FolderPlus,
+  Layers,
   ListChecks,
   Pencil,
   RefreshCw,
@@ -409,6 +410,8 @@ const planActions = computed<MenuAction[]>(() => [
   { label: 'Edit plan', icon: Pencil, run: () => (planDialog.value = true) },
   { label: 'Import into this plan', icon: Upload, run: () => router.push({ path: '/import', query: { plan: planId.value } }) },
   { label: 'Export CSV', icon: Download, run: () => download(plansApi.exportUrl(planId.value)) },
+  { label: 'Full backup (JSON)', icon: Download, run: () => download(plansApi.backupUrl(planId.value)) },
+  { label: 'Study flashcards', icon: Layers, run: () => router.push({ name: 'flashcards', query: { plan: planId.value } }) },
   { label: 'Sync from edited file…', icon: RefreshCw, run: () => router.push(`/plans/${planId.value}/sync`) },
   {
     label: plan.value?.status === 'ACTIVE' ? 'Archive' : 'Activate',
@@ -606,6 +609,8 @@ provide(TREE_CONTEXT, {
       :node="notesNode"
       :plan-id="planId"
       :all-tags="allTags"
+      :tree="tree"
+      @open="(n) => (notesItemId = n.id)"
       @close="notesItemId = null"
       @saved="onNoteSaved"
       @changed="onDetailsChanged"

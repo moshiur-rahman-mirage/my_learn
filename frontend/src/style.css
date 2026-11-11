@@ -156,3 +156,121 @@ body {
 .md-preview td {
   @apply border border-slate-200 px-2 py-1 dark:border-slate-700;
 }
+
+/* Notes panel: adjustable text size (A− / A+) and a roomier reading mode. */
+/* Room the notes panel may use: never cover the left sidebar (w-64, shown from md up).
+   % (not vw) so the page scrollbar is excluded, like the fixed panel's right edge. */
+.notes-panel {
+  --notes-avail: 100%;
+}
+@media (min-width: 48rem) {
+  .notes-panel {
+    --notes-avail: calc(100% - 16rem);
+  }
+}
+.notes-panel .note-content,
+.notes-panel textarea {
+  font-size: calc(0.875rem * var(--note-scale, 1));
+}
+.notes-panel.notes-reading .note-content {
+  font-size: calc(1.0625rem * var(--note-scale, 1));
+  line-height: 1.8;
+}
+.notes-serif .note-content {
+  font-family: ui-serif, Georgia, Cambria, "Times New Roman", serif;
+}
+
+/* [[links]] between notes */
+.note-content a.wikilink {
+  cursor: pointer;
+  color: var(--color-sky-700);
+  text-decoration: underline dotted;
+  text-underline-offset: 3px;
+}
+.dark .note-content a.wikilink {
+  color: var(--color-sky-300);
+}
+.note-content a.wikilink-missing {
+  color: var(--color-slate-500);
+  text-decoration-style: dashed;
+}
+
+/* math and diagrams */
+.note-content .math-display {
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0.25rem 0;
+}
+.note-content .mermaid-diagram {
+  margin: 1em 0;
+  overflow-x: auto;
+  text-align: center;
+}
+.note-content .mermaid-diagram svg {
+  display: inline-block;
+  max-width: 100%;
+  height: auto;
+}
+.note-content .diagram-error {
+  color: var(--color-red-600);
+  font-size: 0.8em;
+}
+
+/* syntax highlighting (highlight.js classes); code blocks are always dark, so one palette */
+.note-content pre code.hljs {
+  display: block;
+  overflow-x: auto;
+}
+.hljs-comment,
+.hljs-quote {
+  color: #8b949e;
+  font-style: italic;
+}
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-type,
+.hljs-doctag {
+  color: #ff7b72;
+}
+.hljs-string,
+.hljs-regexp,
+.hljs-addition,
+.hljs-meta .hljs-string {
+  color: #a5d6ff;
+}
+.hljs-number,
+.hljs-literal,
+.hljs-variable.language_,
+.hljs-symbol,
+.hljs-bullet {
+  color: #79c0ff;
+}
+.hljs-title,
+.hljs-title.function_,
+.hljs-section {
+  color: #d2a8ff;
+}
+.hljs-attr,
+.hljs-attribute,
+.hljs-property,
+.hljs-name,
+.hljs-selector-class,
+.hljs-selector-id {
+  color: #7ee787;
+}
+.hljs-built_in,
+.hljs-meta {
+  color: #ffa657;
+}
+.hljs-deletion {
+  color: #ffdcd7;
+}
+
+.kbd {
+  border: 1px solid currentColor;
+  border-radius: 0.25rem;
+  font-family: ui-monospace, monospace;
+  font-size: 0.7em;
+  opacity: 0.7;
+  padding: 0 0.3em;
+}

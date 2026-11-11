@@ -21,6 +21,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.io.ByteArrayInputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -123,7 +124,7 @@ class BackupRestoreIntegrationTest {
                 "trg_search_note_delete"}) {
             oldDb.execute("DROP TRIGGER " + trigger);
         }
-        for (String table : new String[]{"search_index", "item_review", "item_tag", "tag", "time_log", "item_link", "item_note"}) {
+        for (String table : new String[]{"note_ref", "flashcard", "item_confidence", "search_index", "item_review", "item_tag", "tag", "time_log", "item_link", "item_note"}) {
             oldDb.execute("DROP TABLE " + table);
         }
         oldDb.execute("ALTER TABLE learning_plan DROP COLUMN target_date");
@@ -157,6 +158,68 @@ class BackupRestoreIntegrationTest {
         assertThat(backups.list()).extracting(BackupFile::fileName).contains(keep.fileName()).doesNotContain(gone.fileName());
         mvc.perform(delete("/api/admin/backups/{name}", gone.fileName())).andExpect(status().isNotFound());
         assertThatThrownBy(() -> backups.delete("../learning-tracker.db")).isInstanceOf(NotFoundException.class);    }
+
+    @Test
+    void everyBackupIsChecked_andADamagedFileFailsItsCheck() throws Exception {
+        BackupFile b = backups.backupNow();
+        assertThat(b.check()).isNotNull();
+        assertThat(b.check().ok()).isTrue();
+        assertThat(b.check().plans()).isGreaterThanOrEqualTo(0);
+        assertThat(backups.status().warning()).isNull();
+        assertThat(backups.status().lastCheck().ok()).isTrue();
+
+        // damage the file: the re-check fails, and the dashboard status says so
+        Path file = Path.of(b.path());
+        byte[] bytes = Files.readAllBytes(file);
+        for (int i = 4096; i < bytes.length; i += 97) {
+            bytes[i] = (byte) 0x5A;
+        }
+        Files.write(file, bytes);
+        BackupService.BackupCheck check = backups.checkFile(b.fileName());
+        assertThat(check.ok()).isFalse();
+        assertThat(backups.list().getFirst().check().ok()).isFalse(); // remembered next to the file
+        assertThat(backups.status().warning()).contains("failed its check");
+        backups.delete(b.fileName());
+        assertThat(Path.of(b.path() + ".check")).doesNotExist();
+    }
+
+    @Test
+    void cleanupKeepsRecentPlusOnePerDayWeekAndMonth() throws Exception {
+        Path dir = DATA_DIR.resolve("retention-" + UUID.randomUUID());
+        Files.createDirectories(dir);
+        List<Path> files = new java.util.ArrayList<>();
+        java.time.LocalDateTime t = java.time.LocalDateTime.of(2026, 11, 11, 12, 0);
+        // three today, then one per day back to ~4 months ago
+        for (int h = 0; h < 3; h++) {
+            files.add(dir.resolve("learning-tracker-" + t.minusHours(h).format(java.time.format.DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss-SSS")) + ".db"));
+        }
+        for (int d = 1; d <= 120; d++) {
+            files.add(dir.resolve("learning-tracker-" + t.minusDays(d).format(java.time.format.DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss-SSS")) + ".db"));
+        }
+        var keep = BackupService.toKeep(files, new AppSettings.Retention(2, 7, 4, 3));
+        // files.get(2 + d) is d days back. Recent: 0, 1. Days: Nov 11 (0) and Nov 10–5 (3–8).
+        // ISO weeks (Mon–Sun): Nov 9–15 (0), Nov 2–8 (5), Oct 26–Nov 1 (12), Oct 19–25 (19).
+        // Months: Nov (0), Oct 31 (13), Sep 30 (44).
+        assertThat(keep).containsExactlyInAnyOrder(files.get(0), files.get(1), files.get(3), files.get(4), files.get(5),
+                files.get(6), files.get(7), files.get(8), files.get(12), files.get(19), files.get(13), files.get(44));
+    }
+
+    @Test
+    void cleanupNowRemovesWhatTheRuleDoesntKeep() {
+        var before = backups.settings().retention();
+        for (int i = 0; i < 4; i++) {
+            backups.backupNow();
+        }
+        backups.changeRetention(new AppSettings.Retention(2, 1, 1, 1));
+        List<BackupFile> preview = backups.cleanupPreview();
+        int total = backups.list().size();
+        assertThat(preview).hasSize(total - 2);
+        assertThat(backups.cleanup()).hasSize(total - 2);
+        assertThat(backups.list()).hasSize(2);
+        assertThatThrownBy(() -> backups.changeRetention(new AppSettings.Retention(0, 1, 1, 1)))
+                .isInstanceOf(BusinessRuleException.class);
+        backups.changeRetention(before);
+    }
 
     @Test
     void backupsAreAlsoCopiedToTheSecondFolder_andAFailedCopyNeverFailsTheBackup() throws Exception {

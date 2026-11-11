@@ -36,11 +36,12 @@ public final class ImportDtos {
             boolean canImport) {
     }
 
+    /** @param hasNote the row carries a note, which is imported with the item */
     public record PreviewNode(int row, String name, ItemType type, String description, Priority priority,
-                              boolean completed, List<PreviewNode> children) {
+                              boolean completed, boolean hasNote, List<PreviewNode> children) {
 
         static PreviewNode of(Node n) {
-            return new PreviewNode(n.row, n.name, n.type, n.description, n.priority, n.completed,
+            return new PreviewNode(n.row, n.name, n.type, n.description, n.priority, n.completed, n.note != null,
                     n.children.stream().map(PreviewNode::of).toList());
         }
     }

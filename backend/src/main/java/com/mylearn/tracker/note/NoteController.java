@@ -10,14 +10,24 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/items/{id}/notes")
 public class NoteController {
 
     private final NoteService notes;
+    private final NoteLinks links;
 
-    public NoteController(NoteService notes) {
+    public NoteController(NoteService notes, NoteLinks links) {
         this.notes = notes;
+        this.links = links;
+    }
+
+    /** Items of the same plan whose notes contain a [[link]] to this item. */
+    @GetMapping("/backlinks")
+    public List<NoteLinks.Backlink> backlinks(@PathVariable Long id) {
+        return links.backlinks(id);
     }
 
     @GetMapping
