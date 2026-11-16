@@ -1,0 +1,2971 @@
+﻿level,type,name,description,priority,completed,content
+1,MODULE,Phase 1 — Introduction & Core Trade-offs,The fundamental trade-offs behind every design,MUST,,"# Phase 1: Introduction & core trade-offs
+
+A system design interview has **no single right answer**. The interviewer checks whether you can clarify requirements, pick trade-offs, and justify them. Every later phase is a tool; this phase is the thinking behind choosing the tool.
+
+**Java/Spring Boot angle:** you will be asked to sketch Spring Boot services, their database, cache and queue, and to say what breaks at 10x load."
+2,MODULE,Introduction,What system design is and how to approach it,MUST,,Start here: what the interview is and a repeatable framework.
+3,TOPIC,What is System Design?,"Designing components, data flow and trade-offs to meet requirements at scale",MUST,FALSE,"# What is system design?
+
+System design = deciding **which components** (services, databases, caches, queues), **how they talk**, and **how they behave under load and failure**, so that functional and non-functional requirements are met.
+
+**Analogy:** building a city, not a house. A house (one Spring Boot app + one DB) works for 100 people. A city needs roads (network), water supply (caching/queues), zoning (service boundaries) and emergency services (failover).
+
+## Two kinds of requirements
+
+| Type | Examples |
+|---|---|
+| Functional | ""User can shorten a URL"", ""Place an order"" |
+| Non-functional (NFR) | 10k requests/sec, p99 < 200 ms, 99.99% availability, data never lost |
+
+NFRs drive the architecture. A CRUD API with 10 users and one with 10 million need different designs for the *same* features.
+
+## Monolith to scaled system (typical story)
+
+```text
+Stage 1:  Client -> Spring Boot app -> PostgreSQL          (works to ~1k RPS)
+Stage 2:  + Redis cache, + read replica                    (reads scale)
+Stage 3:  + Load balancer, N stateless app instances       (compute scales)
+Stage 4:  + Kafka, async workers                           (spikes absorbed)
+Stage 5:  + Sharding / microservices / multi-region        (data & team scale)
+```
+- Each stage is added only when a measured bottleneck demands it. Over-engineering is also a design failure.
+
+## Remember
+- Design is about **trade-offs**, never ""best technology"".
+- Always tie a choice to a requirement: ""I add Redis *because* reads are 100:1 vs writes.""
+
+Q: Is system design about picking popular tools?
+A: No. It is about meeting requirements (scale, latency, availability, cost) with justified trade-offs. Tools are the implementation.
+
+Q: Monolith or microservices first?
+A: Usually a well-structured monolith first; split when team size, deploy independence or scaling needs justify the network and operational cost."
+3,TOPIC,How to approach System Design?,"A 5-step interview framework: requirements, estimation, API, high-level design, deep dive",MUST,FALSE,"# How to approach a system design interview
+
+Use the same framework every time (about 45 minutes):
+
+| Step | Time | What you do |
+|---|---|---|
+| 1. Clarify requirements | 5 min | Features in/out of scope, users, read/write ratio, NFRs |
+| 2. Estimate scale | 5 min | QPS, storage, bandwidth (back-of-envelope) |
+| 3. API + data model | 5 min | Endpoints, main entities |
+| 4. High-level design | 10 min | Boxes and arrows: client, LB, services, DB, cache, queue |
+| 5. Deep dive + trade-offs | 15 min | Bottlenecks, sharding, failures, consistency, monitoring |
+
+## Back-of-envelope example: URL shortener
+
+```text
+100M new URLs/month  -> ~40 writes/sec
+Read:write = 100:1   -> ~4,000 reads/sec
+5 years storage      -> 100M * 12 * 5 = 6B URLs * 500 B = ~3 TB
+```
+- Say your numbers aloud; the interviewer wants the *method*, not exact digits.
+
+## Sketch the API in Spring Boot terms
+
+```java
+@RestController
+@RequestMapping(""/api/v1/urls"")
+class UrlController {
+    @PostMapping
+    ResponseEntity<UrlDto> create(@Valid @RequestBody CreateUrlRequest req) { ... } // 201
+
+    @GetMapping(""/{code}"")
+    ResponseEntity<Void> redirect(@PathVariable String code) { ... }               // 302
+}
+```
+- Writing 2-3 endpoints early proves you understand the contract before the boxes.
+
+## Common mistakes
+- Jumping to Kafka/Kubernetes before asking requirements.
+- Giving one design without naming trade-offs.
+- Ignoring failure (""what if the DB dies?"") and monitoring.
+
+Q: Interviewer says ""design Twitter"". First move?
+A: Ask: which features (post, timeline, follow)? How many users/DAU? Read-heavy? Latency target? Then estimate scale, then design."
+2,MODULE,Core Trade-offs,"Performance, scalability, latency, throughput, availability, consistency",MUST,,The vocabulary every interviewer expects you to use precisely.
+3,TOPIC,Performance vs Scalability,Slow for one user vs slow under load,MUST,FALSE,"# Performance vs scalability
+
+- **Performance problem:** the system is slow **for a single user**.
+- **Scalability problem:** the system is fast for one user but **slow under heavy load**.
+
+**Analogy:** a single cashier who is slow = performance. A fast cashier but 1000 customers and one counter = scalability.
+
+## Vertical vs horizontal scaling
+
+| | Vertical (scale up) | Horizontal (scale out) |
+|---|---|---|
+| How | Bigger machine | More machines |
+| Limit | Hardware ceiling, single point of failure | Needs stateless design, LB, data partitioning |
+| Cost | Expensive at the top | Cheap commodity nodes |
+
+## Spring Boot: make the service horizontally scalable
+
+```java
+// BAD: state in the JVM, breaks when a 2nd instance appears
+private final Map<String, Cart> carts = new ConcurrentHashMap<>();
+
+// GOOD: state in Redis (shared), any instance can serve any request
+@Service
+class CartService {
+    private final RedisTemplate<String, Cart> redis;
+    Cart get(String userId) { return redis.opsForValue().get(""cart:"" + userId); }
+}
+```
+- Local in-memory state ties a user to one instance; externalizing it (Redis/DB/JWT) lets you add instances freely.
+
+## Remember
+- Measure first (profiler, p99) to know which problem you have.
+- Performance fixes: indexes, caching, fewer queries. Scalability fixes: stateless nodes, LB, sharding, async.
+
+Q: Your API is slow for one request. Does adding servers help?
+A: No. That is a performance problem (query, N+1, algorithm). More servers only help throughput under load."
+3,TOPIC,Latency vs Throughput,Time per request vs requests per second,MUST,FALSE,"# Latency vs throughput
+
+- **Latency:** time to finish **one** request (ms).
+- **Throughput:** requests (or bytes) handled **per second**.
+
+**Analogy:** a highway. Latency = time one car needs A to B. Throughput = cars per hour. A wider road (more lanes) raises throughput but a single car is not faster.
+
+## Percentiles, not averages
+
+| Metric | Meaning |
+|---|---|
+| p50 | Half the requests are faster |
+| p95 / p99 | The slow tail users actually feel |
+
+Averages hide the tail. ""avg 50 ms, p99 3 s"" is a bad system.
+
+## Little's Law (quick sizing)
+
+```text
+concurrent requests = throughput * latency
+1000 req/s * 0.2 s = 200 requests in flight
+```
+- Tomcat default 200 threads: if latency rises to 1 s at 1000 req/s you need 1000 threads, so requests queue and latency explodes.
+
+## Spring Boot knobs
+
+```yaml
+server:
+  tomcat:
+    threads:
+      max: 200          # concurrency ceiling
+spring:
+  datasource:
+    hikari:
+      maximum-pool-size: 20   # DB concurrency ceiling
+```
+- Often the **DB pool**, not Tomcat, caps throughput. Raising threads without raising downstream capacity only moves the queue.
+
+## Trade-off
+- Batching/queues raise throughput but add latency. Synchronous direct calls lower latency but may cap throughput.
+
+Q: How do you improve throughput without hurting latency?
+A: Scale out stateless instances, cache hot reads, remove blocking I/O, size pools correctly. Avoid adding queues in the user-facing path."
+3,TOPIC,Availability vs Consistency,Under a network partition you choose one,MUST,FALSE,"# Availability vs consistency
+
+- **Consistency:** every read sees the latest write.
+- **Availability:** every request gets a (non-error) response, even if data may be stale.
+
+When a network **partition** splits your nodes you cannot have both (see CAP next). Even without a partition there is a latency vs consistency trade-off.
+
+## Real example: bank vs social feed
+
+| System | Pick | Why |
+|---|---|---|
+| Bank transfer, inventory count | Consistency | Wrong balance or oversell is costly |
+| Likes count, news feed | Availability | Slightly stale is fine, downtime is not |
+
+## Spring Boot example: both modes in one app
+
+```java
+// Strong: one transaction, read from primary
+@Transactional
+public void transfer(Long from, Long to, BigDecimal amt) {
+    Account a = repo.findByIdForUpdate(from);   // SELECT ... FOR UPDATE
+    ...
+}
+
+// Available/eventual: read from replica or cache
+@Transactional(readOnly = true)
+public long likeCount(Long postId) { return cache.get(postId); } // may be a few seconds old
+```
+- Choose per use case inside the same product, not one global answer.
+
+Q: Give a case where you deliberately choose availability.
+A: Product page view counts or timeline: serve cached/stale data rather than fail; reconcile later."
+2,MODULE,CAP Theorem,"Consistency, Availability, Partition tolerance",MUST,,Under a network partition a distributed store must choose C or A.
+3,TOPIC,AP - Availability + Partition Tolerance,"Keep answering during a partition, accept stale data",MUST,FALSE,"# AP systems
+
+During a partition each side **keeps serving** requests, so replicas may diverge. They **reconcile later** (eventual consistency).
+
+**Examples:** Cassandra, DynamoDB (default), Riak, DNS, Couchbase.
+
+## How divergence is fixed
+- **Last-write-wins (timestamp)**: simple, can lose writes.
+- **Vector clocks / CRDTs**: detect or merge concurrent updates.
+- **Read repair / anti-entropy**: replicas sync in the background.
+
+## Spring Data Cassandra example
+
+```java
+CassandraTemplate template = ...;
+template.getCqlOperations().execute(
+    SimpleStatement.newInstance(""INSERT INTO orders ..."")
+        .setConsistencyLevel(DefaultConsistencyLevel.ONE)); // fast, available, may be stale
+```
+- Consistency level **ONE** = answer from the nearest replica (AP behaviour). **QUORUM** moves toward CP.
+
+## Remember
+- AP fits: shopping cart, feeds, sensor data, anything where ""always up"" beats ""always exact"".
+
+Q: Why can't you have CA in a distributed system?
+A: Network partitions are unavoidable, so P is mandatory. The real choice is C or A *when a partition happens*."
+3,TOPIC,CP - Consistency + Partition Tolerance,Refuse to answer rather than return stale data,MUST,FALSE,"# CP systems
+
+During a partition the minority side **rejects requests** (becomes unavailable) so no one reads or writes stale data.
+
+**Examples:** ZooKeeper, etcd, HBase, MongoDB (majority writes), Redis Cluster (best effort), traditional RDBMS with sync replication.
+
+## Quorum idea
+
+```text
+N = 3 replicas, W = 2 (write quorum), R = 2 (read quorum)
+W + R > N  =>  every read overlaps the latest write  => strong consistency
+```
+- If only 1 node is reachable, W=2 cannot be met, so the write fails (unavailable). That is the ""CP"" cost.
+
+## Spring example: fail fast instead of lying
+
+```java
+@Retryable(retryFor = TransientDataAccessException.class, maxAttempts = 3)
+@Transactional
+public void debit(Long id, BigDecimal amt) { ... }   // if primary unreachable, throw, never use stale replica
+```
+- For money, a clean error is better than a wrong balance.
+
+## Remember
+- CP fits: payments, inventory, leader election, config/coordination.
+
+Q: Is PostgreSQL CP or AP?
+A: A single-primary PostgreSQL with sync replication behaves CP: if the primary is unreachable writes fail. Async replicas serving reads give eventual (stale) reads."
+2,MODULE,Consistency Patterns,"Weak, eventual and strong consistency",MUST,,How fresh a read is after a write.
+3,TOPIC,Weak Consistency,"After a write, reads may or may not see it",MUST,FALSE,"# Weak consistency
+
+After a write, reads **might not** see it, and there is no promise when they will. Best-effort.
+
+**Examples:** VoIP/video calls (dropped frames are not replayed), real-time games, memcached.
+
+**Analogy:** a live TV broadcast. If you miss a second, it is gone.
+
+## When to use
+- Data loss/staleness is cheap and speed matters most.
+- A cache you can rebuild: a miss just goes to the DB.
+
+```java
+// Cache that may lose entries any time: acceptable because DB is source of truth
+String v = cache.get(key);
+if (v == null) v = loadFromDb(key);
+```
+
+Q: Where would weak consistency be unacceptable?
+A: Orders, payments, inventory: anything where losing or misreading a write costs money."
+3,TOPIC,Eventual Consistency,Replicas converge given time without new writes,MUST,FALSE,"# Eventual consistency
+
+After a write, reads will **eventually** see it (typically milliseconds to seconds) if no new writes arrive. Replicas are updated **asynchronously**.
+
+**Examples:** DNS, email, S3 (previously), Cassandra, DynamoDB, async DB replicas.
+
+**Analogy:** gossip. Everyone hears the news, just not at the same instant.
+
+## Read-your-writes problem (classic bug)
+
+```text
+User updates profile -> write to primary
+Next page load       -> read from replica (lag 500 ms) -> sees OLD profile
+```
+
+## Spring Boot fix: pin reads after a write
+
+```java
+@Transactional                       // primary
+public Profile update(Profile p) { return repo.save(p); }
+
+@Transactional(readOnly = true)      // routed to replica via AbstractRoutingDataSource
+public Profile get(Long id) { ... }
+```
+- Typical fixes: read from primary for a few seconds after a write, return the updated object in the write response, or use a session token/version.
+
+## Remember
+- With events (Kafka) the consumer side is eventually consistent by design; make handlers **idempotent**.
+
+Q: How do you handle ""I saved but I don't see it""?
+A: Read-your-writes: route that user's next reads to the primary, or return fresh data from the write response and cache it client-side."
+3,TOPIC,Strong Consistency,"After a write, every read sees it",MUST,FALSE,"# Strong consistency
+
+After a write completes, **all** later reads return it. Data is replicated **synchronously**.
+
+**Examples:** RDBMS with ACID transactions, Spanner, ZooKeeper, etcd.
+
+**Cost:** higher write latency (wait for replicas) and lower availability during partitions.
+
+## Spring Boot example: prevent lost update
+
+```java
+@Entity
+class Account {
+    @Id Long id;
+    BigDecimal balance;
+    @Version Long version;          // optimistic lock
+}
+
+@Transactional
+public void withdraw(Long id, BigDecimal amt) {
+    Account a = repo.findById(id).orElseThrow();
+    a.setBalance(a.getBalance().subtract(amt));   // UPDATE ... WHERE id=? AND version=?
+}   // concurrent writer -> ObjectOptimisticLockingFailureException -> retry
+```
+- `@Version` gives correctness on a single DB. Across services you need a saga or 2PC; strong consistency spanning services is expensive.
+
+## Remember
+- Use strong consistency only where required (money, stock). Everything else can be eventual.
+
+Q: Optimistic vs pessimistic locking?
+A: Optimistic (@Version) assumes conflicts are rare and retries on conflict. Pessimistic (`SELECT FOR UPDATE`) blocks others; use when contention is high."
+2,MODULE,Availability Patterns,Fail-over and replication,MUST,,How to stay up when machines die.
+3,TOPIC,Fail-Over: Active - Active,"Both nodes serve traffic; one dies, the other takes all",MUST,FALSE,"# Active-active fail-over
+
+Two or more nodes **all serve traffic** at the same time. If one dies the load balancer sends everything to the survivors.
+
+```text
+         +--> App A (50%) --+
+Client -> LB                 +--> DB
+         +--> App B (50%) --+
+```
+
+## Pros / cons
+- (+) No idle hardware, instant fail-over, scales reads.
+- (-) Each node must handle the **full** load alone after a failure (capacity planning).
+- (-) If the nodes hold data, you need conflict resolution (hard for databases).
+
+## Spring Boot: health-driven LB
+
+```yaml
+management:
+  endpoints.web.exposure.include: health
+  endpoint.health.probes.enabled: true   # /actuator/health/liveness & readiness
+```
+- The LB/Kubernetes calls `/readiness`; an unhealthy instance is removed from rotation automatically.
+
+Q: Active-active with a database?
+A: Stateless app tier is easy. For the DB you need multi-master with conflict resolution or partition data by region, which is complex; many teams keep a single writer."
+3,TOPIC,Fail-Over: Active - Passive,Standby takes over only when the active fails,MUST,FALSE,"# Active-passive fail-over
+
+One node is **active**; a **passive standby** waits. A heartbeat detects failure and the standby is promoted (VIP moves).
+
+- **Hot standby:** already running and in sync, fail-over in seconds.
+- **Cold standby:** started on demand, slow.
+
+```text
+Client -> Active (serves) ~~heartbeat~~ Passive (idle, replicating)
+```
+
+## Pros / cons
+- (+) Simple, no conflict resolution.
+- (-) Idle cost, small downtime window, risk of **split brain** (both think they are active) → use fencing / quorum.
+
+## Example: PostgreSQL primary + standby
+
+```text
+Primary --WAL streaming--> Standby
+Patroni / pg_auto_failover promotes standby when primary stops responding
+App connects via a virtual IP or a connection string with multiple hosts:
+jdbc:postgresql://db1,db2/app?targetServerType=primary
+```
+- The JDBC driver tries hosts until it finds the primary, so the Spring Boot app survives a promotion without code change.
+
+Q: What is split brain and how to avoid it?
+A: Two nodes both act as primary and accept writes, causing divergence. Prevent with quorum/leader election and fencing (STONITH)."
+3,TOPIC,Replication: Master - Slave,"One writer, many read replicas",MUST,FALSE,"# Master-slave (primary-replica) replication
+
+The **master** takes all writes and streams changes to **slaves** (replicas) that serve reads.
+
+```text
+Writes -> Master --async--> Replica 1 -> reads
+                 --async--> Replica 2 -> reads
+```
+
+## Pros / cons
+- (+) Scales **reads**; backups from a replica; simple.
+- (-) Replication lag → stale reads. Master is a write bottleneck and single point of failure until promotion.
+
+## Spring Boot read/write splitting
+
+```java
+class RoutingDataSource extends AbstractRoutingDataSource {
+    @Override protected Object determineCurrentLookupKey() {
+        return TransactionSynchronizationManager.isCurrentTransactionReadOnly()
+                ? ""replica"" : ""primary"";
+    }
+}
+```
+- `@Transactional(readOnly = true)` routes to a replica; everything else hits the primary. Use `LazyConnectionDataSourceProxy` so the routing sees the final read-only flag.
+
+Q: Replica is lagging; user sees old data. Fix?
+A: Read from primary after writes (read-your-writes), monitor lag, or accept eventual consistency for non-critical reads."
+3,TOPIC,Replication: Master - Master,"Multiple writers, needs conflict resolution",MUST,FALSE,"# Master-master (multi-primary) replication
+
+Several nodes accept **writes** and replicate to each other.
+
+## Pros / cons
+- (+) Write availability if a node dies; writes close to users in each region.
+- (-) **Write conflicts** (same row updated on two masters). Needs last-write-wins, versioning or app-level merge.
+- (-) Loosened consistency; harder to reason about; auto-increment ID collisions (use UUID/ULID/Snowflake).
+
+## Conflict example
+
+```text
+t1: Master A sets price = 10
+t1: Master B sets price = 12     (concurrently)
+=> replicas disagree. LWW keeps the later timestamp (one update silently lost).
+```
+
+## Tip for the interview
+- Prefer **single-writer per key** (partition by region/user) over true multi-master unless you must write everywhere.
+- Mention clocks: LWW depends on synchronized clocks → use logical/hybrid clocks.
+
+Q: When pick master-master?
+A: Multi-region active-active writes with tolerance for eventual consistency (e.g., collaborative, shopping cart). Avoid for financial ledgers."
+2,MODULE,Availability in Numbers,The nines and how components combine,SHOULD,,"Translate ""nines"" into downtime and combine components."
+3,TOPIC,99.9% Availability - three 9s,About 8.77 hours downtime per year,SHOULD,FALSE,"# Three nines (99.9%)
+
+| Period | Allowed downtime |
+|---|---|
+| Per year | ~8h 46m |
+| Per month | ~43m 50s |
+| Per week | ~10m 5s |
+| Per day | ~1m 26s |
+
+Achievable with a **single redundant tier** and manual/slow recovery. Typical for internal tools.
+
+## SLO vs SLA vs SLI
+- **SLI:** the measurement (e.g., % of successful requests).
+- **SLO:** your internal target (99.9%).
+- **SLA:** the contract with penalties (usually looser than SLO).
+
+Q: Is a planned 30-minute monthly maintenance within 99.9%?
+A: Only just (43 min/month budget). Planned windows usually count unless the SLA excludes them; prefer zero-downtime deploys (rolling/blue-green)."
+3,TOPIC,99.99% Availability - four 9s,About 52 minutes downtime per year,SHOULD,FALSE,"# Four nines (99.99%)
+
+| Period | Allowed downtime |
+|---|---|
+| Per year | ~52m 36s |
+| Per month | ~4m 23s |
+| Per week | ~1m 5s |
+
+A human cannot react in 4 minutes: needs **automatic** fail-over, health checks, multi-AZ, zero-downtime deploys and no single point of failure.
+
+## What it takes (Spring Boot service)
+- N≥2 instances across availability zones behind a load balancer.
+- Readiness/liveness probes + auto restart (Kubernetes).
+- DB with automatic fail-over (multi-AZ), connection retry.
+- Circuit breaker, timeouts and retries so a slow dependency does not take you down (Resilience4j).
+- Rolling/canary deploys, backward-compatible DB migrations (Flyway).
+
+Q: Cost of each extra nine?
+A: Roughly an order of magnitude more cost and complexity. Pick the nines the business actually needs."
+3,TOPIC,Availability in Parallel vs Sequence,"Serial multiplies, parallel improves",SHOULD,FALSE,"# Availability: sequence vs parallel
+
+## In sequence (all must work)
+```text
+A = A1 * A2
+99.9% * 99.9% = 99.8%   (worse than either)
+```
+Chain of services: `Gateway -> Order -> Payment -> DB`. Each dependency **reduces** total availability.
+
+## In parallel (any one is enough)
+```text
+A = 1 - (1 - A1) * (1 - A2)
+1 - (0.001 * 0.001) = 99.9999%
+```
+Redundant instances behind a load balancer **raise** availability.
+
+## Interview insight
+- A request that synchronously calls 5 services at 99.9% each = 99.5% total (~1.8 days/year down).
+- Fixes: fewer synchronous hops, async messaging, caching fallbacks, redundancy (parallel) for each tier.
+
+## Example
+
+```java
+@CircuitBreaker(name = ""inventory"", fallbackMethod = ""cachedStock"")
+public Stock stock(Long sku) { return inventoryClient.get(sku); }
+
+Stock cachedStock(Long sku, Throwable t) { return cache.get(sku); }  // degrade, don't fail
+```
+- A fallback turns a hard sequential dependency into a soft one.
+
+Q: Two 99% services in series, availability?
+A: 0.99 * 0.99 = 98.01%. Two in parallel: 1 - 0.01*0.01 = 99.99%."
+1,MODULE,Phase 2 — Building Blocks,Components used to build scalable systems,MUST,,"# Phase 2: Building blocks
+
+These are the boxes you draw on the whiteboard: DNS, CDN, load balancer, app servers, databases, caches, queues and the protocols between them. Know **what each does, when to use it, its failure mode, and the Spring Boot equivalent**."
+2,MODULE,Background Jobs,Work done outside the request path,SHOULD,,Move slow or periodic work out of the user's request.
+3,TOPIC,Event-Driven,Jobs triggered by events such as a message or a file upload,SHOULD,FALSE,"# Event-driven background jobs
+
+A job runs because **something happened** (order placed, file uploaded), not because a clock ticked.
+
+```text
+POST /orders -> save order -> publish OrderPlaced -> 202/201 to user
+                                   |
+                            consumer: send email, reserve stock, update analytics
+```
+
+## Spring Boot: in-process and broker-based
+
+```java
+// In-process (same JVM, lost on crash)
+@Service class OrderService {
+    private final ApplicationEventPublisher events;
+    @Transactional public void place(Order o) { repo.save(o); events.publishEvent(new OrderPlaced(o.id())); }
+}
+@Component class EmailListener {
+    @Async @TransactionalEventListener(phase = AFTER_COMMIT)
+    void on(OrderPlaced e) { mail.send(e.id()); }
+}
+
+// Durable (survives crash): Kafka
+@KafkaListener(topics = ""orders.placed"", groupId = ""email"")
+void handle(OrderPlaced e) { mail.send(e.id()); }
+```
+- `AFTER_COMMIT` avoids sending an email for a transaction that later rolls back.
+- Use a broker when the work must survive restarts or run in another service.
+
+## Remember
+- Handlers must be **idempotent** (events can be delivered twice).
+- Dual-write trap: saving to DB and publishing to Kafka are two systems. Use the **Transactional Outbox** pattern for reliability.
+
+Q: How do you guarantee the event is published if the DB commit succeeds?
+A: Transactional outbox: write the event to an outbox table in the same DB transaction; a relay (Debezium or poller) publishes it to Kafka."
+3,TOPIC,Schedule Driven,"Jobs triggered by time, such as cron",SHOULD,FALSE,"# Schedule-driven background jobs
+
+Run at fixed times or intervals: nightly report, expire old sessions, retry failed payments.
+
+```java
+@Component
+class ReportJob {
+    @Scheduled(cron = ""0 0 2 * * *"")          // every day 02:00
+    @SchedulerLock(name = ""dailyReport"", lockAtMostFor = ""PT30M"")   // ShedLock
+    void run() { reportService.generate(); }
+}
+```
+- `@EnableScheduling` runs the method on **every instance**. With 3 pods the job runs 3 times. Use **ShedLock** (DB/Redis lock), Quartz clustered mode, or a Kubernetes CronJob so only one runs.
+
+## Options
+
+| Tool | Use when |
+|---|---|
+| `@Scheduled` + ShedLock | Simple periodic jobs |
+| Quartz (JDBC store) | Persistent, clustered, many jobs |
+| Kubernetes CronJob | Job as its own container |
+| Spring Batch | Large chunked processing with restart |
+
+## Remember
+- Make jobs idempotent and restartable; log start/end; alert on failure.
+
+Q: A @Scheduled job fires twice in production. Why?
+A: Multiple instances each run the scheduler. Add a distributed lock (ShedLock) or run it as a single CronJob."
+3,TOPIC,Returning Results,How a client learns the outcome of a background job,SHOULD,FALSE,"# Returning results from background jobs
+
+The user already got a response; how do they learn the result?
+
+| Approach | How | Use when |
+|---|---|---|
+| Polling | Client calls `GET /jobs/{id}` | Simple, a few seconds delay OK |
+| Webhook/callback | Server calls the client's URL | Server-to-server |
+| WebSocket / SSE | Server pushes | Live UI updates |
+| Email/notification | Out-of-band | Long jobs (report ready) |
+
+## Async request-reply with Spring Boot
+
+```java
+@PostMapping(""/reports"")
+ResponseEntity<Void> start(@RequestBody ReportReq r) {
+    String id = jobs.submit(r);
+    return ResponseEntity.accepted().location(URI.create(""/reports/"" + id)).build(); // 202
+}
+
+@GetMapping(""/reports/{id}"")
+ResponseEntity<?> status(@PathVariable String id) {
+    Job j = jobs.get(id);
+    return j.done() ? ResponseEntity.ok(j.result())
+                    : ResponseEntity.ok(Map.of(""status"", ""RUNNING""));
+}
+```
+- `202 Accepted` + `Location` header is the standard contract.
+
+Q: Polling vs WebSocket?
+A: Polling is simple and stateless but wasteful. WebSocket/SSE gives instant push but needs sticky connections and more infra. Use SSE for one-way updates."
+2,MODULE,Domain Name System,Turning names into IP addresses,MUST,,How the browser finds your server.
+3,TOPIC,DNS,"Resolution flow, record types, TTL and DNS-based routing",MUST,FALSE,"# DNS
+
+DNS maps `api.example.com` → an IP. It is the **phone book** of the internet.
+
+## Resolution flow
+
+```text
+Browser cache -> OS cache -> Recursive resolver (ISP / 8.8.8.8)
+   -> Root (.) -> TLD (.com) -> Authoritative NS for example.com -> IP
+```
+Results are cached for the record's **TTL**.
+
+## Record types
+
+| Record | Purpose |
+|---|---|
+| A / AAAA | Name → IPv4 / IPv6 |
+| CNAME | Alias to another name (not allowed at apex) |
+| MX | Mail servers |
+| NS | Authoritative name servers |
+| TXT | Verification, SPF |
+
+## DNS as a design tool
+- **Round-robin / weighted:** multiple A records spread load.
+- **Latency/geo routing** (Route 53): send users to the nearest region.
+- **Failover:** health check removes a dead IP.
+- **Trade-off:** low TTL = fast failover but more lookups; high TTL = cached, slow to change.
+
+## Java gotcha: JVM caches DNS
+
+```java
+// In a long-lived Spring Boot app behind a changing IP (cloud LB), stale DNS breaks calls.
+java.security.Security.setProperty(""networkaddress.cache.ttl"", ""30"");
+```
+- By default the JVM may cache successful lookups for a long time (forever if a SecurityManager is present). Set a short TTL for services behind changing addresses.
+
+Q: What happens when you type a URL?
+A: DNS lookup → TCP handshake → TLS handshake → HTTP request → LB → app → response → render."
+2,MODULE,Content Delivery Networks,Serve static content from the edge,MUST,,Move bytes closer to users.
+3,TOPIC,Push CDNs,You upload content to the CDN ahead of time,MUST,FALSE,"# Push CDN
+
+You **push** new/changed files to the CDN yourself. Content sits on edge servers until you remove it.
+
+```text
+Deploy -> upload assets to CDN origin storage (S3/GCS) -> replicated to edges
+```
+
+## Pros / cons
+- (+) Full control, no first-request miss, good for small sites with rare changes.
+- (-) You manage uploads and invalidation; wastes storage for rarely used files.
+
+## Use cases
+- Versioned build artifacts: `app.3f9a1c.js` (long cache, new name on change).
+- Big files released at a known time (game patch, video).
+
+Q: Push vs pull, which for a React build?
+A: Push (or deploy to S3 + CDN) with hashed filenames and `Cache-Control: max-age=31536000, immutable`; only `index.html` is short-lived."
+3,TOPIC,Pull CDNs,CDN fetches from your origin on first request,MUST,FALSE,"# Pull CDN
+
+The CDN **pulls** a file from your origin on the first miss, caches it for the TTL, then serves it from the edge.
+
+```text
+User -> Edge (miss) -> Origin (Spring Boot / S3) -> Edge caches -> User
+User -> Edge (hit) -> User
+```
+
+## Pros / cons
+- (+) Easy: just point CDN at origin. Only popular content is cached.
+- (-) First request is slow; origin must handle bursts after TTL expiry (use `stale-while-revalidate`).
+
+## Spring Boot: control the cache with headers
+
+```java
+@GetMapping(""/images/{id}"")
+ResponseEntity<byte[]> image(@PathVariable Long id) {
+    return ResponseEntity.ok()
+        .cacheControl(CacheControl.maxAge(Duration.ofDays(7)).cachePublic())
+        .eTag(hashOf(id))
+        .body(bytes(id));
+}
+```
+- `Cache-Control` tells the CDN and browser how long to keep it; `ETag` allows cheap revalidation (304).
+
+## Remember
+- Never cache personalized responses with `public`. Use `Vary` / `private` / `no-store`.
+
+Q: How do you purge a bad file?
+A: CDN invalidation API or (better) versioned URLs so the new content has a new URL."
+2,MODULE,Load Balancers,Distributing traffic across instances,MUST,,The front door of a scalable service.
+3,TOPIC,LB vs Reverse Proxy,"Both sit in front of servers, with different primary goals",MUST,FALSE,"# Load balancer vs reverse proxy
+
+| | Load balancer | Reverse proxy |
+|---|---|---|
+| Goal | Spread load across many servers | Single entry point for (one or many) servers |
+| Features | Health checks, algorithms | TLS termination, caching, compression, auth, routing |
+| Examples | AWS ALB/NLB, HAProxy | Nginx, Envoy, API gateway |
+
+In practice **Nginx/Envoy/ALB do both**. The words overlap; explain the *functions*.
+
+```text
+Client -> Nginx (TLS, gzip, rate limit) -> [Spring Boot 1, 2, 3]
+```
+
+## Forwarded headers in Spring Boot
+
+```yaml
+server:
+  forward-headers-strategy: framework   # honor X-Forwarded-For / -Proto behind the proxy
+```
+- Without this the app sees the proxy's IP and `http` instead of the client's IP and `https` (breaks redirects and rate limiting).
+
+Q: Why TLS termination at the proxy?
+A: Central certificate management and offloaded CPU; traffic inside the private network can be plain or re-encrypted (mTLS) as needed."
+3,TOPIC,Load Balancing Algorithms,"Round robin, least connections, hash and more",MUST,FALSE,"# Load balancing algorithms
+
+| Algorithm | How | Best for |
+|---|---|---|
+| Round robin | Next server in order | Equal servers, short uniform requests |
+| Weighted round robin | More requests to bigger servers | Mixed hardware |
+| Least connections | Fewest active connections | Long/variable requests |
+| IP / consistent hash | Same key → same server | Sticky sessions, cache locality |
+| Random (power of two choices) | Pick 2 at random, take the less loaded | Large clusters |
+
+## Sticky sessions: avoid them
+- They tie a user to one server; if it dies the session is lost and load becomes uneven.
+- Prefer stateless apps (JWT) or shared session store (Spring Session + Redis).
+
+## Client-side load balancing in Spring Cloud
+
+```java
+@Bean @LoadBalanced
+RestClient.Builder restClient() { return RestClient.builder(); }
+
+restClient.get().uri(""http://inventory-service/stock/{id}"", id).retrieve()...
+```
+- Spring Cloud LoadBalancer resolves `inventory-service` via service discovery and round-robins instances **inside the client**, with no central LB.
+
+Q: Which algorithm for WebSocket servers?
+A: Least connections (long-lived, uneven load), maybe consistent hashing if you need affinity."
+3,TOPIC,Layer 7 Load Balancing,"Routes by HTTP content (path, header, cookie)",MUST,FALSE,"# Layer 7 (application) load balancing
+
+Understands HTTP: it reads the URL, headers, cookies and body metadata, then decides.
+
+```text
+/api/orders/**   -> order-service pool
+/api/payments/** -> payment-service pool
+Host: admin.x.com -> admin pool
+```
+
+## Pros / cons
+- (+) Smart routing, A/B and canary, TLS termination, WAF, rate limit, caching.
+- (-) Slower and more CPU than L4 (it must parse requests, terminate TLS).
+
+## Example: Spring Cloud Gateway as an L7 router
+
+```yaml
+spring.cloud.gateway.routes:
+  - id: orders
+    uri: lb://order-service
+    predicates: [ Path=/api/orders/** ]
+    filters: [ StripPrefix=0 ]
+  - id: canary
+    uri: lb://order-service-v2
+    predicates: [ Path=/api/orders/**, Weight=orders, 10 ]   # 10% traffic
+```
+
+Q: When pick L7 over L4?
+A: When routing depends on request content (microservices by path, canary, header-based tenant routing) or you need TLS/WAF."
+3,TOPIC,Layer 4 Load Balancing,Routes by IP and port (TCP/UDP),MUST,FALSE,"# Layer 4 (transport) load balancing
+
+Looks only at **IP + port**. It forwards TCP/UDP packets without reading HTTP.
+
+## Pros / cons
+- (+) Very fast, very high throughput, any protocol (databases, gRPC passthrough, MQTT).
+- (-) No content-based routing; cannot cache or inspect.
+
+## Example mapping
+- AWS **NLB** = L4 (millions of connections/sec, static IP). AWS **ALB** = L7.
+- Use L4 in front of Kafka brokers, database proxies, raw TCP services, or in front of L7 proxies.
+
+```text
+Client -> NLB (L4) -> Nginx/Envoy (L7, routing) -> Spring Boot pods
+```
+
+Q: L4 or L7 for a gRPC service?
+A: L7 that supports HTTP/2 (ALB/Envoy) lets you balance per-request. A plain L4 balances per-connection, and one long HTTP/2 connection can pin all traffic to a single pod."
+3,TOPIC,Horizontal Scaling,"Add more machines, make the app stateless",MUST,FALSE,"# Horizontal scaling
+
+Add identical instances behind a load balancer instead of buying a bigger one.
+
+## Requirements
+1. **Stateless services:** no user state in memory/local disk.
+2. **Shared state externalized:** DB, Redis, object storage.
+3. **Idempotent/replay-safe** operations (retries happen).
+4. **Auto-scaling** on CPU, RPS or queue depth.
+
+## Spring Boot checklist
+
+| Local (breaks) | Externalize to |
+|---|---|
+| `HttpSession` | Spring Session + Redis, or JWT |
+| In-memory cache | Redis / Caffeine + invalidation |
+| Local file uploads | S3 / MinIO |
+| `@Scheduled` job | ShedLock / CronJob |
+| In-memory ID counter | DB sequence / Snowflake |
+
+```java
+@EnableRedisHttpSession    // session now lives in Redis, any pod serves any user
+```
+
+## Kubernetes auto-scale (concept)
+
+```yaml
+kind: HorizontalPodAutoscaler
+spec: { minReplicas: 3, maxReplicas: 20,
+        metrics: [ { type: Resource, resource: { name: cpu, target: { type: Utilization, averageUtilization: 70 } } } ] }
+```
+- Min 3 across zones means one failure still leaves capacity.
+
+Q: Can you scale the database horizontally like app servers?
+A: Not easily. Reads: replicas. Writes: sharding. That is why data is the hard part."
+2,MODULE,Application Layer,Service boundaries and discovery,MUST,,Split the app tier and let services find each other.
+3,TOPIC,Microservices,Small independent services owning their data,MUST,FALSE,"# Microservices
+
+An app built as **small services**, each owning one business capability and its **own database**, deployed independently, communicating over the network (REST/gRPC/events).
+
+## Monolith vs microservices
+
+| | Monolith | Microservices |
+|---|---|---|
+| Deploy | One unit | Per service |
+| Scale | Whole app | Per service |
+| Complexity | In code | In network/ops |
+| Data | One DB, ACID | DB per service, eventual consistency |
+| Failure | One bug can kill all | Partial failure, needs resilience |
+
+## Typical Spring Boot stack
+- Spring Boot + Spring Cloud Gateway (edge), Eureka/Kubernetes DNS (discovery), Config Server, Resilience4j, Kafka, Micrometer + OpenTelemetry (tracing).
+
+## Interview talking points
+- Split by **business domain** (DDD bounded contexts), not by technical layer.
+- No shared database between services (otherwise it is a distributed monolith).
+- Cross-service transactions → **Saga** (choreography or orchestration), not 2PC.
+- Pain: network failure, latency, versioning, debugging → need tracing, timeouts, circuit breakers.
+
+```java
+@FeignClient(name = ""payment-service"", fallback = PaymentFallback.class)
+interface PaymentClient { @PostMapping(""/payments"") PaymentResult pay(PaymentReq r); }
+```
+
+Q: When NOT to use microservices?
+A: Small team, unclear domain, early product. Start with a modular monolith; extract services when a module needs independent scale/deploy."
+3,TOPIC,Service Discovery,How services find healthy instances,MUST,FALSE,"# Service discovery
+
+IPs change (autoscaling, restarts). Instead of hard-coding, services **register** and clients **look up** by name.
+
+## Two models
+
+| Model | How | Example |
+|---|---|---|
+| Client-side | Client asks registry, picks an instance | Eureka + Spring Cloud LoadBalancer |
+| Server-side | Client calls a stable name; platform routes | Kubernetes Service, AWS ALB |
+
+```text
+payment-service (3 pods) --register/heartbeat--> Registry
+order-service asks ""payment-service"" -> [10.0.1.4, 10.0.2.9, 10.0.3.7]
+```
+
+## Spring Boot with Eureka
+
+```java
+@SpringBootApplication @EnableDiscoveryClient
+class PaymentApp {}
+```
+```yaml
+eureka.client.service-url.defaultZone: http://eureka:8761/eureka
+```
+- On Kubernetes you usually skip Eureka: a `Service` gives a stable DNS name (`http://payment-service`) and kube-proxy balances.
+
+## Remember
+- Registries need **health checks + TTL** to evict dead nodes, and are themselves clustered (Consul/etcd/ZooKeeper are CP).
+
+Q: Eureka is AP. What does that imply?
+A: During partitions it keeps serving possibly stale registrations (self-preservation mode), so clients must tolerate calling a dead instance: use timeouts and retries."
+2,MODULE,Databases,"SQL, replication, sharding and data modeling",MUST,,The hardest tier to scale. Know every lever and its cost.
+3,TOPIC,SQL vs NoSQL,"Pick by data shape, consistency and scale needs",MUST,FALSE,"# SQL vs NoSQL
+
+| | SQL (PostgreSQL, MySQL) | NoSQL (Mongo, Cassandra, Redis, DynamoDB) |
+|---|---|---|
+| Model | Tables, relations, joins | Key-value, document, wide-column, graph |
+| Schema | Fixed, enforced | Flexible |
+| Transactions | Full ACID | Often per-record/partition |
+| Scale | Vertical + replicas, sharding is manual | Built for horizontal scale |
+| Query | Powerful ad-hoc SQL | Designed around known access patterns |
+
+## How to decide
+- **Default to PostgreSQL.** It handles most systems up to very large scale (JSONB, full-text, partitioning).
+- Choose NoSQL when: massive write throughput, simple access by key, flexible/nested documents, geo-distribution, or a specific model (graph, time-series).
+- Often use **both** (polyglot persistence): PostgreSQL for orders, Redis for cache, Elasticsearch for search.
+
+## Spring Data: same app, different stores
+
+```java
+interface OrderRepo extends JpaRepository<Order, Long> {}           // PostgreSQL
+interface SessionRepo extends CrudRepository<Session, String> {}     // Redis
+interface ProductDocRepo extends MongoRepository<Product, String> {} // MongoDB
+```
+
+## ACID vs BASE
+- **ACID:** Atomic, Consistent, Isolated, Durable.
+- **BASE:** Basically Available, Soft state, Eventually consistent.
+
+Q: ""Why not just use MongoDB for everything?""
+A: Multi-document transactions, joins and strong constraints are easier and safer in SQL. Use Mongo when the data is genuinely document-shaped with flexible schema."
+3,TOPIC,RDBMS,"ACID, indexes, isolation levels and transactions",MUST,FALSE,"# RDBMS essentials
+
+## ACID
+- **Atomicity:** all or nothing (rollback).
+- **Consistency:** constraints always hold.
+- **Isolation:** concurrent transactions don't see each other's partial work.
+- **Durability:** committed data survives crashes (WAL).
+
+## Isolation levels
+
+| Level | Prevents | Still allows |
+|---|---|---|
+| Read committed (PG default) | Dirty reads | Non-repeatable, phantom |
+| Repeatable read (MySQL default) | + Non-repeatable | Phantom (PG blocks it) |
+| Serializable | Everything | Slowest, retries needed |
+
+## Indexes (B-tree)
+
+```sql
+CREATE INDEX idx_orders_user_created ON orders (user_id, created_at DESC);
+-- supports: WHERE user_id = ? ORDER BY created_at DESC   (leftmost-prefix rule)
+```
+- Indexes speed reads but slow writes and use space. Index columns in `WHERE`, `JOIN`, `ORDER BY`.
+
+## Spring transaction pitfalls
+
+```java
+@Service class A {
+    @Transactional public void outer() { inner(); }   // inner() is a plain self-call
+    @Transactional(propagation = REQUIRES_NEW)
+    public void inner() { ... }                       // proxy bypassed: annotation ignored!
+}
+```
+- `@Transactional` works through a **proxy**; self-invocation and `private` methods skip it. Call through another bean.
+- Checked exceptions do **not** roll back by default: use `rollbackFor`.
+
+Q: What is a deadlock and how to avoid it?
+A: Two transactions wait for each other's locks. Avoid by locking rows in a consistent order, keeping transactions short, and retrying on `DeadlockLoserDataAccessException`."
+3,TOPIC,Replication,"Copy data to more nodes for reads, safety and failover",MUST,FALSE,"# Database replication
+
+Keep copies of data on several nodes.
+
+| Mode | Behavior | Trade-off |
+|---|---|---|
+| Synchronous | Commit waits for replica ack | No data loss, higher write latency |
+| Asynchronous | Commit returns immediately | Fast, but lag and possible loss on fail-over |
+| Semi-sync | Wait for at least one replica | Balance |
+
+## Purposes
+1. **Read scaling** (replicas serve reads).
+2. **High availability** (promote a replica).
+3. **Backups / analytics** off the primary.
+
+## Monitor lag
+
+```sql
+-- PostgreSQL, on the primary
+SELECT client_addr, replay_lag FROM pg_stat_replication;
+```
+- Alert when lag exceeds your tolerance; route sensitive reads to the primary.
+
+## Remember
+- Replication scales **reads only**. Write throughput still bounded by a single primary → sharding.
+- Replication is not backup: a bad `DELETE` replicates instantly. Keep PITR backups.
+
+Q: How do you scale writes?
+A: Vertical scaling, batching/async writes, reduce write amplification (indexes), then shard by a good key."
+3,TOPIC,Sharding,Split data across databases by a shard key,MUST,FALSE,"# Sharding (horizontal partitioning)
+
+Split one big table across **N independent databases**, each holding a subset of rows.
+
+```text
+user_id % 4 == 0 -> shard0   |  1 -> shard1  |  2 -> shard2  |  3 -> shard3
+```
+
+## Strategies
+
+| Strategy | How | Issue |
+|---|---|---|
+| Range | `id 1-1M` → shard A | Hot shards (latest range) |
+| Hash | `hash(key) % N` | Resharding moves most data |
+| Consistent hashing | Ring with virtual nodes | Only ~1/N keys move on change |
+| Directory/lookup | Mapping table | Lookup is a bottleneck/SPOF |
+
+## Choosing the shard key (most-asked)
+- High cardinality, even distribution, matches the main query (e.g., `user_id` for per-user data).
+- Bad: `country` (skew), `created_at` (hot latest shard).
+
+## Spring Boot: routing by tenant/shard
+
+```java
+class ShardRouter extends AbstractRoutingDataSource {
+    @Override protected Object determineCurrentLookupKey() {
+        return ""shard"" + (ShardContext.userId() % 4);
+    }
+}
+```
+- ShardContext is set from the request (e.g., filter). Prefer proven tools (Vitess, Citus, ShardingSphere) over hand-rolled.
+
+## Costs
+- Cross-shard joins/transactions are hard or impossible; avoid by modeling per-shard data.
+- Resharding is painful; globally unique IDs needed (Snowflake/ULID).
+- Hot keys (celebrity user) still overload one shard.
+
+Q: Sharding vs partitioning?
+A: Partitioning splits a table inside one DB (e.g., PostgreSQL partitions by month). Sharding spreads data over multiple DB servers."
+3,TOPIC,Federation,Split databases by function,MUST,FALSE,"# Federation (functional partitioning)
+
+Split one database into several **by business function**: users DB, products DB, orders DB.
+
+```text
+Before:  one DB (users + products + orders)
+After:   users-db | products-db | orders-db   (each with its own load and replicas)
+```
+
+## Pros / cons
+- (+) Smaller DBs → better cache hit rate, less write contention, independent scaling.
+- (-) Cross-database joins need app-level code or API calls; more connections to manage.
+- It is the data-side of **microservices** (database per service).
+
+## Spring Boot: multiple DataSources
+
+```java
+@Configuration
+@EnableJpaRepositories(basePackages = ""app.users"", entityManagerFactoryRef = ""usersEmf"",
+                       transactionManagerRef = ""usersTx"")
+class UsersDbConfig { /* DataSource + EMF + TxManager for users-db */ }
+```
+- A `@Transactional` spans only one manager; a transaction cannot cover two DBs without JTA/saga.
+
+Q: Federation or sharding first?
+A: Federation is simpler and mirrors service boundaries, so start there. Shard a single domain's table only when it alone outgrows a server."
+3,TOPIC,Denormalization,Trade write cost and redundancy for faster reads,MUST,FALSE,"# Denormalization
+
+Normalized data avoids duplication but needs **joins**. Denormalize by storing redundant data to **avoid joins** on hot read paths.
+
+```text
+Normalized:  orders(user_id) JOIN users(name)
+Denormalized: orders(user_id, user_name)   // copy name into orders
+```
+
+## When
+- Read-heavy; joins are the bottleneck; data rarely changes.
+
+## Costs
+- Writes must update every copy; risk of inconsistency; more storage.
+
+## Spring/JPA options
+
+```java
+@Entity @Immutable
+@Subselect(""SELECT o.id, u.name FROM orders o JOIN users u ON o.user_id = u.id"")
+class OrderView { ... }          // read model
+
+// Or a materialized view in PostgreSQL
+// CREATE MATERIALIZED VIEW order_summary AS ...;  REFRESH MATERIALIZED VIEW CONCURRENTLY order_summary;
+```
+- In **NoSQL** denormalization is the norm: model by query (embed `user` snapshot in the order document).
+- Snapshot data that must not change later: order stores the **price at purchase** and address copy, not a reference.
+
+Q: Name a time you should *not* denormalize.
+A: Frequently updated values (user name edits) copied to millions of rows; use a join/cache or an event to propagate."
+3,TOPIC,SQL Tuning,"Find slow queries, add the right indexes, fix N+1",SHOULD,FALSE,"# SQL tuning
+
+## Method
+1. **Measure:** slow query log, `pg_stat_statements`.
+2. **Explain:** `EXPLAIN (ANALYZE, BUFFERS) ...` → look for `Seq Scan` on big tables.
+3. **Fix:** index, rewrite query, reduce data.
+4. **Re-measure.**
+
+## High-impact fixes
+- Add index matching the filter/sort (composite, leftmost-prefix).
+- Avoid `SELECT *`; select only needed columns.
+- Avoid functions on indexed columns: `WHERE lower(email)=?` skips the index (use a functional index).
+- **Keyset pagination** instead of deep `OFFSET`.
+- Batch inserts; use appropriate types.
+
+```sql
+-- Slow at page 10,000
+SELECT * FROM orders ORDER BY id LIMIT 20 OFFSET 200000;
+-- Fast (keyset)
+SELECT * FROM orders WHERE id > :lastSeenId ORDER BY id LIMIT 20;
+```
+
+## N+1 problem in JPA (very common question)
+
+```java
+List<Order> orders = repo.findAll();             // 1 query
+orders.forEach(o -> o.getItems().size());        // +N queries (lazy load per order)
+
+// Fix
+@Query(""select o from Order o join fetch o.items"")  // or @EntityGraph(attributePaths = ""items"")
+List<Order> findAllWithItems();
+```
+- Enable `spring.jpa.properties.hibernate.generate_statistics` or p6spy in dev to count queries.
+
+Q: Query is slow although an index exists. Why?
+A: The planner may ignore it (low selectivity, type mismatch, function on column, stale stats). Read the plan, run `ANALYZE`, fix the predicate."
+2,MODULE,NoSQL,"Key-value, document, wide-column and graph stores",MUST,,Each type fits a specific access pattern.
+3,TOPIC,Key-Value Store,Hash map at scale: get/put by key,MUST,FALSE,"# Key-value store
+
+`get(key)`, `put(key, value)`, O(1). Value is opaque.
+
+**Examples:** Redis, Memcached, DynamoDB, etcd.
+
+## Use cases
+- Cache, sessions, rate-limit counters, feature flags, shopping cart, leaderboards (Redis sorted sets).
+
+## Spring Data Redis
+
+```java
+@Service
+class RateLimiter {
+    private final StringRedisTemplate redis;
+    boolean allow(String userId) {
+        String key = ""rl:"" + userId + "":"" + (System.currentTimeMillis() / 60_000);
+        Long n = redis.opsForValue().increment(key);       // atomic
+        if (n == 1) redis.expire(key, Duration.ofMinutes(1));
+        return n <= 100;                                    // 100 req/min
+    }
+}
+```
+- `INCR` is atomic, so no race between instances. Fixed window is simple; sliding window/token bucket are smoother.
+
+## Limits
+- No rich queries; modeling must be by key. Data must fit memory (Redis) or be partitioned.
+
+Q: How does Redis stay fast?
+A: In-memory, single-threaded command execution (no locks), efficient data structures, and I/O multiplexing."
+3,TOPIC,Document Store,JSON documents with flexible schema,MUST,FALSE,"# Document store
+
+Stores self-contained JSON/BSON documents, queryable by fields.
+
+**Examples:** MongoDB, Couchbase, Firestore.
+
+```json
+{ ""_id"": ""o-1001"", ""user"": { ""id"": 7, ""name"": ""Rahim"" },
+  ""items"": [ { ""sku"": ""A1"", ""qty"": 2, ""price"": 150 } ], ""status"": ""PAID"" }
+```
+- Order + items + user snapshot in **one document** → read with one lookup, no joins.
+
+## Spring Data MongoDB
+
+```java
+@Document(""orders"")
+record Order(@Id String id, User user, List<Item> items, String status) {}
+
+interface OrderRepo extends MongoRepository<Order, String> {
+    List<Order> findByUserIdAndStatus(long userId, String status);
+}
+```
+
+## Embed vs reference
+- **Embed** when data is read together and bounded in size (items).
+- **Reference** when unbounded or shared (comments of a viral post).
+- Document size limit (16 MB in Mongo): don't embed unbounded arrays.
+
+Q: Good fit for a document store?
+A: Catalogs, content, user profiles, event payloads with varying attributes."
+3,TOPIC,Wide Column Store,"Rows with dynamic columns, partitioned for massive writes",MUST,FALSE,"# Wide-column store
+
+Data grouped by **partition key**, sorted by **clustering key** inside a partition. Optimized for huge write volume and time-series.
+
+**Examples:** Cassandra, HBase, ScyllaDB, Bigtable.
+
+```sql
+-- Cassandra: design the table for ONE query
+CREATE TABLE messages_by_chat (
+  chat_id uuid, sent_at timeuuid, sender text, body text,
+  PRIMARY KEY ((chat_id), sent_at)
+) WITH CLUSTERING ORDER BY (sent_at DESC);
+
+SELECT * FROM messages_by_chat WHERE chat_id = ? LIMIT 50;   -- latest 50, one partition
+```
+
+## Rules
+- **Query-first modeling:** one table per query; duplicate data freely.
+- No joins; avoid huge partitions (bound with a time bucket: `(chat_id, day)`).
+- Tunable consistency (ONE/QUORUM/ALL), write path is LSM-tree (append, very fast).
+
+## Use cases
+- Chat history, IoT/telemetry, activity feeds, audit logs.
+
+Q: Why is Cassandra good at writes?
+A: Writes go to a commit log and memtable (sequential, in-memory) and are flushed as immutable SSTables; no read-before-write, no in-place update."
+3,TOPIC,Graph Databases,Nodes and edges for relationship-heavy queries,SHOULD,FALSE,"# Graph databases
+
+Store **nodes** and **relationships**; traversal is cheap (no expensive joins).
+
+**Examples:** Neo4j, Amazon Neptune.
+
+```cypher
+// Friends of friends who like the same movie
+MATCH (me:User {id: 7})-[:FRIEND]->()-[:FRIEND]->(fof)-[:LIKES]->(m:Movie)<-[:LIKES]-(me)
+RETURN DISTINCT fof.name, m.title
+```
+- The same query in SQL needs several self-joins that explode as depth grows.
+
+## Use cases
+- Social networks, recommendations, fraud rings, knowledge graphs, access-control graphs.
+
+## Spring Data Neo4j
+
+```java
+@Node class User { @Id Long id; String name; @Relationship(""FRIEND"") Set<User> friends; }
+interface UserRepo extends Neo4jRepository<User, Long> {}
+```
+
+Q: When not to use a graph DB?
+A: Simple CRUD and aggregates, or when relationships are shallow. Scaling a graph across shards is hard."
+2,MODULE,Types of Caching,Where you can cache in the request path,MUST,,"Cache at every layer, closest to the user first."
+3,TOPIC,Client Caching,Browser and mobile cache using HTTP headers,MUST,FALSE,"# Client caching
+
+The fastest request is the one never sent. Browser/mobile apps cache responses using headers.
+
+| Header | Meaning |
+|---|---|
+| `Cache-Control: max-age=3600` | Fresh for 1 hour, no request |
+| `ETag` + `If-None-Match` | Revalidate, server replies 304 (no body) |
+| `Cache-Control: no-store` | Never store (sensitive) |
+
+```java
+@GetMapping(""/products/{id}"")
+ResponseEntity<Product> get(@PathVariable Long id, WebRequest req) {
+    Product p = service.get(id);
+    String etag = ""\"""" + p.version() + ""\"""";
+    if (req.checkNotModified(etag)) return null;      // sends 304 automatically
+    return ResponseEntity.ok().eTag(etag).body(p);
+}
+```
+- `checkNotModified` saves bandwidth and serialization; the DB read can also be skipped with a cheap version check.
+
+Q: How to cache static JS safely?
+A: Hash the filename and set `max-age=1 year, immutable`; a new deploy changes the URL."
+3,TOPIC,CDN Caching,Edge caching of static and cacheable API responses,MUST,FALSE,"# CDN caching
+
+CDN edge nodes cache responses near users, absorbing most traffic before it reaches your origin.
+
+## What to cache
+- Static assets (JS, CSS, images, video).
+- Public API responses (`GET /products`, `/config`) with short TTL.
+
+## Key concepts
+- **Cache key:** URL + selected headers/query. Normalize to raise hit ratio.
+- **TTL & invalidation:** purge by URL/tag or use versioned URLs.
+- **Origin shield:** one mid-tier cache to reduce origin hits.
+- **`Vary`:** `Vary: Accept-Encoding`; avoid `Vary: Cookie` (kills hit rate).
+
+```java
+ResponseEntity.ok()
+    .header(""Cache-Control"", ""public, s-maxage=60, stale-while-revalidate=30"")
+    .body(catalog);       // CDN (s-maxage) keeps 60s; browser uses default
+```
+- `s-maxage` targets shared caches (CDN) separately from browsers.
+
+Q: Metric to watch?
+A: **Cache hit ratio** (>90% for static); and origin offload."
+3,TOPIC,Web Server Caching,"Reverse-proxy cache (Nginx, Varnish) in front of the app",MUST,FALSE,"# Web server / reverse-proxy caching
+
+A reverse proxy keeps copies of responses and serves them without touching the application.
+
+```nginx
+proxy_cache_path /var/cache/nginx keys_zone=api:50m max_size=1g inactive=10m;
+location /api/catalog {
+    proxy_cache api;
+    proxy_cache_valid 200 1m;
+    proxy_cache_use_stale error timeout updating;   # serve stale if app is down
+    proxy_pass http://spring_backend;
+}
+```
+
+## Benefits
+- Protects Spring Boot from traffic spikes; serves stale content during outages.
+- Request collapsing (`proxy_cache_lock`): 1000 identical misses → 1 origin call (stops stampede).
+
+## Remember
+- Only cache **safe, idempotent, non-personalized** responses. Key by user/tenant if content differs.
+
+Q: Difference vs CDN cache?
+A: Same idea; CDN is global and edge-located, a reverse-proxy cache is in your data center in front of the app."
+3,TOPIC,Database Caching,"DB buffer cache, query cache and tuning",MUST,FALSE,"# Database caching
+
+The database already caches internally.
+
+- **Buffer pool / shared_buffers:** hot data pages stay in RAM. Fit the working set in memory.
+- **Query plan cache / prepared statements:** parse and plan once.
+- **MySQL query cache** was removed (8.0): invalidation cost outweighed benefit.
+- **Materialized views:** precomputed results.
+
+## Tuning actions
+- Enough RAM for the working set, right `shared_buffers`/`innodb_buffer_pool_size`.
+- Use **prepared statements** and a connection pool.
+
+```yaml
+spring.datasource.hikari:
+  maximum-pool-size: 20
+  data-source-properties:
+    prepStmtCacheSize: 250       # MySQL driver prepared-statement cache
+    cachePrepStmts: true
+```
+
+## Hibernate second-level cache
+- L1 = per `EntityManager` (always on). L2 = shared across sessions (Ehcache/Hazelcast/Redis); good for read-mostly reference data.
+```java
+@Entity @Cache(usage = CacheConcurrencyStrategy.READ_ONLY) class Country { ... }
+```
+
+Q: When is L2 cache dangerous?
+A: With multiple app instances and writes: stale data unless the cache is distributed/invalidated. Use it only for read-mostly data."
+3,TOPIC,Application Caching,In-process (Caffeine) and distributed (Redis) caches,MUST,FALSE,"# Application caching
+
+## Local vs distributed
+
+| | Local (Caffeine) | Distributed (Redis) |
+|---|---|---|
+| Latency | ~100 ns | ~1 ms network |
+| Consistency across pods | Each pod differs | Shared |
+| Capacity | JVM heap | Large |
+| Use | Hot, small, tolerant of staleness | Shared state, larger data |
+
+Often both: **L1 Caffeine + L2 Redis**.
+
+## Spring Cache abstraction
+
+```java
+@EnableCaching
+@Configuration class CacheConfig {
+    @Bean RedisCacheManager cacheManager(RedisConnectionFactory cf) {
+        return RedisCacheManager.builder(cf)
+            .cacheDefaults(RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofMinutes(10)))
+            .build();
+    }
+}
+
+@Service class ProductService {
+    @Cacheable(value = ""product"", key = ""#id"")
+    public Product get(Long id) { return repo.findById(id).orElseThrow(); }
+
+    @CacheEvict(value = ""product"", key = ""#p.id"")
+    public void update(Product p) { repo.save(p); }
+}
+```
+- `@Cacheable` is also proxy-based: self-invocation bypasses the cache. Always set a **TTL**.
+
+## Hard problems
+- **Stampede:** a hot key expires, thousands hit the DB → `@Cacheable(sync = true)`, jittered TTL, request coalescing.
+- **Penetration:** requests for non-existent keys → cache null briefly or Bloom filter.
+- **Hot key / big key**; **invalidation** (""one of the two hard things"").
+
+Q: Cache or DB — which is the source of truth?
+A: DB. The cache is a disposable copy; the system must still work (slower) if it is empty."
+2,MODULE,Caching Strategies,How data enters and leaves the cache,MUST,,Read and write patterns.
+3,TOPIC,Cache Aside,"App checks cache first, loads from DB on miss",MUST,FALSE,"# Cache-aside (lazy loading)
+
+```text
+read:  cache hit? -> return
+       miss -> read DB -> put in cache -> return
+write: update DB, then DELETE the cache key
+```
+
+```java
+public Product get(Long id) {
+    Product p = redis.get(""p:"" + id);
+    if (p != null) return p;
+    p = repo.findById(id).orElseThrow();
+    redis.set(""p:"" + id, p, Duration.ofMinutes(10));
+    return p;
+}
+
+@Transactional
+public void update(Product p) {
+    repo.save(p);
+    redis.delete(""p:"" + p.id());    // invalidate, don't update (avoids race ordering bugs)
+}
+```
+- `@Cacheable` in Spring is cache-aside.
+
+## Pros / cons
+- (+) Only requested data cached; cache failure doesn't break reads; simple.
+- (-) First read slow; stale window; stampede on expiry.
+- Race: read-miss loads old value while a write invalidates → short stale entry. TTL bounds it.
+
+Q: Delete vs update the cache on write?
+A: Delete. Updating risks writing an older value out of order under concurrency."
+3,TOPIC,Write-through,Write to cache and DB together synchronously,MUST,FALSE,"# Write-through
+
+Every write goes to the **cache and DB synchronously**; reads always hit a warm cache.
+
+```text
+write -> cache (update) -> DB (update) -> ack
+read  -> cache (always populated)
+```
+
+## Pros / cons
+- (+) Cache never stale for written data; fast reads.
+- (-) Higher write latency (two writes); caches data that may never be read.
+
+## Spring example
+
+```java
+@CachePut(value = ""product"", key = ""#p.id"")   // write-through-like: always refresh cache
+@Transactional
+public Product save(Product p) { return repo.save(p); }
+```
+- Combine with cache-aside for reads. Good for read-heavy data where freshness matters (profiles).
+
+Q: Write-through failure case?
+A: Cache updated but DB write fails (or reverse) → inconsistency. Order the operations and handle rollback, or let the cache provider do the DB write."
+3,TOPIC,Write-behind,"Write to cache, flush to DB asynchronously",MUST,FALSE,"# Write-behind (write-back)
+
+Write to cache, ack quickly, and **flush to DB later in batches**.
+
+```text
+write -> cache -> ack
+          \-> queue -> batch flush to DB every N sec
+```
+
+## Pros / cons
+- (+) Very fast writes, batching reduces DB load, absorbs spikes.
+- (-) **Data loss** if the cache dies before the flush; eventual consistency; complex.
+
+## Use cases
+- Counters (views, likes), telemetry, where small loss is OK.
+
+```java
+// view counter: increment in Redis, flush periodically
+redis.opsForValue().increment(""views:"" + postId);
+
+@Scheduled(fixedDelay = 5000)
+void flush() { /* read-and-reset counters, then UPDATE posts SET views = views + :n */ }
+```
+- For must-not-lose data use a durable log (Kafka) as the buffer instead of memory.
+
+Q: Why not write-behind for payments?
+A: Acknowledged but unsaved data can be lost. Payments need durable synchronous writes."
+3,TOPIC,Refresh Ahead,Reload hot entries before they expire,SHOULD,FALSE,"# Refresh-ahead
+
+Predict which keys will be requested and **refresh them just before TTL expiry** so users never see a miss.
+
+```text
+TTL = 10 min. When a hit happens after minute 8 -> async reload in background; return current value.
+```
+
+## Pros / cons
+- (+) Low read latency, avoids stampede on hot keys.
+- (-) Needs good prediction; wasted refreshes on keys no longer used.
+
+## Caffeine support
+
+```java
+Caffeine.newBuilder()
+    .expireAfterWrite(10, TimeUnit.MINUTES)
+    .refreshAfterWrite(8, TimeUnit.MINUTES)       // async reload, serves old value meanwhile
+    .build(key -> loadFromDb(key));               // LoadingCache
+```
+- `refreshAfterWrite` returns the stale value instantly and reloads on a background thread.
+
+Q: Refresh-ahead vs cache-aside?
+A: Cache-aside loads on a miss (user waits). Refresh-ahead loads before the miss, ideal for a small set of very hot keys."
+2,MODULE,Asynchronism,Queues and decoupling,MUST,,"Do slow work later, smooth bursts."
+3,TOPIC,Message Queues,Producers and consumers decoupled by a broker,MUST,FALSE,"# Message queues
+
+A broker stores messages; producers don't wait for consumers.
+
+```text
+Order API --publish--> [ Kafka / RabbitMQ ] --consume--> Email / Inventory / Analytics
+```
+
+## Why
+- **Decoupling**, **buffering spikes**, **retry**, **fan-out**, independent scaling.
+
+## RabbitMQ vs Kafka
+
+| | RabbitMQ | Kafka |
+|---|---|---|
+| Model | Smart broker, queues, routing | Distributed append-only log |
+| Delivery | Push, message removed after ack | Pull, retained; consumers track offset |
+| Ordering | Per queue | Per partition |
+| Best for | Task queues, complex routing | High-throughput streams, replay, event sourcing |
+
+## Spring Boot Kafka
+
+```java
+@Service class Publisher {
+    private final KafkaTemplate<String, OrderPlaced> kafka;
+    void send(OrderPlaced e) { kafka.send(""orders"", e.orderId(), e); }    // key => same partition => ordered per order
+}
+
+@KafkaListener(topics = ""orders"", groupId = ""inventory"", concurrency = ""3"")
+void on(OrderPlaced e) { inventory.reserve(e); }
+```
+
+## Delivery semantics
+- At-most-once, **at-least-once (default, need idempotent consumers)**, exactly-once (Kafka transactions, limited scope).
+- Failed messages → retry with backoff → **dead-letter topic (DLT)**.
+
+Q: How to keep order in Kafka?
+A: Use the same key so messages land in the same partition; one consumer per partition in a group."
+3,TOPIC,Task Queues,Background job processing with workers,MUST,FALSE,"# Task queues
+
+A task queue holds **units of work** (resize image, send invoice) executed by worker processes. Focus is on job execution: retries, scheduling, priorities, results.
+
+**Examples:** Celery (Python), Sidekiq (Ruby), Spring: `@Async` + executor, Spring Batch, RabbitMQ workers, Quartz, JobRunr/db-scheduler.
+
+## Spring Boot `@Async` with a bounded pool
+
+```java
+@EnableAsync @Configuration
+class AsyncConfig {
+    @Bean ThreadPoolTaskExecutor taskExecutor() {
+        var ex = new ThreadPoolTaskExecutor();
+        ex.setCorePoolSize(8); ex.setMaxPoolSize(16);
+        ex.setQueueCapacity(500);                                    // bounded: back pressure
+        ex.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
+        return ex;
+    }
+}
+@Async void generatePdf(Long id) { ... }
+```
+- In-memory `@Async` is **not durable**: a crash loses queued tasks. For durable tasks use a broker or DB-backed jobs.
+
+## Remember
+- Tasks need retry with exponential backoff, idempotency, timeouts, and a dead-letter store.
+
+Q: Message queue vs task queue?
+A: A message queue transports messages between services; a task queue is a pattern/product built on it for running jobs with workers, retries and scheduling."
+3,TOPIC,Back Pressure,Slow down or reject producers when consumers are overloaded,MUST,FALSE,"# Back pressure
+
+If producers are faster than consumers, queues grow without bound → memory exhaustion and huge latency. Back pressure **pushes the overload back** to the producer.
+
+## Techniques
+- **Bounded queues** that block or reject (return `503`/`429`).
+- **Rate limiting** at the gateway.
+- **Load shedding:** drop low-priority work.
+- Consumers **pull** at their own pace (Kafka polling) and scale out by lag.
+- Reactive streams (`Flux`) with demand signalling.
+
+```java
+// Reactor: consumer controls the rate
+Flux.range(1, 1_000_000)
+    .onBackpressureBuffer(1_000, dropped -> log.warn(""dropped""))
+    .publishOn(Schedulers.boundedElastic())
+    .subscribe(this::process, e -> {}, () -> {}, s -> s.request(10));
+
+// Servlet: reject when saturated
+if (!executor.getThreadPoolExecutor().getQueue().offer(task)) throw new ResponseStatusException(TOO_MANY_REQUESTS);
+```
+- Autoscale consumers on **consumer lag** (KEDA with Kafka).
+
+Q: Queue depth keeps growing. What do you do?
+A: Add consumers (up to partition count), speed up processing, apply back pressure/rate limit producers, and shed or defer low-priority work."
+3,TOPIC,Idempotent Operations,Repeating a request has the same effect as doing it once,MUST,FALSE,"# Idempotent operations
+
+Networks fail and clients/brokers **retry**. If a retry charges a card twice, you lose money. An idempotent operation gives the same result no matter how many times it runs.
+
+- Naturally idempotent: `PUT /users/7`, `DELETE /users/7`, `SET x = 5`.
+- Not: `POST /payments`, `balance = balance - 10`.
+
+## Idempotency key pattern
+
+```java
+@PostMapping(""/payments"")
+ResponseEntity<Payment> pay(@RequestHeader(""Idempotency-Key"") String key, @RequestBody PayReq req) {
+    return service.payOnce(key, req);
+}
+
+@Transactional
+ResponseEntity<Payment> payOnce(String key, PayReq req) {
+    Optional<IdemRecord> prev = idemRepo.findById(key);
+    if (prev.isPresent()) return prev.get().response();          // replay stored result
+    Payment p = gateway.charge(req);
+    idemRepo.save(new IdemRecord(key, p));                        // PK on key => duplicate insert fails
+    return ok(p);
+}
+```
+- A **unique constraint** on the key makes concurrent duplicates fail safely.
+
+## Idempotent consumer
+
+```java
+@KafkaListener(...)
+@Transactional
+void on(OrderPlaced e) {
+    if (!processed.insertIfAbsent(e.eventId())) return;   // INSERT ... ON CONFLICT DO NOTHING
+    inventory.reserve(e);
+}
+```
+
+Q: How do you get ""exactly-once"" in practice?
+A: At-least-once delivery + idempotent processing (dedupe by event/idempotency key)."
+2,MODULE,Communication,Protocols and API styles,MUST,,How components talk.
+3,TOPIC,HTTP,"Request/response protocol, methods, status codes, versions",MUST,FALSE,"# HTTP
+
+Stateless request-response protocol over TCP (HTTP/3 over QUIC).
+
+## Methods
+
+| Method | Safe | Idempotent | Typical use |
+|---|---|---|---|
+| GET | yes | yes | Read |
+| POST | no | no | Create / action |
+| PUT | no | yes | Replace |
+| PATCH | no | no* | Partial update |
+| DELETE | no | yes | Remove |
+
+## Status codes
+`200` OK, `201` Created, `204` No content, `301/302` redirect, `304` Not modified, `400` bad request, `401` unauthenticated, `403` forbidden, `404`, `409` conflict, `429` too many requests, `500` server error, `502/503/504` gateway/unavailable/timeout.
+
+## Versions
+- **1.1:** keep-alive, one request at a time per connection (head-of-line blocking).
+- **2:** multiplexing, header compression, binary.
+- **3:** QUIC/UDP, no TCP head-of-line blocking.
+
+## Spring Boot client with timeouts (always set them)
+
+```java
+RestClient client = RestClient.builder()
+    .requestFactory(new JdkClientHttpRequestFactory(
+        HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(2)).build()))
+    .build();
+```
+- Missing timeouts are the #1 cause of cascading failures: threads block forever on a slow dependency.
+
+Q: 401 vs 403?
+A: 401 = not authenticated (who are you?). 403 = authenticated but not allowed."
+3,TOPIC,TCP,"Reliable, ordered, connection-oriented transport",MUST,FALSE,"# TCP
+
+Guarantees **ordered, reliable** delivery via handshake, sequence numbers, acks, retransmission, flow and congestion control.
+
+```text
+Client SYN ->  <- SYN-ACK  Client ACK ->     (3-way handshake, 1 RTT)
+... data ...
+FIN / ACK ... (close)
+```
+
+## Costs
+- Handshake latency (plus TLS), head-of-line blocking on loss, slow start.
+- Mitigate: **connection pooling / keep-alive**, HTTP/2.
+
+## Why it matters in Java
+- Opening a connection per request is expensive → use pooled clients (Hikari for DB, Apache/Reactor Netty client pools).
+
+```yaml
+spring.datasource.hikari.maximum-pool-size: 20
+```
+- `TIME_WAIT` exhaustion at high rates happens when connections are not reused.
+
+Q: Why TCP for payments but UDP for video calls?
+A: Payments need every byte correct and ordered. Calls prefer low latency; a late packet is useless, so retransmission is wasted."
+3,TOPIC,UDP,"Connectionless, low-latency, no delivery guarantee",MUST,FALSE,"# UDP
+
+Sends datagrams with **no handshake, no ordering, no retransmission**. Lower overhead and latency.
+
+**Used by:** DNS, video/voice (WebRTC), gaming, metrics (StatsD), QUIC/HTTP3 (reliability built on top).
+
+| | TCP | UDP |
+|---|---|---|
+| Connection | Yes | No |
+| Reliable / ordered | Yes | No |
+| Overhead | Higher | Lower |
+| Broadcast/multicast | No | Yes |
+
+## Java sketch
+
+```java
+try (DatagramSocket socket = new DatagramSocket()) {
+    byte[] data = ""metric:1|c"".getBytes(UTF_8);
+    socket.send(new DatagramPacket(data, data.length, InetAddress.getByName(""statsd""), 8125));
+}
+```
+- Fire-and-forget: acceptable to lose an occasional metric.
+
+Q: Is UDP ""unreliable""?
+A: It gives no guarantee; the application adds reliability if needed (QUIC does it in user space)."
+3,TOPIC,REST,Resource-oriented APIs over HTTP,MUST,FALSE,"# REST
+
+Resources identified by URLs, manipulated through HTTP verbs, **stateless**, usually JSON.
+
+```java
+@RestController
+@RequestMapping(""/api/v1/orders"")
+class OrderController {
+    @GetMapping(""/{id}"")  Order get(@PathVariable Long id) { ... }               // 200 / 404
+    @PostMapping          ResponseEntity<Order> create(@Valid @RequestBody OrderReq r) {
+        Order o = service.create(r);
+        return ResponseEntity.created(URI.create(""/api/v1/orders/"" + o.id())).body(o);   // 201
+    }
+    @DeleteMapping(""/{id}"") @ResponseStatus(NO_CONTENT) void delete(@PathVariable Long id) { ... }
+}
+```
+
+## Design points interviewers like
+- Nouns + plural, proper status codes, **pagination** (`?page=&size=` or cursor), filtering/sorting.
+- **Versioning** (`/v1`), **idempotency** keys for POST, consistent error body (ProblemDetail).
+- **HATEOAS** exists but is rarely used.
+
+## Pros / cons
+- (+) Simple, cacheable, tooling everywhere.
+- (-) Over/under-fetching, chatty for mobile, no strict contract (use OpenAPI).
+
+Q: PUT vs PATCH?
+A: PUT replaces the whole resource (idempotent). PATCH changes part of it."
+3,TOPIC,RPC,Call a remote function like a local one,MUST,FALSE,"# RPC (Remote Procedure Call)
+
+The client calls `paymentService.charge(req)` and a framework turns it into a network call (serialize, send, deserialize). Action-oriented, not resource-oriented.
+
+**Examples:** gRPC, Thrift, JSON-RPC, Java RMI (legacy).
+
+## RPC vs REST
+
+| | RPC | REST |
+|---|---|---|
+| Style | Verbs/methods | Resources |
+| Coupling | Tighter (shared contract/stubs) | Looser |
+| Performance | Binary, fast | Text JSON |
+| Use | Internal service-to-service | Public APIs |
+
+## The big warning
+""Network calls look like local calls but are not"": latency, failure, partial success. Always add **timeouts, retries (idempotent only), circuit breakers**.
+
+```java
+@FeignClient(name = ""inventory"", url = ""${inventory.url}"")
+interface InventoryClient { @GetMapping(""/stock/{sku}"") Stock stock(@PathVariable String sku); }  // declarative RPC-ish
+```
+
+Q: Why internal RPC and public REST?
+A: RPC is efficient and typed for internal calls you control; REST is universal and easy for third parties."
+3,TOPIC,gRPC,HTTP/2 + Protocol Buffers RPC framework,MUST,FALSE,"# gRPC
+
+RPC over **HTTP/2** using **Protocol Buffers** (binary, schema-first). Supports unary, server-streaming, client-streaming and bidirectional streaming.
+
+```proto
+syntax = ""proto3"";
+service InventoryService { rpc GetStock (StockRequest) returns (StockReply); }
+message StockRequest { string sku = 1; }
+message StockReply   { int32 quantity = 1; }
+```
+
+## Spring Boot (grpc-spring-boot-starter)
+
+```java
+@GrpcService
+class InventoryGrpc extends InventoryServiceGrpc.InventoryServiceImplBase {
+    @Override public void getStock(StockRequest r, StreamObserver<StockReply> out) {
+        out.onNext(StockReply.newBuilder().setQuantity(repo.qty(r.getSku())).build());
+        out.onCompleted();
+    }
+}
+```
+
+## Pros / cons
+- (+) Small and fast, strong typed contract, code generation, streaming, deadlines.
+- (-) Browsers need gRPC-Web, harder to debug (binary), needs L7/HTTP2-aware LB.
+- Evolve schemas safely: only add fields, never reuse field numbers.
+
+Q: When pick gRPC over REST?
+A: Internal low-latency microservice calls, streaming, polyglot teams with strict contracts."
+3,TOPIC,GraphQL,Client chooses exactly the fields it needs,SHOULD,FALSE,"# GraphQL
+
+One endpoint; the client sends a query describing the shape of the response. Fixes over-fetching and many round trips.
+
+```graphql
+query { order(id: 7) { id total user { name } items { sku qty } } }
+```
+
+## Spring for GraphQL
+
+```java
+@Controller
+class OrderGraphql {
+    @QueryMapping Order order(@Argument Long id) { return orders.find(id); }
+    @SchemaMapping Customer user(Order o)        { return users.find(o.userId()); }
+}
+```
+
+## Pitfalls
+- **N+1 resolvers:** use `@BatchMapping` / DataLoader to batch.
+- Hard to cache at HTTP level (all POST to one URL); need persisted queries.
+- Expensive queries: enforce depth/complexity limits, auth per field.
+
+## When
+- Mobile/BFF aggregating many services, rapidly changing UIs. Not needed for simple CRUD.
+
+Q: GraphQL vs REST trade-off?
+A: GraphQL gives client flexibility and fewer round trips, at the cost of server complexity, caching difficulty and query-cost control."
+1,MODULE,Phase 3 — Performance Antipatterns,Common causes of poor performance under load,SHOULD,,"# Phase 3: Performance antipatterns
+
+Interviewers ask: ""The system is slow under load. How do you find and fix it?"" Each antipattern below is a **symptom → cause → fix** you can name quickly."
+2,MODULE,Performance Antipatterns,Ten classic mistakes and their fixes,SHOULD,,Recognize and fix common bottlenecks.
+3,TOPIC,Busy Database,Too much logic and load pushed onto the database,SHOULD,FALSE,"# Busy database
+
+**Symptom:** DB CPU 90%, app servers idle, latency grows with load.
+**Cause:** business logic in stored procedures, heavy computation/formatting in SQL, every read hits the DB.
+
+## Fixes
+- Move computation to the app tier (easy to scale out); keep the DB for storage and set-based filtering.
+- **Cache** hot reads, add **read replicas**, add missing **indexes**, move reports to a replica/warehouse.
+- Use pagination and projections.
+
+```java
+// Bad: DB sorts/aggregates 5M rows for every dashboard hit
+@Query(value = ""SELECT ... GROUP BY ... ORDER BY ..."", nativeQuery = true)
+// Better: pre-aggregate on a schedule / materialized view, and cache the result
+@Cacheable(""dashboard"") public Stats dashboard() { return statsRepo.latest(); }
+```
+
+Q: Why not scale the DB by adding more app servers?
+A: More app servers produce more DB connections and queries. If the DB is the bottleneck you must reduce its work (cache, indexes, replicas, sharding)."
+3,TOPIC,Busy Frontend,Heavy processing on the request thread or the browser,SHOULD,FALSE,"# Busy front end
+
+**Symptom:** request threads blocked doing CPU-heavy or long work (image resize, PDF, large JSON transform), so the server cannot accept new requests.
+
+## Fixes
+- Offload heavy work to **background workers/queue**; respond `202 Accepted`.
+- In the browser: Web Workers, pagination/virtual lists.
+- Use a dedicated pool for CPU work instead of Tomcat threads.
+
+```java
+@PostMapping(""/reports"")
+ResponseEntity<Void> create(@RequestBody ReportReq req) {
+    queue.send(req);                       // worker generates the PDF
+    return ResponseEntity.accepted().build();
+}
+```
+- Tomcat has ~200 threads; 200 concurrent 5-second PDF jobs freeze the whole API.
+
+Q: How do you detect it?
+A: Thread dump shows request threads busy in your code; high CPU on web tier; response time degrades for unrelated endpoints."
+3,TOPIC,Chatty I/O,Many small network or disk calls instead of a few big ones,SHOULD,FALSE,"# Chatty I/O
+
+**Symptom:** thousands of tiny DB queries/HTTP calls per request; latency dominated by round trips.
+
+## Classic: N+1 queries and loop-calls
+
+```java
+// Chatty: 1 + N calls
+for (Long id : orderIds) { users.add(userClient.get(id)); }
+
+// Batched: 1 call
+List<User> users = userClient.getAll(userIds);              // POST /users/batch
+```
+- JPA N+1: use `join fetch`, `@EntityGraph`, `@BatchSize`.
+- JDBC: `saveAll` with `hibernate.jdbc.batch_size=50` and `order_inserts=true`.
+
+## Fixes
+- Batch, aggregate (BFF/GraphQL), cache, use bulk endpoints, co-locate chatty services.
+
+Q: 1 ms per call × 1000 calls?
+A: ~1 second added to one request. Round trips, not bandwidth, cause the damage; batching collapses them."
+3,TOPIC,Extraneous Fetching,Retrieving more data than needed,SHOULD,FALSE,"# Extraneous fetching
+
+**Symptom:** big payloads, high DB I/O and memory, though the screen shows 3 fields.
+
+## Causes and fixes
+- `SELECT *` / loading whole entities → **projections**.
+- Returning all rows → **pagination**.
+- Eager fetching of large relations → `LAZY` + fetch explicitly.
+
+```java
+interface OrderSummary { Long getId(); BigDecimal getTotal(); }          // interface projection
+Page<OrderSummary> findByUserId(Long userId, Pageable p);                  // only 2 columns, paged
+```
+- DTOs instead of entities in controllers; avoid serializing `@OneToMany` graphs.
+- Filter at the source (`WHERE`) not in Java streams.
+
+Q: Spring Data default for `findAll()` on a 10M row table?
+A: Loads everything into memory (OOM risk). Always page or stream."
+3,TOPIC,Improper Instantiation,Re-creating expensive shared objects on every request,SHOULD,FALSE,"# Improper instantiation
+
+**Symptom:** high GC, slow requests, socket/connection exhaustion.
+**Cause:** creating objects that should be shared and reused.
+
+## Java examples
+
+```java
+// Bad: new client (and connection pool) per call
+public String call() { return new RestTemplate().getForObject(url, String.class); }
+
+// Good: singleton bean reused
+@Bean RestClient restClient(RestClient.Builder b) { return b.build(); }
+```
+- Also: new `ObjectMapper`, `Pattern.compile`, `DateTimeFormatter`, `HttpClient`, `DataSource` per request.
+- Spring beans are singletons by default, so inject them; never `new` a service or client in a hot path.
+- Thread-safe, immutable objects (`ObjectMapper`, `DateTimeFormatter`) are safe to share.
+
+Q: How do you notice?
+A: Many TIME_WAIT sockets, frequent GC, profiler showing constructor/`Pattern.compile` hot spots."
+3,TOPIC,Monolithic Persistence,One datastore for every workload,SHOULD,FALSE,"# Monolithic persistence
+
+**Symptom:** the single relational DB serves transactions, full-text search, analytics, sessions, queues and caching; each workload hurts the others.
+
+## Fix: polyglot persistence (right store per workload)
+
+| Workload | Better store |
+|---|---|
+| Transactions | PostgreSQL |
+| Cache, sessions, counters | Redis |
+| Full-text search | Elasticsearch/OpenSearch |
+| Analytics/reports | Data warehouse / ClickHouse |
+| Events/queues | Kafka |
+| Blobs (images, PDFs) | S3/MinIO |
+
+```java
+// don't store 5MB PDFs as BLOBs in the orders table
+String key = s3.upload(file);     // store only the object key in DB
+order.setInvoiceKey(key);
+```
+- Cost: more systems to run and keep consistent (CDC/outbox). Add stores only for a measured pain.
+
+Q: When is one DB perfectly fine?
+A: Early stage and moderate scale. Don't add stores speculatively."
+3,TOPIC,No Caching,Recomputing or refetching the same data every time,SHOULD,FALSE,"# No caching
+
+**Symptom:** the same query/computation runs thousands of times per minute; DB/CPU high; reads far outnumber writes.
+
+## Fix
+- Identify hot, read-mostly, expensive-to-compute data; add a cache layer (HTTP/CDN, Redis, Caffeine).
+- Set TTLs, handle invalidation and stampede.
+
+```java
+@Cacheable(value = ""exchangeRates"", key = ""#currency"")     // 1 external call per currency per TTL
+public Rate rate(String currency) { return forexClient.fetch(currency); }
+```
+- Measure **hit ratio**; a cache with a 20% hit ratio may not pay for itself.
+
+## Opposite mistake
+- Caching everything (stale data, memory pressure). Don't cache highly dynamic or user-specific data without keys.
+
+Q: Is caching a premature optimization?
+A: Not when data is clearly read-heavy and expensive. Profile first, then cache where the numbers justify it."
+3,TOPIC,Noisy Neighbor,One tenant or workload steals shared resources,SHOULD,FALSE,"# Noisy neighbor
+
+**Symptom:** latency spikes for everyone when one customer/job runs a heavy task on shared infrastructure.
+
+## Fixes
+- **Per-tenant rate limits and quotas.**
+- **Bulkheads:** separate thread pools, connection pools, queues per tenant/feature.
+- Resource limits (Kubernetes requests/limits, cgroup), separate heavy tenants to dedicated pools/shards.
+- Move batch/report workloads off the OLTP path.
+
+```java
+// Resilience4j bulkhead: reports cannot starve checkout
+@Bulkhead(name = ""reports"", type = Bulkhead.Type.THREADPOOL)
+public CompletableFuture<Report> generate(...) { ... }
+```
+- Kubernetes: set `resources.limits` so one pod cannot consume the whole node.
+
+Q: Multi-tenant SaaS, one tenant runs a giant export. What protects others?
+A: Quotas + rate limits, separate pool/queue for exports, and run exports on a replica."
+3,TOPIC,Retry Storm,Aggressive retries amplify an outage,SHOULD,FALSE,"# Retry storm
+
+A dependency slows down → clients time out and **retry immediately** → load multiplies (3 retries = 4× traffic) → dependency collapses completely.
+
+## Fixes
+- **Exponential backoff + jitter**, a **retry budget** (max attempts), retry only **idempotent** and transient errors.
+- **Circuit breaker** to stop calling a failing service.
+- Retry at **one layer only** (3 layers × 3 retries = 27 calls).
+
+```java
+RetryConfig cfg = RetryConfig.custom()
+    .maxAttempts(3)
+    .intervalFunction(IntervalFunction.ofExponentialRandomBackoff(200, 2.0, 0.5))   // jitter
+    .retryOnException(e -> e instanceof IOException)
+    .build();
+```
+- Without jitter all clients retry at the same instant (thundering herd).
+
+Q: Why jitter?
+A: It spreads retries randomly in time so thousands of clients don't hit the recovering service in synchronized waves."
+3,TOPIC,Synchronous I/O,Blocking threads while waiting for slow I/O,SHOULD,FALSE,"# Synchronous I/O
+
+**Symptom:** low CPU but high latency; threads all waiting on network/disk; throughput capped by thread count.
+
+## Fixes
+- Use **async/non-blocking** I/O (WebFlux + R2DBC/WebClient) when I/O waits dominate.
+- Move non-critical work off the request (events/queue).
+- **Java 21 virtual threads:** keep blocking code, but threads are cheap.
+
+```yaml
+spring.threads.virtual.enabled: true     # Spring Boot 3.2+ : Tomcat uses virtual threads
+```
+
+```java
+// Parallel independent calls instead of sequential waits
+var user = CompletableFuture.supplyAsync(() -> userClient.get(id), executor);
+var orders = CompletableFuture.supplyAsync(() -> orderClient.list(id), executor);
+return new Profile(user.join(), orders.join());      // latency = max, not sum
+```
+- Virtual threads help blocking I/O, not CPU-bound work. Avoid `synchronized` pinning on blocking calls.
+
+Q: WebFlux or virtual threads?
+A: Virtual threads give most of the scalability benefit with simple imperative code; WebFlux fits streaming/backpressure-heavy designs."
+1,MODULE,Phase 4 — Monitoring,"Observe health, availability and performance",MUST,,"# Phase 4: Monitoring
+
+""You can't fix what you can't see."" Be ready to explain the **three pillars (metrics, logs, traces)**, the **golden signals**, and how you alert."
+2,MODULE,Monitoring,"Health, availability, performance, security, usage",MUST,,What to observe and how.
+3,TOPIC,Health Monitoring,Is the system functioning correctly right now?,MUST,FALSE,"# Health monitoring
+
+Probes that report whether each instance and dependency is healthy.
+
+## Liveness vs readiness (Kubernetes)
+
+| Probe | Question | On failure |
+|---|---|---|
+| Liveness | Is the process stuck? | Restart the pod |
+| Readiness | Can it take traffic now? | Remove from load balancer |
+| Startup | Finished booting? | Delay other probes |
+
+```yaml
+management:
+  endpoint.health:
+    probes.enabled: true
+    show-details: when-authorized
+  health.db.enabled: true
+```
+- Expose `/actuator/health/readiness`. Include DB/Kafka in **readiness** only; putting a dependency in **liveness** can restart all pods during a DB outage (making it worse).
+
+```java
+@Component
+class PaymentGatewayHealth implements HealthIndicator {
+    public Health health() { return gateway.ping() ? Health.up().build() : Health.down().build(); }
+}
+```
+
+Q: DB is down. Should liveness fail?
+A: No. Restarting the app does not fix the DB. Fail readiness (stop traffic) and let it recover."
+3,TOPIC,Availability Monitoring,Measure uptime from the user's point of view,MUST,FALSE,"# Availability monitoring
+
+Measure whether the service is reachable and working **from outside**, like a user.
+
+## Techniques
+- **Synthetic checks / probes:** call `/login`, `/search` every minute from multiple regions.
+- **Real user monitoring (RUM)**, error rate from the load balancer.
+- Compute **SLI = good requests / total requests**; compare to SLO (99.9%).
+- **Error budget:** the allowed failures (0.1%); if spent, freeze features and fix reliability.
+
+```text
+SLO 99.9% over 30 days  -> budget 43 minutes
+Burn-rate alert: page when you burn the budget 14x too fast
+```
+- Internal ""up"" can be true while users get 500s; external checks catch DNS/cert/LB issues.
+
+Q: Why measure from outside?
+A: Internal health misses network, DNS, CDN and certificate problems that real users experience."
+3,TOPIC,Performance Monitoring,"Latency, throughput, errors, saturation",MUST,FALSE,"# Performance monitoring
+
+## Golden signals (Google SRE)
+1. **Latency** (p50/p95/p99)
+2. **Traffic** (requests/sec)
+3. **Errors** (5xx rate)
+4. **Saturation** (CPU, memory, thread/DB pool usage, queue depth)
+
+Related: RED (Rate, Errors, Duration) for services, USE (Utilization, Saturation, Errors) for resources.
+
+## Micrometer + Prometheus in Spring Boot
+
+```yaml
+management.endpoints.web.exposure.include: health,prometheus
+management.metrics.distribution.percentiles-histogram.http.server.requests: true
+```
+```java
+@Timed(""order.place"")                          // needs TimedAspect bean
+public Order place(...) { ... }
+
+Counter.builder(""orders.failed"").tag(""reason"", ""payment"").register(registry).increment();
+```
+- Useful JVM metrics: heap used, GC pause, thread count, **HikariCP active/pending connections**, Tomcat busy threads.
+
+Q: Why p99 not average?
+A: A few very slow requests hurt real users but vanish in averages."
+3,TOPIC,Security Monitoring,Detect attacks and abuse,MUST,FALSE,"# Security monitoring
+
+Watch for suspicious behavior and keep an audit trail.
+
+## What to track
+- Failed logins, brute force, impossible travel, privilege changes.
+- Spikes in 401/403/429, unusual IPs, scraping, SQL injection patterns (WAF).
+- Access to sensitive data, admin actions (**audit log**).
+- Dependency vulnerabilities (SCA), leaked secrets.
+
+```java
+@Component
+class AuthEvents {
+    @EventListener
+    void onFail(AbstractAuthenticationFailureEvent e) {
+        audit.warn(""login_failed user={} ip={}"", e.getAuthentication().getName(), ip());
+        metrics.counter(""auth.failed"").increment();      // alert on spike
+    }
+}
+```
+- Never log passwords, tokens, PII. Use **correlation IDs**; ship logs to central SIEM (ELK/Splunk).
+
+Q: How detect brute force?
+A: Count failed logins per user/IP in a window, rate limit/lock out, alert on thresholds, add CAPTCHA/MFA."
+3,TOPIC,Usage Monitoring,Understand how features and resources are used,SHOULD,FALSE,"# Usage monitoring
+
+Track **how the product is used**: feature adoption, per-tenant traffic, API quotas, cost, capacity trends.
+
+## Why
+- Capacity planning, billing/metering, product decisions, detecting abusive clients.
+
+```java
+// per-tenant API usage metric
+registry.counter(""api.requests"", ""tenant"", tenantId, ""endpoint"", path).increment();
+```
+- Watch **cardinality**: never tag metrics by `userId` or `requestId` (millions of series crash Prometheus). Use logs/analytics events for high-cardinality data.
+
+Q: Metric label cardinality problem?
+A: Each unique label combo creates a time series; unbounded values (user IDs) blow up memory/cost. Keep labels low-cardinality."
+3,TOPIC,Instrumentation,"Metrics, logs and distributed traces",MUST,FALSE,"# Instrumentation
+
+Emit signals from code. Three pillars:
+
+| Pillar | Tool | Answers |
+|---|---|---|
+| Metrics | Micrometer → Prometheus | ""Is something wrong?"" (numbers over time) |
+| Logs | Logback JSON → ELK/Loki | ""What happened?"" (events) |
+| Traces | OpenTelemetry → Jaeger/Tempo | ""Where is the time spent?"" (request across services) |
+
+## Distributed tracing
+
+```text
+trace-id abc  [gateway 5ms] -> [order 40ms] -> [payment 900ms]  <- the slow span
+```
+Each service passes `traceparent` header; Spring Boot 3 does it with Micrometer Tracing.
+
+```yaml
+management.tracing.sampling.probability: 0.1      # sample 10% in production
+logging.pattern.level: ""%5p [${spring.application.name},%X{traceId},%X{spanId}]""
+```
+- Put `traceId` in every log line so you can jump from an alert → trace → logs.
+- Use **structured (JSON) logs** and log levels; avoid logging in tight loops.
+
+Q: Monitoring vs observability?
+A: Monitoring watches known failure signals. Observability lets you ask new questions about unknown problems using rich metrics/logs/traces."
+3,TOPIC,Visualization & Alerts,Dashboards and actionable alerts,MUST,FALSE,"# Visualization and alerts
+
+## Dashboards (Grafana)
+- One overview per service: golden signals, dependencies, deploy markers.
+- Drill-down: service → instance → endpoint.
+
+## Good alerts
+- **Symptom-based** (users hurt): ""error rate > 2% for 5 min"", ""p99 > 1s"".
+- Not cause-based noise (""CPU > 70%"").
+- Each alert has a **runbook**, owner and severity; page only when action is needed now.
+- Use **multi-window burn-rate** alerts for SLOs.
+
+```yaml
+# Prometheus alert
+- alert: HighErrorRate
+  expr: sum(rate(http_server_requests_seconds_count{status=~""5..""}[5m]))
+        / sum(rate(http_server_requests_seconds_count[5m])) > 0.02
+  for: 5m
+  labels: { severity: page }
+```
+- Alert fatigue makes people ignore pages; remove noisy alerts.
+
+Q: What do you do when paged at 3 AM?
+A: Check the dashboard (golden signals), recent deploys, dependency health; mitigate first (rollback, scale, failover), then root-cause in a blameless post-mortem."
+1,MODULE,Phase 5 — Cloud Design Patterns,Varying importance: get an overview of each rather than mastering all,SHOULD,,"# Phase 5: Cloud design patterns
+
+These are named, reusable solutions (from the Azure Architecture Center) you can quote in interviews: ""I'd use the **Outbox + CQRS**"" or ""put a **Circuit Breaker** here"". Learn **problem → solution → trade-off → Spring example** for each. Priority tags show what to master (MUST) vs recognize (NICE).
+
+Some patterns appear under several categories in the source plan; the first appearance has the full note, repeats focus on the category angle."
+2,MODULE,Messaging,Decoupling with queues and events,SHOULD,,Patterns built on message brokers.
+3,TOPIC,Queue-based Load Leveling,A queue buffers bursts so the consumer works at a steady rate,SHOULD,FALSE,"# Queue-based load leveling
+
+**Problem:** traffic spikes overwhelm a downstream service (DB, payment API).
+**Solution:** put a **queue between** producer and consumer. Producers enqueue fast; consumers drain at a steady pace.
+
+```text
+1000 req/s burst -> [ queue ] -> consumer at 100 msg/s -> DB (never overloaded)
+```
+
+## Spring Boot
+
+```java
+@PostMapping(""/orders"")
+ResponseEntity<Void> place(@RequestBody OrderReq r) {
+    kafka.send(""orders"", r.id(), r);               // cheap, returns immediately
+    return ResponseEntity.accepted().build();       // 202
+}
+
+@KafkaListener(topics = ""orders"", concurrency = ""5"")   // consumer capacity decides the rate
+void process(OrderReq r) { orderService.save(r); }
+```
+
+## Trade-offs
+- (+) Absorbs spikes, availability if consumer is down (messages wait), independent scaling.
+- (-) Not for request-response needing instant result; added latency; must monitor **queue depth/lag**.
+
+Q: Queue grows forever?
+A: Consumers are slower than average input. Scale consumers or reduce work; the queue only smooths **temporary** bursts."
+3,TOPIC,Publisher/Subscriber,"One event, many independent subscribers",SHOULD,FALSE,"# Publisher/Subscriber
+
+**Problem:** several services need to react to the same event; the publisher shouldn't know them.
+**Solution:** publish to a **topic**; each subscriber gets its own copy.
+
+```text
+OrderPlaced -> topic -> [Email svc] [Inventory svc] [Analytics svc]
+```
+
+## Spring Boot + Kafka (each group = one subscriber service)
+
+```java
+@KafkaListener(topics = ""order.placed"", groupId = ""email"")     void email(OrderPlaced e) { ... }
+@KafkaListener(topics = ""order.placed"", groupId = ""inventory"") void stock(OrderPlaced e) { ... }
+```
+- Different `groupId` = separate subscribers each receive every message. Same group = they share the load (competing consumers).
+
+## Trade-offs
+- (+) Loose coupling, add subscribers without changing the publisher.
+- (-) Eventual consistency, harder to trace flow, schema evolution needs care (use a schema registry).
+
+Q: Pub/sub vs queue?
+A: Queue: one consumer gets each message. Pub/sub: every subscriber gets a copy."
+3,TOPIC,Competing Consumers,Multiple workers read one queue to share load,SHOULD,FALSE,"# Competing consumers
+
+**Solution:** run N identical consumers on the same queue; each message is processed by **exactly one**.
+
+```java
+@KafkaListener(topics = ""image.resize"", groupId = ""resizer"", concurrency = ""4"")
+void resize(ImageJob j) { ... }          // scale pods up to partition count
+```
+- Kafka: parallelism ≤ number of **partitions**. RabbitMQ: add consumers freely.
+
+## Needs
+- **Idempotent** consumers (redelivery after a crash), visibility timeout/ack, DLQ for poison messages.
+- Ordering is lost across consumers unless partitioned by key.
+
+Q: More consumers than partitions?
+A: Extra consumers sit idle. Add partitions (consider ordering/rebalance cost)."
+3,TOPIC,Priority Queue,Urgent messages are processed first,SHOULD,FALSE,"# Priority queue
+
+**Problem:** premium or urgent jobs must not wait behind bulk work.
+
+## Solutions
+- Broker support (RabbitMQ `x-max-priority`).
+- **Separate queues/topics per priority** with dedicated consumers (more predictable; Kafka has no native priority).
+
+```java
+@KafkaListener(topics = ""jobs.high"", concurrency = ""6"")   void high(Job j) { ... }
+@KafkaListener(topics = ""jobs.low"",  concurrency = ""2"")   void low(Job j)  { ... }
+```
+- Guard against **starvation** of low priority (reserve minimum capacity or age-up priority).
+
+Q: Priority in Kafka?
+A: Use separate topics per priority and allocate more consumers to high; one topic cannot reorder."
+3,TOPIC,Async Request Reply,Return 202 then let the client poll for the result,SHOULD,FALSE,"# Asynchronous request-reply
+
+**Problem:** the backend work is slow, but the client uses HTTP request-response.
+**Solution:** accept, return `202 Accepted` + status URL; client polls (or gets a callback).
+
+```text
+POST /exports            -> 202 Location: /exports/9f1
+GET  /exports/9f1        -> 200 {""status"":""RUNNING""}   ...later...
+GET  /exports/9f1        -> 303 See Other -> /files/export.csv
+```
+
+```java
+@GetMapping(""/exports/{id}"")
+ResponseEntity<?> status(@PathVariable String id) {
+    var j = repo.get(id);
+    if (!j.done()) return ResponseEntity.ok(Map.of(""status"", ""RUNNING""));
+    return ResponseEntity.status(SEE_OTHER).location(URI.create(j.resultUrl())).build();
+}
+```
+- Add `Retry-After` header; expire old jobs.
+
+Q: Alternative to polling?
+A: Webhook, SSE or WebSocket push to the client when finished."
+3,TOPIC,Pipes and Filters,Break processing into reusable stages connected by channels,SHOULD,FALSE,"# Pipes and filters
+
+**Problem:** one big processing routine is hard to reuse, test and scale.
+**Solution:** split into **filters** (single-purpose steps) connected by **pipes** (queues/streams).
+
+```text
+upload -> [virus scan] -> [resize] -> [watermark] -> [store]
+```
+
+## Spring examples
+- Streams in-process: `list.stream().map(scan).map(resize)...`
+- **Spring Cloud Stream / Spring Integration** channels between stages; each stage can scale separately.
+- Servlet `Filter` chain and Spring Cloud Gateway filters are the same idea.
+
+```java
+@Bean Function<Upload, Upload> scan()   { return u -> antivirus.check(u); }
+@Bean Function<Upload, Upload> resize() { return u -> img.resize(u); }
+// spring.cloud.function.definition=scan|resize|store
+```
+- Trade-off: more hops/latency; failure and idempotency handling per stage.
+
+Q: Where do you see this daily?
+A: ETL pipelines, image/video processing, Spring Security filter chain."
+3,TOPIC,Choreography,Services react to each other's events with no central coordinator,SHOULD,FALSE,"# Choreography
+
+Each service **listens to events and emits its own**; no orchestrator.
+
+```text
+OrderPlaced -> Payment svc -> PaymentDone -> Inventory svc -> StockReserved -> Shipping svc
+```
+
+## vs Orchestration
+
+| | Choreography | Orchestration (saga orchestrator) |
+|---|---|---|
+| Control | Distributed | Central coordinator |
+| Coupling | Loose | Orchestrator knows all |
+| Visibility | Hard to see whole flow | Easy |
+| Good for | Few simple steps | Complex, many steps |
+
+```java
+@KafkaListener(topics = ""payment.done"")
+void onPaid(PaymentDone e) { stock.reserve(e.orderId()); events.publish(new StockReserved(e.orderId())); }
+```
+- Failure → publish compensating events (see Compensating Transaction). Risk: cyclic dependencies, ""event spaghetti"".
+
+Q: Choreography or orchestration for a 7-step order flow?
+A: Orchestration (e.g., Temporal, Camunda, a Spring state machine): clearer state, timeouts and compensation."
+3,TOPIC,Claim Check,"Send a reference, not the large payload",NICE,FALSE,"# Claim check
+
+**Problem:** message brokers have size limits (Kafka default 1 MB) and big payloads slow them.
+**Solution:** store the payload in blob storage, send only a **reference** (the claim ticket).
+
+```java
+String key = s3.put(bytes);
+kafka.send(""video.uploaded"", new VideoUploaded(videoId, key));   // tiny message
+
+@KafkaListener(topics = ""video.uploaded"")
+void on(VideoUploaded e) { byte[] data = s3.get(e.key()); ... }
+```
+- Handle cleanup (lifecycle rules) and access control (pre-signed URLs)."
+3,TOPIC,Sequential Convoy,Process related messages in order while others run in parallel,NICE,FALSE,"# Sequential convoy
+
+**Problem:** messages of the same entity (one order, one account) must be processed **in order**, but different entities can run in parallel.
+
+**Solution:** partition/session by entity key.
+
+```java
+kafka.send(""account.events"", accountId, event);      // key => same partition => FIFO per account
+```
+- Kafka partition key, RabbitMQ consistent-hash exchange, Azure Service Bus sessions.
+- Trade-off: a slow message blocks its convoy; hot keys limit parallelism."
+3,TOPIC,Scheduling Agent Supervisor,"Coordinate distributed steps with an agent, a supervisor and a retry",NICE,FALSE,"# Scheduler agent supervisor
+
+**Problem:** a multi-step distributed job can fail midway.
+**Solution:** three roles:
+- **Scheduler** starts steps and records state.
+- **Agent** performs a step.
+- **Supervisor** watches for failed/timed-out steps and restarts or compensates.
+
+```text
+State table: job 7 | step=payment | status=RUNNING | started 10:00
+Supervisor (every minute): RUNNING > 5 min -> retry or mark FAILED + compensate
+```
+- Modern equivalents: Temporal/Camunda workflows, Spring Batch + restart, saga orchestrator with timeouts."
+2,MODULE,Data Management,"Caching, partitioning, CQRS and storage patterns",SHOULD,,Patterns for storing and reading data at scale.
+3,TOPIC,Cache-Aside,Load into the cache on demand,SHOULD,FALSE,"# Cache-aside (pattern view)
+
+Application reads the cache first; on miss reads the DB and **populates the cache**; writes update the DB and **invalidate** the key.
+
+```java
+@Cacheable(value = ""product"", key = ""#id"")
+public Product get(Long id) { return repo.findById(id).orElseThrow(); }
+@CacheEvict(value = ""product"", key = ""#id"")
+public void update(Long id, ProductDto d) { ... }
+```
+- See *Caching Strategies → Cache Aside* for stampede, TTL and race details.
+
+Q: Why delete instead of update on write?
+A: Avoids out-of-order writes leaving stale values in the cache."
+3,TOPIC,Sharding,Split data across partitions,SHOULD,FALSE,"# Sharding (pattern view)
+
+Horizontal partitioning of data across stores so each handles a subset of load and size.
+
+- Pick a **shard key** with high cardinality and even spread (`userId`, `tenantId`).
+- Strategies: hash, range, directory/lookup, consistent hashing.
+- Costs: cross-shard queries/transactions, resharding, hot shards.
+
+```java
+int shard = Math.floorMod(Objects.hash(userId), shardCount);
+```
+- See *Databases → Sharding* for full detail and Spring routing.
+
+Q: Hot shard (celebrity user)?
+A: Split the hot key (salting), cache it, or dedicate a shard."
+3,TOPIC,CQRS,Separate write model from read model,SHOULD,FALSE,"# CQRS (Command Query Responsibility Segregation)
+
+**Problem:** one model cannot serve both complex writes and fast, differently shaped reads.
+**Solution:** **commands** change state through a write model; **queries** read from a separate, read-optimized model, updated asynchronously.
+
+```text
+Command -> Write DB (normalized) -> event -> Projection -> Read DB (denormalized / Elasticsearch)
+Query   -> Read DB
+```
+
+## Spring Boot
+
+```java
+@Service class OrderCommandService {
+    @Transactional
+    void place(PlaceOrder cmd) {
+        Order o = orders.save(Order.from(cmd));
+        outbox.save(new OutboxEvent(""OrderPlaced"", o.id()));   // same transaction
+    }
+}
+
+@KafkaListener(topics = ""orders.events"")
+void project(OrderPlaced e) { readRepo.save(OrderView.from(e)); }   // eventual consistency
+
+@GetMapping(""/orders/{id}"") OrderView get(@PathVariable Long id) { return readRepo.find(id); }
+```
+
+## Trade-offs
+- (+) Independent scaling/optimization of read and write; simple read queries.
+- (-) Eventual consistency, more moving parts. **Don't use for plain CRUD.**
+
+Q: Is CQRS the same as event sourcing?
+A: No. CQRS can use one DB with two models. Event sourcing stores events as the source of truth and pairs well with CQRS."
+3,TOPIC,Event Sourcing,Store the sequence of events instead of current state,SHOULD,FALSE,"# Event sourcing
+
+State is derived by **replaying immutable events**.
+
+```text
+AccountOpened(100) -> Deposited(50) -> Withdrawn(30)   => balance 120
+```
+
+```java
+record Deposited(String accountId, BigDecimal amount, Instant at) {}
+
+class Account {
+    BigDecimal balance = ZERO;
+    void apply(Object e) {
+        if (e instanceof Deposited d) balance = balance.add(d.amount());
+        else if (e instanceof Withdrawn w) balance = balance.subtract(w.amount());
+    }
+    static Account rebuild(List<Object> events) { var a = new Account(); events.forEach(a::apply); return a; }
+}
+```
+- Use **snapshots** every N events so rebuilds are fast. Axon Framework and EventStoreDB are common in Java.
+
+## Trade-offs
+- (+) Full audit trail, time travel, easy to build new projections.
+- (-) Complex queries (need CQRS read models), event schema versioning, learning curve.
+
+Q: Where is it a good fit?
+A: Banking/ledgers, audit-heavy domains, collaborative editing. Overkill for simple CRUD."
+3,TOPIC,Materialized View,Precomputed query results for fast reads,SHOULD,FALSE,"# Materialized view
+
+**Problem:** a complex join/aggregation is too slow to run on each request.
+**Solution:** precompute and store the result; refresh periodically or on change.
+
+```sql
+CREATE MATERIALIZED VIEW daily_sales AS
+  SELECT date_trunc('day', created_at) d, sum(total) FROM orders GROUP BY 1;
+REFRESH MATERIALIZED VIEW CONCURRENTLY daily_sales;      -- needs a unique index
+```
+```java
+@Scheduled(cron = ""0 */5 * * * *"") @SchedulerLock(name = ""refreshSales"")
+void refresh() { jdbc.execute(""REFRESH MATERIALIZED VIEW CONCURRENTLY daily_sales""); }
+```
+- Trade-off: staleness vs speed. Also the read side of CQRS is a materialized view maintained by events."
+3,TOPIC,Index Table,Extra tables to support queries on non-key fields,NICE,FALSE,"# Index table
+
+**Problem:** a store (DynamoDB, Cassandra) is fast only by primary key; you must query by another attribute.
+**Solution:** maintain a **secondary lookup table** keyed by that attribute.
+
+```text
+users(user_id PK, email, ...)          -> main table
+users_by_email(email PK, user_id)      -> index table (write to both)
+```
+- Use native secondary indexes when available (DynamoDB GSI). Manual index tables risk inconsistency: update both (batch/transaction) or via events."
+3,TOPIC,Static Content Hosting,Serve static assets from cheap storage/CDN,SHOULD,FALSE,"# Static content hosting
+
+Don't make Spring Boot serve JS/CSS/images/downloads. Put them in object storage (S3) behind a CDN.
+
+```text
+React build -> S3 bucket -> CloudFront CDN
+API calls   -> api.example.com (Spring Boot)
+```
+- Cheaper, faster, reduces load on app servers. Use hashed filenames + long cache; configure CORS between the UI and API.
+- For user uploads use **pre-signed URLs** (see Valet Key) so uploads go straight to S3."
+3,TOPIC,Valet Key,"Give clients a limited, expiring token to access a resource directly",NICE,FALSE,"# Valet key
+
+**Problem:** routing large uploads/downloads through your app wastes bandwidth and threads.
+**Solution:** the app issues a **short-lived signed URL** granting limited access to storage; the client talks to storage directly.
+
+```java
+@GetMapping(""/upload-url"")
+String uploadUrl(@RequestParam String name, Principal p) {
+    var req = PutObjectPresignRequest.builder()
+        .signatureDuration(Duration.ofMinutes(10))
+        .putObjectRequest(b -> b.bucket(""uploads"").key(p.getName() + ""/"" + name))
+        .build();
+    return presigner.presignPutObject(req).url().toString();
+}
+```
+- Scope narrowly (one object, one action), short expiry, validate content type/size after upload.
+
+Q: Why not stream the file through the API?
+A: It ties up Tomcat threads and bandwidth; storage services are built for it."
+2,MODULE,Design & Implementation,"Structure, gateways and migration patterns",SHOULD,,Patterns for composing and evolving services.
+3,TOPIC,Strangler Fig,Replace a legacy system gradually,SHOULD,FALSE,"# Strangler fig
+
+**Problem:** a big-bang rewrite is risky.
+**Solution:** put a **facade/proxy** in front; route one feature at a time to the new service while the rest stays in the legacy app, until legacy is empty.
+
+```yaml
+spring.cloud.gateway.routes:
+  - id: new-orders
+    uri: lb://order-service            # new
+    predicates: [ Path=/api/orders/** ]
+  - id: legacy
+    uri: http://legacy-app             # everything else
+    predicates: [ Path=/** ]
+```
+- Steps: identify seam → build new → route (maybe canary %) → migrate data → retire old.
+- Keep data in sync during transition (CDC/dual-write with care).
+
+Q: Why not rewrite from scratch?
+A: Long time without value, high risk, moving target. Strangler delivers value incrementally and is reversible."
+3,TOPIC,Sidecar,Helper process deployed alongside the main service,SHOULD,FALSE,"# Sidecar
+
+A second container in the **same pod** provides cross-cutting capabilities (logging, proxy, mTLS, config) without changing app code or language.
+
+```text
+Pod: [ Spring Boot app ]  <-localhost->  [ Envoy proxy / log shipper / Vault agent ]
+```
+- **Service mesh (Istio, Linkerd)** is sidecars everywhere: mTLS, retries, metrics outside the app.
+- Trade-offs: extra resources, one more thing to upgrade; latency of an extra hop.
+
+Q: Library vs sidecar?
+A: Library (e.g., Resilience4j) is per-language and in-process. Sidecar is language-agnostic and managed centrally."
+3,TOPIC,Ambassador,A helper proxy handling outbound network concerns,SHOULD,FALSE,"# Ambassador
+
+An out-of-process proxy next to the client that handles **outgoing calls**: retries, circuit breaking, TLS, routing, monitoring.
+
+```text
+Spring Boot app -> localhost ambassador -> (retry, TLS, auth) -> remote service
+```
+- Useful for legacy apps that cannot be modified. A sidecar used for **egress**.
+- Trade-off: extra hop, one more component to run."
+3,TOPIC,Anti-Corruption Layer,Translate between your model and a legacy/external model,SHOULD,FALSE,"# Anti-corruption layer (ACL)
+
+**Problem:** integrating with a legacy or third-party system would leak its ugly model into your clean domain.
+**Solution:** a translation layer (adapter/facade) between them.
+
+```java
+@Component
+class LegacyCustomerAdapter {                      // ACL
+    private final LegacyCrmClient crm;
+    Customer find(String id) {
+        LegacyRec r = crm.getREC(id);              // CUST_NM, ST_CD ...
+        return new Customer(id, r.CUST_NM(), mapStatus(r.ST_CD()));   // our clean model
+    }
+}
+```
+- Your domain depends on an interface; only the adapter knows the legacy format. Pairs well with Strangler Fig."
+3,TOPIC,Backends for Frontend,A dedicated API per client type,SHOULD,FALSE,"# Backends for Frontend (BFF)
+
+Web, mobile and partner apps need different payloads. Create **one backend per frontend** that aggregates and shapes data for it.
+
+```text
+Mobile app -> Mobile BFF --\
+Web app    -> Web BFF -------> order, user, catalog services
+```
+```java
+@GetMapping(""/mobile/home"")
+HomeDto home() {                         // one call instead of five
+    return new HomeDto(users.me(), orders.recent(3), promos.top(2));
+}
+```
+- (+) Optimized per client, fewer round trips. (-) Duplicate code, more services; keep BFFs thin."
+3,TOPIC,Gateway Routing,Route requests to services by path/header,SHOULD,FALSE,"# Gateway routing
+
+A single entry point exposes one URL and routes to many services.
+
+```yaml
+spring.cloud.gateway.routes:
+  - id: users
+    uri: lb://user-service
+    predicates: [ Path=/api/users/** ]
+  - id: orders
+    uri: lb://order-service
+    predicates: [ Path=/api/orders/**, Header=X-Version, v2 ]
+```
+- Clients don't know internal topology; enables versioning, canary and A/B routing.
+- The gateway can become a bottleneck/SPOF: run it redundantly and keep it thin."
+3,TOPIC,Gateway Offloading,Move cross-cutting concerns to the gateway,SHOULD,FALSE,"# Gateway offloading
+
+Handle shared functions **at the gateway** instead of in each service: TLS termination, authentication (JWT validation), rate limiting, CORS, compression, request logging.
+
+```java
+@Bean
+SecurityWebFilterChain security(ServerHttpSecurity http) {
+    return http.oauth2ResourceServer(o -> o.jwt(withDefaults()))     // validate JWT once, at the edge
+               .authorizeExchange(a -> a.anyExchange().authenticated()).build();
+}
+```
+```yaml
+filters:
+  - name: RequestRateLimiter
+    args: { redis-rate-limiter.replenishRate: 10, redis-rate-limiter.burstCapacity: 20 }
+```
+- Trade-off: services must still enforce authorization for sensitive operations (defense in depth)."
+3,TOPIC,Gateway Aggregation,Combine several service calls into one client call,SHOULD,FALSE,"# Gateway aggregation
+
+The gateway calls multiple services, merges results, and returns one response (fewer client round trips).
+
+```java
+@GetMapping(""/dashboard"")
+Mono<Dashboard> dashboard() {
+    return Mono.zip(users.me(), orders.recent(), notifications.unread(),
+                    Dashboard::new);                // calls run in parallel
+}
+```
+- Handle partial failure (timeouts, fallback per part) so one slow service doesn't fail everything.
+- Same idea as BFF/GraphQL."
+3,TOPIC,CQRS,Separate read and write models in design,SHOULD,FALSE,"# CQRS (design view)
+
+See the full note under *Data Management → CQRS*.
+
+**Design angle:** use CQRS when read and write workloads differ widely, e.g., a high-write order service and a heavily-read product search. Command side validates and persists; query side serves optimized views. Keep it local to the **bounded context** that needs it, not system-wide.
+
+Q: Smell that you shouldn't use CQRS?
+A: Simple CRUD with similar read and write shapes: the extra model adds cost with no benefit."
+3,TOPIC,Leader Election,Choose one instance to coordinate work,SHOULD,FALSE,"# Leader election
+
+**Problem:** among N identical instances, exactly **one** must perform a task (scheduler, cache refresher, partition assigner).
+**Solution:** instances compete for a **lock/lease**; the winner is the leader and renews the lease; if it dies the lease expires and another takes over.
+
+```java
+// Spring Integration with a lock registry (Redis/JDBC/ZooKeeper)
+@Bean LockRegistry lockRegistry(RedisConnectionFactory cf) { return new RedisLockRegistry(cf, ""leader"", 30_000); }
+
+void run() {
+    Lock l = registry.obtain(""scheduler"");
+    if (l.tryLock()) { try { doWork(); } finally { l.unlock(); } }
+}
+```
+- Alternatives: ZooKeeper/etcd, Kubernetes Lease API (`spring-cloud-kubernetes-leader`), ShedLock for scheduled jobs.
+- Beware **split brain** from clock skew or GC pauses: use fencing tokens.
+
+Q: Why a lease instead of a plain lock?
+A: A crashed holder never releases a plain lock; a lease expires automatically."
+3,TOPIC,Pipes & Filters,Chain of single-purpose processing steps,SHOULD,FALSE,"# Pipes and filters (design view)
+
+See *Messaging → Pipes and Filters*.
+
+**Design angle:** decompose a processing workflow into small, reusable stages that can be reordered, scaled and tested independently (e.g., Spring Security filter chain, Spring Cloud Gateway filters, Spring Cloud Stream function composition)."
+3,TOPIC,Static Content Hosting,Offload static files from the app,SHOULD,FALSE,"# Static content hosting (design view)
+
+See *Data Management → Static Content Hosting*.
+
+**Design angle:** a clean separation of the SPA/assets (CDN + object storage) from APIs (Spring Boot) makes the API tier smaller, cheaper to scale and easier to deploy independently."
+3,TOPIC,External Config Store,Keep configuration outside deployed artifacts,NICE,FALSE,"# External configuration store
+
+Configuration (URLs, flags, secrets) lives **outside** the application package so it can change without a redeploy and differ per environment.
+
+```yaml
+# bootstrap/application.yml
+spring.config.import: ""configserver:http://config:8888""      # Spring Cloud Config
+```
+- Options: Spring Cloud Config (Git), Kubernetes ConfigMaps/Secrets, HashiCorp Vault, AWS Parameter Store/Secrets Manager.
+- `@RefreshScope` + `/actuator/refresh` (or Spring Cloud Bus) reloads values at runtime.
+- **Secrets** must be encrypted/rotated; never commit them to Git.
+
+Q: 12-factor rule?
+A: ""Store config in the environment"", never hardcode it in the code or image."
+3,TOPIC,Compute Resource Consolidation,Host several tasks in one compute unit to save cost,NICE,FALSE,"# Compute resource consolidation
+
+Combine multiple small, related workloads into one deployable unit (process/pod) to cut cost and operational overhead.
+
+- Example: several lightweight Spring Boot modules in one service, or multiple low-traffic tasks sharing a worker.
+- Trade-offs: loses independent scaling and fault isolation (noisy neighbor); keep clear module boundaries.
+- Good for low, steady load; bad for workloads with different scaling or security needs."
+2,MODULE,Reliability — Availability,Patterns that keep the system reachable,SHOULD,,Patterns tagged for availability.
+3,TOPIC,Deployment Stamps,Deploy independent copies of the whole stack,SHOULD,FALSE,"# Deployment stamps
+
+Deploy multiple **identical, self-contained copies (""stamps"")** of the full stack (app + DB + cache), each serving a subset of tenants or a region.
+
+```text
+Stamp EU: LB + app + DB  (tenants A-M)
+Stamp US: LB + app + DB  (tenants N-Z)
+Global router directs a tenant to its stamp.
+```
+- (+) Failure/blast radius limited to one stamp, easy scale-out by adding stamps, data residency compliance.
+- (-) More infrastructure, routing/tenant-mapping needed, cross-stamp queries are hard.
+- Infrastructure as code (Terraform/Helm) makes stamping repeatable."
+3,TOPIC,Geodes,"Geographically distributed, symmetric nodes serving any request",SHOULD,FALSE,"# Geodes
+
+Deploy **identical nodes (geodes) across regions**, each able to serve **any** request, backed by a geo-replicated data store. Users hit the nearest geode.
+
+- (+) Low latency worldwide, survive a regional outage.
+- (-) Needs multi-region data replication → eventual consistency or conflict resolution (Cosmos DB, Cassandra, DynamoDB Global Tables, CockroachDB).
+- Route using geo-DNS / global load balancer; keep apps stateless.
+
+Q: Geodes vs deployment stamps?
+A: Geodes are interchangeable and share one global data layer. Stamps are isolated copies each owning a slice of data."
+3,TOPIC,Throttling,Limit consumption to protect the system,SHOULD,FALSE,"# Throttling (rate limiting)
+
+Control how many requests a client/tenant may make, to protect the service and keep fairness.
+
+## Algorithms
+
+| Algorithm | Idea |
+|---|---|
+| Fixed window | N requests per minute (burst at boundary) |
+| Sliding window | Smoother |
+| Token bucket | Tokens refill at rate r; burst up to capacity |
+| Leaky bucket | Constant outflow rate |
+
+## Resilience4j / Bucket4j in Spring
+
+```java
+Bucket bucket = Bucket.builder()
+    .addLimit(Bandwidth.simple(100, Duration.ofMinutes(1))).build();
+
+if (!bucket.tryConsume(1)) {
+    return ResponseEntity.status(429).header(""Retry-After"", ""30"").build();
+}
+```
+- For many instances keep counters in **Redis** (Spring Cloud Gateway `RequestRateLimiter`, Bucket4j-Redis).
+- Return `429` with `Retry-After`; throttle by API key/user/IP; differentiate tiers.
+
+Q: Throttling vs load shedding?
+A: Throttling limits per client by policy; load shedding drops requests when the whole system is overloaded."
+3,TOPIC,Health Endpoint Monitoring,Expose health checks for probes and balancers,SHOULD,FALSE,"# Health endpoint monitoring (availability view)
+
+Expose `/health` endpoints so external monitors and load balancers can detect and remove unhealthy instances → higher availability.
+
+- Check dependencies (DB, broker) in a **readiness** check, keep a cheap **liveness** check.
+- Spring Boot Actuator: `/actuator/health/liveness`, `/actuator/health/readiness`.
+- Full note: *Reliability — Resiliency → Health Endpoint Monitoring*."
+3,TOPIC,Queue-Based Load Leveling,Buffer spikes with a queue,SHOULD,FALSE,"# Queue-based load leveling (availability view)
+
+A queue lets the producer accept requests even when the consumer is slow or down, so the system stays **available** during spikes and partial outages; messages are processed when capacity returns.
+
+See the full note under *Messaging → Queue-based Load Leveling* (Spring Boot + Kafka example)."
+2,MODULE,Reliability — High Availability,Patterns that remove single points of failure,SHOULD,,Patterns tagged for high availability.
+3,TOPIC,Deployment Stamps,Isolated full-stack copies for HA,SHOULD,FALSE,"# Deployment stamps (HA view)
+
+Each stamp is independent, so a failure (bad deploy, DB outage) only affects the tenants in that stamp. Combine with multi-AZ inside each stamp. Full note: *Reliability — Availability → Deployment Stamps*."
+3,TOPIC,Geodes,Multi-region active-active for HA,SHOULD,FALSE,"# Geodes (HA view)
+
+Because every region can serve every request, losing a whole region only shifts traffic to others (RTO near zero). Cost: multi-region data replication and consistency trade-offs. Full note: *Reliability — Availability → Geodes*."
+3,TOPIC,Bulkhead,Isolate resources so one failure doesn't sink everything,SHOULD,FALSE,"# Bulkhead (HA view)
+
+Like ship compartments: separate thread pools/connection pools per dependency so a slow dependency exhausts only its own pool.
+
+```java
+@Bulkhead(name = ""payment"", type = Bulkhead.Type.SEMAPHORE)
+public PaymentResult pay(PaymentReq r) { ... }
+```
+- Full note with config under *Reliability — Resiliency → Bulkhead*."
+3,TOPIC,Health Endpoint Monitoring,Detect failed instances automatically,SHOULD,FALSE,"# Health endpoint monitoring (HA view)
+
+Automatic fail-over requires automatic detection: LB/Kubernetes probes hit health endpoints and route traffic only to healthy instances. Tune probe intervals and failure thresholds to balance quick detection and false positives."
+3,TOPIC,Circuit Breaker,Stop calling a failing dependency,SHOULD,FALSE,"# Circuit breaker (HA view)
+
+When a dependency is failing, **open the circuit** and fail fast/fallback instead of piling up blocked threads. This protects your own availability.
+
+```java
+@CircuitBreaker(name = ""inventory"", fallbackMethod = ""cached"")
+public Stock stock(String sku) { return client.get(sku); }
+```
+- Full states and config under *Reliability — Resiliency → Circuit Breaker*."
+2,MODULE,Reliability — Resiliency,Surviving failures gracefully,MUST,,Most-asked pattern group: failure handling.
+3,TOPIC,Circuit Breaker,Fail fast when a dependency is unhealthy,MUST,FALSE,"# Circuit breaker
+
+**Problem:** a slow/failing dependency makes every caller wait for timeouts, exhausting threads and cascading the failure.
+**Solution:** a state machine wrapping calls:
+
+```text
+CLOSED  --failure rate > 50%-->  OPEN (fail immediately)
+OPEN    --after wait 30s-->      HALF-OPEN (allow a few trial calls)
+HALF-OPEN --trial succeeds--> CLOSED     --trial fails--> OPEN
+```
+
+## Resilience4j with Spring Boot
+
+```yaml
+resilience4j.circuitbreaker.instances.payment:
+  sliding-window-size: 20
+  failure-rate-threshold: 50
+  wait-duration-in-open-state: 30s
+  permitted-number-of-calls-in-half-open-state: 3
+  slow-call-duration-threshold: 2s
+```
+```java
+@CircuitBreaker(name = ""payment"", fallbackMethod = ""pending"")
+@TimeLimiter(name = ""payment"")
+public CompletableFuture<Receipt> pay(PayReq r) { return CompletableFuture.supplyAsync(() -> client.pay(r)); }
+
+CompletableFuture<Receipt> pending(PayReq r, Throwable t) { return completedFuture(Receipt.pending(r.id())); }
+```
+- Always pair with **timeouts**. Choose a meaningful fallback (cached data, default, queue for later), not just an error.
+- Annotation order (Resilience4j default): Retry ( CircuitBreaker ( RateLimiter ( TimeLimiter ( Bulkhead ( func ) ) ) ) ).
+
+Q: Circuit breaker vs retry?
+A: Retry handles brief transient errors. Circuit breaker stops retrying/calling when the failure is persistent. Use both: retry inside, breaker around."
+3,TOPIC,Retry,Retry transient failures safely,MUST,FALSE,"# Retry
+
+Transient failures (network blip, 503, deadlock) often succeed on a second try.
+
+## Rules
+1. Retry only **transient** errors (timeouts, 503, 429) not 400/404.
+2. Only **idempotent** operations (or use an idempotency key).
+3. **Exponential backoff + jitter**; cap attempts and total time.
+4. Retry at **one layer** only.
+
+```java
+@Retry(name = ""inventory"", fallbackMethod = ""fallback"")
+Stock stock(String sku) { return client.get(sku); }
+```
+```yaml
+resilience4j.retry.instances.inventory:
+  max-attempts: 3
+  wait-duration: 200ms
+  enable-exponential-backoff: true
+  exponential-backoff-multiplier: 2
+  retry-exceptions: [ java.io.IOException, java.util.concurrent.TimeoutException ]
+```
+- Spring Retry (`@Retryable`) is the simpler alternative inside a single service.
+- Honor `Retry-After` from the server.
+
+Q: Danger of retries?
+A: Retry storms and duplicate side effects; mitigate with backoff + jitter, circuit breaker, idempotency."
+3,TOPIC,Bulkhead,Partition resources so failures stay contained,MUST,FALSE,"# Bulkhead
+
+Isolate resources (threads, connections) per dependency or feature so one slow part cannot consume everything.
+
+```yaml
+resilience4j.bulkhead.instances.reports:
+  max-concurrent-calls: 5          # semaphore: at most 5 report jobs at once
+resilience4j.thread-pool-bulkhead.instances.search:
+  core-thread-pool-size: 4
+  max-thread-pool-size: 8
+  queue-capacity: 20
+```
+```java
+@Bulkhead(name = ""reports"")
+public Report generate(...) { ... }          // 6th concurrent call gets BulkheadFullException -> 503/429
+```
+- Also: separate **HikariCP pools** for OLTP and reporting, separate Kubernetes deployments for critical vs batch.
+
+Q: Bulkhead vs rate limiter?
+A: Bulkhead limits concurrent in-flight calls (resource isolation). Rate limiter limits calls per time window."
+3,TOPIC,Compensating Transaction,Undo completed steps when a later step fails,MUST,FALSE,"# Compensating transaction
+
+In distributed workflows you can't hold a database transaction across services. If step 3 fails, run **compensations** for steps 1-2: this is the **Saga** pattern.
+
+```text
+Create order -> Reserve stock -> Charge payment (FAILS)
+                ^ release stock <- cancel order    (compensations, reverse order)
+```
+
+## Orchestrated saga in Spring
+
+```java
+void placeOrder(Order o) {
+    try {
+        orders.create(o);
+        inventory.reserve(o);
+        payments.charge(o);
+    } catch (Exception e) {
+        inventory.release(o);      // compensation must be idempotent and retryable
+        orders.cancel(o);
+        throw e;
+    }
+}
+```
+- In production use an orchestrator/state machine (Temporal, Camunda, Axon saga) persisting state so it survives crashes.
+- Compensation isn't a perfect rollback: an email already sent can't be unsent (send a ""cancelled"" email).
+- Prefer **semantic undo** (""refund"") over deleting data.
+
+Q: 2PC vs Saga?
+A: 2PC gives atomicity but locks resources and blocks on failure. Saga is eventually consistent, scalable, requires compensations; preferred for microservices."
+3,TOPIC,Health Endpoint Monitoring,Expose liveness and readiness checks,MUST,FALSE,"# Health endpoint monitoring
+
+Each service exposes an endpoint that reports its state so external tools can check it and act.
+
+```yaml
+management:
+  endpoint.health.probes.enabled: true
+  endpoints.web.exposure.include: health,info
+```
+```yaml
+# Kubernetes
+livenessProbe:  { httpGet: { path: /actuator/health/liveness,  port: 8080 }, periodSeconds: 10 }
+readinessProbe: { httpGet: { path: /actuator/health/readiness, port: 8080 }, periodSeconds: 5, failureThreshold: 3 }
+```
+- Return quickly; no heavy checks; secure details; include dependency checks in readiness, not liveness.
+- Deep checks (call DB) vs shallow; cache the result for a few seconds to avoid hammering dependencies.
+
+Q: What's wrong with a health check that always returns 200?
+A: It reports the process alive even when it cannot serve traffic (DB down, deadlock), so the LB keeps sending requests to a broken instance."
+3,TOPIC,Leader Election,Resilient single-coordinator,SHOULD,FALSE,"# Leader election (resiliency view)
+
+For resilience the leader role must **automatically move** if the leader fails: use lease-based election with timeouts (ZooKeeper, etcd, Kubernetes Lease, Redis lock with TTL) and fencing tokens to stop a stale leader acting. Full note: *Design & Implementation → Leader Election*."
+3,TOPIC,Queue-Based Load Leveling,Buffer to survive overload,MUST,FALSE,"# Queue-based load leveling (resiliency view)
+
+A queue decouples producer and consumer, so a **consumer outage or slow-down doesn't fail the producer**: messages wait and are processed later. Add DLQ, retry with backoff, and idempotent consumers. Full note: *Messaging → Queue-based Load Leveling*."
+3,TOPIC,Scheduler Agent Supervisor,Recover failed distributed steps,NICE,FALSE,"# Scheduler agent supervisor (resiliency view)
+
+A supervisor monitors long-running distributed jobs and retries or compensates failed/timed-out steps, so a crashed worker doesn't leave work half done. Today use Temporal/Camunda/Spring Batch restart or a saga orchestrator with timeouts. Full note: *Messaging → Scheduling Agent Supervisor*."
+2,MODULE,Reliability — Security,Identity and access patterns,SHOULD,,Patterns that protect access.
+3,TOPIC,Federated Identity,Delegate authentication to an external identity provider,SHOULD,FALSE,"# Federated identity
+
+Users sign in with an **identity provider (IdP)** (Keycloak, Google, Azure AD, Okta) using **OIDC/SAML**; your app trusts the issued token instead of storing passwords.
+
+```text
+User -> App -> redirect to IdP -> login (MFA/SSO) -> ID/access token (JWT) -> App validates
+```
+
+## Spring Boot resource server
+
+```yaml
+spring.security.oauth2.resourceserver.jwt.issuer-uri: https://keycloak.example.com/realms/app
+```
+```java
+@Bean SecurityFilterChain chain(HttpSecurity http) throws Exception {
+    return http.authorizeHttpRequests(a -> a.anyRequest().authenticated())
+               .oauth2ResourceServer(o -> o.jwt(withDefaults())).build();
+}
+```
+- (+) SSO, centralized MFA/policy, no password storage. (-) Dependency on the IdP: make it highly available.
+- Validate `iss`, `aud`, `exp`, signature (JWKS); keep access tokens short-lived.
+
+Q: OAuth2 vs OIDC?
+A: OAuth2 is authorization (access tokens for APIs). OIDC adds authentication (ID token about the user)."
+3,TOPIC,Gatekeeper,A hardened front component validates requests before the trusted backend,SHOULD,FALSE,"# Gatekeeper
+
+A dedicated, **hardened** front-end proxy validates and sanitizes requests, then passes only valid ones to trusted back-end hosts that have minimal exposure.
+
+```text
+Internet -> Gatekeeper (WAF, authN, input validation, rate limit) -> private network -> app/DB
+```
+- Limits blast radius: if the gatekeeper is compromised it holds no secrets/data; the backend is not internet-reachable.
+- In practice: API gateway + WAF + private subnets + security groups.
+- Still validate input in the backend (defense in depth)."
+3,TOPIC,Valet Key,Delegate narrow access with a signed token,SHOULD,FALSE,"# Valet key (security view)
+
+A **time-limited, scoped, signed token** lets a client access a specific resource directly without receiving your credentials (S3 pre-signed URL, SAS token).
+
+- Principle of **least privilege**: one object, one operation, short expiry.
+- Never reuse long-lived credentials or leak signing keys; log issuance.
+- Full note with Java example: *Data Management → Valet Key*."

@@ -1,0 +1,1176 @@
+{
+  "format" : "learning-tracker-plan",
+  "version" : 1,
+  "exportedAt" : "2026-11-16T05:26:22.234199Z",
+  "plan" : {
+    "name" : "system-design-learning-plan",
+    "status" : "ACTIVE",
+    "createdAt" : "2026-11-10T02:55:12.245Z"
+  },
+  "items" : [ {
+    "id" : "a3b36d31-e7bf-4e2e-b0f8-bcd63a297bc0",
+    "type" : "MODULE",
+    "name" : "Phase 1 — Introduction & Core Trade-offs",
+    "description" : "The fundamental trade-offs behind every design",
+    "completed" : false,
+    "createdAt" : "2026-11-10T02:55:12.246Z",
+    "children" : [ {
+      "id" : "e2aa19f7-ec6d-4773-9b78-91a8303f68b3",
+      "type" : "MODULE",
+      "name" : "Introduction",
+      "priority" : "MUST",
+      "completed" : false,
+      "createdAt" : "2026-11-10T02:55:12.246Z",
+      "children" : [ {
+        "id" : "12c11adc-8894-49e2-861c-9581b94ad5e2",
+        "type" : "TOPIC",
+        "name" : "What is System Design?",
+        "priority" : "MUST",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.247Z"
+      }, {
+        "id" : "18b05c6d-51e5-4e1e-ba55-a926e7091830",
+        "type" : "TOPIC",
+        "name" : "How to approach System Design?",
+        "priority" : "MUST",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.247Z"
+      } ]
+    }, {
+      "id" : "973f6b5a-7a3f-4b1d-8715-c7ab78fe1198",
+      "type" : "MODULE",
+      "name" : "Core Trade-offs",
+      "priority" : "MUST",
+      "completed" : false,
+      "createdAt" : "2026-11-10T02:55:12.247Z",
+      "children" : [ {
+        "id" : "efd9c4a1-a810-4d8b-adde-ae10620f5c19",
+        "type" : "TOPIC",
+        "name" : "Performance vs Scalability",
+        "priority" : "MUST",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.248Z"
+      }, {
+        "id" : "3eeb4f84-8ba8-4232-8ee4-30c2ca07c267",
+        "type" : "TOPIC",
+        "name" : "Latency vs Throughput",
+        "priority" : "MUST",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.248Z"
+      }, {
+        "id" : "46373c04-018b-427e-9294-87b7eea26e02",
+        "type" : "TOPIC",
+        "name" : "Availability vs Consistency",
+        "priority" : "MUST",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.248Z"
+      } ]
+    }, {
+      "id" : "0ad56fb2-5530-4a08-8192-5368625d6b2c",
+      "type" : "MODULE",
+      "name" : "CAP Theorem",
+      "priority" : "MUST",
+      "completed" : false,
+      "createdAt" : "2026-11-10T02:55:12.249Z",
+      "children" : [ {
+        "id" : "b860fd92-aaac-48a4-bb68-5efd7570e042",
+        "type" : "TOPIC",
+        "name" : "AP - Availability + Partition Tolerance",
+        "priority" : "MUST",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.249Z"
+      }, {
+        "id" : "363f04ea-44a5-4de5-8512-95b4e553cdca",
+        "type" : "TOPIC",
+        "name" : "CP - Consistency + Partition Tolerance",
+        "priority" : "MUST",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.249Z"
+      } ]
+    }, {
+      "id" : "366b2b0b-f9bd-412e-b13a-7e8ed0a19e92",
+      "type" : "MODULE",
+      "name" : "Consistency Patterns",
+      "priority" : "MUST",
+      "completed" : false,
+      "createdAt" : "2026-11-10T02:55:12.250Z",
+      "children" : [ {
+        "id" : "1edf33a6-8c4a-4523-9b3d-5c4a4f08f8c8",
+        "type" : "TOPIC",
+        "name" : "Weak Consistency",
+        "priority" : "MUST",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.250Z"
+      }, {
+        "id" : "305e05f1-f025-420d-bd5a-2be6ddfc53e4",
+        "type" : "TOPIC",
+        "name" : "Eventual Consistency",
+        "priority" : "MUST",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.250Z"
+      }, {
+        "id" : "41d8696c-905a-4e62-99f2-bf8e7245f6fe",
+        "type" : "TOPIC",
+        "name" : "Strong Consistency",
+        "priority" : "MUST",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.250Z"
+      } ]
+    }, {
+      "id" : "fd413409-552f-4db1-b484-4f23db912271",
+      "type" : "MODULE",
+      "name" : "Availability Patterns",
+      "priority" : "MUST",
+      "completed" : false,
+      "createdAt" : "2026-11-10T02:55:12.251Z",
+      "children" : [ {
+        "id" : "037dd584-a3cb-4e91-b4ea-0b085d146ae1",
+        "type" : "TOPIC",
+        "name" : "Fail-Over: Active - Active",
+        "priority" : "MUST",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.251Z"
+      }, {
+        "id" : "b8e06bf9-ef9b-412a-859b-71844c5943bd",
+        "type" : "TOPIC",
+        "name" : "Fail-Over: Active - Passive",
+        "priority" : "MUST",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.251Z"
+      }, {
+        "id" : "442f8d95-a49f-45e4-8c98-d327841985c7",
+        "type" : "TOPIC",
+        "name" : "Replication: Master - Slave",
+        "priority" : "MUST",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.252Z"
+      }, {
+        "id" : "ca63fd0b-e85c-4af8-b50d-aea26c78951f",
+        "type" : "TOPIC",
+        "name" : "Replication: Master - Master",
+        "priority" : "MUST",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.252Z"
+      } ]
+    }, {
+      "id" : "0be2a290-ac8e-4224-8d29-7fbb74605558",
+      "type" : "MODULE",
+      "name" : "Availability in Numbers",
+      "priority" : "SHOULD",
+      "completed" : false,
+      "createdAt" : "2026-11-10T02:55:12.252Z",
+      "children" : [ {
+        "id" : "f1740d1a-8dfc-445e-898d-fa87fb2dd0a4",
+        "type" : "TOPIC",
+        "name" : "99.9% Availability - three 9s",
+        "priority" : "SHOULD",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.253Z"
+      }, {
+        "id" : "c20254b0-2579-40a9-85f5-e386832c15cb",
+        "type" : "TOPIC",
+        "name" : "99.99% Availability - four 9s",
+        "priority" : "SHOULD",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.253Z"
+      }, {
+        "id" : "3d2132df-9266-41ed-a3ac-0c817f654ed6",
+        "type" : "TOPIC",
+        "name" : "Availability in Parallel vs Sequence",
+        "priority" : "SHOULD",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.253Z"
+      } ]
+    } ]
+  }, {
+    "id" : "0ca600d9-6759-42f2-aef7-a0783235954a",
+    "type" : "MODULE",
+    "name" : "Phase 2 — Building Blocks",
+    "description" : "Components used to build scalable systems",
+    "completed" : false,
+    "createdAt" : "2026-11-10T02:55:12.253Z",
+    "children" : [ {
+      "id" : "d0427510-92c3-4807-a6d4-3127d1c06705",
+      "type" : "MODULE",
+      "name" : "Background Jobs",
+      "priority" : "SHOULD",
+      "completed" : false,
+      "createdAt" : "2026-11-10T02:55:12.254Z",
+      "children" : [ {
+        "id" : "7e74838b-9745-453b-83ec-e3fc388b82cd",
+        "type" : "TOPIC",
+        "name" : "Event-Driven",
+        "priority" : "SHOULD",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.254Z"
+      }, {
+        "id" : "e1c369a1-ef81-4a85-801d-34bac495971f",
+        "type" : "TOPIC",
+        "name" : "Schedule Driven",
+        "priority" : "SHOULD",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.254Z"
+      }, {
+        "id" : "62757eaa-010e-4f9f-bbda-f5f608d187f2",
+        "type" : "TOPIC",
+        "name" : "Returning Results",
+        "priority" : "SHOULD",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.254Z"
+      } ]
+    }, {
+      "id" : "32bebe1a-eea9-4ebc-a75f-e054ab35a17e",
+      "type" : "MODULE",
+      "name" : "Domain Name System",
+      "priority" : "MUST",
+      "completed" : false,
+      "createdAt" : "2026-11-10T02:55:12.255Z",
+      "children" : [ {
+        "id" : "a810cd85-6f35-43a9-9db1-ba97611db846",
+        "type" : "TOPIC",
+        "name" : "DNS",
+        "priority" : "MUST",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.255Z"
+      } ]
+    }, {
+      "id" : "10ac14be-8bb8-40c8-9c00-0724b822852b",
+      "type" : "MODULE",
+      "name" : "Content Delivery Networks",
+      "priority" : "MUST",
+      "completed" : false,
+      "createdAt" : "2026-11-10T02:55:12.256Z",
+      "children" : [ {
+        "id" : "ec57b446-c3f5-46d2-aa04-91f16aa3afd8",
+        "type" : "TOPIC",
+        "name" : "Push CDNs",
+        "priority" : "MUST",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.256Z"
+      }, {
+        "id" : "e66f482c-0c1c-4734-8335-c50beee555db",
+        "type" : "TOPIC",
+        "name" : "Pull CDNs",
+        "priority" : "MUST",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.256Z"
+      } ]
+    }, {
+      "id" : "26cfcf2d-e7a7-40fc-9bed-ba618a690ddf",
+      "type" : "MODULE",
+      "name" : "Load Balancers",
+      "priority" : "MUST",
+      "completed" : false,
+      "createdAt" : "2026-11-10T02:55:12.256Z",
+      "children" : [ {
+        "id" : "e68567c0-e6fb-4f20-80af-e3cf79a19f36",
+        "type" : "TOPIC",
+        "name" : "LB vs Reverse Proxy",
+        "priority" : "MUST",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.256Z"
+      }, {
+        "id" : "f0757a6a-b020-47f8-8577-9cccd7377fd4",
+        "type" : "TOPIC",
+        "name" : "Load Balancing Algorithms",
+        "priority" : "MUST",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.257Z"
+      }, {
+        "id" : "ffe49021-3708-4b57-9f09-9d762be00eb9",
+        "type" : "TOPIC",
+        "name" : "Layer 7 Load Balancing",
+        "priority" : "MUST",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.257Z"
+      }, {
+        "id" : "7011382c-ecae-4291-ac57-e799e49ca9bc",
+        "type" : "TOPIC",
+        "name" : "Layer 4 Load Balancing",
+        "priority" : "MUST",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.257Z"
+      }, {
+        "id" : "97c9b614-ea7c-41aa-b042-50d19685ce05",
+        "type" : "TOPIC",
+        "name" : "Horizontal Scaling",
+        "priority" : "MUST",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.257Z"
+      } ]
+    }, {
+      "id" : "63a853ad-296b-4868-8151-5920a990062b",
+      "type" : "MODULE",
+      "name" : "Application Layer",
+      "priority" : "MUST",
+      "completed" : false,
+      "createdAt" : "2026-11-10T02:55:12.258Z",
+      "children" : [ {
+        "id" : "bf6e8e2d-bdce-4ff7-955b-8c08c485771f",
+        "type" : "TOPIC",
+        "name" : "Microservices",
+        "priority" : "MUST",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.258Z"
+      }, {
+        "id" : "5b866aab-b891-418f-9761-2d98c6800366",
+        "type" : "TOPIC",
+        "name" : "Service Discovery",
+        "priority" : "MUST",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.259Z"
+      } ]
+    }, {
+      "id" : "0e921a0f-e2b3-4a05-845b-ad1a13f66f95",
+      "type" : "MODULE",
+      "name" : "Databases",
+      "priority" : "MUST",
+      "completed" : false,
+      "createdAt" : "2026-11-10T02:55:12.259Z",
+      "children" : [ {
+        "id" : "c4d04827-a5c9-4db6-86f1-c7f7eb357fb2",
+        "type" : "TOPIC",
+        "name" : "SQL vs NoSQL",
+        "priority" : "MUST",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.259Z"
+      }, {
+        "id" : "9cafaec1-64d6-43c9-a5d1-95cc2fc8d5f8",
+        "type" : "TOPIC",
+        "name" : "RDBMS",
+        "priority" : "MUST",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.259Z"
+      }, {
+        "id" : "9baa7516-07b6-44f5-840d-ca45b64c370b",
+        "type" : "TOPIC",
+        "name" : "Replication",
+        "priority" : "MUST",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.260Z"
+      }, {
+        "id" : "0ea41a6d-a081-4dba-96d0-b96ddd984727",
+        "type" : "TOPIC",
+        "name" : "Sharding",
+        "priority" : "MUST",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.260Z"
+      }, {
+        "id" : "39a3c76c-c27d-4e86-a61a-0074140817be",
+        "type" : "TOPIC",
+        "name" : "Federation",
+        "priority" : "MUST",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.260Z"
+      }, {
+        "id" : "299cbacd-b6bb-4e77-b838-65d1a3ac51eb",
+        "type" : "TOPIC",
+        "name" : "Denormalization",
+        "priority" : "MUST",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.261Z"
+      }, {
+        "id" : "c57d7c05-4a6e-4920-bde5-bee101ea7a2b",
+        "type" : "TOPIC",
+        "name" : "SQL Tuning",
+        "priority" : "SHOULD",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.261Z"
+      } ]
+    }, {
+      "id" : "ac871693-fdec-425d-8370-7f9ae634b806",
+      "type" : "MODULE",
+      "name" : "NoSQL",
+      "priority" : "MUST",
+      "completed" : false,
+      "createdAt" : "2026-11-10T02:55:12.261Z",
+      "children" : [ {
+        "id" : "3fc74d6f-5ebb-47d3-bea0-8d3b152d1f71",
+        "type" : "TOPIC",
+        "name" : "Key-Value Store",
+        "priority" : "MUST",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.261Z"
+      }, {
+        "id" : "ab59254b-4326-475a-a626-e0f35e6cc922",
+        "type" : "TOPIC",
+        "name" : "Document Store",
+        "priority" : "MUST",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.262Z"
+      }, {
+        "id" : "b2d2f1e8-b2f6-4a16-9050-a61188acfa2c",
+        "type" : "TOPIC",
+        "name" : "Wide Column Store",
+        "priority" : "MUST",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.262Z"
+      }, {
+        "id" : "c4540666-8f52-4d06-8a55-9d7fc74ffc8f",
+        "type" : "TOPIC",
+        "name" : "Graph Databases",
+        "priority" : "SHOULD",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.263Z"
+      } ]
+    }, {
+      "id" : "019d1800-57ce-46af-91b3-b26a2549e1cc",
+      "type" : "MODULE",
+      "name" : "Types of Caching",
+      "priority" : "MUST",
+      "completed" : false,
+      "createdAt" : "2026-11-10T02:55:12.263Z",
+      "children" : [ {
+        "id" : "b0c54c09-0541-4a35-abfa-538a137f4846",
+        "type" : "TOPIC",
+        "name" : "Client Caching",
+        "priority" : "MUST",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.263Z"
+      }, {
+        "id" : "cc4d055b-015a-4d4c-9c89-9befbfd7af06",
+        "type" : "TOPIC",
+        "name" : "CDN Caching",
+        "priority" : "MUST",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.263Z"
+      }, {
+        "id" : "08942c4d-5cb6-4e16-82ec-b4c7e00dab69",
+        "type" : "TOPIC",
+        "name" : "Web Server Caching",
+        "priority" : "MUST",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.263Z"
+      }, {
+        "id" : "cc932341-59d4-44b6-bf80-938986c8fb6f",
+        "type" : "TOPIC",
+        "name" : "Database Caching",
+        "priority" : "MUST",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.263Z"
+      }, {
+        "id" : "25270b88-8a11-420b-8a78-8428f8628314",
+        "type" : "TOPIC",
+        "name" : "Application Caching",
+        "priority" : "MUST",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.263Z"
+      } ]
+    }, {
+      "id" : "f19860f1-abaa-4f15-83be-9dce12d5fd05",
+      "type" : "MODULE",
+      "name" : "Caching Strategies",
+      "priority" : "MUST",
+      "completed" : false,
+      "createdAt" : "2026-11-10T02:55:12.264Z",
+      "children" : [ {
+        "id" : "688f65d4-8762-4f71-b739-114eb483627f",
+        "type" : "TOPIC",
+        "name" : "Cache Aside",
+        "priority" : "MUST",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.264Z"
+      }, {
+        "id" : "0f69df16-e73c-47af-b2c1-df4b4f852ffa",
+        "type" : "TOPIC",
+        "name" : "Write-through",
+        "priority" : "MUST",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.264Z"
+      }, {
+        "id" : "5590df09-4c17-4388-90d2-018518b36be3",
+        "type" : "TOPIC",
+        "name" : "Write-behind",
+        "priority" : "MUST",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.264Z"
+      }, {
+        "id" : "e193e859-d414-4dc1-9923-f5b13d4ed509",
+        "type" : "TOPIC",
+        "name" : "Refresh Ahead",
+        "priority" : "SHOULD",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.264Z"
+      } ]
+    }, {
+      "id" : "e3e51999-79a6-4ae7-985b-72446f91455a",
+      "type" : "MODULE",
+      "name" : "Asynchronism",
+      "priority" : "MUST",
+      "completed" : false,
+      "createdAt" : "2026-11-10T02:55:12.264Z",
+      "children" : [ {
+        "id" : "880a20e5-b8d0-4113-bfa7-b5431d24ecb9",
+        "type" : "TOPIC",
+        "name" : "Message Queues",
+        "priority" : "MUST",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.264Z"
+      }, {
+        "id" : "ba79b174-e788-4ee8-9473-daf5fdcab05d",
+        "type" : "TOPIC",
+        "name" : "Task Queues",
+        "priority" : "MUST",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.264Z"
+      }, {
+        "id" : "bc213c24-7edb-427a-8b69-fa6e51fd1e96",
+        "type" : "TOPIC",
+        "name" : "Back Pressure",
+        "priority" : "MUST",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.265Z"
+      }, {
+        "id" : "7801d9cd-7542-4cdc-a175-6610976e09cc",
+        "type" : "TOPIC",
+        "name" : "Idempotent Operations",
+        "priority" : "MUST",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.265Z"
+      } ]
+    }, {
+      "id" : "3c58dcd7-c1b4-4ee8-b144-9c6f86039f56",
+      "type" : "MODULE",
+      "name" : "Communication",
+      "priority" : "MUST",
+      "completed" : false,
+      "createdAt" : "2026-11-10T02:55:12.265Z",
+      "children" : [ {
+        "id" : "fb6c3340-a3a9-401b-a7dd-91aa28b1b494",
+        "type" : "TOPIC",
+        "name" : "HTTP",
+        "priority" : "MUST",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.265Z"
+      }, {
+        "id" : "3e07f990-29aa-45f1-8f03-6a4fcc82a7e5",
+        "type" : "TOPIC",
+        "name" : "TCP",
+        "priority" : "MUST",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.265Z"
+      }, {
+        "id" : "c98ba46b-f405-4019-abee-f84beadaae00",
+        "type" : "TOPIC",
+        "name" : "UDP",
+        "priority" : "MUST",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.265Z"
+      }, {
+        "id" : "ef816c9f-cb21-4733-b39e-d31277d46355",
+        "type" : "TOPIC",
+        "name" : "REST",
+        "priority" : "MUST",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.265Z"
+      }, {
+        "id" : "e97ebc94-4bfd-4af5-bb31-fbe65f42e2c0",
+        "type" : "TOPIC",
+        "name" : "RPC",
+        "priority" : "MUST",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.265Z"
+      }, {
+        "id" : "97619747-b4ec-467d-8f45-0d0115501823",
+        "type" : "TOPIC",
+        "name" : "gRPC",
+        "priority" : "MUST",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.266Z"
+      }, {
+        "id" : "741c3691-5a72-46a6-9584-e8182d5b4d7c",
+        "type" : "TOPIC",
+        "name" : "GraphQL",
+        "priority" : "SHOULD",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.266Z"
+      } ]
+    } ]
+  }, {
+    "id" : "95c49697-54b2-49e1-96cb-de8e9c442b39",
+    "type" : "MODULE",
+    "name" : "Phase 3 — Performance Antipatterns",
+    "description" : "Common causes of poor performance under load",
+    "completed" : false,
+    "createdAt" : "2026-11-10T02:55:12.266Z",
+    "children" : [ {
+      "id" : "f73772c8-788e-4533-b8f2-2fb79153831a",
+      "type" : "MODULE",
+      "name" : "Performance Antipatterns",
+      "priority" : "SHOULD",
+      "completed" : false,
+      "createdAt" : "2026-11-10T02:55:12.266Z",
+      "children" : [ {
+        "id" : "94bb4426-98e2-4274-b44d-88649f92ff83",
+        "type" : "TOPIC",
+        "name" : "Busy Database",
+        "priority" : "SHOULD",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.266Z"
+      }, {
+        "id" : "9c126bd1-ced7-4197-aec8-6b2ab7528462",
+        "type" : "TOPIC",
+        "name" : "Busy Frontend",
+        "priority" : "SHOULD",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.266Z"
+      }, {
+        "id" : "0160a91d-a2c9-4dd8-8cc2-d4755367a79a",
+        "type" : "TOPIC",
+        "name" : "Chatty I/O",
+        "priority" : "SHOULD",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.267Z"
+      }, {
+        "id" : "2dbafbf6-8ef4-44cd-9c6a-9452fa108b0a",
+        "type" : "TOPIC",
+        "name" : "Extraneous Fetching",
+        "priority" : "SHOULD",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.267Z"
+      }, {
+        "id" : "234ff8b6-258b-4b46-baeb-445628697288",
+        "type" : "TOPIC",
+        "name" : "Improper Instantiation",
+        "priority" : "SHOULD",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.267Z"
+      }, {
+        "id" : "f377d4ce-a266-4d70-b960-5e4788de3afa",
+        "type" : "TOPIC",
+        "name" : "Monolithic Persistence",
+        "priority" : "SHOULD",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.267Z"
+      }, {
+        "id" : "76f02897-d123-440b-bfe5-d1c810b6c127",
+        "type" : "TOPIC",
+        "name" : "No Caching",
+        "priority" : "SHOULD",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.267Z"
+      }, {
+        "id" : "ff51d114-73c5-4201-81aa-b7e43d76a63e",
+        "type" : "TOPIC",
+        "name" : "Noisy Neighbor",
+        "priority" : "SHOULD",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.267Z"
+      }, {
+        "id" : "cf5b17a4-6e44-4ad8-aa81-9fc2ac40e016",
+        "type" : "TOPIC",
+        "name" : "Retry Storm",
+        "priority" : "SHOULD",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.267Z"
+      }, {
+        "id" : "fe1c5505-d835-459e-bee4-67821fcd5426",
+        "type" : "TOPIC",
+        "name" : "Synchronous I/O",
+        "priority" : "SHOULD",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.268Z"
+      } ]
+    } ]
+  }, {
+    "id" : "79424680-bbdd-4906-9b0c-66c00f9ed437",
+    "type" : "MODULE",
+    "name" : "Phase 4 — Monitoring",
+    "description" : "Observe health, availability and performance",
+    "completed" : false,
+    "createdAt" : "2026-11-10T02:55:12.268Z",
+    "children" : [ {
+      "id" : "3cb7fbb6-f73d-4a40-9936-217dfc717247",
+      "type" : "MODULE",
+      "name" : "Monitoring",
+      "priority" : "MUST",
+      "completed" : false,
+      "createdAt" : "2026-11-10T02:55:12.268Z",
+      "children" : [ {
+        "id" : "d81f3e07-2d46-456c-935e-950d5a8fa0c2",
+        "type" : "TOPIC",
+        "name" : "Health Monitoring",
+        "priority" : "MUST",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.268Z"
+      }, {
+        "id" : "e326fab0-ae37-409b-b626-b070233d99ec",
+        "type" : "TOPIC",
+        "name" : "Availability Monitoring",
+        "priority" : "MUST",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.268Z"
+      }, {
+        "id" : "0b8e30db-883a-42a5-822f-c6068ee57825",
+        "type" : "TOPIC",
+        "name" : "Performance Monitoring",
+        "priority" : "MUST",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.268Z"
+      }, {
+        "id" : "3366c10f-46e4-4fa4-9ba8-2eb45cdda077",
+        "type" : "TOPIC",
+        "name" : "Security Monitoring",
+        "priority" : "MUST",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.269Z"
+      }, {
+        "id" : "07b62c22-fa99-4997-9b9e-f077641b6d7a",
+        "type" : "TOPIC",
+        "name" : "Usage Monitoring",
+        "priority" : "SHOULD",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.269Z"
+      }, {
+        "id" : "ded2fafc-51bb-42a6-89c1-d81926e3c487",
+        "type" : "TOPIC",
+        "name" : "Instrumentation",
+        "priority" : "MUST",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.269Z"
+      }, {
+        "id" : "cf1be789-8de6-42b7-918d-7526913bfa35",
+        "type" : "TOPIC",
+        "name" : "Visualization & Alerts",
+        "priority" : "MUST",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.269Z"
+      } ]
+    } ]
+  }, {
+    "id" : "ee319e6a-c672-42f5-bf3d-03150d512ebb",
+    "type" : "MODULE",
+    "name" : "Phase 5 — Cloud Design Patterns",
+    "description" : "Varying importance: get an overview of each rather than mastering all",
+    "completed" : false,
+    "createdAt" : "2026-11-10T02:55:12.269Z",
+    "children" : [ {
+      "id" : "787054e2-e018-4dbe-9520-ef9035fcebc4",
+      "type" : "MODULE",
+      "name" : "Messaging",
+      "priority" : "SHOULD",
+      "completed" : false,
+      "createdAt" : "2026-11-10T02:55:12.269Z",
+      "children" : [ {
+        "id" : "db65dd7c-ea60-439b-94de-5a2fc8053903",
+        "type" : "TOPIC",
+        "name" : "Queue-based Load Leveling",
+        "priority" : "SHOULD",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.269Z"
+      }, {
+        "id" : "85a60467-fa80-4c3a-ae86-c8da07ee6fe1",
+        "type" : "TOPIC",
+        "name" : "Publisher/Subscriber",
+        "priority" : "SHOULD",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.270Z"
+      }, {
+        "id" : "30c9a21d-09a7-4b88-940f-7997bde9dafe",
+        "type" : "TOPIC",
+        "name" : "Competing Consumers",
+        "priority" : "SHOULD",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.270Z"
+      }, {
+        "id" : "b1d50820-eaa1-4712-92e6-80b831840e49",
+        "type" : "TOPIC",
+        "name" : "Priority Queue",
+        "priority" : "SHOULD",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.270Z"
+      }, {
+        "id" : "f5ce70f5-7ac8-42ea-8340-52c640149133",
+        "type" : "TOPIC",
+        "name" : "Async Request Reply",
+        "priority" : "SHOULD",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.270Z"
+      }, {
+        "id" : "43602151-4151-4f63-a403-7c64c80a7f69",
+        "type" : "TOPIC",
+        "name" : "Pipes and Filters",
+        "priority" : "SHOULD",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.270Z"
+      }, {
+        "id" : "4c4ac025-e975-4e6c-b730-050b7b893d00",
+        "type" : "TOPIC",
+        "name" : "Choreography",
+        "priority" : "SHOULD",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.270Z"
+      }, {
+        "id" : "425d7ecf-158f-424b-95e2-5113b36b66b3",
+        "type" : "TOPIC",
+        "name" : "Claim Check",
+        "priority" : "NICE",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.271Z"
+      }, {
+        "id" : "1b4098e2-af22-405b-9e60-d185026c2612",
+        "type" : "TOPIC",
+        "name" : "Sequential Convoy",
+        "priority" : "NICE",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.271Z"
+      }, {
+        "id" : "96519e82-344c-4b02-a812-7813ec2689b0",
+        "type" : "TOPIC",
+        "name" : "Scheduling Agent Supervisor",
+        "priority" : "NICE",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.271Z"
+      } ]
+    }, {
+      "id" : "69bcba21-c8b0-40e1-a69b-cef37ea41ba8",
+      "type" : "MODULE",
+      "name" : "Data Management",
+      "priority" : "SHOULD",
+      "completed" : false,
+      "createdAt" : "2026-11-10T02:55:12.271Z",
+      "children" : [ {
+        "id" : "614b6b98-d34a-4ebc-8a4d-d01492f463c0",
+        "type" : "TOPIC",
+        "name" : "Cache-Aside",
+        "priority" : "SHOULD",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.271Z"
+      }, {
+        "id" : "77e551ec-c13d-4d23-809e-ad17b8b1ae1e",
+        "type" : "TOPIC",
+        "name" : "Sharding",
+        "priority" : "SHOULD",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.271Z"
+      }, {
+        "id" : "f91cb5b1-bc02-45df-881f-773b65290447",
+        "type" : "TOPIC",
+        "name" : "CQRS",
+        "priority" : "SHOULD",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.271Z"
+      }, {
+        "id" : "0becbc88-d717-42db-8633-53c501659971",
+        "type" : "TOPIC",
+        "name" : "Event Sourcing",
+        "priority" : "SHOULD",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.271Z"
+      }, {
+        "id" : "98526cf8-fffc-49f4-a0c4-c0cc7967540a",
+        "type" : "TOPIC",
+        "name" : "Materialized View",
+        "priority" : "SHOULD",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.272Z"
+      }, {
+        "id" : "151332d5-c27c-4b21-a5ec-fa6d706c18de",
+        "type" : "TOPIC",
+        "name" : "Index Table",
+        "priority" : "NICE",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.272Z"
+      }, {
+        "id" : "95cbc70a-0af8-45aa-b46b-aace6188ae7d",
+        "type" : "TOPIC",
+        "name" : "Static Content Hosting",
+        "priority" : "SHOULD",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.272Z"
+      }, {
+        "id" : "c9fce560-6894-43a4-890d-d64463ea4f64",
+        "type" : "TOPIC",
+        "name" : "Valet Key",
+        "priority" : "NICE",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.272Z"
+      } ]
+    }, {
+      "id" : "55afbacb-4439-4c70-8673-c38dae8711bc",
+      "type" : "MODULE",
+      "name" : "Design & Implementation",
+      "priority" : "SHOULD",
+      "completed" : false,
+      "createdAt" : "2026-11-10T02:55:12.272Z",
+      "children" : [ {
+        "id" : "fa9de5b3-576d-4fb8-a485-d57dbf8c16f1",
+        "type" : "TOPIC",
+        "name" : "Strangler Fig",
+        "priority" : "SHOULD",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.272Z"
+      }, {
+        "id" : "df6ee37f-8901-46fb-a328-6c58ece2c1d9",
+        "type" : "TOPIC",
+        "name" : "Sidecar",
+        "priority" : "SHOULD",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.272Z"
+      }, {
+        "id" : "969ecfd5-00f7-412c-a023-82a367c6ab64",
+        "type" : "TOPIC",
+        "name" : "Ambassador",
+        "priority" : "SHOULD",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.272Z"
+      }, {
+        "id" : "54246c1f-5a55-4124-91ef-c71df5a8aa3a",
+        "type" : "TOPIC",
+        "name" : "Anti-Corruption Layer",
+        "priority" : "SHOULD",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.273Z"
+      }, {
+        "id" : "b2306d66-d1f8-4584-b4af-2c3f10530a32",
+        "type" : "TOPIC",
+        "name" : "Backends for Frontend",
+        "priority" : "SHOULD",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.273Z"
+      }, {
+        "id" : "724b59e2-6c58-43a7-9e3b-f2a1a9c19e07",
+        "type" : "TOPIC",
+        "name" : "Gateway Routing",
+        "priority" : "SHOULD",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.273Z"
+      }, {
+        "id" : "f3c69fcd-8160-47b8-982b-44f7ad7ab818",
+        "type" : "TOPIC",
+        "name" : "Gateway Offloading",
+        "priority" : "SHOULD",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.273Z"
+      }, {
+        "id" : "f9fdf3a3-e8d0-4aa0-aff9-5313ab7b5a9d",
+        "type" : "TOPIC",
+        "name" : "Gateway Aggregation",
+        "priority" : "SHOULD",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.273Z"
+      }, {
+        "id" : "affd611d-56eb-4bd7-916f-a17a3f234549",
+        "type" : "TOPIC",
+        "name" : "CQRS",
+        "priority" : "SHOULD",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.273Z"
+      }, {
+        "id" : "968cf08f-c17f-46fa-b04a-2228fa13a6c4",
+        "type" : "TOPIC",
+        "name" : "Leader Election",
+        "priority" : "SHOULD",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.274Z"
+      }, {
+        "id" : "e03795be-1a2f-484b-9cfc-2cb428583a2a",
+        "type" : "TOPIC",
+        "name" : "Pipes & Filters",
+        "priority" : "SHOULD",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.274Z"
+      }, {
+        "id" : "b4ce4abf-2ecd-4fd5-b3d9-c77c217a863d",
+        "type" : "TOPIC",
+        "name" : "Static Content Hosting",
+        "priority" : "SHOULD",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.274Z"
+      }, {
+        "id" : "ec3535fd-dddb-4ad6-9c30-15fd298447cb",
+        "type" : "TOPIC",
+        "name" : "External Config Store",
+        "priority" : "NICE",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.274Z"
+      }, {
+        "id" : "ea232bca-e9ed-4283-974e-c144708af4e6",
+        "type" : "TOPIC",
+        "name" : "Compute Resource Consolidation",
+        "priority" : "NICE",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.274Z"
+      } ]
+    }, {
+      "id" : "f1dc3497-beb1-434a-b4ae-6c93b9886eeb",
+      "type" : "MODULE",
+      "name" : "Reliability — Availability",
+      "priority" : "SHOULD",
+      "completed" : false,
+      "createdAt" : "2026-11-10T02:55:12.274Z",
+      "children" : [ {
+        "id" : "fe55988f-00d4-4362-9029-f83ab488007b",
+        "type" : "TOPIC",
+        "name" : "Deployment Stamps",
+        "priority" : "SHOULD",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.274Z"
+      }, {
+        "id" : "ffae5aa0-f4c6-4d86-83a7-e9f18860bfc7",
+        "type" : "TOPIC",
+        "name" : "Geodes",
+        "priority" : "SHOULD",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.274Z"
+      }, {
+        "id" : "b471822d-a31c-45f5-af6a-97ccf4197460",
+        "type" : "TOPIC",
+        "name" : "Throttling",
+        "priority" : "SHOULD",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.275Z"
+      }, {
+        "id" : "5e099496-8c77-43bc-a041-0642ca86d477",
+        "type" : "TOPIC",
+        "name" : "Health Endpoint Monitoring",
+        "priority" : "SHOULD",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.275Z"
+      }, {
+        "id" : "4755f8a2-fcd8-48df-bc3b-16fbc6e2e52a",
+        "type" : "TOPIC",
+        "name" : "Queue-Based Load Leveling",
+        "priority" : "SHOULD",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.275Z"
+      } ]
+    }, {
+      "id" : "0b5af7d4-b19c-4410-a812-e7f4b9bd82d4",
+      "type" : "MODULE",
+      "name" : "Reliability — High Availability",
+      "priority" : "SHOULD",
+      "completed" : false,
+      "createdAt" : "2026-11-10T02:55:12.275Z",
+      "children" : [ {
+        "id" : "c0887345-77e1-46ce-9870-094d31878501",
+        "type" : "TOPIC",
+        "name" : "Deployment Stamps",
+        "priority" : "SHOULD",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.275Z"
+      }, {
+        "id" : "c54c1db7-d043-44f3-84c9-1ee13089c13c",
+        "type" : "TOPIC",
+        "name" : "Geodes",
+        "priority" : "SHOULD",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.275Z"
+      }, {
+        "id" : "84ff902a-abc2-422c-93fd-76daf51251de",
+        "type" : "TOPIC",
+        "name" : "Bulkhead",
+        "priority" : "SHOULD",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.276Z"
+      }, {
+        "id" : "7f0f2c44-30cb-4849-ab33-2b082d341a56",
+        "type" : "TOPIC",
+        "name" : "Health Endpoint Monitoring",
+        "priority" : "SHOULD",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.276Z"
+      }, {
+        "id" : "9c7ff58e-db20-48ee-9aef-272ca0608a80",
+        "type" : "TOPIC",
+        "name" : "Circuit Breaker",
+        "priority" : "SHOULD",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.276Z"
+      } ]
+    }, {
+      "id" : "89db6000-24e9-4804-a7dc-da5bf856f56b",
+      "type" : "MODULE",
+      "name" : "Reliability — Resiliency",
+      "priority" : "MUST",
+      "completed" : false,
+      "createdAt" : "2026-11-10T02:55:12.276Z",
+      "children" : [ {
+        "id" : "f5419ea1-d6e8-4eeb-bb67-f1f7f1b1c756",
+        "type" : "TOPIC",
+        "name" : "Circuit Breaker",
+        "priority" : "MUST",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.276Z"
+      }, {
+        "id" : "214efcd4-3af0-4fb7-8421-a9f874054748",
+        "type" : "TOPIC",
+        "name" : "Retry",
+        "priority" : "MUST",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.276Z"
+      }, {
+        "id" : "307891a7-efdd-42a7-a717-d482e8adb350",
+        "type" : "TOPIC",
+        "name" : "Bulkhead",
+        "priority" : "MUST",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.276Z"
+      }, {
+        "id" : "215c4322-957d-42c6-b3a6-8319692034d2",
+        "type" : "TOPIC",
+        "name" : "Compensating Transaction",
+        "priority" : "MUST",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.276Z"
+      }, {
+        "id" : "aee6e45b-861c-4efb-8eb3-34ac3c625b6e",
+        "type" : "TOPIC",
+        "name" : "Health Endpoint Monitoring",
+        "priority" : "MUST",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.276Z"
+      }, {
+        "id" : "1daa3cf0-0071-45bf-bb6c-402ba29eea3a",
+        "type" : "TOPIC",
+        "name" : "Leader Election",
+        "priority" : "SHOULD",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.277Z"
+      }, {
+        "id" : "b4ace332-f46d-4ab7-830d-8ed0e532907d",
+        "type" : "TOPIC",
+        "name" : "Queue-Based Load Leveling",
+        "priority" : "MUST",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.277Z"
+      }, {
+        "id" : "57434868-5c7b-48c3-ae8d-57f3bf47bc11",
+        "type" : "TOPIC",
+        "name" : "Scheduler Agent Supervisor",
+        "priority" : "NICE",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.277Z"
+      } ]
+    }, {
+      "id" : "885ba20b-0d7e-4e8b-9021-83ba946c92e6",
+      "type" : "MODULE",
+      "name" : "Reliability — Security",
+      "priority" : "SHOULD",
+      "completed" : false,
+      "createdAt" : "2026-11-10T02:55:12.277Z",
+      "children" : [ {
+        "id" : "b351de36-2611-41c3-872c-395256e1a82f",
+        "type" : "TOPIC",
+        "name" : "Federated Identity",
+        "priority" : "SHOULD",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.278Z"
+      }, {
+        "id" : "25ff446a-fe78-487f-a3c5-7c37de2f6d4c",
+        "type" : "TOPIC",
+        "name" : "Gatekeeper",
+        "priority" : "SHOULD",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.278Z"
+      }, {
+        "id" : "d5857287-f816-4684-bf1e-b90a56f5ec4c",
+        "type" : "TOPIC",
+        "name" : "Valet Key",
+        "priority" : "SHOULD",
+        "completed" : false,
+        "createdAt" : "2026-11-10T02:55:12.278Z"
+      } ]
+    } ]
+  } ]
+}

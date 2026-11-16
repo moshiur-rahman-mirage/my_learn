@@ -771,6 +771,7 @@ onBeforeUnmount(() => {
                 ref="editorRef"
                 v-model="content"
                 :view="shownMdView"
+                :dblclick-edit="!reading"
                 :wiki-targets="wikiTargets"
                 @update:view="onMdView"
                 @wiki="openWiki"
@@ -811,7 +812,7 @@ onBeforeUnmount(() => {
               </div>
             </div>
             <p v-if="reading" class="muted mt-2 text-xs">
-              Reading mode — Alt+R or the book button to edit again (double-click a Markdown note to jump into editing). Alt+← / Alt+→ previous /
+              Reading mode — Alt+R or the book button to edit again. Alt+← / Alt+→ previous /
               next topic, Alt+C toggles completed.
             </p>
             <p v-else-if="format === 'MARKDOWN'" class="muted mt-2 text-xs">

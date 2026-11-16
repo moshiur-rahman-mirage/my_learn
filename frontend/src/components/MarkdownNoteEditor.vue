@@ -17,7 +17,10 @@ export interface WikiTarget {
   type: 'MODULE' | 'TOPIC'
 }
 
-const props = defineProps<{ modelValue: string; placeholder?: string; wikiTargets?: WikiTarget[] }>()
+const props = withDefaults(
+  defineProps<{ modelValue: string; placeholder?: string; wikiTargets?: WikiTarget[]; dblclickEdit?: boolean }>(),
+  { dblclickEdit: true },
+)
 const emit = defineEmits<{ 'update:modelValue': [md: string]; wiki: [name: string] }>()
 const view = defineModel<MarkdownView>('view', { default: 'split' })
 
@@ -207,7 +210,7 @@ function focus() {
 defineExpose({ focus })
 
 function editFromPreview() {
-  if (view.value === 'preview') {
+  if (props.dblclickEdit && view.value === 'preview') {
     view.value = 'write'
     void nextTick(focus)
   }
@@ -275,7 +278,7 @@ function editFromPreview() {
         ref="preview"
         class="note-content md-preview prose prose-sm max-w-none min-h-96 overflow-x-auto px-4 py-3 dark:prose-invert"
         :class="view === 'split' ? 'border-t border-slate-200 md:border-t-0 dark:border-slate-800' : ''"
-        :title="view === 'preview' ? 'Double-click to edit' : undefined"
+        :title="view === 'preview' && dblclickEdit ? 'Double-click to edit' : undefined"
         @dblclick="editFromPreview"
         @click="onPreviewClick"
         @keydown="onPreviewClick"

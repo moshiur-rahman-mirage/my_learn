@@ -7,7 +7,7 @@ Each guide/*.md file holds rows. A row starts with a marker line:
 and everything after it (until the next marker) is that row's Markdown content.
 level: 1 = phase, 2 = section, 3 = topic.  TYPE: MODULE or TOPIC.  PRIORITY: MUST / SHOULD / NICE or empty.
 
-Run:  python build_plan_csv.py
+Run:  python build_plan_csv.py [guide_dir] [out.csv]   (defaults: guide plan.csv)
 """
 import csv
 import pathlib
@@ -15,8 +15,8 @@ import re
 import sys
 
 HERE = pathlib.Path(__file__).parent
-GUIDE = HERE / "guide"
-OUT = HERE / "plan.csv"
+GUIDE = HERE / (sys.argv[1] if len(sys.argv) > 1 else "guide")
+OUT = HERE / (sys.argv[2] if len(sys.argv) > 2 else "plan.csv")
 FIELDS = ["level", "type", "name", "description", "priority", "completed", "content"]
 MARKER = re.compile(r"^@@\s*(\d)\s*\|\s*(MODULE|TOPIC)\s*\|(.*)$")
 
