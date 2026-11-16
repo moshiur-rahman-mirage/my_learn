@@ -65,6 +65,16 @@ body {
       dark:border-emerald-500 dark:bg-emerald-600 dark:text-white;
   }
 
+  /* collapsible section heading / plan-group row (Today view) */
+  .section-toggle {
+    @apply flex w-full items-center gap-2 rounded-md py-1 text-left font-semibold
+      hover:text-emerald-700 focus-visible:outline-2 focus-visible:outline-emerald-500 dark:hover:text-emerald-400;
+  }
+  .plan-toggle {
+    @apply flex w-full items-center gap-2 rounded-xl px-4 py-2 text-left text-sm font-semibold
+      hover:bg-slate-50 focus-visible:outline-2 focus-visible:outline-emerald-500 dark:hover:bg-slate-800/50;
+  }
+
   .muted {
     @apply text-slate-500 dark:text-slate-400;
   }

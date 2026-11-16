@@ -1,0 +1,2220 @@
+﻿level,type,name,description,priority,completed,content
+1,MODULE,How to Use This Material,,,FALSE,"This guide follows PKSF_Study_Plan.csv phase by phase. Each section has short notes, code you should be able to write without looking, and likely written-test or viva questions with model answers.
+Tip  Focus order: Java + Spring Boot + React + PostgreSQL first (mandatory). Then Security (JWT/OAuth2/Keycloak), Microservices, Redis, Docker/K8s/CI-CD (preferred). Cloud is optional.
+
+| Week | Focus | Output |
+|---|---|---|
+| 1 | CS fundamentals + Core Java | 50 MCQs/day, 2 coding problems/day |
+| 2 | Collections, Streams, Concurrency, JVM | Handwritten Java solutions |
+| 3 | Spring Core, Boot, REST, JPA | CRUD API with validation and tests |
+| 4 | SQL + PostgreSQL design, indexing, tuning | 20 SQL problems, EXPLAIN practice |
+| 5 | Spring Security, JWT, OAuth2, Keycloak | Secure API with Keycloak |
+| 6 | React + TypeScript | Frontend for the API |
+| 7 | Microservices, SOAP/XML, Redis, MongoDB | Split into services, add cache |
+| 8 | Docker, Kubernetes, CI/CD, mock interviews | Deployed portfolio repo |"
+2,MODULE,What the TOR Asks For,,,FALSE,"- Mandatory: Minimum 2 years full-stack experience; hands-on Java (Spring Boot) and React.
+- Preferred: Public GitHub with clean structure, tests, README and docker-compose; microservices; REST/JSON/XML/SOAP; OAuth2, JWT, Keycloak; PostgreSQL schema design, indexing and query tuning; MongoDB; Redis caching and sessions; Docker, Kubernetes, Git, CI/CD.
+- Optional: AWS/GCP/Azure familiarity or associate-level certification.
+- Context: PKSF works through 200+ Partner Organizations (POs). Data is financial and sensitive, so expect questions on security, data integrity, auditing and performance."
+2,MODULE,Microfinance Vocabulary,,,FALSE,"- PO (Partner Organization): an NGO/MFI that borrows funds from PKSF and lends to members.
+- Member/Borrower: an individual in a PO group (samity).
+- Loan disbursement: money released to a borrower. Installment: a scheduled repayment (often weekly).
+- Outstanding: principal not yet repaid. Overdue: installments past due date.
+- PAR (Portfolio at Risk): outstanding of loans with overdue installments divided by total outstanding.
+- Savings: member deposits. Service charge: interest-like fee.
+- Tip: In design questions, model Loans, Installments and Transactions with NUMERIC money columns, an immutable ledger and an audit trail."
+2,MODULE,Selection Process,,,FALSE,"- Written: MCQs (Java, OOP, DBMS, networking, OS, web), short coding by hand, SQL queries, short theory answers.
+- Viva: your past projects, Spring Boot internals, database design, security, why PKSF.
+- Tip: Practice writing Java on paper. Syntax errors cost marks when there is no IDE."
+2,MODULE,Data Structures,,,FALSE,"| Structure | Access | Search | Insert | Delete | Notes |
+|---|---|---|---|---|---|
+| Array | O(1) | O(n) | O(n) | O(n) | Contiguous memory |
+| Linked list | O(n) | O(n) | O(1) at head | O(1) with node ref | No random access |
+| Stack/Queue | - | O(n) | O(1) | O(1) | LIFO / FIFO |
+| Hash table | - | O(1) avg | O(1) avg | O(1) avg | O(n) worst case |
+| BST (balanced) | - | O(log n) | O(log n) | O(log n) | Unbalanced worst O(n) |
+| Heap | O(1) top | O(n) | O(log n) | O(log n) | Priority queue |"
+3,TOPIC,Linked List — Reverse and Detect Cycle,,,FALSE,"```java
+ListNode reverse(ListNode head) {
+ListNode prev = null, cur = head;
+while (cur != null) {
+ListNode next = cur.next;
+cur.next = prev;
+prev = cur;
+cur = next;
+}
+return prev;
+}
+boolean hasCycle(ListNode head) {   // Floyd's tortoise and hare
+ListNode slow = head, fast = head;
+while (fast != null && fast.next != null) {
+slow = slow.next;
+fast = fast.next.next;
+if (slow == fast) return true;
+}
+return false;
+}
+```"
+3,TOPIC,Stack — Balanced Parentheses,,,FALSE,"```java
+boolean isBalanced(String s) {
+Deque<Character> st = new ArrayDeque<>();
+for (char c : s.toCharArray()) {
+if (c == '(' || c == '{' || c == '[') st.push(c);
+else {
+if (st.isEmpty()) return false;
+char o = st.pop();
+if ((c == ')' && o != '(') || (c == '}' && o != '{') || (c == ']' && o != '[')) return false;
+}
+}
+return st.isEmpty();
+}
+```"
+3,TOPIC,Trees — Traversals,,,FALSE,"```java
+Inorder (L, Root, R): gives sorted order for a BST.
+Preorder (Root, L, R): copy/serialize a tree. Postorder (L, R, Root): delete/free a tree.
+Level order: BFS using a queue.
+int height(TreeNode n) {
+return n == null ? 0 : 1 + Math.max(height(n.left), height(n.right));
+}
+List<List<Integer>> levelOrder(TreeNode root) {
+List<List<Integer>> res = new ArrayList<>();
+if (root == null) return res;
+Queue<TreeNode> q = new LinkedList<>();
+q.add(root);
+while (!q.isEmpty()) {
+int size = q.size();
+List<Integer> level = new ArrayList<>();
+for (int i = 0; i < size; i++) {
+TreeNode n = q.poll();
+level.add(n.val);
+if (n.left != null) q.add(n.left);
+if (n.right != null) q.add(n.right);
+}
+res.add(level);
+}
+return res;
+}
+```"
+3,TOPIC,Graphs — BFS and DFS,,,FALSE,"```java
+void bfs(Map<Integer, List<Integer>> g, int start) {
+Set<Integer> seen = new HashSet<>(List.of(start));
+Queue<Integer> q = new ArrayDeque<>(List.of(start));
+while (!q.isEmpty()) {
+int u = q.poll();
+System.out.println(u);
+for (int v : g.getOrDefault(u, List.of()))
+if (seen.add(v)) q.add(v);
+}
+}
+BFS: shortest path in unweighted graphs, level-wise processing.
+DFS: cycle detection, topological sort, connected components.
+Topological sort: ordering of a DAG (e.g., task dependencies). Use Kahn's algorithm (in-degree + queue).
+```"
+3,TOPIC,Complexity Cheat Sheet,,,FALSE,"Algorithm
+Best
+Average
+Worst
+Space
+Stable
+Bubble sort
+O(n)
+O(n²)
+O(n²)
+O(1)
+Yes
+Insertion sort
+O(n)
+O(n²)
+O(n²)
+O(1)
+Yes
+Selection sort
+O(n²)
+O(n²)
+O(n²)
+O(1)
+No
+Merge sort
+O(n log n)
+O(n log n)
+O(n log n)
+O(n)
+Yes
+Quick sort
+O(n log n)
+O(n log n)
+O(n²)
+O(log n)
+No
+Heap sort
+O(n log n)
+O(n log n)
+O(n log n)
+O(1)
+No
+Binary search
+O(1)
+O(log n)
+O(log n)
+O(1)
+-
+- Tip: Java's Arrays.sort uses dual-pivot Quicksort for primitives and TimSort (stable) for objects; Collections.sort uses TimSort."
+3,TOPIC,Binary Search,,,FALSE,"```java
+int binarySearch(int[] a, int target) {
+int lo = 0, hi = a.length - 1;
+while (lo <= hi) {
+int mid = lo + (hi - lo) / 2;   // avoids int overflow
+if (a[mid] == target) return mid;
+if (a[mid] < target) lo = mid + 1; else hi = mid - 1;
+}
+return -1;
+}
+```"
+3,TOPIC,Merge Sort,,,FALSE,"```java
+void mergeSort(int[] a, int l, int r) {
+if (l >= r) return;
+int m = (l + r) / 2;
+mergeSort(a, l, m);
+mergeSort(a, m + 1, r);
+int[] tmp = new int[r - l + 1];
+int i = l, j = m + 1, k = 0;
+while (i <= m && j <= r) tmp[k++] = a[i] <= a[j] ? a[i++] : a[j++];
+while (i <= m) tmp[k++] = a[i++];
+while (j <= r) tmp[k++] = a[j++];
+System.arraycopy(tmp, 0, a, l, tmp.length);
+}
+```"
+3,TOPIC,Two Pointers and Sliding Window,,,FALSE,"```java
+// Longest substring without repeating characters
+int lengthOfLongestSubstring(String s) {
+Map<Character, Integer> last = new HashMap<>();
+int best = 0, left = 0;
+for (int right = 0; right < s.length(); right++) {
+char c = s.charAt(right);
+if (last.containsKey(c) && last.get(c) >= left) left = last.get(c) + 1;
+last.put(c, right);
+best = Math.max(best, right - left + 1);
+}
+return best;
+}
+// Two Sum with HashMap — O(n)
+int[] twoSum(int[] nums, int target) {
+Map<Integer, Integer> idx = new HashMap<>();
+for (int i = 0; i < nums.length; i++) {
+Integer j = idx.get(target - nums[i]);
+if (j != null) return new int[]{j, i};
+idx.put(nums[i], i);
+}
+return new int[0];
+}
+```"
+3,TOPIC,Dynamic Programming,,,FALSE,"```java
+- Use when a problem has overlapping subproblems and optimal substructure.
+Memoization: top-down recursion with a cache. Tabulation: bottom-up loop filling a table.
+// Coin change: minimum coins to make amount
+int coinChange(int[] coins, int amount) {
+int[] dp = new int[amount + 1];
+Arrays.fill(dp, amount + 1);
+dp[0] = 0;
+for (int a = 1; a <= amount; a++)
+for (int c : coins)
+if (c <= a) dp[a] = Math.min(dp[a], dp[a - c] + 1);
+return dp[amount] > amount ? -1 : dp[amount];
+}
+```"
+3,TOPIC,Common Handwritten Problems,,,FALSE,"```java
+boolean isPalindrome(String s) {
+int i = 0, j = s.length() - 1;
+while (i < j) if (s.charAt(i++) != s.charAt(j--)) return false;
+return true;
+}
+boolean isPrime(int n) {
+if (n < 2) return false;
+for (int i = 2; (long) i * i <= n; i++) if (n % i == 0) return false;
+return true;
+}
+long factorial(int n) { return n <= 1 ? 1 : n * factorial(n - 1); }
+Map<Character, Long> charFrequency(String s) {
+return s.chars().mapToObj(c -> (char) c)
+.collect(Collectors.groupingBy(c -> c, LinkedHashMap::new, Collectors.counting()));
+}
+boolean isAnagram(String a, String b) {
+if (a.length() != b.length()) return false;
+int[] cnt = new int[26];
+for (int i = 0; i < a.length(); i++) { cnt[a.charAt(i) - 'a']++; cnt[b.charAt(i) - 'a']--; }
+for (int c : cnt) if (c != 0) return false;
+return true;
+}
+void fizzBuzz(int n) {
+for (int i = 1; i <= n; i++)
+System.out.println(i % 15 == 0 ? ""FizzBuzz"" : i % 3 == 0 ? ""Fizz"" : i % 5 == 0 ? ""Buzz"" : String.valueOf(i));
+}
+```"
+3,TOPIC,Four Pillars,,,FALSE,"```java
+Encapsulation: hide state behind methods (private fields + getters/validated setters).
+Abstraction: expose what, hide how (interfaces, abstract classes).
+Inheritance: an IS-A relationship and code reuse (extends).
+Polymorphism: one interface, many forms. Compile-time = overloading (same name, different params). Runtime = overriding (subclass redefines; resolved by dynamic dispatch).
+```"
+3,TOPIC,SOLID,,,FALSE,"```java
+S — Single Responsibility: a class has one reason to change. LoanService should not also generate PDFs.
+O — Open/Closed: open for extension, closed for modification. Add a new InterestCalculator implementation instead of editing if/else.
+L — Liskov Substitution: subtypes must work wherever the base type is used. Classic violation: Square extends Rectangle.
+I — Interface Segregation: many small interfaces beat one fat interface.
+D — Dependency Inversion: depend on abstractions. Spring DI is the practical form of this.
+// Open/Closed + Strategy pattern
+public interface InterestCalculator { BigDecimal calculate(BigDecimal principal, int months); }
+@Component(""flat"")
+class FlatInterest implements InterestCalculator {
+public BigDecimal calculate(BigDecimal p, int m) {
+return p.multiply(new BigDecimal(""0.10"")).multiply(BigDecimal.valueOf(m)).divide(BigDecimal.valueOf(12), 2, RoundingMode.HALF_UP);
+}
+}
+@Component(""declining"")
+class DecliningInterest implements InterestCalculator { /* ... */ }
+@Service
+class LoanService {
+private final Map<String, InterestCalculator> calculators; // Spring injects all beans by name
+LoanService(Map<String, InterestCalculator> calculators) { this.calculators = calculators; }
+BigDecimal interest(String method, BigDecimal p, int m) { return calculators.get(method).calculate(p, m); }
+}
+```"
+3,TOPIC,Design Patterns You Must Know,,,FALSE,"```java
+public static Config getInstance() { return Holder.INSTANCE; }
+}
+```"
+3,TOPIC,SDLC and Agile,,,FALSE,"Waterfall: sequential phases; fits fixed requirements.
+Agile/Scrum: iterative sprints (1–4 weeks). Roles: Product Owner, Scrum Master, Dev Team. Ceremonies: sprint planning, daily stand-up, review, retrospective. Artifacts: product backlog, sprint backlog, increment.
+- User story: ""As a PO officer, I want to record a repayment so that the outstanding balance is up to date."""
+2,MODULE,Operating Systems,,,FALSE,"Process: an independent program with its own memory space. Thread: a lightweight unit inside a process that shares heap memory but has its own stack.
+Deadlock conditions (all four needed): mutual exclusion, hold and wait, no preemption, circular wait. Prevent by breaking one, for example by always acquiring locks in a fixed order.
+Mutex vs semaphore: a mutex allows one owner. A counting semaphore allows N concurrent holders.
+Race condition: the outcome depends on thread timing. Fix with synchronization or atomic operations.
+Virtual memory/paging: memory is split into fixed pages. A page fault loads a page from disk. Thrashing means too many page faults.
+Scheduling: FCFS, SJF (optimal average wait), Round Robin (time quantum, fair), Priority (risk of starvation, fixed by aging)."
+2,MODULE,Computer Networks,,,FALSE,"OSI Layer
+Example
+7 Application
+HTTP, DNS, SMTP, FTP
+6 Presentation
+TLS/SSL, encoding
+5 Session
+Sessions, RPC
+4 Transport
+TCP, UDP
+3 Network
+IP, ICMP, routers
+2 Data Link
+Ethernet, MAC, switches
+1 Physical
+Cables, signals
+TCP: connection-oriented (3-way handshake SYN, SYN-ACK, ACK), reliable, ordered, flow/congestion control. Used for HTTP, DB connections.
+UDP: connectionless, no delivery guarantee, low latency. Used for DNS, video, VoIP.
+HTTPS: HTTP over TLS. TLS handshake: the server sends its certificate, the client verifies it, and both agree on a symmetric session key.
+Safe methods: GET, HEAD, OPTIONS. Idempotent: GET, PUT, DELETE, HEAD, OPTIONS. POST is neither.
+Code
+Meaning
+200 OK / 201 Created / 204 No Content
+Success
+301 / 302 / 304 Not Modified
+Redirects / caching
+400 Bad Request
+Validation error
+401 Unauthorized
+Not authenticated
+403 Forbidden
+Authenticated but not allowed
+404 Not Found / 409 Conflict
+Missing / state conflict (e.g. version mismatch)
+422 Unprocessable Entity
+Semantic validation failure
+429 Too Many Requests
+Rate limited
+500 / 502 / 503 / 504
+Server error / bad gateway / unavailable / gateway timeout
+What happens when you type a URL: DNS lookup, then TCP connect, TLS handshake, HTTP request, server processes it, response, then the browser parses HTML, fetches CSS/JS and renders.
+CORS: a browser rule. A page from origin A calling API origin B needs B to send Access-Control-Allow-Origin. Non-simple requests send an OPTIONS preflight first.
+Cookies: HttpOnly (JavaScript can't read it), Secure (sent only over HTTPS), SameSite (Strict/Lax/None, which mitigates CSRF)."
+3,TOPIC,Normalization,,,FALSE,"1NF: atomic values, no repeating groups.
+2NF: 1NF + no partial dependency (non-key column depends on the whole composite key).
+3NF: 2NF + no transitive dependency (non-key depends only on key).
+BCNF: every determinant is a candidate key.
+Denormalize for read-heavy reporting, with care.
+- Tip: Example: storing po_name in the loans table violates 3NF (loan_id → po_id → po_name). Move it to a pos table."
+3,TOPIC,ACID and Isolation,,,FALSE,"Atomicity: all or nothing. Consistency: constraints hold. Isolation: concurrent transactions don't interfere. Durability: committed data survives a crash (WAL).
+Isolation level
+Dirty read
+Non-repeatable read
+Phantom
+Read Uncommitted
+Possible
+Possible
+Possible
+Read Committed (Postgres default)
+No
+Possible
+Possible
+Repeatable Read
+No
+No
+Possible (Postgres prevents)
+Serializable
+No
+No
+No
+CAP: in a network partition, a distributed system must choose Consistency or Availability. BASE: Basically Available, Soft state, Eventually consistent."
+2,MODULE,Phase 1 — Interview Questions,,,FALSE,"Q. Difference between an array and a linked list?
+A. An array has contiguous memory, O(1) index access and costly inserts. A linked list has scattered nodes, O(n) access, O(1) insert/delete given the node, and extra memory for pointers.
+Q. Why is HashMap lookup O(1) on average but O(n) in the worst case?
+A. The hash maps a key to a bucket. If many keys collide in one bucket, lookup scans that bucket. Java 8+ turns large buckets (more than 8 entries) into red-black trees, so the worst case becomes O(log n).
+Q. Explain 401 vs 403.
+A. 401 means you are not authenticated (missing or invalid credentials). 403 means you are authenticated but lack permission.
+Q. What is a deadlock and how do you prevent it in Java?
+A. Two or more threads each wait for a lock held by another. Prevent it by acquiring locks in a consistent global order, using tryLock with a timeout, or reducing lock scope.
+Q. What is the difference between process and thread?
+A. Processes have separate address spaces. Threads in a process share heap and code but each has its own stack and registers. Threads are cheaper to create and switch."
+2,MODULE,Java Language Basics,,,FALSE,"```java
+BigDecimal a = new BigDecimal(""0.1""), b = new BigDecimal(""0.2"");
+System.out.println(a.add(b));          // 0.3
+System.out.println(0.1 + 0.2);         // 0.30000000000000004
+BigDecimal inst = new BigDecimal(""10000"").divide(new BigDecimal(""12""), 2, RoundingMode.HALF_UP); // 833.33
+```"
+3,TOPIC,Strings,,,FALSE,"- String s1 = ""pksf"", s2 = ""pksf"", s3 = new String(""pksf"");
+s1 == s2;        // true  (same pool reference)
+s1 == s3;        // false (different objects)
+s1.equals(s3);   // true
+s3.intern() == s1; // true"
+3,TOPIC,equals() and hashCode(),,,FALSE,"```java
+Contract: if a.equals(b) then a.hashCode() == b.hashCode(). The reverse is not required.
+If you override equals without hashCode, HashMap/HashSet break (equal objects land in different buckets).
+public final class Member {
+private final String nid;
+private final String name;
+public Member(String nid, String name) { this.nid = nid; this.name = name; }
+@Override public boolean equals(Object o) {
+if (this == o) return true;
+if (!(o instanceof Member m)) return false;
+return nid.equals(m.nid);
+}
+@Override public int hashCode() { return Objects.hash(nid); }
+}
+// Or simply: public record Member(String nid, String name) {}  — equals/hashCode generated
+```"
+3,TOPIC,Keywords and Access Modifiers,,,FALSE,"```java
+Modifier
+Class
+Package
+Subclass
+World
+private
+Yes
+No
+No
+No
+default (none)
+Yes
+Yes
+No
+No
+protected
+Yes
+Yes
+Yes
+No
+public
+Yes
+Yes
+Yes
+Yes
+static: belongs to the class rather than an instance. A static method cannot use this.
+final: a final variable can't be reassigned, a final method can't be overridden, a final class can't be extended.
+finally: a block that always runs (except System.exit). finalize: deprecated GC hook.
+```"
+3,TOPIC,Exceptions,,,FALSE,"```java
+Checked (extends Exception, not RuntimeException): the compiler forces handling, e.g. IOException, SQLException.
+Unchecked (RuntimeException): programming errors, e.g. NullPointerException, IllegalArgumentException.
+Error: JVM problems such as OutOfMemoryError and StackOverflowError. Don't catch these.
+try (BufferedReader br = Files.newBufferedReader(Path.of(""data.csv""))) {   // auto-closed
+return br.lines().count();
+} catch (IOException e) {
+throw new UncheckedIOException(""Failed to read file"", e);   // wrap, keep cause
+}
+public class LoanNotFoundException extends RuntimeException {
+public LoanNotFoundException(Long id) { super(""Loan not found: "" + id); }
+}
+- Tip: Best practice: don't swallow exceptions, don't catch Exception broadly, preserve the cause, and log once at the boundary.
+```"
+3,TOPIC,Generics,,,FALSE,"```java
+public static <T extends Comparable<T>> T max(List<T> list) {
+T best = list.get(0);
+for (T t : list) if (t.compareTo(best) > 0) best = t;
+return best;
+}
+double sum(List<? extends Number> nums) { return nums.stream().mapToDouble(Number::doubleValue).sum(); }
+```"
+3,TOPIC,Interfaces vs Abstract Classes,,,FALSE,"Interface
+Abstract class
+Multiple implementation allowed
+Single inheritance
+No instance state (constants only)
+Can have fields and constructors
+default/static/private methods since Java 8/9
+Any method type
+Defines a capability (CAN-DO)
+Shares a base (IS-A)"
+3,TOPIC,Enums and Records,,,FALSE,"```java
+public enum LoanStatus {PENDING(""Pending approval""), ACTIVE(""Disbursed""), CLOSED(""Fully repaid""), WRITTEN_OFF(""Written off"");private final String label;LoanStatus(String label) { this.label = label; }public String label() { return label; }}
+public record LoanDto(Long id, String memberName, BigDecimal amount, LoanStatus status) {
+public LoanDto {   // compact constructor for validation
+if (amount.signum() <= 0) throw new IllegalArgumentException(""amount must be positive"");
+}
+}
+```"
+3,TOPIC,Immutable Class Recipe,,,FALSE,"```java
+Make the class final, all fields private final, and provide no setters.
+Make defensive copies of mutable inputs and outputs (List.copyOf).
+Or use a record (shallowly immutable).
+```"
+2,MODULE,Collections Framework,,,FALSE,"Type
+Implementation
+Ordered
+Sorted
+Null
+Get/Contains
+List
+ArrayList
+Insertion
+No
+Yes
+O(1) index
+List
+LinkedList
+Insertion
+No
+Yes
+O(n) index
+Set
+HashSet
+No
+No
+One null
+O(1)
+Set
+LinkedHashSet
+Insertion
+No
+One null
+O(1)
+Set
+TreeSet
+Sorted
+Yes
+No
+O(log n)
+Map
+HashMap
+No
+No
+One null key
+O(1)
+Map
+LinkedHashMap
+Insertion/access
+No
+One null key
+O(1)
+Map
+TreeMap
+Sorted keys
+Yes
+No null key
+O(log n)
+Map
+ConcurrentHashMap
+No
+No
+No nulls
+O(1), thread-safe"
+3,TOPIC,HashMap Internals,,,FALSE,"Backed by an array of buckets (Node[] table), default capacity 16 and load factor 0.75.
+index = (n - 1) & (hash ^ (hash >>> 16)).
+A collision creates a linked list in the bucket. A list longer than 8 (when the table is at least 64) becomes a red-black tree.
+When size > capacity × load factor, the table doubles and entries are redistributed.
+Mutable keys are dangerous: if a key's hashCode changes after insertion, the entry can't be found."
+3,TOPIC,LRU Cache with LinkedHashMap,,,FALSE,"```java
+class LruCache<K, V> extends LinkedHashMap<K, V> {
+private final int capacity;
+LruCache(int capacity) { super(16, 0.75f, true); this.capacity = capacity; } // accessOrder = true
+@Override protected boolean removeEldestEntry(Map.Entry<K, V> e) { return size() > capacity; }
+}
+```"
+3,TOPIC,Comparable vs Comparator,,,FALSE,"```java
+record Loan(String member, BigDecimal amount, LocalDate date) implements Comparable<Loan> {
+public int compareTo(Loan o) { return date.compareTo(o.date); }   // natural order
+}
+loans.sort(Comparator.comparing(Loan::amount).reversed().thenComparing(Loan::member));
+Fail-fast iterators (ArrayList, HashMap) throw ConcurrentModificationException if the collection is modified during iteration. Use iterator.remove() or removeIf().
+Fail-safe (ConcurrentHashMap, CopyOnWriteArrayList) iterate over a snapshot or weakly consistent view.
+```"
+2,MODULE,Functional Java and Streams,,,FALSE,"record Txn(String po, String type, BigDecimal amount, LocalDate date) {}
+// Total disbursement per PO
+Map<String, BigDecimal> byPo = txns.stream()
+.filter(t -> t.type().equals(""DISBURSE""))
+.collect(Collectors.groupingBy(Txn::po,
+Collectors.reducing(BigDecimal.ZERO, Txn::amount, BigDecimal::add)));
+// Top 3 largest transactions
+List<Txn> top3 = txns.stream().sorted(Comparator.comparing(Txn::amount).reversed()).limit(3).toList();
+// Partition: large vs small
+Map<Boolean, List<Txn>> parts = txns.stream()
+.collect(Collectors.partitioningBy(t -> t.amount().compareTo(new BigDecimal(""50000"")) > 0));
+// flatMap: all words from lines
+List<String> words = lines.stream().flatMap(l -> Arrays.stream(l.split(""\\s+""))).distinct().toList();
+// Second highest number
+- Optional<Integer> second = nums.stream().distinct().sorted(Comparator.reverseOrder()).skip(1).findFirst();
+// Duplicates in a list
+Set<Integer> seen = new HashSet<>();
+Set<Integer> dups = nums.stream().filter(n -> !seen.add(n)).collect(Collectors.toSet());"
+3,TOPIC,Optional,,,FALSE,"```java
+- Use Optional as a return type for ""may be absent"". Don't use it for fields or parameters.
+Prefer orElseThrow, map, orElse and ifPresent over get().
+Loan loan = loanRepository.findById(id).orElseThrow(() -> new LoanNotFoundException(id));
+- String name = memberRepo.findById(id).map(Member::name).orElse(""Unknown"");
+```"
+2,MODULE,Concurrency and Multithreading,,,FALSE,"```java
+Thread states: NEW, RUNNABLE, BLOCKED, WAITING, TIMED_WAITING, TERMINATED.
+Runnable returns nothing. Callable returns a value and can throw a checked exception.
+synchronized: mutual exclusion plus visibility. volatile: visibility and ordering only, not atomicity (count++ is still unsafe).
+happens-before: unlocking a monitor happens-before a later lock of it, and a volatile write happens-before a later read.
+ExecutorService pool = Executors.newFixedThreadPool(4);
+try {
+List<Future<BigDecimal>> futures = poIds.stream()
+.map(id -> pool.submit(() -> reportService.calculateOutstanding(id))).toList();
+for (Future<BigDecimal> f : futures) total = total.add(f.get());
+} finally {
+pool.shutdown();
+}
+CompletableFuture<Member> m = CompletableFuture.supplyAsync(() -> memberClient.get(id));
+CompletableFuture<List<Loan>> l = CompletableFuture.supplyAsync(() -> loanClient.byMember(id));
+MemberProfile profile = m.thenCombine(l, MemberProfile::new).join();
+AtomicLong counter = new AtomicLong();   // lock-free via CAS
+counter.incrementAndGet();
+Thread-safe counter options: synchronized method, AtomicInteger/LongAdder, ReentrantLock.
+wait/notify vs sleep: wait() releases the monitor and must be called in synchronized code. sleep() keeps the lock.
+Virtual threads (Java 21): cheap, JVM-managed threads, good for blocking I/O. Enable in Spring Boot 3.2+ with spring.threads.virtual.enabled=true.
+```"
+3,TOPIC,Producer–Consumer,,,FALSE,"```java
+BlockingQueue<String> q = new LinkedBlockingQueue<>(100);
+Runnable producer = () -> { for (int i = 0; i < 10; i++) { try { q.put(""job-"" + i); } catch (InterruptedException e) { Thread.currentThread().interrupt(); } } };
+Runnable consumer = () -> { while (true) { try { process(q.take()); } catch (InterruptedException e) { Thread.currentThread().interrupt(); return; } } };
+```"
+2,MODULE,JVM Internals,,,FALSE,"```java
+Heap: objects (Young gen: Eden + Survivors; Old gen). Stack: one per thread; frames hold local variables and references. Metaspace: class metadata (native memory, replaced PermGen in Java 8).
+StackOverflowError: recursion too deep. OutOfMemoryError: heap/metaspace exhausted or leak.
+GC: objects unreachable from GC roots (stack refs, static fields) are collected. Minor GC cleans the young gen and major/full GC cleans the old gen. G1 is the default since Java 9; ZGC offers very low pauses.
+Class loading: Bootstrap → Platform → Application, using the parent-delegation model.
+Tools: jps, jstack (thread dump for deadlocks), jmap/heap dump, VisualVM, Java Flight Recorder. Tune with -Xms, -Xmx, -XX:+UseG1GC.
+```"
+2,MODULE,Modern Java (17/21),,,FALSE,"```javascript
+var list = new ArrayList<String>();                       // local type inference
+- String json = """"""
+{""po"": ""ABC"", ""amount"": 5000}
+"""""";                                                  // text block
+- String label = switch (status) {                          // switch expression
+case PENDING -> ""Waiting"";
+case ACTIVE, CLOSED -> ""Processed"";
+default -> ""Other"";
+};
+if (obj instanceof Loan loan && loan.amount().signum() > 0) { /* use loan */ }   // pattern matching
+sealed interface Shape permits Circle, Square {}
+record Circle(double r) implements Shape {}
+record Square(double s) implements Shape {}
+double area(Shape s) {
+return switch (s) {                                   // record patterns, Java 21
+case Circle(double r) -> Math.PI * r * r;
+case Square(double side) -> side * side;
+};
+}
+```"
+2,MODULE,Build Tools — Maven,,,FALSE,"Lifecycle phases: validate → compile → test → package → verify → install → deploy.
+Scopes: compile (default), provided (container supplies), runtime (e.g. JDBC driver), test.
+Commands: mvn clean package, mvn test, mvn spring-boot:run, mvn dependency:tree, mvn -DskipTests package.
+Multi-module: a parent POM with <modules> and <dependencyManagement> for consistent versions."
+2,MODULE,Phase 2 — Interview Questions,,,FALSE,"```java
+Q. Why is String immutable?
+A. For security (paths, URLs, class names can't be changed), thread safety, safe use as HashMap keys with cached hashCode, and string-pool sharing.
+Q. Difference between == and equals()?
+A. == compares references (or primitive values). equals() compares logical content as defined by the class.
+Q. What happens if you put a key with an overridden equals but not hashCode into a HashMap?
+A. Equal keys may produce different hash codes, land in different buckets and create duplicates. get() with an equal key may return null.
+Q. ArrayList vs LinkedList?
+A. ArrayList is backed by a dynamic array: O(1) random access and amortized O(1) append, with costly middle inserts. LinkedList is doubly linked: O(1) insert/remove at the ends but O(n) access and poor cache locality. ArrayList is preferred almost always.
+Q. Checked vs unchecked exceptions — which should a Spring service throw?
+A. Usually unchecked (custom RuntimeExceptions). They don't pollute signatures, and by default @Transactional rolls back only on unchecked exceptions.
+Q. What is the difference between map and flatMap?
+A. map transforms each element one-to-one. flatMap maps each element to a stream and flattens the results into one stream.
+Q. volatile vs synchronized?
+A. volatile guarantees visibility and ordering of a single variable but not compound atomicity. synchronized gives mutual exclusion and visibility for a block.
+Q. Explain the Java memory model areas.
+A. Heap stores objects and is shared by threads. Each thread has its own stack of frames with locals. Metaspace stores class metadata. There are also the PC register and native method stack.
+Q. What is a functional interface? Can it have default methods?
+A. An interface with exactly one abstract method. Yes, it can have any number of default and static methods.
+```"
+2,MODULE,Spring Core,,,FALSE,"```java
+IoC (Inversion of Control): the container creates and wires objects instead of your code doing it. DI is how: dependencies are supplied through constructors, setters or fields.
+Prefer constructor injection: it allows final fields, makes dependencies explicit, simplifies testing and fails fast. With a single constructor, @Autowired is optional.
+ApplicationContext is the container (it extends BeanFactory and adds events, i18n and AOP integration).
+@Service
+public class RepaymentService {
+private final LoanRepository loanRepo;
+private final ApplicationEventPublisher events;
+public RepaymentService(LoanRepository loanRepo, ApplicationEventPublisher events) {
+this.loanRepo = loanRepo;
+this.events = events;
+}
+}
+```"
+3,TOPIC,Bean Scopes and Lifecycle,,,FALSE,"```java
+Scope
+Meaning
+singleton (default)
+One instance per container
+prototype
+New instance per injection/request for the bean
+request
+One per HTTP request
+session
+One per HTTP session
+application
+One per ServletContext
+Lifecycle: instantiate → inject dependencies → Aware callbacks → BeanPostProcessor before → @PostConstruct / afterPropertiesSet → BeanPostProcessor after (proxies created here) → ready → @PreDestroy on shutdown.
+Singleton beans must be stateless or thread-safe because they are shared across requests.
+```"
+3,TOPIC,Stereotypes and Configuration,,,FALSE,"```java
+@Component: generic bean. @Service: business logic. @Repository: DAO; also translates persistence exceptions into DataAccessException. @Controller/@RestController: web layer.
+@Configuration + @Bean: define beans for third-party classes. @Qualifier/@Primary: resolve multiple candidates. @Profile, @ConditionalOnProperty: conditional beans.
+@Configuration
+public class AppConfig {
+@Bean
+public RestClient smsClient(@Value(""${sms.base-url}"") String url) {
+return RestClient.builder().baseUrl(url).build();
+}
+}
+```"
+3,TOPIC,Spring AOP,,,FALSE,"```java
+Aspect: cross-cutting module (logging, security, transactions). Advice: @Before, @After, @AfterReturning, @AfterThrowing, @Around. Pointcut: where to apply. Join point: a method execution.
+Spring AOP is proxy-based: JDK dynamic proxies for interfaces, CGLIB subclasses otherwise. Internal calls (this.method()) bypass the proxy, which is why @Transactional on self-invoked methods does not work.
+@Aspect @Component
+public class TimingAspect {
+private static final Logger log = LoggerFactory.getLogger(TimingAspect.class);
+@Around(""execution(* bd.org.pksf..service..*(..))"")
+public Object time(ProceedingJoinPoint pjp) throws Throwable {
+long start = System.nanoTime();
+try { return pjp.proceed(); }
+finally { log.info(""{} took {} ms"", pjp.getSignature(), (System.nanoTime() - start) / 1_000_000); }
+}
+}
+```"
+2,MODULE,Spring Boot Essentials,,,FALSE,"```java
+@SpringBootApplication = @Configuration + @EnableAutoConfiguration + @ComponentScan (current package and sub-packages).
+Auto-configuration: classes listed in META-INF/spring/...AutoConfiguration.imports are applied conditionally (@ConditionalOnClass, @ConditionalOnMissingBean). Example: if a DataSource class and URL are present, a HikariCP DataSource is configured. Debug with --debug to see the conditions report.
+Starters: curated dependency bundles (spring-boot-starter-web, -data-jpa, -security, -validation, -actuator, -data-redis, -oauth2-resource-server).
+Embedded server: Tomcat by default, so the app runs as an executable fat jar.
+```"
+3,TOPIC,Configuration and Profiles,,,FALSE,"```java
+# application.yml
+spring:
+application:
+name: loan-service
+datasource:
+url: jdbc:postgresql://localhost:5432/pksf
+- username: ${DB_USER:pksf}
+password: ${DB_PASSWORD}
+hikari:
+maximum-pool-size: 20
+jpa:
+hibernate:
+ddl-auto: validate      # never 'update' in production; use Flyway
+open-in-view: false
+profiles:
+active: dev
+app:
+loan:
+max-amount: 500000
+default-tenure-months: 12
+---
+spring:
+config:
+activate:
+on-profile: prod
+logging:
+level:
+root: WARN
+@ConfigurationProperties(prefix = ""app.loan"")
+public record LoanProperties(BigDecimal maxAmount, int defaultTenureMonths) {}
+// enable with @EnableConfigurationProperties(LoanProperties.class) or @ConfigurationPropertiesScan
+Property precedence (high to low, simplified): command-line args → environment variables → profile-specific files → application.yml → defaults.
+```"
+3,TOPIC,Actuator and Logging,,,FALSE,"Endpoints: /actuator/health (with liveness/readiness groups for K8s), /info, /metrics, /prometheus. Expose only what you need and secure the rest.
+Logging: SLF4J API + Logback. Use parameterized logs: log.info(""Loan {} approved"", id). Add a correlation ID through MDC in a filter so you can trace requests across services. Never log passwords, tokens or full NID numbers."
+3,TOPIC,Project Structure,,,FALSE,"src/main/java/bd/org/pksf/loan
+├── LoanServiceApplication.java
+├── config/          (security, OpenAPI, cache config)
+├── loan/            (feature package)
+│    ├── LoanController.java
+│    ├── LoanService.java
+│    ├── LoanRepository.java
+│    ├── Loan.java (entity)
+│    └── dto/ (LoanRequest, LoanResponse)
+├── member/
+└── common/          (exceptions, audit, utils)
+src/main/resources/application.yml, db/migration/V1__init.sql"
+2,MODULE,Building REST APIs,,,FALSE,"```java
+@RestController
+@RequestMapping(""/api/v1/loans"")
+@RequiredArgsConstructor
+public class LoanController {
+private final LoanService loanService;
+@GetMapping
+public Page<LoanResponse> list(@RequestParam(required = false) LoanStatus status,
+@PageableDefault(size = 20, sort = ""createdAt"", direction = Sort.Direction.DESC) Pageable pageable) {
+return loanService.search(status, pageable);
+}
+@GetMapping(""/{id}"")
+public LoanResponse get(@PathVariable Long id) { return loanService.get(id); }
+@PostMapping
+@PreAuthorize(""hasRole('PO_OFFICER')"")
+public ResponseEntity<LoanResponse> create(@Valid @RequestBody LoanRequest req, UriComponentsBuilder uri) {
+LoanResponse created = loanService.create(req);
+return ResponseEntity.created(uri.path(""/api/v1/loans/{id}"").build(created.id())).body(created);
+}
+@PostMapping(""/{id}/repayments"")
+public RepaymentResponse repay(@PathVariable Long id, @Valid @RequestBody RepaymentRequest req) {
+return loanService.repay(id, req);
+}
+@DeleteMapping(""/{id}"")
+@ResponseStatus(HttpStatus.NO_CONTENT)
+public void delete(@PathVariable Long id) { loanService.delete(id); }
+}
+```"
+3,TOPIC,DTOs and Validation,,,FALSE,"```java
+@NotNull @DecimalMin(""1000.00"") @DecimalMax(""500000.00"") @Digits(integer = 10, fraction = 2) BigDecimal amount,
+@Min(1) @Max(60) int tenureMonths,
+@NotBlank @Size(max = 200) String purpose) {}
+@Mapper(componentModel = ""spring"")
+public interface LoanMapper {
+@Mapping(target = ""memberName"", source = ""member.name"")
+LoanResponse toResponse(Loan loan);
+}
+```"
+3,TOPIC,Global Exception Handling,,,FALSE,"```java
+@RestControllerAdvice
+public class GlobalExceptionHandler {
+@ExceptionHandler(LoanNotFoundException.class)
+public ProblemDetail notFound(LoanNotFoundException ex) {
+return ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, ex.getMessage());
+}
+@ExceptionHandler(MethodArgumentNotValidException.class)
+public ProblemDetail validation(MethodArgumentNotValidException ex) {
+ProblemDetail pd = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ""Validation failed"");
+Map<String, String> errors = new HashMap<>();
+ex.getBindingResult().getFieldErrors().forEach(e -> errors.put(e.getField(), e.getDefaultMessage()));
+pd.setProperty(""errors"", errors);
+return pd;
+}
+@ExceptionHandler(ObjectOptimisticLockingFailureException.class)
+public ProblemDetail conflict() {
+return ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, ""Record was modified by another user. Reload and retry."");
+}
+}
+```"
+3,TOPIC,"OpenAPI, Files and HTTP Clients",,,FALSE,"```java
+Add springdoc-openapi-starter-webmvc-ui to get Swagger UI at /swagger-ui.html. Annotate with @Operation and @Tag.
+Upload: @PostMapping(consumes = MULTIPART_FORM_DATA_VALUE) upload(@RequestParam MultipartFile file). Validate size, type and filename. Configure spring.servlet.multipart.max-file-size.
+Download large files: stream with StreamingResponseBody or Resource. Set Content-Disposition.
+RestClient (Boot 3.2+): synchronous fluent client. WebClient: reactive/non-blocking. OpenFeign: declarative interface clients for microservices.
+MemberDto m = restClient.get().uri(""/members/{id}"", id)
+.header(HttpHeaders.AUTHORIZATION, ""Bearer "" + token)
+.retrieve().body(MemberDto.class);
+```"
+3,TOPIC,Entity Mapping,,,FALSE,"```java
+private BigDecimal amount;
+@Enumerated(EnumType.STRING)          // never ORDINAL — reordering breaks data
+private LoanStatus status;
+@OneToMany(mappedBy = ""loan"", cascade = CascadeType.ALL, orphanRemoval = true)
+private List<Installment> installments = new ArrayList<>();
+@Version
+private Long version;                 // optimistic locking
+@CreatedDate private Instant createdAt;
+@CreatedBy   private String createdBy;
+public void addInstallment(Installment i) { installments.add(i); i.setLoan(this); }  // keep both sides in sync
+}
+ID strategies: IDENTITY (DB auto-increment; disables JDBC insert batching), SEQUENCE (best for Postgres; supports batching with allocationSize), UUID.
+Owning side: the side with the foreign key (@ManyToOne / @JoinColumn). mappedBy marks the inverse side.
+Cascade: propagates persist/merge/remove to children. orphanRemoval: deletes a child removed from the collection.
+```"
+3,TOPIC,N+1 Problem and Fetching,,,FALSE,"List<Loan> findByStatusAndAmountGreaterThan(LoanStatus status, BigDecimal amount);   // derived query
+@Query(""select l from Loan l join fetch l.member where l.status = :status"")
+List<Loan> findWithMember(@Param(""status"") LoanStatus status);                       // fixes N+1
+@EntityGraph(attributePaths = {""member"", ""installments""})
+- Optional<Loan> findDetailedById(Long id);
+@Query(""select new bd.org.pksf.loan.dto.PoSummary(m.po.id, sum(l.amount), count(l)) "" +
+""from Loan l join l.member m where l.status = 'ACTIVE' group by m.po.id"")
+List<PoSummary> activeSummaryByPo();                                                 // DTO projection
+@Query(value = ""select * from loans where created_at >= now() - interval '7 days'"", nativeQuery = true)
+List<Loan> lastWeek();
+@Modifying
+@Query(""update Loan l set l.status = 'CLOSED' where l.id = :id"")
+int close(@Param(""id"") Long id);
+}"
+3,TOPIC,Transactions,,,FALSE,"```java
+@Transactional is applied through a proxy. It works only on public methods called from outside the bean.
+Default rollback: RuntimeException and Error only. Use rollbackFor = Exception.class to include checked exceptions.
+- Use readOnly = true for queries; it skips dirty checking and can route to replicas.
+Propagation
+Behavior
+REQUIRED (default)
+Join existing or create new
+REQUIRES_NEW
+Suspend current, always start new (e.g. audit log that must persist)
+SUPPORTS
+Join if exists, else run non-transactionally
+- MANDATORY
+Must have an existing transaction, else exception
+NEVER / NOT_SUPPORTED
+Must not run in a transaction / suspend it
+NESTED
+Savepoint within current transaction
+@Transactional
+public RepaymentResponse repay(Long loanId, RepaymentRequest req) {
+Loan loan = loanRepo.findById(loanId).orElseThrow(() -> new LoanNotFoundException(loanId));
+if (loan.getStatus() != LoanStatus.ACTIVE) throw new BusinessException(""Loan is not active"");
+loan.applyPayment(req.amount());              // dirty checking saves changes at commit
+Repayment r = repaymentRepo.save(new Repayment(loan, req.amount(), LocalDate.now()));
+events.publishEvent(new RepaymentRecorded(loan.getId(), req.amount()));
+return mapper.toResponse(r);
+}
+```"
+3,TOPIC,Locking,,,FALSE,Pessimistic: @Lock(LockModeType.PESSIMISTIC_WRITE) issues SELECT ... FOR UPDATE. Use it for hot rows such as balance updates. Keep transactions short.
+3,TOPIC,Persistence Context,,,FALSE,"Entity states: Transient (new), Managed (in the persistence context), Detached (context closed), Removed.
+First-level cache: the same entity ID returns the same instance within a transaction.
+Dirty checking: changes to managed entities are flushed automatically at commit, so no save() is needed.
+save() vs saveAndFlush(): flush forces SQL immediately."
+3,TOPIC,Migrations and Batching,,,FALSE,"```java
+CREATE TABLE loans (
+id          BIGSERIAL PRIMARY KEY,
+member_id   BIGINT NOT NULL REFERENCES members(id),
+amount      NUMERIC(14,2) NOT NULL CHECK (amount > 0),
+status      VARCHAR(20) NOT NULL,
+version     BIGINT NOT NULL DEFAULT 0,
+created_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
+created_by  VARCHAR(100)
+);
+CREATE INDEX idx_loans_member ON loans(member_id);
+Flyway runs versioned scripts in order (V1__, V2__) and records them in flyway_schema_history. Never edit an applied migration; add a new one.
+Batch inserts: set spring.jpa.properties.hibernate.jdbc.batch_size=50 and order_inserts=true, use SEQUENCE IDs, or use JdbcTemplate.batchUpdate for bulk imports from POs.
+```"
+2,MODULE,Other Spring Capabilities,,,FALSE,"```java
+@EnableScheduling @EnableAsync @EnableCaching
+@Configuration class AsyncConfig {}
+@Scheduled(cron = ""0 0 1 * * *"", zone = ""Asia/Dhaka"")       // 1 AM daily
+@SchedulerLock(name = ""overdueJob"")                          // ShedLock: run once in a cluster
+public void markOverdueInstallments() { installmentService.markOverdue(LocalDate.now()); }
+@Async
+public CompletableFuture<byte[]> generateReport(Long poId) { return CompletableFuture.completedFuture(excel.build(poId)); }
+@Cacheable(value = ""po"", key = ""#id"")
+public PoDto getPo(Long id) { return mapper.toDto(poRepo.findById(id).orElseThrow()); }
+@CacheEvict(value = ""po"", key = ""#id"")
+public void updatePo(Long id, PoUpdate req) { /* ... */ }
+Reports: Apache POI (XSSFWorkbook / SXSSFWorkbook for streaming large Excel files), JasperReports or OpenPDF for PDF. Generate heavy reports asynchronously and notify the user when ready.
+Spring Batch: Job → Steps → chunk-oriented ItemReader/ItemProcessor/ItemWriter, with restartability. Good for monthly PO data imports.
+```"
+2,MODULE,Phase 3 — Interview Questions,,,FALSE,"```java
+A. Use optimistic locking with @Version (return 409 Conflict) or pessimistic locking (SELECT FOR UPDATE) for high-contention rows, plus short transactions.
+Q. How would you set the active profile in production?
+A. Use the environment variable SPRING_PROFILES_ACTIVE=prod or the argument --spring.profiles.active=prod. Secrets come from env vars or a secret store, never from committed files.
+Q. What is open-in-view and why disable it?
+A. It keeps the Hibernate session open during view rendering, which allows lazy loading in controllers. That hides N+1 issues and holds DB connections longer. Disable it and fetch explicitly.
+```"
+2,MODULE,SQL Mastery,,,FALSE,"Sample schema used below:
+pos(id, name, district)
+members(id, po_id, name, nid, phone, joined_on)
+loans(id, member_id, amount, status, disbursed_on)
+installments(id, loan_id, due_date, amount_due, amount_paid, paid_on)
+employees(id, name, dept_id, salary, manager_id)"
+3,TOPIC,Joins and Aggregation,,,FALSE,"```sql
+SELECT m.name, p.name AS po_nameFROM members m JOIN pos p ON p.id = m.po_id;-- POs with zero members (LEFT JOIN + IS NULL)
+SELECT p.* FROM pos p LEFT JOIN members m ON m.po_id = p.id WHERE m.id IS NULL;-- Total active loan amount per PO, only POs above 1 crore
+SELECT p.name, SUM(l.amount) AS total, COUNT(*) AS loansFROM loans l JOIN members m ON m.id = l.member_id JOIN pos p ON p.id = m.po_idWHERE l.status = 'ACTIVE'GROUP BY p.nameHAVING SUM(l.amount) > 10000000ORDER BY total DESC;-- Conditional aggregation
+SELECT p.name,COUNT(*) FILTER (WHERE l.status = 'ACTIVE') AS active,COUNT(*) FILTER (WHERE l.status = 'CLOSED') AS closedFROM loans l JOIN members m ON m.id = l.member_id JOIN pos p ON p.id = m.po_idGROUP BY p.name;-- Employee and manager (self join)
+SELECT e.name AS employee, m.name AS manager FROM employees e LEFT JOIN employees m ON m.id = e.manager_id;WHERE vs HAVING: WHERE filters rows before grouping, and HAVING filters groups after aggregation.
+Logical order: FROM → JOIN → WHERE → GROUP BY → HAVING → SELECT → DISTINCT → ORDER BY → LIMIT.
+```"
+3,TOPIC,"Subqueries, CTEs and Window Functions",,,FALSE,"```sql
+SELECT MAX(salary) FROM employees WHERE salary < (SELECT MAX(salary) FROM employees);
+SELECT DISTINCT salary FROM employees ORDER BY salary DESC OFFSET 2 LIMIT 1;   -- 3rd highest
+SELECT salary FROM (SELECT salary, DENSE_RANK() OVER (ORDER BY salary DESC) r FROM employees) t WHERE r = 3;-- Highest paid employee per department (top-N per group)
+SELECT * FROM (
+SELECT e.*, ROW_NUMBER() OVER (PARTITION BY dept_id ORDER BY salary DESC) rn FROM employees e) t WHERE rn = 1;-- Employees earning above their department average (correlated subquery)
+SELECT * FROM employees e WHERE salary > (SELECT AVG(salary) FROM employees WHERE dept_id = e.dept_id);-- Find duplicate NIDs
+SELECT nid, COUNT(*) FROM members GROUP BY nid HAVING COUNT(*) > 1;-- Delete duplicates keeping lowest idDELETE FROM members a USING members b WHERE a.nid = b.nid AND a.id > b.id;-- Monthly disbursement with running total and month-over-month changeWITH monthly AS (
+SELECT date_trunc('month', disbursed_on) AS month, SUM(amount) AS totalFROM loans GROUP BY 1)
+SELECT month, total,SUM(total) OVER (ORDER BY month) AS running_total,total - LAG(total) OVER (ORDER BY month) AS changeFROM monthly ORDER BY month;-- Overdue members: any installment due before today and not fully paid
+SELECT DISTINCT m.id, m.nameFROM members m JOIN loans l ON l.member_id = m.id JOIN installments i ON i.loan_id = l.idWHERE i.due_date < CURRENT_DATE AND COALESCE(i.amount_paid, 0) < i.amount_due;-- Recursive CTE: org hierarchy under manager 1WITH RECURSIVE tree AS (
+SELECT id, name, manager_id, 1 AS lvl FROM employees WHERE id = 1UNION ALL
+SELECT e.id, e.name, e.manager_id, t.lvl + 1 FROM employees e JOIN tree t ON e.manager_id = t.id)
+SELECT * FROM tree;
+ROW_NUMBER: unique sequence (1,2,3,4). RANK: gaps on ties (1,2,2,4). DENSE_RANK: no gaps (1,2,2,3).
+UNION removes duplicates and UNION ALL keeps them (faster). INTERSECT and EXCEPT are also available.
+DELETE vs TRUNCATE vs DROP: DELETE removes rows (can use WHERE, fires triggers). TRUNCATE removes all rows quickly and resets storage. DROP removes the table.
+```"
+3,TOPIC,"DDL, Upsert, Views, Functions",,,FALSE,"INSERT INTO members (nid, name, po_id) VALUES ('1990123456789', 'Rahima', 5)ON CONFLICT (nid) DO UPDATE SET name = EXCLUDED.name;          -- upsert
+UPDATE loans l SET status = 'CLOSED'
+FROM (SELECT loan_id FROM installments GROUP BY loan_id HAVING SUM(amount_due - COALESCE(amount_paid,0)) = 0) pWHERE l.id = p.loan_id;
+CREATE MATERIALIZED VIEW po_portfolio AS
+SELECT m.po_id, SUM(l.amount) total, COUNT(*) loans FROM loans l JOIN members m ON m.id = l.member_id GROUP BY m.po_id;CREATE UNIQUE INDEX ON po_portfolio(po_id);REFRESH MATERIALIZED VIEW CONCURRENTLY po_portfolio;            -- needs unique indexCREATE OR REPLACE FUNCTION audit_loan() RETURNS trigger AS $$BEGIN
+INSERT INTO loan_audit(loan_id, old_status, new_status, changed_at) VALUES (OLD.id, OLD.status, NEW.status, now());
+RETURN NEW;
+END $$ LANGUAGE plpgsql;
+CREATE TRIGGER trg_loan_audit AFTER UPDATE OF status ON loans FOR EACH ROW EXECUTE FUNCTION audit_loan();"
+2,MODULE,PostgreSQL Schema Design,,,FALSE,"Need
+- Use
+Avoid
+- Money
+NUMERIC(14,2)
+float, double, money type
+Timestamps
+TIMESTAMPTZ (stored as UTC)
+TIMESTAMP without tz for events
+IDs
+BIGINT identity / BIGSERIAL; UUID for public/distributed IDs
+INT for big tables
+Flexible attributes
+JSONB with GIN index
+Many nullable columns or EAV
+Status
+VARCHAR + CHECK or lookup table
+Magic integers
+Text
+TEXT / VARCHAR(n)
+CHAR(n)"
+3,TOPIC,Example Finance Schema,,,FALSE,"CREATE TABLE pos (id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,code VARCHAR(20) NOT NULL UNIQUE,name TEXT NOT NULL,district VARCHAR(50) NOT NULL,created_at TIMESTAMPTZ NOT NULL DEFAULT now());
+CREATE TABLE members (id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,po_id BIGINT NOT NULL REFERENCES pos(id),nid VARCHAR(17) NOT NULL UNIQUE,name TEXT NOT NULL,phone VARCHAR(14),deleted_at TIMESTAMPTZ                      -- soft delete);
+CREATE TABLE loans (id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,member_id BIGINT NOT NULL REFERENCES members(id) ON DELETE RESTRICT,principal NUMERIC(14,2) NOT NULL CHECK (principal > 0),service_charge_rate NUMERIC(5,2) NOT NULL,status VARCHAR(20) NOT NULL CHECK (status IN ('PENDING','ACTIVE','CLOSED','WRITTEN_OFF')),disbursed_on DATE,version BIGINT NOT NULL DEFAULT 0,created_at TIMESTAMPTZ NOT NULL DEFAULT now(),created_by VARCHAR(100) NOT NULL);-- Append-only ledger: never UPDATE/DELETE, correct with reversing entries
+CREATE TABLE ledger_entries (id BIGINT GENERATED ALWAYS AS IDENTITY,loan_id BIGINT NOT NULL REFERENCES loans(id),entry_type VARCHAR(20) NOT NULL,            -- DISBURSE, REPAY, REVERSALamount NUMERIC(14,2) NOT NULL,txn_date DATE NOT NULL,created_at TIMESTAMPTZ NOT NULL DEFAULT now(),PRIMARY KEY (id, txn_date)) PARTITION BY RANGE (txn_date);
+CREATE TABLE ledger_2026 PARTITION OF ledger_entries FOR VALUES FROM ('2026-01-01') TO ('2027-01-01');
+ON DELETE options: RESTRICT/NO ACTION (block), CASCADE (delete children), SET NULL. For financial data, prefer RESTRICT and soft delete.
+- Partitioning: split huge tables by date range. Queries that filter by date touch only the relevant partitions (partition pruning), and old partitions are easy to archive."
+2,MODULE,PostgreSQL Indexing,,,FALSE,"B-tree (default) supports =, <, >, BETWEEN, IN, ORDER BY and prefix LIKE 'abc%'.
+Composite index (a, b, c): usable for filters on a, (a,b) and (a,b,c), but not b alone (leftmost-prefix rule). Put equality columns first, then range/sort columns.
+- Partial index: indexes only the rows that matter.
+Expression index: indexes a computed value.
+Covering index (INCLUDE): enables index-only scans.
+GIN: JSONB, arrays, full-text search. GiST: geometry and ranges. BRIN: very large, naturally ordered tables (time series) with a tiny index. Hash: equality only.
+CREATE INDEX idx_inst_loan_due ON installments (loan_id, due_date);
+CREATE INDEX idx_loans_active ON loans (member_id) WHERE status = 'ACTIVE';           -- partial
+CREATE INDEX idx_members_lower_name ON members (LOWER(name));                          -- expression
+CREATE INDEX idx_loans_member_cover ON loans (member_id) INCLUDE (principal, status);  -- covering
+CREATE INDEX idx_forms_data ON survey_forms USING GIN (data jsonb_path_ops);           -- JSONB
+CREATE INDEX idx_ledger_date_brin ON ledger_entries USING BRIN (txn_date);
+CREATE INDEX CONCURRENTLY idx_members_phone ON members(phone);                         -- no table lock"
+3,TOPIC,When an Index Is Not Used,,,FALSE,"A function is applied to the column (WHERE LOWER(name) = 'x' without an expression index; WHERE date(created_at) = ...).
+A leading wildcard: LIKE '%rahim' (use pg_trgm with a GIN index).
+Implicit type casts or comparing mismatched types.
+Low selectivity (the planner prefers a seq scan when most rows match) or a small table.
+Stale statistics. Run ANALYZE.
+OR across different columns (consider UNION or separate indexes so a bitmap OR can be used).
+- Tip: Indexes speed up reads but slow down writes and take space. Find unused ones in pg_stat_user_indexes where idx_scan = 0."
+2,MODULE,PostgreSQL Query Tuning,,,FALSE,"SELECT * FROM installments WHERE loan_id = 42 AND due_date < CURRENT_DATE;
+-- Example output to read:
+-- Index Scan using idx_inst_loan_due on installments  (cost=0.43..8.45 rows=3 width=48)
+--      (actual time=0.021..0.025 rows=3 loops=1)
+--   Index Cond: ((loan_id = 42) AND (due_date < CURRENT_DATE))
+--   Buffers: shared hit=4
+-- Planning Time: 0.1 ms   Execution Time: 0.05 ms
+cost: the planner estimate (startup..total). rows: estimated vs actual; big differences mean stale stats. loops: times the node ran. Buffers: shared hit = cache, read = disk.
+Seq Scan: reads the whole table. Index Scan: traverses the index, then fetches heap rows. Index Only Scan: all columns come from the index. Bitmap Heap Scan: collects matching pages, then reads them, which suits medium selectivity.
+Join algorithms: Nested Loop (small outer, indexed inner), Hash Join (large unsorted equi-joins), Merge Join (both sides sorted)."
+3,TOPIC,MVCC and VACUUM,,,FALSE,"```java
+MVCC: an UPDATE writes a new row version and marks the old one dead. Readers never block writers.
+VACUUM reclaims dead tuples, and autovacuum does this automatically. ANALYZE updates planner statistics. VACUUM FULL rewrites the table and locks it.
+Long-running transactions prevent cleanup and cause bloat.
+```"
+3,TOPIC,Practical Tuning Checklist,,,FALSE,"```sql
+Avoid SELECT *; fetch only the columns you need.- Use keyset pagination instead of a large OFFSET (OFFSET 100000 scans and discards 100k rows).- Use EXISTS instead of IN with a large subquery, and NOT EXISTS instead of NOT IN (NOT IN breaks with NULLs).Batch inserts and use COPY for bulk loads.Keep transactions short and fix N+1 queries in the ORM.Connection pooling: HikariCP pool size is roughly (cores × 2) + effective spindles. Usually 10–30 is enough. Use PgBouncer when many app instances connect.-- Keyset pagination
+SELECT id, name FROM members WHERE po_id = 5 AND id > :last_seen_id ORDER BY id LIMIT 50;-- Top slow queries
+SELECT query, calls, mean_exec_time, total_exec_time FROM pg_stat_statements ORDER BY total_exec_time DESC LIMIT 10;
+```"
+2,MODULE,PostgreSQL Operations,,,FALSE,"```sql
+Backup: pg_dump -Fc pksf > pksf.dump; restore with pg_restore -d pksf pksf.dump. PITR = base backup + WAL archiving.
+Replication: streaming replication to read replicas (asynchronous by default). Send reports to replicas.
+Roles: an app user with only the needed privileges (no superuser), and a separate read-only reporting user.
+Row-Level Security: ALTER TABLE members ENABLE ROW LEVEL SECURITY; CREATE POLICY po_isolation ON members USING (po_id = current_setting('app.po_id')::bigint);
+```"
+2,MODULE,MongoDB,,,FALSE,"```java
+Document model: JSON-like BSON documents in collections. Schema is flexible, and each document has an _id (ObjectId by default).
+Good fits at PKSF: audit logs, activity events, dynamic survey forms, notifications, document metadata.
+Keep in PostgreSQL: loans, ledgers and anything needing strict relational integrity and multi-row transactions.
+db.audit_logs.insertOne({ entity: ""Loan"", entityId: 42, action: ""APPROVE"", user: ""officer1"",
+at: new Date(), changes: { status: { from: ""PENDING"", to: ""ACTIVE"" } } });
+db.audit_logs.find({ entity: ""Loan"", entityId: 42 }).sort({ at: -1 }).limit(20);
+db.members.updateOne({ _id: id }, { $set: { phone: ""017..."" }, $push: { tags: ""verified"" }, $inc: { visits: 1 } });
+db.audit_logs.createIndex({ entity: 1, entityId: 1, at: -1 });              // compound
+db.sessions.createIndex({ createdAt: 1 }, { expireAfterSeconds: 3600 });    // TTL
+// Aggregation: actions per user in last 30 days
+db.audit_logs.aggregate([
+{ $match: { at: { $gte: new Date(Date.now() - 30*24*3600*1000) } } },
+{ $group: { _id: ""$user"", actions: { $sum: 1 } } },
+{ $sort: { actions: -1 } },
+{ $limit: 10 }
+]);
+// $lookup = left outer join
+db.loans.aggregate([{ $lookup: { from: ""members"", localField: ""memberId"", foreignField: ""_id"", as: ""member"" } },
+{ $unwind: ""$member"" }]);
+```"
+3,TOPIC,Embedding vs Referencing,,,FALSE,"```java
+Embed when the data is read together, owned by the parent, and bounded in size (an address in a member document).
+Reference when the data is unbounded (thousands of transactions), shared, or updated independently.
+A document can be at most 16 MB. Model schemas around query patterns.
+@Document(collection = ""audit_logs"")
+public record AuditLog(@Id String id, String entity, Long entityId, String action, String user, Instant at, Map<String, Object> changes) {}
+public interface AuditLogRepository extends MongoRepository<AuditLog, String> {
+List<AuditLog> findByEntityAndEntityIdOrderByAtDesc(String entity, Long entityId);
+}
+PostgreSQL (SQL)
+MongoDB (NoSQL)
+Fixed schema, relations, joins
+Flexible schema, embedded docs
+Strong ACID across tables
+ACID on single document; multi-doc transactions on replica sets
+Vertical scaling + replicas
+Horizontal sharding built in
+Finance, ledgers, reporting
+Logs, events, catalogs, dynamic forms
+```"
+2,MODULE,Phase 4 — Interview Questions,,,FALSE,"```java
+Q. How would you speed up a slow query?
+A. Run EXPLAIN (ANALYZE, BUFFERS) and look for seq scans on large tables, row-estimate mismatches and expensive sorts or joins. Add or adjust indexes (composite, partial, covering), rewrite the query (no functions on indexed columns, keyset pagination, EXISTS), refresh statistics with ANALYZE, and check pg_stat_statements for the worst queries overall.
+Q. What is a composite index and how does column order matter?
+A. It is an index on multiple columns, sorted by the first, then the second, and so on. It helps queries that filter on a leftmost prefix. Put equality-filtered columns first, then range or ORDER BY columns.
+Q. Why use NUMERIC instead of FLOAT for money?
+A. FLOAT is binary floating point and can't represent decimals like 0.1 exactly, so rounding errors accumulate. NUMERIC is exact decimal.
+Q. What is MVCC?
+A. Multi-Version Concurrency Control. Each transaction sees a snapshot. Updates create new row versions, so readers and writers don't block each other. VACUUM cleans up old versions.
+Q. Clustered vs non-clustered index?
+A. A clustered index defines the physical row order (one per table, e.g. in MySQL InnoDB or SQL Server). PostgreSQL heap tables have no persistent clustered index; all indexes are secondary. The CLUSTER command reorders rows once.
+Q. When would you choose MongoDB over PostgreSQL?
+A. When the schema varies or evolves rapidly, the data is document-shaped and read as a whole, writes are high-volume and append-heavy (logs/events), or you need horizontal sharding. Financial transactions stay relational.
+Q. What is the difference between a view and a materialized view?
+A. A view is a stored query that runs each time. A materialized view stores the result physically and must be refreshed, which suits heavy reports.
+```"
+2,MODULE,REST API Design,,,FALSE,"Resources are nouns, plural: /api/v1/pos/{poId}/members, /api/v1/loans/{id}/installments.
+- Use HTTP verbs: GET (read), POST (create / non-idempotent action), PUT (replace), PATCH (partial), DELETE.
+Actions that are not CRUD: POST /loans/{id}/approve, or treat them as sub-resources (POST /loans/{id}/repayments).
+Filtering, sorting and paging: GET /loans?status=ACTIVE&po=12&sort=createdAt,desc&page=0&size=20.
+Stateless: each request carries its auth (token). No server session is required.
+Idempotency key: for payment or disbursement POSTs, the client sends an Idempotency-Key header. The server stores the key with its result and returns the same response on retry, which prevents double disbursement.
+Versioning: URI (/v1/), which is simplest and most common, header (API-Version: 2) or media type (application/vnd.pksf.v2+json).
+Rate limiting: token bucket (Bucket4j + Redis) at the gateway. Return 429 with Retry-After."
+3,TOPIC,JSON with Jackson,,,FALSE,"BigDecimal amount,
+@JsonFormat(pattern = ""yyyy-MM-dd"") LocalDate disbursedOn,
+@JsonInclude(JsonInclude.Include.NON_NULL) String remarks) {}
+ObjectMapper om = new ObjectMapper().registerModule(new JavaTimeModule())
+.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+- String json = om.writeValueAsString(dto);
+LoanResponse back = om.readValue(json, LoanResponse.class);
+List<LoanResponse> list = om.readValue(jsonArray, new TypeReference<>() {});"
+3,TOPIC,XML with JAXB / Jackson XML,,,FALSE,"```java
+@XmlElement private BigDecimal amount;
+}
+JAXBContext ctx = JAXBContext.newInstance(LoanXml.class);
+Marshaller m = ctx.createMarshaller();
+m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+m.marshal(loan, System.out);
+LoanXml parsed = (LoanXml) ctx.createUnmarshaller().unmarshal(new StringReader(xml));
+Spring MVC can return both JSON and XML from one endpoint (content negotiation via the Accept header) if jackson-dataformat-xml is on the classpath.
+XSD defines and validates XML structure. XPath queries XML (e.g. /loan/amount).
+Security: disable external entities when parsing XML to prevent XXE attacks.
+```"
+3,TOPIC,SOAP,,,FALSE,"```java
+SOAP is an XML-based protocol with a strict contract. The message is an Envelope containing an optional Header (security, WS-Security tokens) and a Body (payload or Fault).
+The WSDL describes operations, messages, types (XSD), bindings and endpoint address.
+It is common in government and bank integrations (payment gateways, NID verification, legacy systems).
+<soapenv:Envelope xmlns:soapenv=""http://schemas.xmlsoap.org/soap/envelope/"" xmlns:mem=""http://pksf.org.bd/member"">
+<soapenv:Header/>
+<soapenv:Body>
+<mem:GetMemberRequest>
+<mem:nid>1990123456789</mem:nid>
+</mem:GetMemberRequest>
+</soapenv:Body>
+</soapenv:Envelope>
+// Spring WS client: generate classes from WSDL (jaxb2-maven-plugin / wsimport), then:
+public class MemberSoapClient extends WebServiceGatewaySupport {
+public GetMemberResponse getMember(String nid) {
+GetMemberRequest req = new GetMemberRequest();
+req.setNid(nid);
+return (GetMemberResponse) getWebServiceTemplate().marshalSendAndReceive(req);
+}
+}
+// Spring WS server: @Endpoint class with @PayloadRoot(namespace = NS, localPart = ""GetMemberRequest"") @ResponsePayload method
+Aspect
+REST
+SOAP
+gRPC
+Format
+JSON (usually), any
+XML only
+Protobuf (binary)
+Contract
+OpenAPI (optional)
+WSDL (mandatory)
+.proto (mandatory)
+Transport
+HTTP
+HTTP, SMTP, others
+HTTP/2
+Standards
+Lightweight
+WS-Security, WS-ReliableMessaging, ACID-ish
+Streaming, codegen
+- Use
+Web/mobile APIs
+Enterprise/legacy/bank
+Internal high-performance service calls
+```"
+2,MODULE,Microservices Architecture,,,FALSE,"Monolith
+Microservices
+One deployable, simple to develop and test
+Many independently deployable services
+Scale everything together
+Scale services independently
+One tech stack, shared DB
+Polyglot, database per service
+Easier transactions
+Distributed transactions, network failures, ops complexity
+- Tip: A well-structured modular monolith is often the right first step. Split services when team size, scaling or deployment independence demands it."
+3,TOPIC,Decomposition,,,FALSE,"Split services by business capability / DDD bounded context: PO Service, Member Service, Loan Service, Repayment Service, Reporting Service, Notification Service, Auth (Keycloak).
+Each service owns its data. Other services never query its tables directly; they call its API or consume its events."
+3,TOPIC,Core Infrastructure,,,FALSE,"React SPA ──► API Gateway (Spring Cloud Gateway: routing, JWT validation, rate limit, CORS)
+│
+┌───────────┼──────────────┬────────────────┐
+PO Service  Loan Service  Member Service  Report Service
+│            │              │                │
+Postgres     Postgres       Postgres     Read replica / MongoDB
+│
+RabbitMQ / Kafka  ──► Notification Service (SMS/Email)
+Keycloak (auth)   Redis (cache/session)   Config Server   Prometheus/Grafana   Zipkin   ELK
+# Spring Cloud Gateway routes
+spring:
+cloud:
+gateway:
+routes:
+- id: loan-service
+uri: lb://loan-service          # via discovery; in K8s use http://loan-service:8080
+predicates:
+- Path=/api/v1/loans/**
+filters:
+- name: RequestRateLimiter
+args:
+redis-rate-limiter.replenishRate: 20
+redis-rate-limiter.burstCapacity: 40
+Service discovery: Eureka (Spring Cloud Netflix) or, in Kubernetes, built-in Service DNS (preferred).
+Config: Spring Cloud Config Server (Git-backed), or K8s ConfigMaps/Secrets."
+3,TOPIC,Communication,,,FALSE,"Synchronous (REST/Feign/gRPC): simple, but creates temporal coupling. If the callee is down, the caller fails.
+Asynchronous (events via RabbitMQ/Kafka): loose coupling and resilience, with eventual consistency. Example: LoanDisbursed event → Notification sends SMS, Reporting updates totals."
+3,TOPIC,Resilience with Resilience4j,,,FALSE,"```java
+@CircuitBreaker(name = ""memberService"", fallbackMethod = ""memberFallback"")
+@Retry(name = ""memberService"")
+@TimeLimiter(name = ""memberService"")
+public CompletableFuture<MemberDto> getMember(Long id) {
+return CompletableFuture.supplyAsync(() -> memberClient.get(id));
+}
+private CompletableFuture<MemberDto> memberFallback(Long id, Throwable t) {
+return CompletableFuture.completedFuture(MemberDto.unavailable(id));
+}
+Circuit breaker states: CLOSED (normal) → OPEN when the failure rate exceeds the threshold (fail fast) → HALF_OPEN (trial calls) → CLOSED or OPEN.
+Retry: with exponential backoff, and only for idempotent operations. Timeout: always set one. Bulkhead: limit concurrent calls so one slow dependency can't exhaust all threads.
+```"
+3,TOPIC,Distributed Transactions — Saga and Outbox,,,FALSE,"```sql
+Two-phase commit does not fit microservices (blocking, tight coupling).
+Saga: a sequence of local transactions, each publishing an event. On failure, run compensating transactions (e.g. cancel disbursement). Choreography uses events with no central coordinator. Orchestration uses a central saga orchestrator that tells each service what to do.
+Transactional outbox: write the business change and an outbox row in the same DB transaction. A relay (poller or Debezium CDC) publishes outbox rows to the broker. This avoids the dual-write problem where the DB commit succeeds but the message is lost.
+```"
+3,TOPIC,Observability,,,FALSE,"Logs: structured JSON logs with a traceId, shipped to ELK/EFK or Loki.
+Metrics: Micrometer → /actuator/prometheus → Prometheus → Grafana dashboards (latency, error rate, JVM, DB pool).
+Tracing: Micrometer Tracing / OpenTelemetry → Zipkin/Jaeger, to follow one request across services.
+Twelve-factor: one codebase, explicit dependencies, config in the environment, backing services as attached resources, build/release/run stages, stateless processes, port binding, concurrency, disposability, dev/prod parity, logs as streams, admin processes."
+2,MODULE,Messaging,,,FALSE,"```java
+Concepts: producer, broker, consumer, acknowledgment, at-least-once delivery (so consumers must be idempotent), dead-letter queue (DLQ) for poison messages, ordering guarantees.
+RabbitMQ: exchanges (direct, topic, fanout) route to queues through bindings. Good for task queues and routing.
+Kafka: a distributed log. Topics have partitions, and order is guaranteed only within a partition. Consumer groups share partitions and track offsets. Data is retained and can be replayed. Good for event streaming and high throughput.
+@Bean Queue smsQueue() { return QueueBuilder.durable(""sms.queue"").deadLetterExchange(""dlx"").build(); }
+rabbitTemplate.convertAndSend(""loan.events"", ""loan.disbursed"", new LoanDisbursed(loanId, memberPhone, amount));
+@RabbitListener(queues = ""sms.queue"")
+public void onDisbursed(LoanDisbursed e) { smsService.send(e.phone(), ""Loan of Tk "" + e.amount() + "" disbursed.""); }
+```"
+2,MODULE,Phase 5 — Interview Questions,,,FALSE,"```java
+Q. How do you keep data consistent across microservices?
+A. Each service owns its database. Use the Saga pattern with compensating actions, publish events through a transactional outbox, and design for eventual consistency and idempotent consumers.
+Q. What is a circuit breaker and why use it?
+A. It stops calling a failing dependency after a failure threshold and fails fast or uses a fallback. This prevents cascading failures and resource exhaustion, and it periodically tests recovery in the half-open state.
+Q. What does an API Gateway do?
+A. It is a single entry point. It handles routing, authentication/JWT validation, rate limiting, CORS, request logging and response aggregation, and it hides internal service topology.
+Q. SOAP vs REST — when would you still use SOAP?
+A. When integrating with existing enterprise, bank or government systems that expose WSDL, or when WS-Security, formal contracts and reliable messaging standards are required.
+Q. How do you make a message consumer idempotent?
+A. Store processed message IDs (or a business key) in a table with a unique constraint and skip duplicates, or design operations so that repeating them has no extra effect (upsert, set status).
+Q. Monolith or microservices for a new PKSF system?
+A. Start with a modular monolith with clear module boundaries and separate schemas, unless there is a clear need for independent scaling or deployment. Extract services later along those boundaries. This keeps operational cost low.
+```"
+2,MODULE,Security Fundamentals,,,FALSE,"```sql
+- String bad = ""SELECT * FROM members WHERE nid = '"" + nid + ""'"";       // injectable
+jdbcTemplate.query(""SELECT * FROM members WHERE nid = ?"", mapper, nid); // parameterized
+XSS: React escapes values by default. Never use dangerouslySetInnerHTML with user input, or sanitize with DOMPurify. Add a Content-Security-Policy header.
+CSRF: relevant when auth uses cookies. Use CSRF tokens and SameSite cookies. APIs using Bearer tokens in headers are not vulnerable to classic CSRF.
+Hashing is one-way (passwords: BCrypt/Argon2 with salt). Encryption is reversible with a key (AES for data, RSA for key exchange). Encoding (Base64) is not security.
+Secrets: never commit them. Use env vars, K8s Secrets (with encryption at rest) or HashiCorp Vault. Rotate them regularly.
+```"
+2,MODULE,Spring Security,,,FALSE,"```javascript
+Requests pass through the SecurityFilterChain (a chain of servlet filters) before reaching the DispatcherServlet. Filters authenticate (create an Authentication in the SecurityContext) and then authorize.
+Authentication answers ""who are you?"" Authorization answers ""what can you do?""
+Role vs authority: hasRole('ADMIN') checks the authority ROLE_ADMIN.
+@Configuration
+@EnableMethodSecurity
+public class SecurityConfig {
+@Bean
+SecurityFilterChain api(HttpSecurity http) throws Exception {
+http
+.csrf(csrf -> csrf.disable())                         // stateless JWT API
+.cors(Customizer.withDefaults())
+.sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+.authorizeHttpRequests(auth -> auth
+.requestMatchers(""/actuator/health/**"", ""/v3/api-docs/**"", ""/swagger-ui/**"").permitAll()
+.requestMatchers(HttpMethod.GET, ""/api/v1/reports/**"").hasAnyRole(""ADMIN"", ""AUDITOR"")
+.requestMatchers(""/api/v1/admin/**"").hasRole(""ADMIN"")
+.anyRequest().authenticated())
+.oauth2ResourceServer(o -> o.jwt(j -> j.jwtAuthenticationConverter(keycloakConverter())));
+return http.build();
+}
+@Bean
+CorsConfigurationSource corsConfigurationSource() {
+CorsConfiguration c = new CorsConfiguration();
+c.setAllowedOrigins(List.of(""https://app.pksf.org.bd"", ""http://localhost:5173""));
+c.setAllowedMethods(List.of(""GET"", ""POST"", ""PUT"", ""PATCH"", ""DELETE""));
+c.setAllowedHeaders(List.of(""Authorization"", ""Content-Type""));
+UrlBasedCorsConfigurationSource src = new UrlBasedCorsConfigurationSource();
+src.registerCorsConfiguration(""/**"", c);
+return src;
+}
+@Bean PasswordEncoder passwordEncoder() { return new BCryptPasswordEncoder(12); }
+}
+// Method-level, including ownership checks
+@PreAuthorize(""hasRole('PO_OFFICER') and @poAccess.canAccess(authentication, #poId)"")
+public List<MemberDto> members(Long poId) { ... }
+```"
+2,MODULE,JWT,,,FALSE,"```java
+Structure: base64url(header).base64url(payload).signature
+Header: {""alg"":""RS256"",""typ"":""JWT"",""kid"":""...""}. Payload claims: iss, sub, aud, exp, iat, plus custom claims (roles, po_id).
+The payload is encoded, not encrypted, so anyone can read it. Never put secrets in it.
+HS256: shared secret HMAC. Every verifier must know the secret. RS256/ES256: a private key signs and a public key verifies. Public keys are published at a JWKS endpoint, which is what Keycloak does.
+Always validate: signature, exp, iss, aud and alg (reject ""none"").
+Access token: short-lived (5–15 minutes). Refresh token: longer-lived, used to get new access tokens, and rotated on each use.
+Revocation: JWTs are stateless and can't be revoked by default. Use short expiry, a denylist in Redis keyed by jti, or token introspection.
+Storage
+XSS risk
+CSRF risk
+Notes
+localStorage
+High (JS can read)
+None
+Simple but risky
+Memory (JS variable)
+Lower
+None
+Lost on refresh; use silent refresh
+HttpOnly Secure cookie
+JS can't read
+Needs SameSite/CSRF token
+Recommended with BFF pattern
+```"
+2,MODULE,OAuth2 and OpenID Connect,,,FALSE,"```java
+OAuth2 is an authorization delegation framework. OIDC is an identity layer on top that adds an ID token (a JWT about the user), the userinfo endpoint and discovery (/.well-known/openid-configuration).
+Roles: Resource Owner (user), Client (React app / service), Authorization Server (Keycloak), Resource Server (Spring Boot API).
+Authorization Code + PKCE for SPAs and mobile apps:
+1. React generates code_verifier (random) and code_challenge = SHA256(verifier)
+2. Redirect user to Keycloak /auth?response_type=code&client_id=pksf-web&code_challenge=...&redirect_uri=...
+3. User logs in at Keycloak → redirected back with ?code=XYZ
+4. React POSTs code + code_verifier to /token → receives access_token, refresh_token, id_token
+5. React calls API with Authorization: Bearer <access_token>
+6. Spring Boot validates the JWT signature using Keycloak's JWKS public keys
+Client Credentials: machine-to-machine (service A calls service B) with no user.
+Deprecated: the Implicit and Resource Owner Password grants. Don't use them.
+Scopes: coarse permissions requested by the client (read:loans). Roles: user permissions assigned in the IdP.
+```"
+2,MODULE,Keycloak,,,FALSE,"```java
+Realm: an isolated tenant (users, clients, roles), for example the realm ""pksf"".
+Client: an application. pksf-web (public client, PKCE) and loan-service (confidential/bearer-only).
+Roles: realm roles (ADMIN, PO_OFFICER, AUDITOR) or client roles. Groups bundle roles. Custom attributes such as po_id can be mapped into the token with protocol mappers.
+# docker-compose excerpt
+keycloak:
+image: quay.io/keycloak/keycloak:25.0
+command: start-dev --import-realm
+environment:
+KC_BOOTSTRAP_ADMIN_USERNAME: admin
+KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+ports: [""8081:8080""]
+volumes: [""./keycloak/realm-export.json:/opt/keycloak/data/import/realm.json""]
+# Spring Boot application.yml
+spring:
+security:
+oauth2:
+resourceserver:
+jwt:
+issuer-uri: http://localhost:8081/realms/pksf
+// Map Keycloak realm roles (realm_access.roles) to Spring authorities
+@Bean
+JwtAuthenticationConverter keycloakConverter() {
+JwtAuthenticationConverter conv = new JwtAuthenticationConverter();
+conv.setJwtGrantedAuthoritiesConverter(jwt -> {
+Map<String, Object> realm = jwt.getClaim(""realm_access"");
+if (realm == null) return List.of();
+@SuppressWarnings(""unchecked"")
+List<String> roles = (List<String>) realm.getOrDefault(""roles"", List.of());
+return roles.stream().map(r -> new SimpleGrantedAuthority(""ROLE_"" + r)).collect(Collectors.toList());
+});
+return conv;
+}
+// React with keycloak-js
+import Keycloak from ""keycloak-js"";
+export const keycloak = new Keycloak({ url: ""http://localhost:8081"", realm: ""pksf"", clientId: ""pksf-web"" });
+await keycloak.init({ onLoad: ""login-required"", pkceMethod: ""S256"", checkLoginIframe: false });
+api.interceptors.request.use(async (config) => {
+await keycloak.updateToken(30);                 // refresh if expiring within 30s
+config.headers.Authorization = `Bearer ${keycloak.token}`;
+return config;
+});
+const isAdmin = keycloak.hasRealmRole(""ADMIN"");
+const logout = () => keycloak.logout({ redirectUri: window.location.origin });
+Service-to-service: a confidential client with a service account obtains a token via client_credentials, using spring-boot-starter-oauth2-client with an OAuth2AuthorizedClientManager.
+Advanced: user federation (LDAP/AD), identity brokering (Google/Microsoft login), MFA (OTP), custom login themes, fine-grained authorization services.
+```"
+2,MODULE,Data Protection and Auditing,,,FALSE,"```java
+Audit trail: record who, what, when, from where and the old/new values for every create, update, delete and approval. Store it append-only (MongoDB collection or Postgres table with no UPDATE/DELETE grant). Use Hibernate Envers or a custom @EntityListener / AOP.
+Encryption: TLS for every hop including DB connections (sslmode=require). Encrypt sensitive columns with pgcrypto or app-level AES-GCM, and disk encryption at rest.
+Masking: show NID as ********6789 in the UI and logs. Restrict full view by role.
+Least privilege for users, DB accounts and K8s service accounts. Review access periodically.
+```"
+2,MODULE,Phase 6 — Interview Questions,,,FALSE,"```java
+Q. Authentication vs authorization?
+A. Authentication verifies identity (login, token validation). Authorization decides what an authenticated identity may access (roles, permissions, ownership).
+Q. How does a Spring Boot resource server validate a Keycloak JWT?
+A. On startup it reads issuer-uri/.well-known/openid-configuration to find the JWKS URI. For each request it verifies the signature with the matching public key (by kid) and checks exp, iss and optionally aud. It then maps claims to authorities.
+Q. Why use Authorization Code with PKCE for a React app?
+A. A SPA can't keep a client secret. PKCE binds the authorization code to a one-time verifier, so an intercepted code is useless. The implicit flow is deprecated because it exposes tokens in URLs.
+Q. How do you log out or revoke a JWT?
+A. Keep access tokens short-lived, revoke the refresh token at Keycloak (logout endpoint), and if immediate revocation is needed, keep a Redis denylist of jti values until they expire, or use introspection.
+Q. HS256 vs RS256?
+A. HS256 uses one shared secret for signing and verifying, so every service that verifies can also forge tokens. RS256 signs with a private key and verifies with a public key, which suits distributed systems.
+Q. How do you prevent SQL injection in Spring Boot?
+A. Use JPA/JPQL parameters or JdbcTemplate placeholders and never concatenate user input into SQL. Validate input and run with least-privilege DB users.
+```"
+2,MODULE,Redis Fundamentals,,,FALSE,"Redis is an in-memory key–value store. It is single-threaded for command execution, so each command is atomic, and it typically answers in under a millisecond.
+Type
+Commands
+- Use case
+- String
+SET, GET, INCR, SETEX
+Cache values, counters, rate limiting
+Hash
+HSET, HGET, HGETALL
+Object fields (session data, user profile)
+List
+LPUSH, RPOP, LRANGE
+Queues, recent activity
+Set
+SADD, SISMEMBER, SINTER
+Unique items, tags, online users
+Sorted Set
+ZADD, ZRANGE, ZREVRANK
+Leaderboards, sliding-window rate limit, delayed jobs
+Stream
+XADD, XREADGROUP
+Durable event log with consumer groups
+SET po:12 '{""id"":12,""name"":""ABC""}' EX 3600     # set with 1-hour TTL
+GET po:12
+TTL po:12
+INCR rate:user:42                              # atomic counter
+EXPIRE rate:user:42 60
+SET lock:loan:42 uuid NX PX 10000              # acquire lock if absent, 10s expiry
+Eviction (when maxmemory is reached): noeviction, allkeys-lru (common for caches), allkeys-lfu, volatile-lru (only keys with TTL), volatile-ttl.
+Persistence: RDB takes periodic snapshots (fast restart, may lose recent data). AOF logs every write (more durable, larger). Both can be combined."
+2,MODULE,Caching Patterns,,,FALSE,"```java
+Cache-aside (lazy loading): the app checks the cache. On a miss it loads from the DB and writes to the cache. On update it writes the DB and evicts the cache key. This is the most common pattern and what @Cacheable does.
+Write-through: write to the cache and DB synchronously. The cache is always fresh, but writes are slower.
+Write-behind: write to the cache and flush to the DB asynchronously. Writes are fast but data can be lost.
+What to cache: read-heavy, rarely changing data (PO list, districts, loan products, user permissions, dashboard aggregates). Don't cache rapidly changing balances without careful invalidation.
+Invalidation: TTL as a safety net, explicit evict on update, or event-driven eviction across services.
+Cache stampede (many misses at once when a hot key expires): use a mutex/lock or early refresh. Penetration (queries for non-existent keys): cache nulls briefly or use a Bloom filter. Avalanche (many keys expire together): add random jitter to TTLs.
+spring:
+data:
+redis:
+host: localhost
+port: 6379
+cache:
+type: redis
+redis:
+time-to-live: 10m
+@Configuration
+@EnableCaching
+public class CacheConfig {
+@Bean
+RedisCacheConfiguration cacheConfiguration() {
+return RedisCacheConfiguration.defaultCacheConfig()
+.entryTtl(Duration.ofMinutes(10))
+.disableCachingNullValues()
+.serializeValuesWith(RedisSerializationContext.SerializationPair
+.fromSerializer(new GenericJackson2JsonRedisSerializer()));
+}
+}
+@Service
+public class PoService {
+@Cacheable(cacheNames = ""po"", key = ""#id"", unless = ""#result == null"")
+public PoDto get(Long id) { ... }
+@CachePut(cacheNames = ""po"", key = ""#id"")
+public PoDto update(Long id, PoUpdate req) { ... }
+@CacheEvict(cacheNames = ""po"", allEntries = true)
+public void reloadAll() { ... }
+}
+// Direct access
+@Autowired StringRedisTemplate redis;
+redis.opsForValue().set(""otp:"" + phone, otp, Duration.ofMinutes(5));
+- String saved = redis.opsForValue().get(""otp:"" + phone);
+```"
+2,MODULE,Sessions and Distributed Use Cases,,,FALSE,"```java
+Spring Session + Redis: stores HttpSession in Redis, so any app instance behind a load balancer can serve the user. This removes the need for sticky sessions. Add spring-session-data-redis and set spring.session.store-type=redis (auto-detected in Boot 3).
+Distributed lock: SET key value NX PX ttl. Release only if the value matches, using a Lua script. Redisson's RLock handles this, plus watchdog renewal.
+Rate limiting: a fixed window with INCR + EXPIRE, or a sliding window with a sorted set of timestamps.
+Pub/Sub: fire-and-forget broadcast, for example cache invalidation across instances. Streams: durable, with consumer groups.
+High availability: Sentinel provides automatic failover for primary/replica. Cluster shards data across nodes (16384 hash slots).
+RLock lock = redisson.getLock(""lock:loan:"" + loanId);
+if (lock.tryLock(2, 10, TimeUnit.SECONDS)) {
+try { disburse(loanId); } finally { lock.unlock(); }
+}
+```"
+2,MODULE,Phase 7 — Interview Questions,,,FALSE,"```sql
+Q. Why is Redis fast?
+A. Data lives in memory, it uses efficient data structures, and a single-threaded event loop avoids lock overhead. It uses I/O multiplexing and a simple protocol.
+Q. How do you keep the cache consistent with the database?
+A. Cache-aside: update the DB first, then delete the cache key (not update it), with a TTL as a safety net. For multi-instance setups, publish invalidation events. Accept brief staleness for non-critical data and never cache authoritative balances blindly.
+Q. How do you share sessions across multiple Spring Boot instances?
+A. Use Spring Session with Redis as the store (a stateless JWT also avoids sessions). The load balancer then needs no sticky sessions.
+Q. What is a cache stampede and how do you prevent it?
+A. When a hot key expires, many requests hit the DB at once. Prevent it with a lock so only one request rebuilds the value, serve stale data while refreshing, or add TTL jitter.
+Q. RDB vs AOF?
+A. RDB takes point-in-time snapshots: compact and fast to restore, but writes since the last snapshot can be lost. AOF appends every write: more durable, with larger files and slower restarts.
+```"
+2,MODULE,HTML and CSS,,,FALSE,"Semantic HTML: header, nav, main, section, article, footer, button (not a clickable div). Give forms label for= and proper input types.
+Accessibility: alt text, keyboard navigation, focus states, color contrast, aria-label where needed.
+Box model: content + padding + border + margin. Use box-sizing: border-box.
+Flexbox for one-dimensional layout (rows or columns). Grid for two-dimensional layout.
+Responsive design: mobile-first CSS with @media (min-width: 768px), relative units (rem, %), and flexible images.
+Position: static, relative, absolute (relative to the nearest positioned ancestor), fixed, sticky.
+.layout { display: grid; grid-template-columns: 240px 1fr; min-height: 100vh; }
+.toolbar { display: flex; justify-content: space-between; align-items: center; gap: 1rem; }
+@media (max-width: 768px) { .layout { grid-template-columns: 1fr; } }"
+2,MODULE,JavaScript,,,FALSE,"```java
+const { name, po: { district } = {} } = member;          // destructuring with default
+const updated = { ...member, phone: ""017..."" };           // spread (immutable update)
+const sum = (...nums) => nums.reduce((a, b) => a + b, 0);  // rest + arrow + reduce
+const label = `Loan #${id} for ${name}`;                   // template literal
+const city = member?.address?.city ?? ""N/A"";              // optional chaining + nullish coalescing
+var is function-scoped and hoisted (initialized as undefined). let/const are block-scoped and sit in the temporal dead zone before their declaration.
+Closure: a function remembers variables from the scope where it was created.
+this: depends on how a function is called. Arrow functions don't have their own this; they use the enclosing scope's.
+== vs ===: == coerces types (""5"" == 5 is true). === is strict. Always use ===.
+Falsy values: false, 0, """", null, undefined, NaN. Everything else is truthy.
+function counter() { let c = 0; return () => ++c; }      // closure
+const next = counter(); next(); next();                   // 1, 2
+// Classic closure-in-loop
+for (var i = 0; i < 3; i++) setTimeout(() => console.log(i));  // 3 3 3
+for (let i = 0; i < 3; i++) setTimeout(() => console.log(i));  // 0 1 2
+```"
+3,TOPIC,Async JavaScript and the Event Loop,,,FALSE,"```java
+async function loadDashboard() {
+try {
+const [pos, loans] = await Promise.all([api.get(""/pos""), api.get(""/loans?status=ACTIVE"")]);
+return { pos: pos.data, loans: loans.data };
+} catch (err) {
+console.error(""Failed"", err);
+throw err;
+}
+}
+console.log(1);
+setTimeout(() => console.log(2), 0);        // macrotask
+Promise.resolve().then(() => console.log(3)); // microtask
+console.log(4);
+// Output: 1 4 3 2  — sync first, then all microtasks, then macrotasks
+Event loop: the call stack runs synchronous code. When it is empty, all microtasks run (promise callbacks, queueMicrotask), then one macrotask (setTimeout, I/O, events), then rendering.
+Promise.all fails fast on the first rejection. Promise.allSettled waits for all. Promise.race settles with the first. Promise.any resolves with the first fulfilled promise.
+Array methods: map (transform), filter (subset), reduce (accumulate), find/findIndex, some/every, flatMap, sort (mutates; use toSorted for a copy).
+```"
+3,TOPIC,Axios Instance with Interceptors,,,FALSE,"```javascript
+export const api = axios.create({ baseURL: import.meta.env.VITE_API_URL, timeout: 15000 });
+api.interceptors.response.use(
+(res) => res,
+(error) => {
+if (error.response?.status === 401) keycloak.login();
+return Promise.reject(error);
+}
+);
+```"
+2,MODULE,TypeScript,,,FALSE,"```javascript
+type LoanStatus = ""PENDING"" | ""ACTIVE"" | ""CLOSED"" | ""WRITTEN_OFF"";   // literal union
+interface Loan {
+id: number;
+memberName: string;
+amount: number;
+status: LoanStatus;
+disbursedOn?: string;          // optional
+readonly createdAt: string;
+}
+interface Page<T> { content: T[]; totalElements: number; totalPages: number; number: number; size: number; }
+async function fetchPage<T>(url: string, params?: Record<string, unknown>): Promise<Page<T>> {
+const { data } = await api.get<Page<T>>(url, { params });
+return data;
+}
+type LoanCreate = Omit<Loan, ""id"" | ""createdAt"" | ""status"">;
+type LoanPatch = Partial<Pick<Loan, ""amount"" | ""status"">>;
+type StatusCount = Record<LoanStatus, number>;
+type vs interface: both describe object shapes. Interfaces can be extended and merged. Types support unions, intersections and mapped types.
+unknown vs any: any disables checking. unknown forces you to narrow the type before use.
+Narrowing: typeof, instanceof, in, discriminated unions.
+```"
+3,TOPIC,"Components, Props and State",,,FALSE,"```javascript
+function LoanRow({ loan, onApprove }: Props) {
+return (
+<tr>
+<td>{loan.memberName}</td>
+<td>{loan.amount.toLocaleString(""en-BD"")}</td>
+<td>{loan.status}</td>
+<td>{loan.status === ""PENDING"" && <button onClick={() => onApprove(loan.id)}>Approve</button>}</td>
+</tr>
+);
+}
+function LoanTable({ loans }: { loans: Loan[] }) {
+const [filter, setFilter] = useState<LoanStatus | ""ALL"">(""ALL"");
+const visible = filter === ""ALL"" ? loans : loans.filter((l) => l.status === filter);  // derived, not state
+return (
+<>
+<select value={filter} onChange={(e) => setFilter(e.target.value as LoanStatus | ""ALL"")}>
+<option value=""ALL"">All</option><option value=""PENDING"">Pending</option><option value=""ACTIVE"">Active</option>
+</select>
+<table><tbody>{visible.map((l) => <LoanRow key={l.id} loan={l} onApprove={approve} />)}</tbody></table>
+</>
+);
+}
+Props are read-only inputs from the parent. State is local data owned by the component; changing it triggers a re-render.
+Update state immutably: setItems([...items, x]), setUser({ ...user, name }). Use the functional form when the new value depends on the old one: setCount(c => c + 1).
+Don't store derived data in state. Compute it during render (or with useMemo if it is expensive).
+Keys: must be stable and unique among siblings (a DB id). Using the array index breaks state when items are reordered or removed.
+Re-renders happen when state changes, the parent re-renders, or a consumed context changes.
+```"
+3,TOPIC,useEffect,,,FALSE,"```javascript
+- useEffect(() => {
+const controller = new AbortController();
+api.get(`/members/${id}`, { signal: controller.signal }).then((r) => setMember(r.data));
+return () => controller.abort();              // cleanup on unmount or id change
+}, [id]);                                       // re-run when id changes
+No dependency array: runs after every render. []: once on mount. [a, b]: when a or b changes.
+Cleanup runs before the next effect and on unmount (timers, subscriptions, aborting fetches).
+In React 18 StrictMode (dev), effects run twice on mount to surface missing cleanup.
+Prefer TanStack Query for data fetching instead of hand-written effects.
+```"
+3,TOPIC,"Forms, Refs, Memoization, Context, Reducers",,,FALSE,"```java
+// Controlled input
+const [name, setName] = useState("""");
+<input value={name} onChange={(e) => setName(e.target.value)} />
+// useRef: DOM access or mutable value that doesn't trigger render
+const inputRef = useRef<HTMLInputElement>(null);
+- useEffect(() => inputRef.current?.focus(), []);
+// useMemo / useCallback: avoid expensive recalculation / keep stable function identity
+const total = useMemo(() => loans.reduce((s, l) => s + l.amount, 0), [loans]);
+const handleApprove = useCallback((id: number) => approveMutation.mutate(id), [approveMutation]);
+// useReducer for complex state transitions
+type Action = { type: ""add""; item: Item } | { type: ""remove""; id: number };
+function reducer(state: Item[], a: Action): Item[] {
+switch (a.type) {
+case ""add"": return [...state, a.item];
+case ""remove"": return state.filter((i) => i.id !== a.id);
+}
+}
+const [items, dispatch] = useReducer(reducer, []);
+// Context for app-wide values (auth user, theme, language)
+const AuthContext = createContext<{ user?: User; logout: () => void } | null>(null);
+export const useAuth = () => {
+const ctx = useContext(AuthContext);
+if (!ctx) throw new Error(""useAuth must be inside AuthProvider"");
+return ctx;
+};
+// Custom hook
+function useDebounce<T>(value: T, delay = 400) {
+const [v, setV] = useState(value);
+- useEffect(() => { const t = setTimeout(() => setV(value), delay); return () => clearTimeout(t); }, [value, delay]);
+return v;
+}
+Rules of hooks: call them only at the top level (not in loops or conditions) and only from components or custom hooks.
+Virtual DOM and reconciliation: React renders a new tree, diffs it with the previous one (comparing element type and key), and applies minimal DOM updates.
+Error boundaries: class components (or the react-error-boundary library) that catch render errors in children and show a fallback UI.
+```"
+2,MODULE,React Ecosystem,,,FALSE,"src/
+├── api/            (axios instance, endpoint functions)
+├── auth/           (keycloak, AuthProvider, ProtectedRoute)
+├── components/     (shared UI)
+├── features/
+│    ├── loans/     (LoanListPage, LoanForm, hooks/useLoans.ts, types.ts)
+│    └── members/
+├── hooks/
+├── i18n/           (en.json, bn.json)
+├── routes.tsx
+└── main.tsx"
+3,TOPIC,Routing and Protected Routes,,,FALSE,"```javascript
+const router = createBrowserRouter([
+{ index: true, element: <Dashboard /> },
+]},
+]);
+function RequireRole({ role, children }: { role: string; children: JSX.Element }) {
+return keycloak.hasRealmRole(role) ? children : <Navigate to=""/"" replace />;
+}
+const { id } = useParams();                 // read route param
+const navigate = useNavigate();             // navigate(""/loans"")
+```"
+3,TOPIC,Server State with TanStack Query,,,FALSE,"```javascript
+export function useLoans(page: number, status?: LoanStatus) {
+return useQuery({
+queryKey: [""loans"", page, status],
+queryFn: () => fetchPage<Loan>(""/loans"", { page, size: 20, status }),
+placeholderData: keepPreviousData,
+});
+}
+export function useApproveLoan() {
+const qc = useQueryClient();
+return useMutation({
+mutationFn: (id: number) => api.post(`/loans/${id}/approve`),
+onSuccess: () => qc.invalidateQueries({ queryKey: [""loans""] }),
+});
+}
+const { data, isLoading, isError } = useLoans(page, status);
+Server state (from the API) belongs in TanStack Query, which handles caching, refetching, retries and stale time. Client/UI state (modals, filters) belongs in useState, Context, Zustand or Redux Toolkit.
+```"
+3,TOPIC,Forms with React Hook Form + Zod,,,FALSE,"```javascript
+const schema = z.object({
+memberId: z.number({ required_error: ""Member is required"" }),
+amount: z.number().min(1000).max(500000),
+tenureMonths: z.number().int().min(1).max(60),
+purpose: z.string().min(3).max(200),
+});
+type FormValues = z.infer<typeof schema>;
+function LoanForm() {
+const { register, handleSubmit, formState: { errors, isSubmitting } } =
+- useForm<FormValues>({ resolver: zodResolver(schema) });
+const create = useMutation({ mutationFn: (v: FormValues) => api.post(""/loans"", v) });
+return (
+<form onSubmit={handleSubmit((v) => create.mutateAsync(v))}>
+<input type=""number"" {...register(""amount"", { valueAsNumber: true })} />
+{errors.amount && <span role=""alert"">{errors.amount.message}</span>}
+<button disabled={isSubmitting}>Save</button>
+</form>
+);
+}
+```"
+3,TOPIC,"UI Libraries, Tables and Charts",,,FALSE,"MUI or Ant Design provide ready components (DataGrid/Table, forms, dialogs, date pickers). Theme them to match branding.
+Server-side tables: send page, size, sort and filters to the API (Spring Pageable) and show totalElements for pagination.
+Charts: Recharts or Chart.js for dashboards (disbursement by month, PAR by PO).
+Global state: Zustand for something minimal, or Redux Toolkit (createSlice, configureStore, RTK Query) for larger apps."
+2,MODULE,React Advanced,,,FALSE,"```java
+Performance: React.memo for pure components with stable props; useMemo/useCallback where profiling shows a benefit; code splitting with React.lazy(() => import('./ReportsPage')) inside Suspense; virtualize long lists (react-window); avoid creating new objects in props unnecessarily.
+SPA auth flow: initialize Keycloak before rendering, attach the token in an interceptor, refresh silently with updateToken, guard routes by role, handle 401 by re-login and 403 with a ""no access"" page, and clear state on logout.
+i18n: react-i18next with en.json and bn.json, plus a language switcher. Format numbers and dates with Intl (bn-BD).
+Next.js: a React framework with SSR/SSG/ISR and file-based routing. Mostly not needed for internal admin SPAs.
+Build: Vite (npm run build creates static files in dist/) served by Nginx. Environment variables use the VITE_ prefix and are baked in at build time.
+```"
+2,MODULE,Phase 8 — Interview Questions,,,FALSE,"```java
+Q. What is the virtual DOM?
+A. It is an in-memory representation of the UI. On a state change, React creates a new tree, diffs it against the previous one and applies only the minimal changes to the real DOM.
+Q. Why are keys important in lists?
+A. React uses them to match elements between renders. Stable keys preserve component state and avoid unnecessary re-creation. Index keys cause bugs when items are reordered, inserted or deleted.
+Q. useMemo vs useCallback?
+A. useMemo caches a computed value. useCallback caches a function reference. Both recompute only when dependencies change.
+Q. Controlled vs uncontrolled components?
+A. Controlled inputs keep their value in React state (value + onChange). Uncontrolled inputs keep it in the DOM and you read it with a ref. React Hook Form uses uncontrolled inputs for performance.
+Q. How do you share state between sibling components?
+A. Lift the state up to the common parent and pass it down via props, or use Context or a store (Zustand/Redux) for widely shared state.
+Q. What is the output order of console.log, setTimeout and Promise.then?
+A. Synchronous logs first, then promise callbacks (microtasks), then setTimeout callbacks (macrotasks).
+Q. How do you protect routes in React?
+A. Use a wrapper component that checks authentication and roles (from Keycloak or the auth context) and redirects with Navigate if access is denied. The backend must still enforce authorization, because frontend checks are only UX.
+```"
+2,MODULE,Backend Testing,,,FALSE,"```java
+Test pyramid: many fast unit tests, fewer integration tests, few end-to-end tests.
+Unit: one class, with dependencies mocked. Integration: real Spring context and real DB (Testcontainers). E2E: the full system through its UI or API.
+@ExtendWith(MockitoExtension.class)
+class LoanServiceTest {
+@Mock LoanRepository loanRepo;
+@Mock ApplicationEventPublisher events;
+@InjectMocks LoanService service;
+@Test
+void repay_reducesOutstanding() {
+Loan loan = Loan.active(1L, new BigDecimal(""10000""));
+when(loanRepo.findById(1L)).thenReturn(Optional.of(loan));
+service.repay(1L, new RepaymentRequest(new BigDecimal(""2500"")));
+assertThat(loan.getOutstanding()).isEqualByComparingTo(""7500"");
+verify(events).publishEvent(any(RepaymentRecorded.class));
+}
+@Test
+void repay_unknownLoan_throws() {
+when(loanRepo.findById(99L)).thenReturn(Optional.empty());
+assertThatThrownBy(() -> service.repay(99L, new RepaymentRequest(BigDecimal.TEN)))
+.isInstanceOf(LoanNotFoundException.class);
+}
+@ParameterizedTest
+@CsvSource({""10000,12,833.33"", ""5000,6,833.33""})
+void installment(String principal, int months, String expected) {
+assertThat(service.installment(new BigDecimal(principal), months)).isEqualByComparingTo(expected);
+}
+}
+@WebMvcTest(LoanController.class)
+class LoanControllerTest {
+@Autowired MockMvc mvc;
+@MockitoBean LoanService loanService;      // Boot 3.4+; older: @MockBean
+@Test
+@WithMockUser(roles = ""PO_OFFICER"")
+void create_invalidAmount_returns400() throws Exception {
+mvc.perform(post(""/api/v1/loans"").with(csrf())
+.contentType(MediaType.APPLICATION_JSON)
+.content(""{\""memberId\"":1,\""amount\"":10,\""tenureMonths\"":12,\""purpose\"":\""cow\""}""))
+.andExpect(status().isBadRequest())
+.andExpect(jsonPath(""$.errors.amount"").exists());
+}
+@Test
+void unauthenticated_returns401() throws Exception {
+mvc.perform(get(""/api/v1/loans"")).andExpect(status().isUnauthorized());
+}
+}
+@SpringBootTest
+@Testcontainers
+class LoanRepositoryIT {
+@Container @ServiceConnection
+static PostgreSQLContainer<?> pg = new PostgreSQLContainer<>(""postgres:16-alpine"");
+@Autowired LoanRepository repo;
+@Test
+void findWithMember_fetchesInOneQuery() {
+List<Loan> loans = repo.findWithMember(LoanStatus.ACTIVE);
+assertThat(loans).allSatisfy(l -> assertThat(l.getMember().getName()).isNotBlank());
+}
+}
+Slices: @WebMvcTest (controllers, MockMvc, security), @DataJpaTest (JPA repositories; embedded DB by default, so use @AutoConfigureTestDatabase(replace = NONE) with Testcontainers), @JsonTest, @SpringBootTest (full context).
+@ServiceConnection (Boot 3.1+) wires Testcontainers connection details automatically.
+TDD cycle: Red (write a failing test) → Green (minimal code to pass) → Refactor.
+JaCoCo: coverage reports in CI. Aim for meaningful coverage of business logic, not 100% of everything.
+```"
+2,MODULE,Frontend Testing,,,FALSE,"```javascript
+import { render, screen } from ""@testing-library/react"";
+import userEvent from ""@testing-library/user-event"";
+test(""shows validation error for small amount"", async () => {
+render(<LoanForm />);
+await userEvent.type(screen.getByLabelText(/amount/i), ""10"");
+await userEvent.click(screen.getByRole(""button"", { name: /save/i }));
+expect(await screen.findByRole(""alert"")).toHaveTextContent(/1000/);
+});
+Test behavior the way a user sees it: query by role, label or text, not by CSS classes.
+MSW (Mock Service Worker) mocks API calls at the network level. Playwright runs end-to-end browser tests (login → create loan → see it in the list).
+```"
+2,MODULE,Code Quality,,,FALSE,"Clean code: intention-revealing names, small focused methods, no duplicated logic (DRY), no magic numbers (use constants/enums), fail fast with clear exceptions, and comments that explain why rather than what.
+Static analysis: SonarQube (bugs, code smells, coverage gates), Checkstyle/Spotless (formatting), SpotBugs, ESLint + Prettier (frontend), OWASP dependency-check.
+Code review: small PRs, a clear description, review for correctness, security and readability, and constructive comments."
+2,MODULE,Phase 9 — Interview Questions,,,FALSE,"Q. Difference between @Mock and @MockitoBean/@MockBean?
+A. @Mock is a plain Mockito mock with no Spring involved. @MockitoBean (formerly @MockBean) replaces a bean inside the Spring test context.
+Q. Why use Testcontainers instead of H2?
+A. H2 behaves differently from PostgreSQL (SQL dialect, JSONB, indexes, functions). Testcontainers runs the real database in Docker, so tests reflect production behavior.
+Q. What should a unit test not do?
+A. Hit the network, a real database or the filesystem, depend on test order, or test framework internals. It should be fast, isolated and deterministic."
+2,MODULE,Git,,,FALSE,"```java
+git clone <url> && cd repo
+git checkout -b feature/loan-repayment         # create branch
+git add -p && git commit -m ""feat(loan): add repayment endpoint""
+git fetch origin && git rebase origin/main      # update branch with latest main
+git push -u origin feature/loan-repayment       # then open a Pull Request
+git stash / git stash pop                       # shelve work in progress
+git log --oneline --graph --all
+git diff main...HEAD
+git revert <sha>                                # new commit that undoes <sha> (safe on shared branches)
+git reset --soft HEAD~1                         # undo last commit, keep changes staged (local only)
+git restore file.txt                            # discard working changes to file
+git cherry-pick <sha>                           # apply one commit onto current branch
+git tag -a v1.2.0 -m ""Release 1.2.0"" && git push --tags
+Merge preserves history with a merge commit. Rebase rewrites your commits on top of the target for a linear history. Never rebase shared/public branches. Squash merge turns a PR into one commit.
+GitFlow: main, develop, feature/*, release/*, hotfix/*. Trunk-based: short-lived branches merged to main often, using feature flags. It is simpler and CI-friendly.
+Conflicts: git shows <<<<<<< ======= >>>>>>> markers. Edit, then git add and continue the merge or rebase.
+Conventional commits: feat:, fix:, docs:, refactor:, test:, chore:. SemVer: MAJOR.MINOR.PATCH.
+```"
+2,MODULE,Linux and Servers,,,FALSE,"```javascript
+ls -la; cd; pwd; mkdir -p; cp -r; mv; rm -rf
+cat / less / head -n 50 / tail -f app.log          # view and follow logs
+grep -rn ""ERROR"" /var/log/app/                     # search
+find / -name ""*.jar"" 2>/dev/null
+ps aux | grep java; top; htop; kill -15 <pid>      # processes
+df -h; du -sh *; free -m                           # disk and memory
+chmod 640 file; chown app:app file                 # permissions (rwx for user/group/others)
+ss -tulpn | grep 8080                              # who listens on a port
+ssh -i key.pem user@server; scp app.jar user@server:/opt/app/
+systemctl status|start|restart loan-service; journalctl -u loan-service -f
+curl -i http://localhost:8080/actuator/health
+server {
+listen 443 ssl;
+server_name app.pksf.org.bd;
+ssl_certificate     /etc/ssl/certs/pksf.crt;
+ssl_certificate_key /etc/ssl/private/pksf.key;
+root /usr/share/nginx/html;                         # React build
+location / { try_files $uri /index.html; }          # SPA fallback for client routing
+location /api/ {
+proxy_pass http://localhost:8080;
+proxy_set_header Host $host;
+proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+proxy_set_header X-Forwarded-Proto $scheme;
+}
+}
+```"
+2,MODULE,Docker,,,FALSE,"Image: a read-only template made of layers. Container: a running instance of an image with a writable layer.
+Docker vs VM: containers share the host kernel, so they are lightweight and start in seconds. VMs include a full guest OS.
+Layer caching: order Dockerfile instructions from least to most frequently changing (dependencies before source code).
+# Spring Boot — multi-stage build
+FROM maven:3.9-eclipse-temurin-21 AS build
+WORKDIR /app
+COPY pom.xml .
+RUN mvn -q dependency:go-offline          # cached layer unless pom changes
+COPY src ./src
+RUN mvn -q package -DskipTests
+FROM eclipse-temurin:21-jre-alpine
+WORKDIR /app
+RUN addgroup -S app && adduser -S app -G app
+COPY --from=build /app/target/*.jar app.jar
+- USER app
+EXPOSE 8080
+HEALTHCHECK CMD wget -qO- http://localhost:8080/actuator/health || exit 1
+ENTRYPOINT [""java"", ""-XX:MaxRAMPercentage=75"", ""-jar"", ""app.jar""]
+# React — build then serve with Nginx
+FROM node:20-alpine AS build
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci
+COPY . .
+RUN npm run build
+FROM nginx:1.27-alpine
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY --from=build /app/dist /usr/share/nginx/html
+EXPOSE 80
+# docker-compose.yml — full local stack
+services:
+postgres:
+image: postgres:16-alpine
+environment: { POSTGRES_DB: pksf, POSTGRES_USER: pksf, POSTGRES_PASSWORD: pksf }
+volumes: [pgdata:/var/lib/postgresql/data]
+healthcheck: { test: [""CMD-SHELL"", ""pg_isready -U pksf""], interval: 5s, retries: 10 }
+redis:
+image: redis:7-alpine
+mongo:
+image: mongo:7
+keycloak:
+image: quay.io/keycloak/keycloak:25.0
+command: start-dev --import-realm
+environment: { KC_BOOTSTRAP_ADMIN_USERNAME: admin, KC_BOOTSTRAP_ADMIN_PASSWORD: admin }
+volumes: [./keycloak:/opt/keycloak/data/import]
+ports: [""8081:8080""]
+backend:
+build: ./backend
+environment:
+SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/pksf
+SPRING_DATASOURCE_USERNAME: pksf
+SPRING_DATASOURCE_PASSWORD: pksf
+SPRING_DATA_REDIS_HOST: redis
+SPRING_DATA_MONGODB_URI: mongodb://mongo:27017/audit
+SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: http://keycloak:8080/realms/pksf
+depends_on:
+postgres: { condition: service_healthy }
+redis: { condition: service_started }
+ports: [""8080:8080""]
+frontend:
+build: ./frontend
+ports: [""3000:80""]
+depends_on: [backend]
+volumes:
+pgdata:
+docker build -t pksf/loan-service:1.0 .
+docker run -d -p 8080:8080 --name loan pksf/loan-service:1.0
+docker ps; docker logs -f loan; docker exec -it loan sh; docker stop loan; docker rm loan
+docker images; docker rmi <img>; docker system prune
+docker compose up -d --build; docker compose logs -f backend; docker compose down -v
+Volumes: persist data outside the container lifecycle. Bind mounts map host paths. Networks: containers on the same compose network reach each other by service name (postgres:5432).
+Best practices: small base images (alpine/distroless/JRE-only), a .dockerignore (target, node_modules, .git), a non-root USER, pinned versions, one process per container, no secrets in images, and image scanning (Trivy).
+CMD vs ENTRYPOINT: ENTRYPOINT is the fixed executable. CMD supplies default arguments that can be overridden. COPY vs ADD: prefer COPY; ADD also extracts archives and fetches URLs."
+2,MODULE,Kubernetes,,,FALSE,"```javascript
+Control plane: kube-apiserver (front door), etcd (cluster state store), scheduler (places Pods on nodes), controller-manager (reconciliation loops).
+Worker node: kubelet (runs Pods), kube-proxy (Service networking), container runtime (containerd).
+Pod: the smallest deployable unit (one or more containers sharing network and storage). ReplicaSet keeps N Pods running. Deployment manages ReplicaSets for rolling updates and rollbacks.
+Service: a stable virtual IP/DNS name for a set of Pods. ClusterIP is internal, NodePort exposes a port on each node, and LoadBalancer creates a cloud LB. Ingress does HTTP routing by host/path (with an ingress controller such as NGINX).
+ConfigMap holds non-secret config. Secret holds sensitive data (base64-encoded, not encrypted by default; enable encryption at rest).
+StatefulSet: stable identity and storage for databases. PersistentVolume/PersistentVolumeClaim: storage abstraction. DaemonSet: one Pod per node (log agents). Job/CronJob: batch tasks.
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: loan-service, labels: { app: loan-service } }
+spec:
+replicas: 3
+selector: { matchLabels: { app: loan-service } }
+strategy: { type: RollingUpdate, rollingUpdate: { maxUnavailable: 0, maxSurge: 1 } }
+template:
+metadata: { labels: { app: loan-service } }
+spec:
+containers:
+- name: app
+image: registry.pksf.org.bd/loan-service:1.4.2
+ports: [{ containerPort: 8080 }]
+envFrom:
+- configMapRef: { name: loan-config }
+- secretRef: { name: loan-secrets }
+resources:
+requests: { cpu: ""250m"", memory: ""512Mi"" }
+limits: { memory: ""1Gi"" }
+readinessProbe:
+httpGet: { path: /actuator/health/readiness, port: 8080 }
+initialDelaySeconds: 20
+livenessProbe:
+httpGet: { path: /actuator/health/liveness, port: 8080 }
+initialDelaySeconds: 40
+---
+apiVersion: v1
+kind: Service
+metadata: { name: loan-service }
+spec:
+selector: { app: loan-service }
+ports: [{ port: 80, targetPort: 8080 }]
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata: { name: pksf-ingress }
+spec:
+ingressClassName: nginx
+rules:
+- host: app.pksf.org.bd
+http:
+paths:
+- { path: /api/v1/loans, pathType: Prefix, backend: { service: { name: loan-service, port: { number: 80 } } } }
+- { path: /, pathType: Prefix, backend: { service: { name: frontend, port: { number: 80 } } } }
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata: { name: loan-service }
+spec:
+scaleTargetRef: { apiVersion: apps/v1, kind: Deployment, name: loan-service }
+minReplicas: 2
+maxReplicas: 10
+metrics: [{ type: Resource, resource: { name: cpu, target: { type: Utilization, averageUtilization: 70 } } }]
+Probes: a failed readiness check removes the Pod from Service endpoints (no traffic). A failed liveness check restarts the container. A startup probe protects slow-starting apps.
+Requests are used for scheduling. Limits are the maximum: exceeding the memory limit kills the container (OOMKilled), and exceeding the CPU limit throttles it.
+kubectl get pods -o wide; kubectl get deploy,svc,ingress
+kubectl describe pod <pod>                      # events: ImagePullBackOff, CrashLoopBackOff, OOMKilled
+kubectl logs -f <pod> [-c container] [--previous]
+kubectl exec -it <pod> -- sh
+kubectl apply -f k8s/; kubectl delete -f k8s/
+kubectl rollout status deploy/loan-service; kubectl rollout undo deploy/loan-service
+kubectl scale deploy/loan-service --replicas=5
+kubectl port-forward svc/loan-service 8080:80
+kubectl create secret generic loan-secrets --from-literal=DB_PASSWORD=...
+Troubleshooting: CrashLoopBackOff (app crashes: check logs --previous), ImagePullBackOff (wrong image or registry credentials), Pending (insufficient resources or unbound PVC), OOMKilled (raise the memory limit or fix a leak).
+Practice locally with minikube, kind or k3d. Helm is a package manager that templates manifests (charts, values.yaml).
+```"
+2,MODULE,CI/CD,,,FALSE,"```java
+CI (Continuous Integration): every push is built and tested automatically. CD: continuous delivery means always deployable with a manual approval; continuous deployment means automatic deployment to production.
+Typical stages: checkout → build → unit tests → integration tests → static analysis/security scan → build Docker image → push to registry → deploy to dev/staging → smoke tests → approval → production.
+# .github/workflows/ci.yml
+name: CI
+on:
+push: { branches: [main] }
+pull_request:
+jobs:
+backend:
+runs-on: ubuntu-latest
+defaults: { run: { working-directory: backend } }
+steps:
+- uses: actions/checkout@v4
+- uses: actions/setup-java@v4
+with: { distribution: temurin, java-version: ""21"", cache: maven }
+- run: mvn -B verify                       # unit + Testcontainers integration tests
+- uses: actions/upload-artifact@v4
+with: { name: jacoco, path: backend/target/site/jacoco }
+frontend:
+runs-on: ubuntu-latest
+defaults: { run: { working-directory: frontend } }
+steps:
+- uses: actions/checkout@v4
+- uses: actions/setup-node@v4
+with: { node-version: ""20"", cache: npm, cache-dependency-path: frontend/package-lock.json }
+- run: npm ci && npm run lint && npm test -- --run && npm run build
+docker:
+if: github.ref == 'refs/heads/main'
+needs: [backend, frontend]
+runs-on: ubuntu-latest
+permissions: { contents: read, packages: write }
+steps:
+- uses: actions/checkout@v4
+- uses: docker/login-action@v3
+with: { registry: ghcr.io, username: ""${{ github.actor }}"", password: ""${{ secrets.GITHUB_TOKEN }}"" }
+- uses: docker/build-push-action@v6
+with: { context: backend, push: true, tags: ""ghcr.io/${{ github.repository }}/backend:${{ github.sha }}"" }
+// Jenkinsfile (declarative) — common in on-premise government setups
+pipeline {
+agent any
+stages {
+stage('Build & Test') { steps { sh 'mvn -B clean verify' } }
+stage('Sonar')        { steps { withSonarQubeEnv('sonar') { sh 'mvn sonar:sonar' } } }
+stage('Docker')       { steps { sh 'docker build -t registry/loan:$BUILD_NUMBER . && docker push registry/loan:$BUILD_NUMBER' } }
+stage('Deploy')       { when { branch 'main' } steps { sh 'kubectl set image deploy/loan-service app=registry/loan:$BUILD_NUMBER' } }
+}
+post { failure { echo 'Build failed' } }
+}
+Deployment strategies: Rolling replaces Pods gradually (the K8s default). Blue-green runs two environments and switches traffic, with instant rollback. Canary sends a small percentage of traffic to the new version first. Recreate stops old then starts new (downtime).
+Environment promotion: build the image once and promote the same image through dev → staging → prod. Inject config per environment via ConfigMaps, Secrets or profiles.
+```"
+2,MODULE,Phase 10 — Interview Questions,,,FALSE,"Q. Merge vs rebase?
+A. Merge combines histories with a merge commit and preserves context. Rebase replays your commits on top of another branch for linear history, but rewrites commits, so avoid it on shared branches.
+Q. How do you reduce Docker image size?
+A. Use multi-stage builds, a JRE-only or alpine/distroless base, a .dockerignore, fewer layers, clearing package caches, and copying only the final artifact.
+Q. Liveness vs readiness probe?
+A. Readiness decides whether the Pod should receive traffic (e.g. still warming up or the DB is unreachable). Liveness decides whether it should be restarted (e.g. deadlocked). Spring Boot Actuator exposes both.
+Q. Deployment vs StatefulSet?
+A. A Deployment is for stateless, interchangeable Pods. A StatefulSet gives stable network IDs, ordered rollout and per-Pod persistent volumes, which suits databases and brokers.
+Q. How do you roll back a bad release in Kubernetes?
+A. kubectl rollout undo deployment/name (or redeploy the previous image tag via CI). With blue-green, switch traffic back.
+Q. What is the difference between CI, continuous delivery and continuous deployment?
+A. CI automatically builds and tests every change. Continuous delivery keeps every change releasable, with a manual production approval. Continuous deployment releases every passing change to production automatically."
+1,MODULE,Phase 11 — Cloud (Optional),,,FALSE,"IaaS (VMs: EC2), PaaS (managed runtime: Elastic Beanstalk, App Service), SaaS (finished software). Regions contain multiple Availability Zones; deploy across AZs for high availability.
+AWS core: EC2 (VMs), S3 (object storage for documents and backups), RDS (managed PostgreSQL), IAM (users, roles, least-privilege policies), VPC (private networking, subnets, security groups), ECR (container registry), EKS (managed Kubernetes), CloudWatch (logs and metrics).
+Azure equivalents: VM, Blob Storage, Azure Database for PostgreSQL, Entra ID, VNet, ACR, AKS. GCP: Compute Engine, Cloud Storage, Cloud SQL, IAM, GKE.
+Simple deploy path: push the image to ECR, then run it on ECS Fargate or EKS with RDS PostgreSQL, ElastiCache Redis, an ALB and HTTPS via ACM. Store secrets in Secrets Manager.
+Certifications: AWS Certified Developer – Associate, AWS Solutions Architect – Associate, Azure Developer Associate (AZ-204)."
+2,MODULE,Fundamentals,,,FALSE,"Vertical scaling adds a bigger machine. Horizontal scaling adds more instances, which requires stateless services (sessions in Redis or JWT).
+Load balancers: round robin, least connections, IP hash. Health checks remove bad instances.
+Database scaling: indexes and query tuning first, then caching, read replicas for reports, partitioning big tables, and finally sharding.
+Caching layers: browser/CDN (static assets), API gateway, application (Redis), database buffer cache.
+Asynchronous processing: queues for heavy work (report generation, SMS, bulk imports)."
+2,MODULE,Approach to Any Design Question,,,FALSE,"1. Clarify requirements: functional (features) and non-functional (users, data volume, latency, availability, security).
+2. Estimate: e.g. 200 POs × 20,000 members = 4M members; weekly installments mean about 4M payment rows/week, or about 200M/year, so partition by date.
+3. High-level design: clients, gateway, services, databases, cache, queue.
+4. Data model and APIs.
+5. Deep dive: bottlenecks, consistency, security, failure handling.
+6. Trade-offs and future improvements."
+2,MODULE,Case Study: PO Loan Management System,,,FALSE,"```java
+Functional requirements: onboard POs and members, loan application → approval → disbursement, installment schedules, repayment collection, overdue tracking, reports (PO portfolio, PAR), audit trail, role-based access (PKSF admin, PO officer, auditor).
+Non-functional requirements: accurate money handling, no double disbursement, high availability during office hours, sub-second responses for common screens, PO data isolation, full auditability, data retention.
+Architecture: React SPA → Nginx/Ingress → API Gateway (JWT via Keycloak) → modular Spring Boot services (PO, Member, Loan, Repayment, Reporting, Notification) → PostgreSQL (primary + read replica) + Redis (cache, rate limit) + MongoDB (audit/events) + RabbitMQ (async events) → Prometheus/Grafana + ELK.
+Data model: pos, members, loan_products, loans, installments, repayments, ledger_entries (append-only, partitioned by date), users/roles in Keycloak with a po_id attribute.
+POST /api/v1/loans                      create application
+POST /api/v1/loans/{id}/approve         approve (role: PKSF/PO manager)
+POST /api/v1/loans/{id}/disburse        disburse (Idempotency-Key header)
+GET  /api/v1/loans/{id}/installments    schedule
+POST /api/v1/loans/{id}/repayments      record repayment
+GET  /api/v1/reports/par?poId=&asOf=    portfolio at risk
+Correctness: use a DB transaction for repayment + ledger entry + installment update; @Version optimistic locking on the loan; an Idempotency-Key with a unique constraint on disbursement/repayment requests; NUMERIC money; reversal entries instead of edits.
+Performance: composite indexes (loan_id, due_date) and (po_id, status); nightly materialized views for PAR and portfolio reports, refreshed concurrently; reports served from a replica; Redis caching of products and PO metadata; async Excel/PDF generation.
+Security: Keycloak RBAC + PO scoping on every query (also enforceable with Postgres RLS), TLS, masking of NID/phone, audit of every state change, rate limiting, OWASP checks in CI.
+Reliability: multiple replicas behind K8s, readiness/liveness probes, circuit breakers for external SMS/NID services, an outbox for events, daily backups + PITR, and DR documentation.
+```"
+2,MODULE,Phase 12 — Interview Questions,,,FALSE,"Q. How would you prevent double disbursement if the user clicks twice or the network retries?
+A. The client sends an Idempotency-Key. The server stores it with a unique constraint in the same transaction as the disbursement and returns the stored result for repeats. Also check the loan status transition (only APPROVED → DISBURSED) under optimistic locking.
+Q. Reports are slowing down the transactional database. What do you do?
+A. Move reports to a read replica, precompute aggregates in materialized views or summary tables refreshed on a schedule, add suitable indexes, generate large reports asynchronously, and cache frequent results."
+2,MODULE,Project: PO Microfinance Management System,,,FALSE,"```java
+- Tip: The TOR explicitly prefers a public repo with clean modular full-stack code, unit/integration tests, a README and docker-compose. This project demonstrates every mandatory and preferred skill.
+pksf-microfinance/
+├── backend/                 Spring Boot 3, Java 21, Maven
+│    ├── src/main/java/...   po, member, loan, repayment, report, audit, config, common
+│    ├── src/main/resources/db/migration (Flyway)
+│    ├── src/test/java       unit + Testcontainers ITs
+│    └── Dockerfile
+├── frontend/                React 18 + TypeScript + Vite + MUI + TanStack Query
+│    └── Dockerfile
+├── keycloak/realm-export.json
+├── k8s/                     deployment, service, ingress, configmap, hpa
+├── docker-compose.yml
+├── .github/workflows/ci.yml
+└── README.md                architecture diagram, setup, screenshots, API docs link
+```"
+2,MODULE,Milestones,,,FALSE,"#
+Milestone
+Skills shown
+Requirements, ER diagram, OpenAPI contract
+Design, documentation
+PO and Member CRUD with validation, pagination, error handling
+Spring Boot REST, JPA, DTOs
+Loan lifecycle (apply, approve, disburse) + installment schedule generation
+Business logic, transactions, BigDecimal
+Repayments, overdue job, ledger
+@Scheduled, locking, idempotency
+Keycloak login, roles ADMIN/PO_OFFICER/AUDITOR, PO scoping
+OAuth2, JWT, Spring Security
+Redis caching for products/POs; Mongo audit log
+Redis, MongoDB
+React UI: login, dashboard with charts, tables, forms
+React, TS, RHF+Zod, TanStack Query
+Reports: PAR, portfolio by PO, Excel export; EXPLAIN-tuned queries
+SQL, indexing, Apache POI
+Tests: JUnit/Mockito, MockMvc, Testcontainers, RTL
+Testing
+docker-compose, K8s manifests, GitHub Actions CI
+Docker, K8s, CI/CD
+README with architecture diagram, setup steps, screenshots
+Communication"
+2,MODULE,README Checklist,,,FALSE,"```sql
+A one-paragraph overview and a feature list.
+An architecture diagram and tech stack badges.
+Quick start: docker compose up -d, plus default login users for each role.
+API docs link (Swagger UI) and sample requests.
+How to run tests, and a coverage report.
+Key design decisions: why NUMERIC, why the outbox, the indexing strategy with EXPLAIN before/after.
+Screenshots of the UI.
+```"
+2,MODULE,Written Test Strategy,,,FALSE,"```bash
+MCQ: expect fast recall of Java output prediction, OOP concepts, SQL clauses, normalization, OSI layers, HTTP codes, OS deadlock/scheduling and Git commands. Practice timed sets of 50.
+Handwritten code: write complete, compiling Java: class, method signature, edge cases (null, empty). Narrate complexity in a comment.
+SQL: joins, GROUP BY/HAVING, Nth highest, top-N per group, duplicates, running totals.
+Short answers: structure each one as definition → how it works → example → trade-off.
+```"
+2,MODULE,Java Output Prediction — Practice,,,FALSE,"```java
+- String s = ""a"" + 1 + 2;  String t = 1 + 2 + ""a"";
+System.out.println(s + "" "" + t);              // a12 3a
+int i = 5; i = i++ + ++i; System.out.println(i);   // 5 + 7 = 12
+System.out.println(10 / 3 + "" "" + 10 % 3 + "" "" + 10.0 / 3);   // 3 1 3.3333333333333335
+List<Integer> list = new ArrayList<>(List.of(1, 2, 3));
+list.remove(Integer.valueOf(1));   // removes value 1 -> [2, 3]
+list.remove(0);                    // removes index 0 -> [3]
+static int f() { try { return 1; } finally { System.out.println(""finally""); } }   // prints finally, returns 1
+Integer a = 1000, b = 1000; System.out.println(a == b);     // false (outside cache)
+System.out.println(""hello"".substring(1, 3));                 // el
+char c = 'A'; c += 1; System.out.println(c);                 // B
+```"
+2,MODULE,Viva Preparation,,,FALSE,"```java
+Self-introduction (60–90 seconds): education, years of experience, core stack (Java/Spring Boot/React/PostgreSQL), one key achievement with numbers, and why PKSF.
+Project walkthrough (3 minutes): the problem, your role, architecture, tech choices and why, one hard problem you solved (performance, concurrency, security), and the result.
+Why PKSF? Mission impact on poverty alleviation at national scale, building secure systems used by 200+ POs, and the chance to work across the full stack on meaningful, data-intensive government projects.
+Behavioral (STAR: Situation, Task, Action, Result): a tight deadline, a production bug, disagreement with a teammate, learning a new technology quickly, mentoring someone.
+Questions to ask them: current tech stack and deployment environment (on-prem or cloud), team size and process, the major upcoming systems, and code review/CI practices.
+```"
+2,MODULE,Rapid-Fire Revision List,,,FALSE,"```java
+Java: OOP pillars, SOLID, String immutability, equals/hashCode, HashMap internals, ArrayList vs LinkedList, checked vs unchecked, streams map/flatMap/groupingBy, volatile vs synchronized, JVM memory, GC.
+Spring: IoC/DI, bean scopes, @SpringBootApplication, auto-config, profiles, @Transactional pitfalls and propagation, N+1, lazy vs eager, optimistic locking, @ControllerAdvice, validation, Actuator.
+Security: authN vs authZ, filter chain, JWT structure, HS256 vs RS256, OAuth2 auth code + PKCE, client credentials, Keycloak realm/client/roles, CORS, CSRF, XSS, SQL injection, BCrypt.
+DB: normalization, ACID, isolation levels, indexes (B-tree, composite, partial, GIN, BRIN), EXPLAIN ANALYZE, MVCC/VACUUM, keyset pagination, window functions, CTEs, MongoDB embedding vs referencing, aggregation.
+Microservices: gateway, discovery, circuit breaker, saga, outbox, idempotency, observability, REST vs SOAP.
+Redis: data types, cache-aside, invalidation, stampede, TTL/eviction, Spring Session, distributed lock.
+React: virtual DOM, hooks rules, useEffect deps and cleanup, keys, controlled inputs, Context, TanStack Query, protected routes, event loop.
+DevOps: Git merge vs rebase, Dockerfile multi-stage, compose, K8s Pod/Deployment/Service/Ingress/ConfigMap/Secret/probes/HPA, CI stages, deployment strategies.
+- Tip: Final tip: for every answer, connect the concept to PKSF's context — sensitive financial data, 200+ POs, reliability and auditability. It shows you understand the job, not just the technology.
+```"

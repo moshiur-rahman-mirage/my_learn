@@ -1,6 +1,7 @@
 import { request } from './client'
 import type {
   Activity,
+  CompletedHistory,
   BackupCheck,
   BackupFile,
   BackupSettings,
@@ -103,6 +104,12 @@ export const dashboardApi = {
     const q = new URLSearchParams({ days: String(days), tz: Intl.DateTimeFormat().resolvedOptions().timeZone })
     if (planId) q.set('planId', String(planId))
     return request<Activity>('GET', `/api/dashboard/activity?${q}`)
+  },
+  /** Topics you completed from..to (inclusive yyyy-MM-dd days in the browser's time zone). */
+  completed: (from: string, to: string, planId: number | null) => {
+    const q = new URLSearchParams({ from, to, tz: Intl.DateTimeFormat().resolvedOptions().timeZone })
+    if (planId) q.set('planId', String(planId))
+    return request<CompletedHistory>('GET', `/api/dashboard/completed?${q}`)
   },
 }
 

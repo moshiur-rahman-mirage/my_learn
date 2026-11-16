@@ -1,0 +1,22 @@
+﻿level,type,name,description,priority,completed,content
+1,MODULE,Phase 1 — Foundations,Start here,,,
+2,MODULE,Core concepts,,MUST,,
+3,TOPIC,First topic,What to learn about it,MUST,TRUE,"# First topic
+
+The **content** column is the topic's study note, written in Markdown.
+Line breaks, commas and ""quotes"" are fine inside one quoted CSV cell.
+
+## Key points
+- Point one
+- Point two
+
+```java
+int answer = 42;
+```
+
+Q: What is the answer?
+A: 42"
+3,TOPIC,Second topic,,SHOULD,FALSE,"Short content works too: **bold**, `code`, [a link](https://example.com)."
+2,TOPIC,A topic directly under the phase,,NICE,FALSE,
+1,MODULE,Phase 2 — Practice,,,,
+2,TOPIC,Build a small project,,MUST,FALSE,

@@ -48,6 +48,8 @@ class ImportExportIntegrationTest extends IntegrationTest {
     ItemService items;
     @Autowired
     MockMvc mvc;
+    @Autowired
+    com.mylearn.tracker.note.ItemNoteRepository noteRepository;
 
     @Test
     void xlsxWithSeveralSheetsCanBeImportedAsOnePlanPerSheet() throws IOException {
@@ -177,14 +179,14 @@ class ImportExportIntegrationTest extends IntegrationTest {
     @Test
     void blankTemplateHasOnlyTheHeader_andImportsOnceFilledIn() {
         String blank = new String(exports.template(false).content(), StandardCharsets.UTF_8);
-        assertThat(blank).isEqualTo("\uFEFFlevel,type,name,description,priority,completed\r\n");
+        assertThat(blank).isEqualTo("\uFEFFlevel,type,name,description,priority,completed,content\r\n");
 
-        // what a user would type below the header in Excel
+        // what a user would type below the header in Excel; content is multi-line Markdown in one quoted cell
         String filled = blank
-                + "1,MODULE,Spring Core,,MUST,\r\n"
-                + "2,TOPIC,Dependency injection,\"@Autowired, constructors\",MUST,TRUE\r\n"
-                + "2,TOPIC,Bean scopes,,SHOULD,\r\n"
-                + "1,TOPIC,Read the docs,,NICE,FALSE\r\n";
+                + "1,MODULE,Spring Core,,MUST,,\r\n"
+                + "2,TOPIC,Dependency injection,\"@Autowired, constructors\",MUST,TRUE,\"# DI\r\n\r\n- constructor, setter\r\n- \"\"field\"\"\"\r\n"
+                + "2,TOPIC,Bean scopes,,SHOULD,,\r\n"
+                + "1,TOPIC,Read the docs,,NICE,FALSE,\r\n";
         ImportPreview preview = imports.preview(null, "my-plan.csv", filled.getBytes(StandardCharsets.UTF_8), ImportOptions.AUTO);
         assertThat(preview.errors()).isEmpty();
         assertThat(preview.warnings()).isEmpty();
@@ -196,6 +198,11 @@ class ImportExportIntegrationTest extends IntegrationTest {
         assertThat(tree.getFirst().children()).extracting(TreeNode::name).containsExactly("Dependency injection", "Bean scopes");
         assertThat(tree.getFirst().children().getFirst().description()).isEqualTo("@Autowired, constructors");
         assertThat(tree.getFirst().progress()).isEqualTo(Progress.of(1, 2));
+        Long di = tree.getFirst().children().getFirst().id();
+        assertThat(noteRepository.findById(di)).get().satisfies(n -> {
+            assertThat(n.getContent()).isEqualTo("# DI\n\n- constructor, setter\n- \"field\"");
+            assertThat(n.getFormat()).isEqualTo(com.mylearn.tracker.note.NoteFormat.MARKDOWN);
+        });
     }
 
     @Test
@@ -205,6 +212,7 @@ class ImportExportIntegrationTest extends IntegrationTest {
         assertThat(preview.errors()).isEmpty();
         assertThat(preview.stats().modules()).isEqualTo(3);
         assertThat(preview.stats().leafTopics()).isEqualTo(4);
+        assertThat(preview.stats().notes()).isEqualTo(2);
     }
 
     /** Two sheets mimicking the user's workbook: a title row, a header on row 2, boolean checkbox cells. */

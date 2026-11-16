@@ -235,8 +235,17 @@ Hibernate never alters the schema (`ddl-auto: none`).
 - **Confidence:** rate any item 1–5 in its notes panel. Rating a completed topic 1–2 brings its review forward to tomorrow; shaky topics are listed on *Today*.
 - **Reading long notes:** drag the notes panel's left edge to make it as wide as you like (double-click it to reset), maximize it to the full window (Alt+Enter), switch to reading mode (Alt+R: details hidden, formatted, larger text) and change the text size (A−/A+, Ctrl+Alt+−/+). The panel remembers these.
 - **Templates:** at the top of the Import page:
-  - **Blank CSV (headers only):** `level,type,name,description,priority,completed`. Fill it in and import it.
-  - **Example CSV:** the same columns plus sample rows that show the nesting.
+  - **Blank CSV (headers only):** `level,type,name,description,priority,completed,content`. Fill it in and import it.
+  - **Example CSV:** the same columns plus sample rows that show the nesting and Markdown study content.
+  - **`content` column:** the topic's study content in Markdown; it becomes the item's note (`content` and `note` are the same column). Multi-line Markdown goes in one cell wrapped in `"…"`, with `"` inside written as `""`:
+    ```csv
+    level,type,name,description,priority,completed,content
+    1,MODULE,Spring Core,,MUST,,
+    2,TOPIC,Dependency injection,,MUST,TRUE,"# Dependency injection
+
+    - constructor injection
+    - **prefer** final fields"
+    ```
   - Both are also at `GET /api/import/template` (blank) and `GET /api/import/template?examples=true`.
 
 ---

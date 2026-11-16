@@ -46,8 +46,8 @@ const TEMPLATE_COLUMNS = [
   { name: 'description', help: 'Optional. What to learn, notes, links.' },
   { name: 'priority', help: 'Optional. MUST, SHOULD or NICE.' },
   { name: 'completed', help: 'Optional. TRUE if already done. Only counts for topics without sub-rows.' },
-  { name: 'note', help: 'Optional (add the column yourself). The item\'s note, in Markdown. Exports include it, so an exported plan imports back with its notes.' },
-  { name: 'note_format', help: 'Optional. MARKDOWN or HTML; detected from the note when left empty.' },
+  { name: 'content', help: 'Optional. The topic\'s study content, in Markdown; it becomes the item\'s note. Multi-line Markdown goes in one cell wrapped in double quotes, with any " inside written as "" (Excel and Google Sheets do this when saving as CSV). The column may also be called "note"; exports call it "note".' },
+  { name: 'note_format', help: 'Optional (add it yourself). MARKDOWN or HTML; detected from the content when left empty.' },
 ]
 
 const ROLES: { value: ColumnRole; label: string }[] = [
@@ -305,7 +305,7 @@ async function confirmImport() {
           rows="12"
           spellcheck="false"
           class="input font-mono text-xs leading-relaxed"
-          placeholder="level,type,name,description,priority,completed&#10;1,MODULE,Spring Core,,MUST,&#10;2,TOPIC,Dependency injection,,MUST,TRUE"
+          placeholder="level,type,name,description,priority,completed,content&#10;1,MODULE,Spring Core,,MUST,,&#10;2,TOPIC,Dependency injection,,MUST,TRUE,&quot;# Dependency injection&#10;&#10;- constructor injection&#10;- **prefer** final fields&quot;&#10;2,TOPIC,Bean scopes,,SHOULD,,Short Markdown fits on one line"
           aria-label="CSV text"
         ></textarea>
         <p class="muted text-xs">

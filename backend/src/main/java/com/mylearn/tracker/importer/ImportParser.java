@@ -70,7 +70,9 @@ public final class ImportParser {
             Map.entry("version", ColumnRole.IGNORE),
             Map.entry("note_format", ColumnRole.NOTE_FORMAT), Map.entry("note format", ColumnRole.NOTE_FORMAT),
             Map.entry("note_content", ColumnRole.NOTE), Map.entry("note content", ColumnRole.NOTE),
-            Map.entry("note body", ColumnRole.NOTE));
+            Map.entry("note body", ColumnRole.NOTE),
+            Map.entry("content", ColumnRole.NOTE), Map.entry("contents", ColumnRole.NOTE),
+            Map.entry("study content", ColumnRole.NOTE), Map.entry("markdown", ColumnRole.NOTE));
 
     /**
      * "Note"/"Notes" headers mean the item's note when the sheet also has a real description column

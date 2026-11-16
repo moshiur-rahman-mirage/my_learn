@@ -1,0 +1,717 @@
+﻿id,level,type,name,description,priority,completed,version,note_format,note
+e916bd43-6ad9-4fb2-8691-999419b69f46,1,MODULE,Phase 0 — Orientation & Strategy,"Understand the job, the selection process and how to study",,,0,,
+9180f7ce-7b22-4e17-a17f-92b6db86897f,2,MODULE,Understand the TOR,Know exactly what PKSF is hiring for,MUST,,0,,
+43bcc478-0810-454e-aedf-092839a75449,3,TOPIC,Map TOR requirements to skills,"Mandatory: 2+ yrs full-stack, Java Spring Boot, React. Preferred: microservices, PostgreSQL, MongoDB, Redis, Docker, K8s, CI/CD, OAuth2/JWT/Keycloak, cloud",MUST,FALSE,0,,
+2622a5e8-fb54-457a-a1c8-94c39007b884,3,TOPIC,PKSF and ITDSD context,Apex govt-founded development org; 200+ Partner Organizations; sensitive financial/project/PO data; ITDSD builds internal & PO-facing systems,SHOULD,TRUE,0,,
+69e822cd-1355-496d-b69c-595aec49a582,3,TOPIC,Microfinance domain basics,"Loans, savings, disbursement, installments, overdue, portfolio-at-risk, PO reporting — vocabulary for viva and design questions",SHOULD,TRUE,0,,
+74d3edd0-a712-49c9-99dd-d789bb47d847,3,TOPIC,Selection process format,Typical: written test (MCQ + written/coding + SQL) then viva; prepare for each,MUST,TRUE,0,,
+708e026b-99f1-4ea1-b6cb-3ce354c01b2f,3,TOPIC,Study routine and revision method,"Daily blocks, spaced repetition (Anki), weekly mock tests, track progress in this plan",SHOULD,TRUE,0,,
+9b038f5e-a731-4661-b6d3-edcec65d61e5,1,MODULE,Phase 1 — CS Fundamentals,Theory asked in written tests and viva,,,0,,
+23924e0e-c965-493b-8ba4-215dd5281651,2,MODULE,Data Structures,,MUST,,0,,
+a6d0244d-07b8-4fec-9d8a-a57de5b38360,3,TOPIC,Arrays and strings,"Indexing, resizing cost, string immutability, common string manipulations",MUST,TRUE,0,MARKDOWN,"### Part 1: Arrays in Java
+
+#### 1. Indexing: The O(1) Illusion and Reality
+When you access an element in an array like `arr[i]`, it takes **O(1) time complexity**. 
+**The ""Why"":** Under the hood, an array is a contiguous block of memory. The JVM calculates the memory address of the `i`-th element using simple pointer arithmetic: 
+`Memory Address = Base Address + (i * Element Size)`. 
+Because this is a single mathematical calculation, it is incredibly fast and CPU-cache friendly.
+
+**Senior Engineer Insight:** Notice I said *contiguous block of memory*. This is why primitive arrays (`int[]`) are vastly superior to object arrays (`Integer[]`) or Collections for numerical data. An `int[]` keeps all data in a tight, contiguous memory block, maximizing CPU cache line hits. An `Integer[]` is just an array of pointers scattered across the heap, leading to cache misses and higher memory overhead.
+
+#### 2. Resizing Cost: The Hidden Tax
+Here is a fundamental rule in Java: **Arrays cannot be resized.** Their size is fixed at allocation. When you ""resize"" an array (e.g., using `Arrays.copyOf()`), the JVM actually:
+1. Allocates a brand-new, larger contiguous block of memory.
+2. Copies every single element from the old array to the new array using `System.arraycopy()` (a highly optimized native method).
+3. Leaves the old array for the Garbage Collector (GC).
+
+**The Cost:** This is an **O(N)** operation. 
+If you do this inside a loop, your time complexity degrades to **O(N²)**, which will bring down a production system.
+
+**Trade-offs & Alternatives:**
+*   **Raw Arrays:** Use when the size is known at compile time or strictly bounded. Lowest memory overhead, highest performance.
+*   **`ArrayList`:** Under the hood, it uses a raw `Object[]`. When it runs out of space, it allocates a new array (usually 1.5x the old size) and copies the elements. This gives an *amortized* O(1) insertion time. However, the trade-off is memory fragmentation and GC pressure from the discarded old arrays.
+*   **Custom Ring Buffers / Deques:** If you are building a high-performance queue and need to avoid GC pauses, you might pre-allocate a massive array and use modulo arithmetic to wrap the indices, completely avoiding resizing.
+
+---
+
+### Part 2: Strings in Java
+
+#### 1. String Immutability: A Masterclass in Design
+In Java, once a `String` object is created, its internal state cannot be changed. Why did the language designers make this choice? It is not just to be annoying; it solves several complex system-level problems:
+
+*   **Security:** Strings are heavily used as parameters for network connections, database URLs, and class loading. If strings were mutable, a malicious actor could change the string after a security check but before the actual connection is made.
+*   **Thread Safety:** Because they are immutable, strings are inherently thread-safe. They can be shared across multiple threads without any synchronization overhead.
+*   **The String Pool (Interning):** Java maintains a ""String Pool"" in the heap (moved to Metaspace in Java 8+). If you create `String s1 = ""hello"";` and `String s2 = ""hello"";`, they point to the exact same memory location. This saves massive amounts of memory. This is only possible if strings are immutable.
+*   **Hash Code Caching:** Strings are the most common keys in `HashMap`. The hash code of a String is calculated based on its contents. Because the contents never change, the String can calculate the hash code once, cache it internally, and return it in O(1) time for all subsequent lookups.
+
+**Under the Hood (Java 9+ Update):** 
+Prior to Java 9, Strings used a `char[]` (UTF-16), meaning every character took 2 bytes, even for standard English text. In Java 9, they introduced **Compact Strings**. It now uses a `byte[]` and a coder flag. If the string only contains Latin-1 characters, it uses 1 byte per char. If it contains complex Unicode, it falls back to 2 bytes. This reduced String memory footprint in typical enterprise apps by up to 40%.
+
+#### 2. Common Manipulations and the ""Concatenation Trap""
+Because Strings are immutable, every manipulation (`substring`, `replace`, `concat`, `toUpperCase`) creates a **brand new String object** and copies the characters. The cost is **O(N)** where N is the length of the string.
+
+**The Anti-Pattern:**
+```java
+// BAD: High GC pressure in production
+String result = """";
+for (String word : words) {
+    result += word; // Creates a new String object in every iteration!
+}
+```
+In a loop of 10,000 iterations, this creates 10,000 intermediate String objects, most of which are immediately garbage. In a high-throughput microservice, this will trigger frequent Minor GC pauses, spiking your latency.
+
+**The Solution:**
+Use `StringBuilder` (or `StringBuffer` if you strictly need thread safety, though you rarely do in this context). `StringBuilder` maintains an internal, mutable `byte[]` (or `char[]`). It only creates the final immutable `String` when you call `.toString()`.
+
+---
+
+### System Design Perspective
+
+When you are designing a system, ask yourself:
+1.  **Memory vs. CPU:** Are we CPU-bound or Memory-bound? If memory-bound, avoid `ArrayList` of boxed primitives; use primitive arrays or specialized libraries like Eclipse Collections.
+2.  **GC Pauses:** Are we building a low-latency trading system? If so, object allocation (like intermediate Strings) is your enemy. Pre-allocate buffers, reuse objects, and use `StringBuilder` with an initial capacity to prevent internal array resizing.
+3.  **Data Locality:** Are you processing large datasets? Keep your data in contiguous primitive arrays to ensure the CPU hardware prefetcher can do its job.
+
+Mastering these basics separates the engineers who just write code from the engineers who design systems that scale.
+
+***
+
+Q: What is the time complexity of array indexing in Java and what hardware-level mechanism makes it possible?
+A: The time complexity is O(1). It is made possible by contiguous memory allocation, allowing the JVM to calculate the exact memory address of an element using simple pointer arithmetic (Base Address + index * element size).
+
+Q: Why is resizing an array in Java considered an O(N) operation?
+A: Java arrays have a fixed size. Resizing requires allocating a completely new contiguous block of memory and copying every existing element from the old array to the new one using System.arraycopy, which takes time proportional to the number of elements (N).
+
+Q: What are the primary architectural and security reasons Java Strings are designed to be immutable?
+A: Immutability ensures thread safety without synchronization, enables the memory-saving String Pool (interning), guarantees security for class loading and network parameters, and allows the hash code to be calculated once and cached for fast HashMap lookups.
+
+Q: How did Java 9 optimize the internal memory representation of Strings?
+A: Java 9 introduced Compact Strings, changing the internal representation from a char array (UTF-16, 2 bytes per char) to a byte array with a coder flag. This allows Latin-1 characters to use only 1 byte, reducing memory footprint by up to 40% for typical text.
+
+Q: Why is string concatenation inside a loop considered a severe anti-pattern in high-throughput systems?
+A: Because Strings are immutable, every concatenation creates a new String object and copies the characters. In a loop, this generates massive amounts of short-lived intermediate objects, leading to high memory churn and frequent Garbage Collection pauses, which spikes latency.
+
+Q: What is the recommended alternative to String concatenation in a loop, and why is it more efficient?
+A: StringBuilder is recommended. It uses a mutable internal byte/char array that expands as needed, modifying the sequence in place without creating intermediate objects, and only creates the final immutable String once when toString() is called.
+
+Q: When designing a high-performance system, why is a primitive array (int[]) significantly faster and more memory-efficient than an ArrayList of boxed primitives (ArrayList<Integer>)?
+A: A primitive array stores data in a single, contiguous block of memory, maximizing CPU cache line hits and avoiding object overhead. An ArrayList of boxed primitives stores an array of object references scattered across the heap, causing cache misses and requiring extra memory for object headers and pointers."
+5bf7c53d-8812-41c3-9124-4c9a49e2dacf,3,TOPIC,Linked lists,"Singly/doubly, reverse, detect cycle (Floyd), merge two sorted lists",MUST,FALSE,0,MARKDOWN,"
+In high-performance systems, linked lists are often avoided due to poor CPU cache locality (nodes are scattered across the heap). However, when you need O(1) insertions/deletions in the middle of a sequence, or when building specific data structures like LRU caches, they are indispensable.
+
+Let’s break down these core operations, focusing on the engineering mindset, edge cases, and optimal implementations.
+
+---
+
+### 1. Singly vs. Doubly Linked Lists: The Trade-offs
+
+Before writing code, you must choose the right tool. 
+
+**Singly Linked List:**
+*   **Structure:** Each node has data and a `next` pointer.
+*   **Pros:** Lower memory overhead (one pointer per node). Simpler to implement.
+*   **Cons:** Unidirectional traversal. If you have a reference to a specific node and need to delete it, you must traverse from the `head` to find the previous node, making deletion O(N).
+
+**Doubly Linked List:**
+*   **Structure:** Each node has data, a `next` pointer, and a `prev` pointer.
+*   **Pros:** Bidirectional traversal. If you have a reference to a node, you can delete it or insert before it in O(1) time.
+*   **Cons:** Higher memory overhead (two pointers per node). More complex logic (you must maintain both `next` and `prev` during insertions/deletions).
+*   **Real-World Example:** Java’s `java.util.LinkedList` is doubly linked. Doubly linked lists are the backbone of an **LRU (Least Recently Used) Cache**, where you need to move an accessed node to the front in O(1) time.
+
+**Senior Insight:** In Java, object headers and reference sizes add up. On a 64-bit JVM, a reference is 4 bytes (with compressed oops) or 8 bytes. A doubly linked node carries significantly more memory baggage than a raw array. Always ask: *Do I really need O(1) middle-deletions, or is an `ArrayList` with O(N) shifts actually faster in practice due to CPU cache prefetching?* (Spoiler: For 90% of use cases, `ArrayList` wins).
+
+---
+
+### 2. Reverse a Linked List
+
+**The Thought Process:**
+When reversing a list, you need to change the direction of the `next` pointers. If you just change `curr.next`, you lose the reference to the rest of the list. Therefore, you need to save the `next` node *before* you overwrite the pointer.
+
+**Iterative vs. Recursive:**
+*   *Recursive:* Elegant, but uses O(N) call stack space. In a production system, a list with 10,000 nodes will throw a `StackOverflowError`. 
+*   *Iterative:* Uses O(1) space. **Always prefer the iterative approach in production.**
+
+**Implementation (Iterative):**
+```java
+public ListNode reverseList(ListNode head) {
+    ListNode prev = null;
+    ListNode curr = head;
+    
+    while (curr != null) {
+        ListNode nextTemp = curr.next; // 1. Save the next node
+        curr.next = prev;              // 2. Reverse the pointer
+        prev = curr;                   // 3. Move prev forward
+        curr = nextTemp;               // 4. Move curr forward
+    }
+    return prev; // prev is the new head
+}
+```
+*Edge Cases Handled:* If `head` is null or has only one node, the loop either doesn't run or runs once, correctly returning the original head.
+
+---
+
+### 3. Detect Cycle (Floyd’s Cycle-Finding Algorithm)
+
+**The Thought Process:**
+The naive approach is to use a `HashSet` to store visited nodes. If you see a node already in the set, there’s a cycle. 
+*Trade-off:* This takes O(N) extra space. Can we do it in O(1) space? Yes, using Floyd’s ""Tortoise and Hare"" algorithm.
+
+**The Mechanism:**
+Use two pointers: `slow` (moves 1 step) and `fast` (moves 2 steps). 
+*   If there is no cycle, `fast` will hit `null`.
+*   If there is a cycle, `fast` will eventually lap `slow` and they will meet.
+
+**Why it works (The Math):**
+Once both pointers are inside the cycle, the `fast` pointer closes the distance to the `slow` pointer by exactly 1 node per step. Because the distance decreases by 1 every iteration, `fast` will *never* jump over `slow`; it is guaranteed to land exactly on it.
+
+**Implementation:**
+```java
+public boolean hasCycle(ListNode head) {
+    if (head == null || head.next == null) return false;
+    
+    ListNode slow = head;
+    ListNode fast = head;
+    
+    while (fast != null && fast.next != null) {
+        slow = slow.next;          // Moves 1 step
+        fast = fast.next.next;     // Moves 2 steps
+        
+        if (slow == fast) {
+            return true; // Cycle detected
+        }
+    }
+    return false; // fast hit null, no cycle
+}
+```
+
+---
+
+### 4. Merge Two Sorted Lists
+
+**The Thought Process:**
+You have two sorted lists. You need to weave them together into one sorted list. The naive approach involves a lot of `if/else` checks to handle the `head` of the new list, because the head keeps changing.
+
+**The ""Dummy Node"" Pattern:**
+To eliminate edge-case branching, we use a **Sentinel (Dummy) Node**. This is a fake node at the beginning of the list. It acts as an anchor. When we are done merging, we simply return `dummy.next`. This is a standard pattern in linked list manipulation that keeps your code clean and bug-free.
+
+**Implementation:**
+```java
+public ListNode mergeTwoLists(ListNode l1, ListNode l2) {
+    // Sentinel node to simplify head management
+    ListNode dummy = new ListNode(-1); 
+    ListNode tail = dummy;
+    
+    while (l1 != null && l2 != null) {
+        if (l1.val <= l2.val) {
+            tail.next = l1;
+            l1 = l1.next;
+        } else {
+            tail.next = l2;
+            l2 = l2.next;
+        }
+        tail = tail.next; // Advance the tail
+    }
+    
+    // Attach the remaining non-null list (handles the edge case where one list is longer)
+    tail.next = (l1 != null) ? l1 : l2;
+    
+    return dummy.next;
+}
+```
+*Complexity:* Time O(N + M), Space O(1) because we are just rewiring existing nodes, not creating new ones.
+
+---
+
+### System Design & Production Considerations
+
+1.  **Memory Leaks in Java:** If you remove a node from a linked list (especially in a doubly linked list or a custom cache), you *must* set its `next` and `prev` pointers to `null`. If you don't, the Garbage Collector cannot reclaim that node, leading to a silent memory leak.
+2.  **Concurrency:** Standard linked lists are not thread-safe. If you need concurrent access, look at `ConcurrentLinkedQueue`, which uses non-blocking CAS (Compare-And-Swap) operations to link nodes safely without heavy locking.
+
+Mastering these patterns gives you the mental models required to tackle complex graph traversals, memory management, and low-level system design.
+
+***
+
+Q: What is the primary trade-off between using a singly linked list versus a doubly linked list in terms of memory and operations?
+A: A singly linked list uses less memory (one pointer per node) but requires O(N) time to delete a specific node since you must traverse from the head to find the previous node. A doubly linked list uses more memory (two pointers per node) but allows O(1) deletion and bidirectional traversal if you already have a reference to the node.
+
+Q: Why is the iterative approach preferred over the recursive approach for reversing a linked list in production systems?
+A: The recursive approach uses O(N) call stack space, which can cause a StackOverflowError on large lists. The iterative approach uses O(1) auxiliary space, making it safe and predictable for production environments regardless of list size.
+
+Q: How does Floyd’s Cycle-Finding Algorithm guarantee that the fast and slow pointers will meet if a cycle exists?
+A: Once both pointers are inside the cycle, the fast pointer moves two steps and the slow pointer moves one step, meaning the fast pointer closes the distance to the slow pointer by exactly one node per iteration. Because the distance decreases by one each step, the fast pointer will eventually land exactly on the slow pointer without jumping over it.
+
+Q: What is the purpose of using a ""Dummy Node"" (or Sentinel Node) when merging two sorted linked lists?
+A: The Dummy Node acts as a temporary anchor at the beginning of the merged list. It eliminates the need for complex conditional logic to determine the head of the new list, allowing you to uniformly append nodes and simply return dummy.next at the end.
+
+Q: In Java, what is a common cause of memory leaks when manipulating custom linked lists, and how do you prevent it?
+A: A common cause is failing to nullify the next and previous pointers of a node after it has been removed from the list. If these references are not cleared, the Garbage Collector cannot reclaim the node's memory. This is prevented by explicitly setting node.next and node.prev to null upon removal.
+
+Q: Why might an ArrayList outperform a LinkedList in modern CPU architectures despite LinkedList having O(1) insertion times?
+A: An ArrayList stores elements in a contiguous block of memory, which highly optimizes CPU cache line hits and hardware prefetching. A LinkedList scatters nodes across the heap, causing frequent cache misses. For most practical sizes, the CPU cache advantage of an ArrayList outweighs the theoretical O(1) insertion advantage of a LinkedList."
+6df0473e-0398-497f-83af-1bbca5d1baf6,3,TOPIC,Stacks and queues,"LIFO/FIFO, balanced parentheses, queue via two stacks, Deque",MUST,FALSE,0,MARKDOWN,"
+### 1. LIFO vs. FIFO: The Temporal Ordering of Data Access
+
+At the bedrock of sequential data processing lie two contrasting paradigms: Last-In-First-Out (LIFO) and First-In-First-Out (FIFO). These are not merely academic concepts; they dictate the temporal ordering of operations and fundamentally influence system behavior.
+
+**LIFO (The Stack Paradigm):**
+In a LIFO structure, the most recently inserted element is the first to be removed. 
+*   **The ""Why"":** This structure is inherently suited for scenarios requiring state reversion or nested execution contexts. Consider the call stack in a runtime environment: when Function A calls Function B, B must complete and be ""popped"" before A can resume. Similarly, an ""undo"" mechanism in a text editor relies on LIFO, as the most recent action is the one the user intuitively expects to reverse first.
+*   **Implementation Trade-offs:** Stacks are exceptionally efficient. They require only a single pointer (the ""top"") and, when implemented via contiguous arrays, exhibit superb cache locality. However, their restrictive nature means they are entirely unsuited for scenarios requiring fair, chronological processing.
+
+**FIFO (The Queue Paradigm):**
+Conversely, FIFO ensures that the earliest inserted element is processed first.
+*   **The ""Why"":** This is the quintessential mechanism for fairness and chronological scheduling. In distributed systems, message brokers (like Kafka or RabbitMQ) utilize FIFO semantics to ensure tasks are processed in the exact order they were received, preventing starvation of older requests.
+*   **Implementation Trade-offs:** Queues are slightly more complex to implement efficiently. A naive array-based queue requires O(N) time to dequeue, as all elements must be shifted. To achieve O(1) operations, we must employ a circular buffer or a linked list, which introduces the overhead of managing two pointers (head and tail) and, in the case of linked lists, poor cache locality and increased memory fragmentation.
+
+### 2. Balanced Parentheses: Validating Nested Structures
+
+The problem of validating balanced parentheses (e.g., ensuring `({[]})` is valid while `([)]` is not) is a classic demonstration of matching the problem domain to the correct data structure.
+
+**The Reasoning Process:**
+When parsing a string of nested brackets, the core constraint is that a closing bracket must correspond to the *most recently encountered* unmatched opening bracket of the same type. This requirement of matching the ""most recent"" with the ""current"" is the exact definition of LIFO semantics. Therefore, a Stack is the mathematically optimal choice.
+
+**Algorithmic Execution:**
+1.  Iterate through the string character by character.
+2.  If an opening bracket is encountered, push it onto the stack.
+3.  If a closing bracket is encountered, inspect the stack. If the stack is empty, the string is invalid (a closing bracket without a preceding opening bracket). If it is not empty, pop the top element and verify if it forms a matching pair with the current closing bracket.
+4.  Upon completing the iteration, the stack must be entirely empty. Any remaining elements indicate unclosed opening brackets.
+
+**Edge Cases to Consider:**
+A senior engineer must always anticipate edge cases. What if the string is empty? (Usually considered valid). What if the string consists solely of closing brackets? (The stack-empty check on step 3 catches this). What if the string is exceptionally long? (Memory limits of the stack must be considered, though in modern languages, dynamic arrays handle this gracefully).
+
+### 3. Queue via Two Stacks: Mastering Amortized Analysis
+
+Implementing a FIFO queue using two LIFO stacks is a brilliant exercise in algorithmic ingenuity and introduces the critical concept of *amortized time complexity*.
+
+**The Naive Approach (and its flaw):**
+One might instinctively push all elements onto Stack A. To dequeue, one could pop all elements from Stack A, push them onto Stack B, pop the top of Stack B (the oldest element), and then push everything back onto Stack A. While functional, this results in an abysmal O(N) time complexity for *both* enqueue and dequeue operations, rendering it useless for high-throughput systems.
+
+**The Optimized Approach (Inbox and Outbox):**
+To achieve optimal performance, we designate Stack 1 as the ""Inbox"" and Stack 2 as the ""Outbox"".
+*   **Enqueue:** Always push the new element onto the Inbox (Stack 1). This is an O(1) operation.
+*   **Dequeue:** Always pop from the Outbox (Stack 2). If the Outbox is empty, we pop all elements from the Inbox and push them onto the Outbox, then pop the top of the Outbox.
+
+**The ""Why"" Behind Amortized O(1):**
+At first glance, the dequeue operation appears to be O(N) when the Outbox is empty. However, we must analyze the *amortized* cost over a sequence of operations. Notice that once an element is moved from the Inbox to the Outbox, it remains in the Outbox until it is dequeued. Therefore, over the lifecycle of N elements, each element is pushed exactly once, moved between stacks exactly once, and popped exactly once. The total number of operations is 3N. Divided by N elements, the amortized cost per operation is strictly O(1). This distinction between worst-case and amortized complexity is a hallmark of senior-level system design.
+
+### 4. The Deque: A Unifying Abstraction and its Trade-offs
+
+A Double-Ended Queue (Deque) is a generalized linear data structure that permits the insertion and removal of elements at both the front and the rear. 
+
+**Relationship to Stacks and Queues:**
+A Deque is essentially a superset. A Stack is merely a Deque restricted to operating exclusively on one end (push and pop at the head). A standard Queue is a Deque restricted to inserting at the rear and removing from the front. Consequently, one can easily implement both Stacks and Queues using a Deque as the underlying primitive.
+
+**Architectural Trade-offs:**
+If a Deque can do everything, why do we maintain distinct Stack and Queue implementations? 
+1.  **Memory Overhead:** If implemented via a doubly-linked list, a Deque requires two pointers per node (previous and next), doubling the pointer memory overhead compared to a singly-linked queue. If implemented via a dynamic array, managing growth and shrinkage at both ends simultaneously introduces significant algorithmic complexity.
+2.  **Cache Locality:** A simple array-based stack or circular-buffer queue offers predictable, contiguous memory access. A Deque that grows dynamically at both ends can suffer from memory fragmentation, degrading CPU cache performance.
+3.  **The Principle of Least Privilege:** From an API design perspective, exposing a Deque when only Stack or Queue semantics are required is a design flaw. It grants the client code unnecessary capabilities, increasing the cognitive load and the risk of introducing logical bugs. We restrict interfaces to enforce architectural invariants.
+
+***
+
+Q: What is the fundamental distinction between LIFO and FIFO paradigms?
+A: LIFO dictates that the most recently added element is processed first, whereas FIFO mandates that the earliest added element is processed first, fundamentally altering the temporal ordering of data retrieval.
+
+Q: Why is a stack the optimal data structure for validating balanced parentheses?
+A: A stack is optimal because the nested nature of parentheses requires the most recently opened bracket to be the first one closed, perfectly mirroring the Last-In-First-Out operational semantics.
+
+Q: How does the two-stack queue implementation achieve an amortized time complexity of O(1) for dequeue operations?
+A: By utilizing an inbox for enqueues and an outbox for dequeues, elements are transferred from the inbox to the outbox only when the outbox is empty, ensuring each element is moved at most twice over its lifecycle, thus yielding an O(1) amortized cost.
+
+Q: What are the primary trade-offs of utilizing a Deque in lieu of a dedicated Stack or Queue?
+A: While a Deque offers unparalleled flexibility, it incurs higher memory overhead due to bidirectional pointers or complex resizing logic, and it violates the principle of least privilege by exposing an overly permissive interface, which can lead to unintended architectural misuse.
+
+Q: Why do Stacks exhibit superior cache locality compared to linked-list-based Queues?
+A: Stacks are typically implemented using contiguous arrays where insertions and deletions occur at a single, predictable memory address, allowing the CPU to efficiently prefetch data into the cache, whereas linked-list nodes are scattered across memory."
+1d1bb3e9-67be-4715-94be-1128438d787d,3,TOPIC,Hash tables,"Hashing, collisions (chaining/open addressing), load factor, O(1) average",MUST,FALSE,0,,
+3a289aaf-78a3-44c4-be5d-8e6dacb6cede,3,TOPIC,Trees and BST,"Traversals (in/pre/post/level), height, BST insert/search/delete, balanced trees concept",MUST,FALSE,0,,
+4d58cf9f-2f4c-4cf9-a8a9-81a3e5c8062d,3,TOPIC,Heaps and priority queues,"Min/max heap, heapify, top-K problems",SHOULD,FALSE,0,,
+287ea629-a66c-4a6b-a0db-11871c8131f7,3,TOPIC,Graphs,"Adjacency list/matrix, BFS, DFS, cycle detection, topological sort",SHOULD,FALSE,0,,
+bf500718-a19d-4472-84a3-52861f227ca8,3,TOPIC,Tries,"Prefix search, autocomplete",NICE,FALSE,0,,
+fff4f41c-b8b0-41b8-9bde-964764f3904c,2,MODULE,Algorithms,,MUST,,0,,
+c5067451-467d-45e5-ae94-30613a09a560,3,TOPIC,Big-O complexity analysis,"Time/space, best/average/worst, common complexities",MUST,FALSE,0,,
+07b7214a-8f42-4342-af19-8df751013dc6,3,TOPIC,Sorting algorithms,"Bubble, insertion, selection, merge, quick, counting; stability; complexities",MUST,FALSE,0,,
+eab96999-8c1a-45be-98fa-7d886d24482f,3,TOPIC,Binary search,"Classic and on-answer variants, off-by-one pitfalls",MUST,FALSE,0,,
+0592102e-3e31-43e8-a5be-c4d6ca4726c6,3,TOPIC,Two pointers and sliding window,"Pair sum, longest substring without repeats",MUST,FALSE,0,,
+3131f6ec-1ed6-4370-9c7f-5ba615947ffe,3,TOPIC,Recursion and backtracking,"Base case, call stack, permutations/subsets",SHOULD,FALSE,0,,
+8e928ea9-28d7-4a9b-93fe-7200724ecfd5,3,TOPIC,Dynamic programming basics,"Memoization vs tabulation, Fibonacci, coin change, LCS, knapsack",SHOULD,FALSE,0,,
+7a898178-c405-4ab0-bf24-fdf976e539a7,3,TOPIC,Greedy algorithms,"Activity selection, interval scheduling",NICE,FALSE,0,,
+3c2fb3a2-4e63-4691-8124-5bd6ed929e66,3,TOPIC,Shortest path,"Dijkstra, BFS on unweighted graphs",NICE,FALSE,0,,
+49ccf47a-eef0-44f4-9336-d2dd2d10edc9,2,MODULE,OOP and Software Design,,MUST,,0,,
+f4b00452-c7b6-4af7-87e8-34c3b618ca8a,3,TOPIC,Four pillars of OOP,"Encapsulation, abstraction, inheritance, polymorphism (overloading vs overriding)",MUST,FALSE,0,,
+3d56ee81-655b-4f88-9c0b-8b66f7eb3ae7,3,TOPIC,SOLID principles,"SRP, OCP, LSP, ISP, DIP with Java examples",MUST,FALSE,0,,
+2da1b5e6-ed92-492e-a7c7-506399910d51,3,TOPIC,Composition vs inheritance,When to favor composition; coupling and cohesion,MUST,FALSE,0,,
+13b63703-fe21-49f0-bbcd-39f8229258e4,3,TOPIC,Creational patterns,"Singleton, Factory, Builder",MUST,FALSE,0,,
+05b4fbd1-d228-4f6d-bbd6-b877fa263724,3,TOPIC,Structural patterns,"Adapter, Decorator, Proxy, Facade",SHOULD,FALSE,0,,
+ee3915e8-ae9f-4c70-b74e-537e994785dc,3,TOPIC,Behavioral patterns,"Strategy, Observer, Template Method, Chain of Responsibility",SHOULD,FALSE,0,,
+126f48ae-548b-4d38-bc1c-75218cc89587,3,TOPIC,UML diagrams,"Class, sequence, ER diagrams",SHOULD,FALSE,0,,
+3946b952-ebad-46e2-99a7-b874feaa319d,3,TOPIC,SDLC and Agile,"Waterfall vs Agile, Scrum roles/ceremonies, user stories",SHOULD,FALSE,0,,
+ffc5ef89-d8c1-49e6-90cf-2dc974973e5f,2,MODULE,Operating Systems,,SHOULD,,0,,
+0db73d54-b6c7-45d4-b7c9-e67cd20a572d,3,TOPIC,Processes vs threads,"Memory sharing, context switching",SHOULD,FALSE,0,,
+abcf5ab8-4709-4be1-9cd7-191bb7d12331,3,TOPIC,CPU scheduling,"FCFS, SJF, Round Robin, priority",NICE,FALSE,0,,
+e20a7943-8008-43a9-814b-7081da814ae0,3,TOPIC,Deadlock,"Four conditions, prevention, avoidance (Banker's)",SHOULD,FALSE,0,,
+f6bb55d2-73cd-4db3-a962-32344e5f4da1,3,TOPIC,Memory management,"Paging, virtual memory, page faults",NICE,FALSE,0,,
+b039fd18-7641-4ce8-a9ac-3d9c8f1ef523,3,TOPIC,Synchronization primitives,"Mutex, semaphore, race conditions",SHOULD,FALSE,0,,
+5fe18a30-4f90-46c9-a803-81c31850031b,2,MODULE,Computer Networks,,MUST,,0,,
+671686de-6950-4ef0-b109-2a9b50194a6e,3,TOPIC,OSI and TCP/IP models,Layers and example protocols,MUST,FALSE,0,,
+138fded9-9e6b-4580-aafc-2cbd5c4c1ddd,3,TOPIC,TCP vs UDP,"Handshake, reliability, use cases",MUST,FALSE,0,,
+67f3e32e-1f1a-498a-b99c-8e05dd217373,3,TOPIC,HTTP and HTTPS,"Request/response anatomy, headers, HTTP/1.1 vs 2, TLS handshake basics",MUST,FALSE,0,,
+777e4544-5acb-4b12-ba83-436abf8e1e25,3,TOPIC,HTTP methods and status codes,"Safe/idempotent methods, 2xx/3xx/4xx/5xx meanings",MUST,FALSE,0,,
+c0211aab-3b93-4a98-935f-361aa4ce07bc,3,TOPIC,DNS and how a URL loads,Resolution steps end to end,SHOULD,FALSE,0,,
+81bcab42-2332-4e13-ba43-2e9b304516d9,3,TOPIC,Cookies sessions and CORS,"SameSite, HttpOnly, preflight requests",MUST,FALSE,0,,
+97a6e7a9-436c-4931-adab-b45c4f3b9f8e,3,TOPIC,WebSockets,"Full-duplex, when to use vs polling/SSE",NICE,FALSE,0,,
+be27c2cf-310f-4675-b6cd-e55e50c885db,2,MODULE,DBMS Theory,,MUST,,0,,
+727cf31b-29ac-4b46-bfeb-6e2fd21844c6,3,TOPIC,ER modeling,"Entities, relationships, cardinality, mapping to tables",MUST,FALSE,0,,
+a152f020-2415-44d0-9ee2-a3cd5c90348b,3,TOPIC,Normalization,"1NF, 2NF, 3NF, BCNF; denormalization trade-offs",MUST,FALSE,0,,
+676bf2e7-6e36-43b4-9900-8346e95678e1,3,TOPIC,Keys and constraints,"Primary, foreign, unique, candidate, composite, check",MUST,FALSE,0,,
+503f3d2f-b14f-4bcf-9bef-62f7a5097b90,3,TOPIC,ACID and transactions,"Atomicity, consistency, isolation, durability",MUST,FALSE,0,,
+bf69722b-e046-4857-b69e-2b1b26927db9,3,TOPIC,Isolation levels and anomalies,"Dirty read, non-repeatable read, phantom; READ COMMITTED vs REPEATABLE READ vs SERIALIZABLE",MUST,FALSE,0,,
+2281cb1e-1dde-47a4-ae38-cf6fc753abb2,3,TOPIC,CAP theorem and BASE,Consistency vs availability under partition,SHOULD,FALSE,0,,
+96a9c120-e782-4ec9-aeff-31ce5f373d22,1,MODULE,Phase 2 — Core Java,Mandatory core stack,,,0,,
+93625356-dac4-4de6-b760-d20a8e2f7efe,2,MODULE,Java Language Basics,,MUST,,0,,
+163b5313-28ee-4c6b-98dd-5b7510c898ab,3,TOPIC,"JDK, JRE and JVM","Compilation to bytecode, JIT, platform independence",MUST,FALSE,0,,
+c395065a-2e70-498f-b2af-c0ac9c6cf130,3,TOPIC,Data types and wrappers,"Primitives, autoboxing, Integer cache, BigDecimal for money",MUST,FALSE,0,,
+9eb39853-a89f-402c-8b47-664292fde4aa,3,TOPIC,String handling,"Immutability, string pool, StringBuilder vs StringBuffer",MUST,FALSE,0,,
+4d5498a9-70e2-49b2-8ffb-ae3e1fb86b83,3,TOPIC,equals and hashCode contract,Why both must be overridden together,MUST,FALSE,0,,
+506b7c55-1f30-4ae8-a984-85d7ffb53bb3,3,TOPIC,"Keywords static, final, this, super",Access modifiers and their scope,MUST,FALSE,0,,
+da67ad11-92de-4fce-a946-e58b609a5994,3,TOPIC,Exception handling,"Checked vs unchecked, try-with-resources, custom exceptions, best practices",MUST,FALSE,0,,
+d65e9d0e-6805-4234-bd68-67639f67826b,3,TOPIC,Generics,"Type parameters, bounded types, wildcards, PECS, type erasure",MUST,FALSE,0,,
+e30d01f8-494f-4e4d-a496-de1902bb7992,3,TOPIC,Interfaces vs abstract classes,"Default/static methods, sealed classes",MUST,FALSE,0,,
+7dd3c500-bb9b-47ec-800a-aeeb4086bce9,3,TOPIC,Enums and records,"Enum with fields/methods, records for DTOs",MUST,FALSE,0,,
+fbb38cb9-ba20-4a84-a1a4-d155cdd8f635,3,TOPIC,Immutability,Designing immutable classes,SHOULD,FALSE,0,,
+229a72a1-80f8-4e47-90ce-89cd7cdf67a9,2,MODULE,Collections Framework,,MUST,,0,,
+d2cee5d7-960b-45c8-9f19-8c6ba7eebc12,3,TOPIC,List implementations,ArrayList vs LinkedList complexity,MUST,FALSE,0,,
+31da70f6-4b1d-4643-962e-f7f391f2471a,3,TOPIC,Set implementations,"HashSet, LinkedHashSet, TreeSet",MUST,FALSE,0,,
+91aeca40-567e-45fa-a47e-f9317a910fbf,3,TOPIC,HashMap internals,"Buckets, hashing, treeification, resize, null key",MUST,FALSE,0,,
+d946e77b-71c7-4d15-ab67-e1133f7c0112,3,TOPIC,"TreeMap, LinkedHashMap","Ordering guarantees, LRU cache with LinkedHashMap",SHOULD,FALSE,0,,
+ad0c318f-f39a-4b73-9e67-4b4803393a6e,3,TOPIC,Comparable vs Comparator,"Natural vs custom ordering, Comparator.comparing chains",MUST,FALSE,0,,
+6dbb46de-9396-4d38-858d-49057e65fc6c,3,TOPIC,Iterators fail-fast vs fail-safe,ConcurrentModificationException,SHOULD,FALSE,0,,
+df1bd0b2-6a72-45e0-b5cf-4c6588891513,3,TOPIC,Concurrent collections,"ConcurrentHashMap, CopyOnWriteArrayList, BlockingQueue",SHOULD,FALSE,0,,
+08c262c4-3134-43a9-aff1-bd59897b297d,2,MODULE,Functional Java and Streams,,MUST,,0,,
+639e0db0-5b52-4a78-8549-788b6ad42b13,3,TOPIC,Lambdas and functional interfaces,"Function, Predicate, Supplier, Consumer, custom @FunctionalInterface",MUST,FALSE,0,,
+db8a6a76-56c4-4fe9-9cc9-eb91abceafff,3,TOPIC,Method references,"Static, instance, constructor references",MUST,FALSE,0,,
+ca8a70de-688e-4eee-999e-89bac550850f,3,TOPIC,Stream API operations,"map, filter, flatMap, reduce, sorted, distinct; lazy evaluation",MUST,FALSE,0,,
+f7fdde60-eaf5-4745-9bf9-d417042f7c04,3,TOPIC,Collectors,"toList, toMap, groupingBy, partitioningBy, summingDouble",MUST,FALSE,0,,
+c795da9c-24dc-4dc4-839c-5931c47ac2b4,3,TOPIC,Optional,"Correct usage, avoiding get()",MUST,FALSE,0,,
+9f5204c2-2117-438b-9b3e-7c5277f54ca4,2,MODULE,Concurrency and Multithreading,,MUST,,0,,
+e1726682-3874-4b5c-ace7-52c7817ea0e1,3,TOPIC,"Thread, Runnable, Callable",Thread lifecycle and states,MUST,FALSE,0,,
+24a8c0b2-ecd6-42ad-88b6-7c7bf3a9ccda,3,TOPIC,synchronized and volatile,"Java Memory Model, happens-before, visibility",MUST,FALSE,0,,
+07d462ad-651c-4f26-8c88-a8d156b50289,3,TOPIC,ExecutorService and thread pools,"Fixed, cached, scheduled pools; shutdown",MUST,FALSE,0,,
+d48545d7-db9e-439a-8df9-b3f7ef6224c8,3,TOPIC,CompletableFuture,"Async composition: thenApply, thenCompose, allOf",SHOULD,FALSE,0,,
+2287f0d2-caac-4ec1-b64c-c7c767525dc6,3,TOPIC,Locks and atomics,"ReentrantLock, ReadWriteLock, AtomicInteger, CAS",SHOULD,FALSE,0,,
+e96d2a2b-6fa5-467a-8f36-aa05ecc7a614,3,TOPIC,Virtual threads (Java 21),"Project Loom, when they help",NICE,FALSE,0,,
+cc0c425f-03f3-4af2-962e-340eb0136315,2,MODULE,JVM Internals,,SHOULD,,0,,
+8330438e-0c65-4308-a9e5-173c8b4414c5,3,TOPIC,JVM memory areas,"Heap, stack, metaspace; StackOverflowError vs OutOfMemoryError",SHOULD,FALSE,0,,
+2f1d0d80-3211-48c4-91ca-6a34ffd5d36c,3,TOPIC,Garbage collection,"Generational GC, G1, ZGC, GC roots",SHOULD,FALSE,0,,
+adcb79d5-5a17-4a88-b00f-4d8598f78da5,3,TOPIC,Class loading,"Bootstrap, platform, application loaders",NICE,FALSE,0,,
+64136b11-0a3e-47d2-8d1b-630eb73e34d1,3,TOPIC,Profiling and diagnostics,"jstack, jmap, VisualVM, JFR",NICE,FALSE,0,,
+ff5cd05d-869d-48bf-9c78-b968d447ace7,2,MODULE,Modern Java 17/21 Features,,SHOULD,,0,,
+08167cb6-0242-40ca-ab96-d8143be3a2ed,3,TOPIC,var and text blocks,,SHOULD,FALSE,0,,
+74794919-1dcb-4645-886b-0487c875f519,3,TOPIC,Switch expressions and pattern matching,"instanceof patterns, record patterns",SHOULD,FALSE,0,,
+6ab102c9-084f-443a-8c2a-9f0152833c91,3,TOPIC,Sealed classes,,NICE,FALSE,0,,
+24ac7871-5675-44db-8951-16a48d2cf3fb,2,MODULE,Build Tools,,MUST,,0,,
+da6d64fe-f964-4fef-812e-77f50ea82f42,3,TOPIC,Maven,"pom.xml, lifecycle phases, scopes, plugins, multi-module",MUST,FALSE,0,,
+7b3aff82-c635-4ab2-930e-f6da2e808049,3,TOPIC,Gradle basics,"build.gradle, tasks, wrapper",NICE,FALSE,0,,
+b1e7ac57-67ab-454f-ac78-1f4bd54582bb,1,MODULE,Phase 3 — Spring and Spring Boot,Mandatory backend framework,,,0,,
+92212795-e1bd-4268-ad0c-5f08728e20a6,2,MODULE,Spring Core,,MUST,,0,,
+0d665be1-2d2c-46dc-a381-595c1e47a437,3,TOPIC,IoC and dependency injection,Constructor vs setter vs field injection; why constructor,MUST,FALSE,0,,
+15bb7ee4-1328-4b68-a111-4eb51a9fe10b,3,TOPIC,Bean scopes and lifecycle,"singleton, prototype, request, session; @PostConstruct/@PreDestroy",MUST,FALSE,0,,
+75ce6c50-9a11-4e04-aa2f-7367b4481e38,3,TOPIC,Stereotype annotations,"@Component, @Service, @Repository, @Controller",MUST,FALSE,0,,
+cda94c7c-0c07-43b5-aaff-2a4adfbfd01f,3,TOPIC,Java configuration,"@Configuration, @Bean, @Qualifier, @Primary, @Conditional",MUST,FALSE,0,,
+2d778a7c-8d74-41eb-bf9a-b2840e82f0ea,3,TOPIC,Spring AOP,"Aspects, advice types, pointcuts, proxies (JDK vs CGLIB)",SHOULD,FALSE,0,,
+fd3db9e4-b30c-4699-9275-1c03428280db,2,MODULE,Spring Boot Essentials,,MUST,,0,,
+baf06ce7-194f-4134-9f36-bcd976e6c8d0,3,TOPIC,Auto-configuration and starters,How @SpringBootApplication works,MUST,FALSE,0,,
+359c8baa-b2a3-4cc5-9ed9-7073461d9ca8,3,TOPIC,Externalized configuration,"application.yml, profiles, env vars, @Value, @ConfigurationProperties",MUST,FALSE,0,,
+410644de-dff4-403b-af2b-a2224f6705d5,3,TOPIC,Actuator,"Health, metrics, info endpoints; securing them",SHOULD,FALSE,0,,
+c4e03dc6-4f61-47e2-998f-b12e7c50891c,3,TOPIC,Logging,"SLF4J + Logback, levels, MDC correlation IDs",MUST,FALSE,0,,
+68c8e0c3-0870-4042-a338-ff4f500c6255,3,TOPIC,DevTools and project setup,"start.spring.io, project structure (layered vs feature packaging)",SHOULD,FALSE,0,,
+7ba23e12-068f-47d0-8f6a-dabc9d18e818,2,MODULE,Building REST APIs with Spring MVC,,MUST,,0,,
+98c2a21d-88ca-42d7-97bb-a75c51a92ea8,3,TOPIC,Controllers and request mapping,"@RestController, @GetMapping, @PathVariable, @RequestParam, @RequestBody, ResponseEntity",MUST,FALSE,0,,
+6b149237-a166-46ae-bbd6-a551218ca569,3,TOPIC,DTOs and mapping,"Entity vs DTO, MapStruct",MUST,FALSE,0,,
+fe90c58a-9df3-48a8-b7be-1cde4c732256,3,TOPIC,Bean Validation,"@Valid, @NotNull, @Size, custom validators",MUST,FALSE,0,,
+746ebde1-daa9-4c3c-8231-79e7ee1fbde8,3,TOPIC,Global exception handling,"@RestControllerAdvice, ProblemDetail (RFC 7807)",MUST,FALSE,0,,
+589e6133-7b9e-40ab-8d0b-519459a73e70,3,TOPIC,Pagination and sorting,"Pageable, Page, Slice",MUST,FALSE,0,,
+4ff40574-5f6d-413f-a65b-e686771e7593,3,TOPIC,OpenAPI documentation,"springdoc-openapi, Swagger UI",MUST,FALSE,0,,
+81e302d6-8a85-4a80-a9df-45cc14c8ee2d,3,TOPIC,File upload and download,"MultipartFile, streaming large files",SHOULD,FALSE,0,,
+e5b07568-c483-4fe0-aadb-de57f7db64c5,3,TOPIC,Calling other APIs,"RestClient, WebClient, Feign",SHOULD,FALSE,0,,
+6b40c302-7fb9-454c-9532-1f279776e74b,2,MODULE,Spring Data JPA and Hibernate,,MUST,,0,,
+0793f0f4-e1d7-4f52-a81a-06d082e35ca0,3,TOPIC,Entity mapping,"@Entity, @Id, generation strategies, @Column, @Embeddable",MUST,FALSE,0,,
+a5b69bb6-9355-4f5e-857b-37b321da165a,3,TOPIC,Relationships,"@OneToMany, @ManyToOne, @ManyToMany, owning side, cascade, orphanRemoval",MUST,FALSE,0,,
+53512b52-6575-4c60-a1cb-26183bc1f3c6,3,TOPIC,Fetch types and N+1 problem,"LAZY vs EAGER, JOIN FETCH, @EntityGraph, LazyInitializationException",MUST,FALSE,0,,
+d4b01f7f-f8a6-4494-b99e-19d252c09473,3,TOPIC,Repositories and queries,"Derived queries, @Query JPQL/native, projections, Specifications",MUST,FALSE,0,,
+e306d5b6-f743-4589-9a56-703ca78ecdd5,3,TOPIC,Transactions,"@Transactional propagation, isolation, rollback rules, self-invocation pitfall",MUST,FALSE,0,,
+33f9ce20-aafb-4a9e-babe-c27f5bf748ee,3,TOPIC,Locking,Optimistic (@Version) vs pessimistic locking,MUST,FALSE,0,,
+42c5e9b2-f201-4f40-9dd5-9668a18505c6,3,TOPIC,Persistence context,"Entity states, dirty checking, first-level cache",SHOULD,FALSE,0,,
+fdf685a4-c816-43d2-9704-4c6938a41f81,3,TOPIC,Auditing,"@CreatedDate, @LastModifiedBy, Envers",SHOULD,FALSE,0,,
+8416b987-6e81-4e36-a5d4-08d07d4a2e25,3,TOPIC,Database migrations,Flyway or Liquibase,MUST,FALSE,0,,
+39113670-cf72-44e0-b255-f9b772778c13,3,TOPIC,Batch operations,"JDBC batching, saveAll pitfalls, JdbcTemplate",SHOULD,FALSE,0,,
+d7387e68-70cd-4f62-a61a-0cc846009b07,2,MODULE,Other Spring Capabilities,,SHOULD,,0,,
+d8a0d8b5-9a75-4304-931e-cfe7ca6267cb,3,TOPIC,Scheduling and async,"@Scheduled, @Async, ShedLock for clusters",SHOULD,FALSE,0,,
+d8178775-d8ff-49a4-860d-2b4c7d5ef02b,3,TOPIC,Spring Cache abstraction,"@Cacheable, @CacheEvict, @CachePut",MUST,FALSE,0,,
+bb1524ed-7198-404c-b32a-68ffa5110575,3,TOPIC,Report generation,"Excel (Apache POI), PDF (JasperReports/OpenPDF) — common in finance systems",SHOULD,FALSE,0,,
+031b5bc3-6860-4990-8680-90c2fd3aa801,3,TOPIC,Spring Batch,"Jobs, steps, chunk processing for bulk PO data",NICE,FALSE,0,,
+9dc87dde-a170-4791-95f0-7f0c2ca0d1fe,3,TOPIC,Email and notifications,"JavaMailSender, templating",NICE,FALSE,0,,
+d1d153ba-1f90-4826-9e9a-b65097731837,1,MODULE,Phase 4 — Databases,PostgreSQL deep dive + MongoDB,,,0,,
+eee925d8-e5fb-475e-ae2c-80c343be2fd6,2,MODULE,SQL Mastery,,MUST,,0,,
+8404a787-b3cf-47af-ae08-9bbf0b7c21fc,3,TOPIC,SELECT and joins,"INNER, LEFT, RIGHT, FULL, CROSS, self join",MUST,FALSE,0,,
+f5d1fe74-c313-4be6-a552-5e03c6a533c4,3,TOPIC,Aggregation,"GROUP BY, HAVING, COUNT/SUM/AVG, FILTER clause",MUST,FALSE,0,,
+a8186a9b-dbb6-4220-ad36-e575d82d5738,3,TOPIC,Subqueries and CTEs,"Correlated subqueries, WITH, recursive CTEs",MUST,FALSE,0,,
+2e08a7bf-1a33-4f17-89a2-a45a5e729fa0,3,TOPIC,Window functions,"ROW_NUMBER, RANK, DENSE_RANK, LAG/LEAD, running totals",MUST,FALSE,0,,
+3bb71c2d-9c22-4808-931e-70dc3a58402d,3,TOPIC,Classic interview SQL,"Nth highest salary, duplicates, top-N per group, gaps",MUST,FALSE,0,,
+cb7b7221-a0ef-478d-ba67-b020131a18d7,3,TOPIC,DDL and DML,"CREATE/ALTER, INSERT ... ON CONFLICT (upsert), UPDATE/DELETE with joins",MUST,FALSE,0,,
+bc3a2ecb-6842-415b-9f41-3b1c04614f94,3,TOPIC,Views and materialized views,Refresh strategies for reports,SHOULD,FALSE,0,,
+6ef0a3c7-3f36-428a-a47f-a605135eeb14,3,TOPIC,Functions and triggers,"PL/pgSQL basics, audit triggers",SHOULD,FALSE,0,,
+ec2dd6dd-4dc5-49ed-89d9-05bc5cb35c31,2,MODULE,PostgreSQL Schema Design,,MUST,,0,,
+f1e6ae6f-c1bb-4c9f-b7f8-e5d4897d45df,3,TOPIC,Choosing data types,"NUMERIC for money, TIMESTAMPTZ, UUID vs BIGSERIAL, JSONB, ENUM vs lookup table",MUST,FALSE,0,,
+4b5d35d3-68c3-48df-9cea-dcacda3b9928,3,TOPIC,Constraints for data integrity,"NOT NULL, CHECK, UNIQUE, FK with ON DELETE rules",MUST,FALSE,0,,
+b4fcb7aa-e812-469f-a4e4-337d4faf5620,3,TOPIC,Designing a finance schema,"POs, members, loans, installments, transactions ledger",MUST,FALSE,0,,
+056e7375-c1bc-4d68-8b1f-edf608802943,3,TOPIC,Audit columns and soft delete,"created_at/by, updated_at/by, deleted_at",SHOULD,FALSE,0,,
+468c36e0-7a80-4ec8-a5af-4014e57750c6,3,TOPIC,Table partitioning,Range partitioning by date for large transaction tables,SHOULD,FALSE,0,,
+152999b1-2535-4cae-867b-2b88456e08dc,2,MODULE,PostgreSQL Indexing,,MUST,,0,,
+3edc40d4-5718-4e3f-8a3e-271b661f92a3,3,TOPIC,B-tree indexes,"How they work, what queries they support",MUST,FALSE,0,,
+f67ed386-7a06-407c-ae3e-036b18eabf33,3,TOPIC,Composite indexes and column order,Leftmost prefix rule,MUST,FALSE,0,,
+23bebf72-1911-41da-a450-dfbbd1c677d5,3,TOPIC,"Partial, expression and covering indexes","WHERE clause indexes, LOWER(email), INCLUDE",MUST,FALSE,0,,
+f1fe2287-baba-4c33-ad00-d310a1474718,3,TOPIC,"GIN, GiST, BRIN, Hash","JSONB/full-text with GIN, BRIN for time series",SHOULD,FALSE,0,,
+69bfe899-6542-4e84-9cee-eb346bb02e5f,3,TOPIC,When indexes are not used,"Functions on columns, low selectivity, type mismatch, leading wildcard LIKE",MUST,FALSE,0,,
+5ebb7289-b144-4495-9fa6-832211b420ff,3,TOPIC,Index costs,"Write overhead, bloat, unused index detection",SHOULD,FALSE,0,,
+aa4ed911-5ce2-457c-8e35-c9a8d1fbcbb7,2,MODULE,PostgreSQL Query Tuning,,MUST,,0,,
+2515b8f4-65db-43ca-9fdc-256367c6db9e,3,TOPIC,Reading EXPLAIN ANALYZE,"Cost, rows, actual time, buffers",MUST,FALSE,0,,
+b04c054b-0a4b-4a81-bd5f-07556f305abd,3,TOPIC,Scan types,"Seq scan, index scan, index-only scan, bitmap scan",MUST,FALSE,0,,
+8bbada29-a0d0-43ce-8d01-6322fba69569,3,TOPIC,Join algorithms,"Nested loop, hash join, merge join",SHOULD,FALSE,0,,
+d28d44e9-2c30-4492-a998-4c5dcb50b172,3,TOPIC,MVCC and VACUUM,"Dead tuples, autovacuum, ANALYZE statistics",MUST,FALSE,0,,
+6d8f6a62-1bcc-4fd4-bdfa-de199c3ec57b,3,TOPIC,pg_stat_statements and slow query log,Finding the worst queries,SHOULD,FALSE,0,,
+a8fbbd68-fbdb-4a3b-a2bc-8ab06d470583,3,TOPIC,Connection pooling,"HikariCP settings, PgBouncer",MUST,FALSE,0,,
+2f66aef0-c5d6-47aa-92fb-a3089954f560,3,TOPIC,Query rewriting techniques,"Avoid SELECT *, keyset pagination vs OFFSET, EXISTS vs IN",MUST,FALSE,0,,
+fa2c682d-0e22-45f5-9863-9613e0588af2,2,MODULE,PostgreSQL Operations,,SHOULD,,0,,
+af83db32-d72f-4210-a079-bbb33a789bd2,3,TOPIC,Backup and restore,"pg_dump, pg_restore, PITR concept",SHOULD,FALSE,0,,
+09166357-bbf5-4bcf-a890-4e562584bd82,3,TOPIC,Replication,"Streaming replication, read replicas",NICE,FALSE,0,,
+1e1ab7f7-9b95-4208-9fc4-0ce202339215,3,TOPIC,Roles and privileges,"Least privilege, GRANT/REVOKE",SHOULD,FALSE,0,,
+d9dcf1a7-9ad1-4c17-9e6e-6226e8cee530,3,TOPIC,Row-level security,Multi-tenant isolation per PO,NICE,FALSE,0,,
+dcaf0c13-ef21-47b7-a2f2-f0cf9ed126b3,2,MODULE,MongoDB,,MUST,,0,,
+0cd62514-da74-4cb5-98a9-90e99cd5333b,3,TOPIC,Document model and BSON,"Collections, documents, _id/ObjectId",MUST,FALSE,0,,
+b63a75d2-3d26-4e7a-829e-7ea0bcd2dbe3,3,TOPIC,CRUD operations,"find, insert, update operators ($set, $inc, $push), delete",MUST,FALSE,0,,
+5d166a57-1970-427f-9851-5cbe44d4bd5a,3,TOPIC,Schema design,"Embedding vs referencing, one-to-many patterns",MUST,FALSE,0,,
+c746933d-55f4-4597-a054-a751330d5c99,3,TOPIC,Indexes in MongoDB,"Single, compound, TTL, text; explain()",SHOULD,FALSE,0,,
+dac7a07b-2fb2-4ca2-8990-8bf9b6457dee,3,TOPIC,Aggregation pipeline,"$match, $group, $project, $lookup, $unwind, $sort",MUST,FALSE,0,,
+aebd5ee5-0481-4f9e-95b8-3fdeceec8207,3,TOPIC,Spring Data MongoDB,"@Document, MongoRepository, MongoTemplate",MUST,FALSE,0,,
+26e114e1-151d-4a37-88ee-acdc7e33ca42,3,TOPIC,Transactions and consistency,"Replica sets, write concern, read concern",NICE,FALSE,0,,
+890e706d-569c-4a59-89fa-57b7a16a85e5,3,TOPIC,SQL vs NoSQL decision,"When to use MongoDB vs PostgreSQL (e.g. audit logs, dynamic forms)",MUST,FALSE,0,,
+460824f7-0955-43ae-b18e-e9c4cddfa47f,1,MODULE,"Phase 5 — APIs, Integration and Microservices",Preferred: microservices and data exchange,,,0,,
+faa730d4-fdf9-48e8-9f61-a86fdf102781,2,MODULE,REST API Design,,MUST,,0,,
+92c105cf-a633-4944-8102-c6c6db905572,3,TOPIC,REST principles,"Resources, statelessness, uniform interface",MUST,FALSE,0,,
+ffd4264b-3024-4604-a5e5-3bf162eb58de,3,TOPIC,Resource naming and URL design,"Nouns, plurals, nesting, filtering",MUST,FALSE,0,,
+f6f191ec-585d-4c24-9237-369e6df7488f,3,TOPIC,Idempotency,"Idempotent methods, idempotency keys for payments",MUST,FALSE,0,,
+d8cf57c4-ba6d-4f82-b689-a80b1dc6c31a,3,TOPIC,Versioning strategies,URI vs header vs media type,SHOULD,FALSE,0,,
+974f6275-dd30-4d7b-a728-d3b389f596cc,3,TOPIC,Error response design,"Consistent error body, ProblemDetail",MUST,FALSE,0,,
+b5e3e40a-2477-41c6-bf1d-7d7367aabc87,3,TOPIC,Rate limiting and throttling,"Token bucket, Bucket4j",SHOULD,FALSE,0,,
+aa60d0b5-bb4e-484e-ba41-4d36f0d1f8dc,2,MODULE,Data Exchange Formats,,MUST,,0,,
+4cf3ffaf-8f46-4c1b-8994-e2adb320dbe9,3,TOPIC,JSON and Jackson,"Serialization, annotations, dates, custom serializers",MUST,FALSE,0,,
+47d74fba-ef6b-4897-a6ee-26268dc48290,3,TOPIC,XML and JAXB,"Marshalling/unmarshalling, Jackson XML",MUST,FALSE,0,,
+87d106e2-0b8d-42d0-9184-0fb809561973,3,TOPIC,"XSD, XPath",Validation and querying XML,NICE,FALSE,0,,
+4bc53efa-d17c-42d1-a774-ab9eaebb26ec,3,TOPIC,SOAP fundamentals,"Envelope, header, body, fault, WSDL",MUST,FALSE,0,,
+71645b81-c89b-4491-a95b-a87e1289cf6d,3,TOPIC,SOAP in Spring,"Spring Web Services client/server, wsimport/JAXB codegen",SHOULD,FALSE,0,,
+856ac447-7d2d-4ff2-ab06-d5b107a2439b,3,TOPIC,REST vs SOAP vs gRPC,Comparison table,MUST,FALSE,0,,
+a28f8a25-09f2-4934-98cf-ffb9cd9edf34,2,MODULE,Microservices Architecture,,MUST,,0,,
+fd6927c1-eb25-4d4a-8438-4986d322cc0c,3,TOPIC,Monolith vs microservices,"Pros/cons, modular monolith",MUST,FALSE,0,,
+1b9151c9-8d24-464c-a449-7a27c3cf83a9,3,TOPIC,Service decomposition,"DDD bounded contexts, database-per-service",MUST,FALSE,0,,
+3dc1175d-f0c1-4edd-a19e-be58ec87d7e3,3,TOPIC,API Gateway,"Spring Cloud Gateway: routing, auth, rate limiting",MUST,FALSE,0,,
+d32f0033-b515-44da-bad9-960a99c8a01e,3,TOPIC,Service discovery and config,"Eureka / K8s DNS, Spring Cloud Config",SHOULD,FALSE,0,,
+52970174-dfa6-4c5e-b155-08da60034195,3,TOPIC,Inter-service communication,Sync REST/Feign vs async messaging,MUST,FALSE,0,,
+cc5d6d29-e362-4a05-adf0-6b20c5501438,3,TOPIC,Resilience patterns,"Circuit breaker, retry, timeout, bulkhead (Resilience4j)",MUST,FALSE,0,,
+7125c1ad-caab-4041-ae6f-978666f36e62,3,TOPIC,Distributed transactions,"Saga (choreography/orchestration), outbox pattern",MUST,FALSE,0,,
+8fd3ba41-2108-48f3-b85f-85cae92089e1,3,TOPIC,Observability,"Centralized logs (ELK), metrics (Micrometer, Prometheus, Grafana), tracing (OpenTelemetry, Zipkin)",SHOULD,FALSE,0,,
+4ad8c8df-f098-4b59-bdec-fa1a200364a4,3,TOPIC,Twelve-factor app,"Config, statelessness, disposability",SHOULD,FALSE,0,,
+a0f1ae22-b997-46c5-8983-49fea987a948,2,MODULE,Messaging,,SHOULD,,0,,
+261f0607-6a49-4a54-b6cd-11c596e04f4d,3,TOPIC,Message queue concepts,"Producer, consumer, at-least-once, DLQ, ordering",SHOULD,FALSE,0,,
+6421effb-31ea-4508-88a0-f51b336c174b,3,TOPIC,RabbitMQ with Spring AMQP,"Exchanges, queues, bindings",SHOULD,FALSE,0,,
+134007fa-832f-4d37-a1b9-c38072824a61,3,TOPIC,Kafka basics,"Topics, partitions, consumer groups, offsets",NICE,FALSE,0,,
+3d48fd6d-d85e-4aea-aa02-b7f40e87b805,1,MODULE,Phase 6 — Authentication and Security,"Preferred: OAuth2, JWT, Keycloak; data is sensitive",,,0,,
+429dd691-141b-4d14-9c83-d3df6e27f039,2,MODULE,Security Fundamentals,,MUST,,0,,
+7770c5ed-f12c-4977-b078-872a501a6a78,3,TOPIC,OWASP Top 10,"Broken access control, injection, crypto failures, etc.",MUST,FALSE,0,,
+b4787cb0-711a-442e-bd0f-11a93c4cc8b8,3,TOPIC,SQL injection prevention,"Prepared statements, JPA parameters",MUST,FALSE,0,,
+ca0054b7-9221-44f3-8f14-97c2ce21f48a,3,TOPIC,XSS and CSRF,"React escaping, CSP, CSRF tokens, SameSite cookies",MUST,FALSE,0,,
+b467656d-0915-4bc0-99de-7b0515ce69ab,3,TOPIC,"Hashing, encryption, encoding",BCrypt/Argon2 vs AES vs Base64,MUST,FALSE,0,,
+93fe136e-ab5f-46da-98ae-daee234b8817,3,TOPIC,Secrets management,"Env vars, K8s Secrets, Vault; never commit secrets",MUST,FALSE,0,,
+851ef9a2-4ad1-41fd-b29d-f27fadef1955,2,MODULE,Spring Security,,MUST,,0,,
+1e8c2ff4-dbbc-412c-8598-6e27c35e0afc,3,TOPIC,Security filter chain architecture,"SecurityFilterChain bean, filters order",MUST,FALSE,0,,
+027840bb-6977-44e7-a5bd-f83c553cf3da,3,TOPIC,Authentication vs authorization,"AuthenticationManager, UserDetailsService, roles vs authorities",MUST,FALSE,0,,
+2eb183c4-9ab2-49d0-ab1c-74756e0fa49e,3,TOPIC,Password storage,"PasswordEncoder, BCrypt",MUST,FALSE,0,,
+c44c62f9-c4f2-4a94-9b71-343343d99679,3,TOPIC,Method-level security,"@PreAuthorize, @EnableMethodSecurity",MUST,FALSE,0,,
+61017bba-c1ff-4a42-ac51-e12316478914,3,TOPIC,CORS and CSRF configuration,For SPA + API setups,MUST,FALSE,0,,
+6b44b727-814e-4a4c-840f-7d6f8cb7331d,2,MODULE,JWT,,MUST,,0,,
+329d1276-5f30-43b7-8bb9-94759ae1b67a,3,TOPIC,JWT structure,"Header, payload (claims), signature",MUST,FALSE,0,,
+26002b9a-0cc7-4ead-9199-2d8fc313e6b6,3,TOPIC,Signing algorithms,"HS256 vs RS256, JWKS",MUST,FALSE,0,,
+a0a75f5e-0a6b-43f2-bfd0-821f5c56e409,3,TOPIC,Access and refresh tokens,"Lifetimes, rotation, revocation strategies",MUST,FALSE,0,,
+2b3e51d6-ad62-49da-bf68-41aea5603634,3,TOPIC,Token storage on frontend,Memory vs localStorage vs HttpOnly cookie trade-offs,MUST,FALSE,0,,
+b7ab84f7-6341-4657-8fcf-b11e58464674,2,MODULE,OAuth2 and OpenID Connect,,MUST,,0,,
+1fd539a2-13fa-48d5-9d02-46ea1f274bad,3,TOPIC,OAuth2 roles,"Resource owner, client, authorization server, resource server",MUST,FALSE,0,,
+81ede349-1906-49fa-90c6-44b201038faa,3,TOPIC,Grant types,"Authorization code + PKCE, client credentials; deprecated implicit/password",MUST,FALSE,0,,
+e2e937ba-ee1f-452c-9ffa-c901aed408f7,3,TOPIC,Scopes and consent,,SHOULD,FALSE,0,,
+003ab67d-b9bc-4200-b2da-cfd25d9b38c1,3,TOPIC,OpenID Connect,"ID token, userinfo, discovery",MUST,FALSE,0,,
+1ef31e49-2dc2-4bc5-bcbc-c3df80d9b38d,3,TOPIC,Spring Boot as OAuth2 resource server,"spring-boot-starter-oauth2-resource-server, issuer-uri",MUST,FALSE,0,,
+cf0186f1-2acb-4cb4-add9-1cee5e426869,2,MODULE,Keycloak,,MUST,,0,,
+f7bcd560-5b25-4a1d-bd0d-90cb0de88a49,3,TOPIC,Keycloak concepts,"Realms, clients, users, groups, realm/client roles",MUST,FALSE,0,,
+0e0beb41-c1bb-4d43-8efa-6143982d79f8,3,TOPIC,Running Keycloak in Docker,"Dev mode, admin console, realm export/import",MUST,FALSE,0,,
+47e0a198-1aba-4640-b85b-536e35dc89d9,3,TOPIC,Securing Spring Boot with Keycloak,Role mapping from realm_access claim,MUST,FALSE,0,,
+c28209bc-c2b9-42c2-b570-455cf4e26073,3,TOPIC,Securing React with Keycloak,"keycloak-js / oidc-client, login, token refresh",MUST,FALSE,0,,
+3884d156-9f62-4f08-b864-3bdb241842ef,3,TOPIC,Service-to-service auth,Client credentials flow between microservices,SHOULD,FALSE,0,,
+29a52aa8-cc39-4631-897d-0ee1a9bde6be,3,TOPIC,Keycloak advanced,"Identity brokering, user federation (LDAP), themes",NICE,FALSE,0,,
+32382f61-3552-470b-8f84-0a12ebd14071,2,MODULE,Data Protection and Auditing,,SHOULD,,0,,
+fbe2cd21-2e46-4b98-9450-43998f1dcb77,3,TOPIC,Audit trails,Who did what when; immutable logs,MUST,FALSE,0,,
+082f5d16-fe1f-44f0-bb03-6fd509f3bf6e,3,TOPIC,Encryption at rest and in transit,"TLS everywhere, column encryption (pgcrypto)",SHOULD,FALSE,0,,
+f1cd761b-6f6b-40b8-b0ce-a808f3ef0d61,3,TOPIC,PII masking and access control,NID/phone masking in logs and UI,SHOULD,FALSE,0,,
+495ed546-fd0c-4e33-9d75-96d97d0e5ccf,1,MODULE,Phase 7 — Redis Caching and Sessions,Preferred: Redis for distributed caching and sessions,,,0,,
+4ed853a8-d664-45cf-bcec-fe7ca2df0941,2,MODULE,Redis Fundamentals,,MUST,,0,,
+630eecd7-197d-4bca-b676-ce40e6bdcc10,3,TOPIC,Redis data structures,"String, Hash, List, Set, Sorted Set, Streams",MUST,FALSE,0,,
+edaff6c0-e877-4755-adbb-c8c13994ea05,3,TOPIC,"TTL, expiry and eviction policies","allkeys-lru, volatile-ttl, maxmemory",MUST,FALSE,0,,
+0d5177e3-fdbf-4f90-8556-a5575bb2eae3,3,TOPIC,Persistence,RDB snapshots vs AOF,SHOULD,FALSE,0,,
+e1ac9bf4-04b2-4b8f-8079-e9e583e9b44c,3,TOPIC,Single-threaded model,"Why Redis is fast, atomic commands",SHOULD,FALSE,0,,
+5345a4e7-a6c1-4c00-8e85-30e261ad6c0e,2,MODULE,Caching Patterns,,MUST,,0,,
+3c3fa693-87cd-4aa8-aa0f-2d38b5634e13,3,TOPIC,"Cache-aside, write-through, write-behind",Pros/cons of each,MUST,FALSE,0,,
+3e20036f-7c81-4dbe-9d3f-8b448dd0d90b,3,TOPIC,Cache invalidation,"TTL, explicit evict, event-based",MUST,FALSE,0,,
+6536a656-b514-4e7f-b735-7ec70eb3eda6,3,TOPIC,"Cache stampede, penetration, avalanche","Locking, null caching, jittered TTL",SHOULD,FALSE,0,,
+feee8725-d3f9-4e6f-bf1f-e8ea4cd30819,3,TOPIC,Spring Boot with Redis cache,"spring-boot-starter-data-redis, RedisCacheManager, serialization",MUST,FALSE,0,,
+b09c1865-8a3d-4fbc-aa20-07cc04a0f120,2,MODULE,Sessions and Distributed Use Cases,,MUST,,0,,
+b03bbcce-e587-44d5-8d59-e00c00e4a901,3,TOPIC,Spring Session with Redis,Sharing sessions across instances,MUST,FALSE,0,,
+2c165f2c-611a-4a26-9db8-f078b65f07b4,3,TOPIC,Distributed locks,"SET NX PX, Redisson",SHOULD,FALSE,0,,
+1bc9e0db-2785-4ecb-9888-c3e7dc853e3d,3,TOPIC,Rate limiting with Redis,"INCR + EXPIRE, sliding window",SHOULD,FALSE,0,,
+61124290-59c9-40ba-ad57-cbe1aa61d525,3,TOPIC,Pub/Sub and Streams,Lightweight messaging,NICE,FALSE,0,,
+f12ea086-4b85-44ee-ba0e-41cd58d389d1,3,TOPIC,High availability,Sentinel vs Cluster,NICE,FALSE,0,,
+24d54432-72a4-4498-9077-c4ee50d21782,1,MODULE,Phase 8 — Frontend with React,Mandatory frontend stack,,,0,,
+cc8176be-c74f-4be7-87be-cfe86803ec93,2,MODULE,HTML and CSS,,MUST,,0,,
+d023b919-82de-4157-8d48-a65932101c9c,3,TOPIC,Semantic HTML and forms,"Accessibility basics, labels, ARIA",MUST,FALSE,0,,
+a4d4c6ae-e31d-4014-b10a-59486f255697,3,TOPIC,"CSS box model, Flexbox, Grid",,MUST,FALSE,0,,
+43d41b14-feae-4baa-988d-6ed8937563fe,3,TOPIC,Responsive design,"Media queries, mobile-first",MUST,FALSE,0,,
+a2673009-5ddb-4854-88b3-94eb39189ed9,3,TOPIC,CSS framework,Tailwind CSS or MUI theming,SHOULD,FALSE,0,,
+23a3b780-1b39-4392-b109-15454264b123,2,MODULE,JavaScript,,MUST,,0,,
+a50db409-3213-4d6e-b3ef-360ea1bd1aca,3,TOPIC,ES6+ syntax,"let/const, arrow functions, destructuring, spread/rest, template literals, modules",MUST,FALSE,0,,
+ac6dc999-7112-459a-a215-97b00e37d6e0,3,TOPIC,"Scope, closures, hoisting, this",,MUST,FALSE,0,,
+5f680ccc-5fae-48fe-bdf9-93a38dfe7751,3,TOPIC,Promises and async/await,"Error handling, Promise.all",MUST,FALSE,0,,
+29a137dd-f272-49e3-8440-b37c05895f99,3,TOPIC,Event loop,"Call stack, microtasks vs macrotasks",MUST,FALSE,0,,
+e1bf49f0-d2bc-4fab-8e50-cfee4f3bfc98,3,TOPIC,Array methods,"map, filter, reduce, find, some, every",MUST,FALSE,0,,
+b59f8cc7-6dc6-4bda-bf19-0a64079aaad2,3,TOPIC,"== vs ===, truthy/falsy, types",,MUST,FALSE,0,,
+06d6d61c-b973-44cd-8ef9-53ee7dc900e6,3,TOPIC,Fetch API and Axios,Interceptors for auth headers,MUST,FALSE,0,,
+cb21d41a-5508-42a6-8a1f-50564585979c,2,MODULE,TypeScript,,MUST,,0,,
+cc97bd0a-521c-4db9-8090-bf8473aaf0d4,3,TOPIC,Types and interfaces,"Union, intersection, literal types, type vs interface",MUST,FALSE,0,,
+2bdee8e9-1541-4cc8-9a64-4a5ceed80573,3,TOPIC,Generics,,MUST,FALSE,0,,
+df4d124c-ed13-47c9-9d13-58d918cca823,3,TOPIC,Utility types,"Partial, Pick, Omit, Record",SHOULD,FALSE,0,,
+215147e9-2784-4c49-a77e-04e94697ff95,3,TOPIC,Typing React,"Props, events, hooks",MUST,FALSE,0,,
+ba386e11-f2ae-4c36-bc8c-a5692a1cdaa8,2,MODULE,React Core,,MUST,,0,,
+16352dbc-934e-4905-920f-500b97ab2943,3,TOPIC,JSX and components,"Function components, composition, children",MUST,FALSE,0,,
+2602d1ab-1069-4a43-929a-e72994a050c2,3,TOPIC,Props and state,"useState, immutability, re-render rules",MUST,FALSE,0,,
+99d7b91c-9055-4f64-b8e3-a7330249083d,3,TOPIC,useEffect,"Dependencies, cleanup, data fetching pitfalls",MUST,FALSE,0,,
+8cc1c403-228c-4a06-9218-64e250179583,3,TOPIC,Lists and keys,Why stable keys matter,MUST,FALSE,0,,
+f299c6f9-c922-4a01-9c5a-de12aeea5fc4,3,TOPIC,Forms,Controlled vs uncontrolled,MUST,FALSE,0,,
+5b1abb51-7553-4a2b-be2a-243f40e416c0,3,TOPIC,Lifting state and composition,,MUST,FALSE,0,,
+aa5d408f-b583-4bf4-a8d0-cd059936d332,3,TOPIC,"useRef, useMemo, useCallback",,MUST,FALSE,0,,
+f1010d98-3e50-4ed1-b312-31c74252ff80,3,TOPIC,useReducer and Context API,,MUST,FALSE,0,,
+a4cab1e4-d717-4f8d-b5ac-40580082747c,3,TOPIC,Custom hooks,,MUST,FALSE,0,,
+689fcec7-cbfd-4937-b15c-ad0a5655e8ba,3,TOPIC,Virtual DOM and reconciliation,,MUST,FALSE,0,,
+7b2d422d-a15b-4d32-bea4-504b6da85b3f,3,TOPIC,Error boundaries,,SHOULD,FALSE,0,,
+a9fc9e6b-2533-404d-8155-d5f5015377bf,2,MODULE,React Ecosystem,,MUST,,0,,
+41b297ab-8755-4cbe-8a35-5f713a691a49,3,TOPIC,Vite project setup,"Folder structure, env variables",MUST,FALSE,0,,
+7ebd7cf5-1942-4ff9-83e1-fac233c15b04,3,TOPIC,React Router,"Routes, nested routes, params, protected routes",MUST,FALSE,0,,
+dd082868-3785-48c8-b48e-e47cd71dec81,3,TOPIC,Server state with TanStack Query,"Caching, invalidation, mutations",MUST,FALSE,0,,
+d604cc67-61b4-4a36-b318-51a232dcbfa3,3,TOPIC,Global state,Redux Toolkit or Zustand,SHOULD,FALSE,0,,
+1e7c056a-17a9-4460-af32-93731fb814b2,3,TOPIC,Forms and validation,React Hook Form + Zod,MUST,FALSE,0,,
+b837e0b7-e198-470e-a2cf-1f924d9f685d,3,TOPIC,UI component library,MUI or Ant Design; data tables with server pagination,MUST,FALSE,0,,
+3058e6f7-c8a7-48d9-8a7c-32a71f9f97c3,3,TOPIC,Charts and dashboards,Recharts / Chart.js,SHOULD,FALSE,0,,
+21b2ad60-7643-43d9-9e28-2805dfce804c,2,MODULE,React Advanced,,SHOULD,,0,,
+52a4b342-642a-485a-8b08-1754a663ac1b,3,TOPIC,Performance,"React.memo, code splitting, lazy + Suspense, profiler",SHOULD,FALSE,0,,
+399dd936-d1a1-4960-8a64-e77dc1fa501e,3,TOPIC,Authentication flow in SPA,"Login, token refresh, route guards, logout",MUST,FALSE,0,,
+068e88dd-bd3a-4322-9d1d-e8cef5f4b8a2,3,TOPIC,Internationalization,react-i18next with Bangla/English,SHOULD,FALSE,0,,
+eb1ce558-122c-48bc-8474-226918f85092,3,TOPIC,Next.js basics,SSR/SSG concept,NICE,FALSE,0,,
+9152006f-b8f2-48d1-bca4-9cead65a05d4,1,MODULE,Phase 9 — Testing and Code Quality,Preferred: unit/integration tests in portfolio,,,0,,
+49deba37-a7c5-4e04-99db-92cb726ca39b,2,MODULE,Backend Testing,,MUST,,0,,
+26f73555-f153-4868-8cf6-a0a9f97e64a1,3,TOPIC,JUnit 5,"Annotations, assertions, parameterized tests",MUST,FALSE,0,,
+9dc7d8ec-608f-4e0e-a986-ad2d9da504b4,3,TOPIC,Mockito,"Mocks, stubs, verify, argument captors",MUST,FALSE,0,,
+9bb685fa-cc8d-4930-b74c-8d3040b5dd97,3,TOPIC,Spring Boot test slices,"@WebMvcTest, @DataJpaTest, @SpringBootTest",MUST,FALSE,0,,
+1e167fa3-7e5d-4ffe-ac6d-5bf3064ba0ef,3,TOPIC,MockMvc,Testing controllers and security,MUST,FALSE,0,,
+e5fea775-0692-4192-a10e-45630b1c6af8,3,TOPIC,Testcontainers,Real PostgreSQL/Redis/Keycloak in tests,MUST,FALSE,0,,
+df9bc66e-d377-42c3-b17a-f760c279ec53,3,TOPIC,Test pyramid and TDD,Unit vs integration vs e2e,SHOULD,FALSE,0,,
+83fe9fce-31d7-4a3f-a5ae-b417ba5040b9,3,TOPIC,Coverage with JaCoCo,,SHOULD,FALSE,0,,
+536100e0-ba7f-41c5-91ab-54386f3055af,2,MODULE,Frontend Testing,,SHOULD,,0,,
+c9f9fb9a-107f-4320-9d4c-5e72513d9978,3,TOPIC,Vitest / Jest,,SHOULD,FALSE,0,,
+6c53533d-7755-4ecf-8fb4-25fcd15c6a08,3,TOPIC,React Testing Library,"Query by role, user-event",SHOULD,FALSE,0,,
+d428a4f4-d4e1-4d36-9ed8-2d1dc2f0c8cc,3,TOPIC,Mock Service Worker,Mocking APIs,NICE,FALSE,0,,
+d4082021-f860-4c4a-a458-14970bf7abd7,3,TOPIC,Playwright end-to-end,,NICE,FALSE,0,,
+3051d5f2-9024-4cc5-9143-75ecb0220069,2,MODULE,Code Quality,,SHOULD,,0,,
+156382f1-4596-47ee-b510-63465fa6c9d5,3,TOPIC,Clean code practices,"Naming, small functions, no magic numbers",MUST,FALSE,0,,
+48427e70-2900-4abf-97cb-2b1918dc1df0,3,TOPIC,Static analysis,"SonarQube, Checkstyle, ESLint, Prettier",SHOULD,FALSE,0,,
+fb38f30f-afb6-4eca-90c9-4f38f78957ff,3,TOPIC,Code review etiquette,,SHOULD,FALSE,0,,
+c57a6ee9-654c-43bf-8c82-513bd907e49b,1,MODULE,"Phase 10 — DevOps: Git, Docker, Kubernetes, CI/CD",Preferred: containerization and automated deployment,,,0,,
+aa896521-3b00-4420-ac6b-e0628cbb542b,2,MODULE,Git,,MUST,,0,,
+2f997df4-194e-4a0f-b149-b97e24c2c048,3,TOPIC,Core commands,"init, clone, add, commit, push, pull, status, log, diff",MUST,FALSE,0,,
+7bf38ea4-1c92-4a42-8ad4-c195d1c4fdb2,3,TOPIC,Branching strategies,"GitFlow vs trunk-based, feature branches",MUST,FALSE,0,,
+41c1ef2a-1ec8-4ca6-ab3d-ccff0878489e,3,TOPIC,Merge vs rebase,"Fast-forward, squash, interactive rebase concept",MUST,FALSE,0,,
+e8a17002-ff4d-4d14-b092-638f9ff64041,3,TOPIC,Conflict resolution,,MUST,FALSE,0,,
+2cb4c6e7-4490-4a7f-ba08-2ef8a3686bf7,3,TOPIC,Undoing changes,"reset, revert, restore, stash, cherry-pick",MUST,FALSE,0,,
+c3b28b23-e497-41a2-833d-fa336932ce3c,3,TOPIC,Pull request workflow,"Reviews, conventional commits, semantic versioning",SHOULD,FALSE,0,,
+7ec19b6f-029f-492d-aac6-965ec6834d19,2,MODULE,Linux and Servers,,MUST,,0,,
+8a228cf8-d92f-4d8f-96a2-20a53ea04c1d,3,TOPIC,Essential shell commands,"ls, grep, find, tail -f, ps, top, df, chmod, chown",MUST,FALSE,0,,
+ed4dc657-564c-40e4-a4c3-932c5a95eafc,3,TOPIC,SSH and remote access,"Keys, scp",MUST,FALSE,0,,
+c9f10afa-1a3d-41c8-8488-5a24d270862b,3,TOPIC,Systemd services and logs,"systemctl, journalctl",SHOULD,FALSE,0,,
+d96f9365-7158-456e-8f70-8997b5e84d8e,3,TOPIC,Nginx reverse proxy,"Serve React build, proxy /api, TLS",SHOULD,FALSE,0,,
+d21b7032-fe4a-4691-881c-ddfc2e748d89,2,MODULE,Docker,,MUST,,0,,
+978c408b-5d7c-41d1-8ed3-1725a766c449,3,TOPIC,"Images, containers, layers",Docker vs VM,MUST,FALSE,0,,
+d2c8fd55-5585-4811-8ad2-91cd2c20338e,3,TOPIC,Dockerfile for Spring Boot,"Multi-stage build, layered jars, non-root user",MUST,FALSE,0,,
+4e062c58-7ee1-4d34-9da0-f623b58ac69f,3,TOPIC,Dockerfile for React,Build stage + Nginx stage,MUST,FALSE,0,,
+46bbf388-e067-49e4-b269-36320a59a39e,3,TOPIC,Volumes and networks,,MUST,FALSE,0,,
+bf243763-1a83-428d-ba61-0aeb448e06e6,3,TOPIC,Docker Compose for full stack,App + PostgreSQL + Redis + Keycloak + MongoDB,MUST,FALSE,0,,
+dbc4c428-679c-41a6-8186-2e6d753d405c,3,TOPIC,Image best practices,"Small base images, .dockerignore, healthchecks, scanning",SHOULD,FALSE,0,,
+7c9bfe22-508d-42f3-920b-7df7304f9943,2,MODULE,Kubernetes,,MUST,,0,,
+c538181b-2682-4b24-bff4-98e4715e162e,3,TOPIC,Kubernetes architecture,"Control plane, nodes, kubelet, etcd",MUST,FALSE,0,,
+25920745-ebf8-4a92-b339-d1ef80fae813,3,TOPIC,"Pods, ReplicaSets, Deployments",Rolling updates and rollback,MUST,FALSE,0,,
+584c5b61-435f-47fb-bbbc-c60f1be045e7,3,TOPIC,Services and Ingress,"ClusterIP, NodePort, LoadBalancer",MUST,FALSE,0,,
+7f1cb574-3930-44fa-9623-a90490cede59,3,TOPIC,ConfigMaps and Secrets,,MUST,FALSE,0,,
+cda56352-eae0-45cf-850f-118c10f1268e,3,TOPIC,Health probes,"Liveness, readiness, startup; Actuator integration",MUST,FALSE,0,,
+b6b3456d-d078-430b-8c04-fd132f2c6fc2,3,TOPIC,Resources and autoscaling,"Requests/limits, HPA",SHOULD,FALSE,0,,
+ff8ac568-3dda-4ff6-86a4-55dc7b4ce9af,3,TOPIC,StatefulSets and volumes,"PV, PVC for databases",SHOULD,FALSE,0,,
+c86ab09b-fa12-4379-b1a3-88fe8708409a,3,TOPIC,kubectl essentials,"get, describe, logs, exec, apply, rollout",MUST,FALSE,0,,
+6f37786a-1935-4366-a706-1651d7cf783d,3,TOPIC,Helm basics,,NICE,FALSE,0,,
+42622ed6-cff7-4d86-9018-17769321ad1a,3,TOPIC,Local cluster practice,minikube / kind / k3d,MUST,FALSE,0,,
+e751a2d0-3112-4c1a-95a5-32fa1a97d479,2,MODULE,CI/CD,,MUST,,0,,
+02f0d1ff-8d47-42e8-8945-3554bdb0b283,3,TOPIC,CI/CD concepts,"Build, test, scan, package, deploy stages",MUST,FALSE,0,,
+60883c71-8e0f-43b2-9add-a30f9779a3f3,3,TOPIC,GitHub Actions pipeline,Maven build + tests + Docker image push,MUST,FALSE,0,,
+7c0d650d-e924-441c-90ad-d169a7bfd2e6,3,TOPIC,GitLab CI or Jenkins,Jenkinsfile / .gitlab-ci.yml basics (common in BD govt orgs),SHOULD,FALSE,0,,
+81a00532-d6b4-4278-8e49-be0fb499a13c,3,TOPIC,Deployment strategies,"Rolling, blue-green, canary",SHOULD,FALSE,0,,
+7af063d4-78b3-4f4b-a152-d9439d6f6508,3,TOPIC,Environment promotion,"dev → staging → prod, config per env",SHOULD,FALSE,0,,
+109f88ed-5649-486f-bf9e-576f63e24cbb,1,MODULE,Phase 11 — Cloud (Optional),Optional in TOR,,,0,,
+e7370540-1e0e-4577-8fd0-ed74d68a836d,2,MODULE,Cloud Fundamentals,,NICE,,0,,
+d0988f82-6be2-4eaf-9c9c-81c035c6f45f,3,TOPIC,"IaaS, PaaS, SaaS; regions and AZs",,NICE,FALSE,0,,
+a30552b2-a539-40b3-9c56-573f306dc60f,3,TOPIC,AWS core services,"EC2, S3, RDS, IAM, VPC, ECR, EKS",NICE,FALSE,0,,
+a01d79fd-8914-4d44-b6f8-3cfb4fbe928f,3,TOPIC,Deploy Spring Boot + React to cloud,EC2/Elastic Beanstalk or ECS,NICE,FALSE,0,,
+fe50a578-a61b-496d-be57-34dca0d8e3a2,3,TOPIC,Associate-level certification path,AWS Developer Associate / Azure AZ-204,NICE,FALSE,0,,
+3edd2313-cefd-4a08-8cf7-ed9c240d62f9,1,MODULE,Phase 12 — System Design,For senior-ish viva questions,,,0,,
+fcb96b23-2eee-405b-a7ed-5b8e83bbd586,2,MODULE,System Design Fundamentals,,SHOULD,,0,,
+f60cf32c-58ad-462e-a893-fd0073e02a5f,3,TOPIC,Scalability,"Vertical vs horizontal, stateless services",SHOULD,FALSE,0,,
+4df80c58-98e6-4ee9-b32a-ff8a920ece8d,3,TOPIC,Load balancing,"Algorithms, sticky sessions",SHOULD,FALSE,0,,
+2e17e6d6-bdc2-45f9-9a75-412ccfc69496,3,TOPIC,Database scaling,"Read replicas, sharding, partitioning",SHOULD,FALSE,0,,
+fc4b0ddf-4ea1-4f91-bc63-4efb4370614a,3,TOPIC,Caching layers,"CDN, app cache, DB cache",SHOULD,FALSE,0,,
+70534f03-fbf0-4160-8b4b-57f225068bdc,3,TOPIC,Case study: PO loan management system,"Requirements, entities, APIs, scale, security",MUST,FALSE,0,,
+5e588c01-1fd5-42ba-ab09-a5741c9a3147,3,TOPIC,Case study: reporting and dashboards,"Aggregations, materialized views, async report jobs",SHOULD,FALSE,0,,
+05dfd75f-96f9-4279-aeb4-ae347a6eeee2,1,MODULE,Phase 13 — Portfolio Project,Preferred: public GitHub repo with tests and docker-compose,,,0,,
+2948ee66-e6fa-4043-9ed6-aa7323b963b9,2,MODULE,Build: PO Microfinance Management System,,MUST,,0,,
+51ca99a1-aec2-4cf3-9b2e-a2164ba18c9b,3,TOPIC,Requirements and design,"User stories, ER diagram, API contract (OpenAPI)",MUST,FALSE,0,,
+2ac7894a-5330-49a4-8dda-de4769f6e7a8,3,TOPIC,Backend: Spring Boot services,"PO, member, loan, repayment modules; Flyway; validation; error handling",MUST,FALSE,0,,
+bd1b728a-4184-45a8-9df0-d5e54cd402b3,3,TOPIC,Database: PostgreSQL with indexes,"Tuned queries, EXPLAIN evidence in README",MUST,FALSE,0,,
+e0734eaf-c397-403d-8767-76bef00ca8af,3,TOPIC,MongoDB for audit logs,,SHOULD,FALSE,0,,
+ecdc3a9b-80ca-4476-8493-7231074c0180,3,TOPIC,Redis caching for lookups and sessions,,SHOULD,FALSE,0,,
+20e8a5fb-52bf-408c-b4c1-6ed9db41ad55,3,TOPIC,Keycloak authentication and roles,"ADMIN, PO_OFFICER, AUDITOR",MUST,FALSE,0,,
+f3ccb035-5bed-4711-af2d-6a66ce83ccf5,3,TOPIC,React frontend,"Login, dashboard, CRUD tables, forms, charts",MUST,FALSE,0,,
+3eddbe78-5d7b-4d00-98ad-767a9a3f6b03,3,TOPIC,Tests,Unit + Testcontainers integration + RTL,MUST,FALSE,0,,
+a8e8f1c2-8fd1-4e8d-8e88-15b4dbb377a4,3,TOPIC,docker-compose for one-command startup,,MUST,FALSE,0,,
+f0dd3c1c-1bc7-45ff-9185-a67a154da779,3,TOPIC,Kubernetes manifests,,SHOULD,FALSE,0,,
+e70ceb2b-1f32-43aa-bd72-03e84b86e030,3,TOPIC,GitHub Actions CI,,MUST,FALSE,0,,
+04a55139-eb3d-4599-92e3-dee7c51db8a1,3,TOPIC,README and documentation,"Architecture diagram, setup, screenshots, API docs",MUST,FALSE,0,,
+5d37f654-21b0-4266-9dc9-12341d4c5aa3,1,MODULE,Phase 14 — Exam and Interview Preparation,,,,0,,
+61c9e2c7-92b1-4180-b13c-f85dc8fbc334,2,MODULE,Written Test Prep,,MUST,,0,,
+c94e5bf0-1c6c-441c-9788-8c4a6e28a62c,3,TOPIC,MCQ practice,"Java, OOP, DBMS, networks, OS, web",MUST,FALSE,0,,
+13f9f657-b2e5-4741-a686-b249604b8f44,3,TOPIC,Handwritten coding practice,"Write Java on paper: strings, arrays, collections, recursion",MUST,FALSE,0,,
+6dc7ad2b-0375-4263-8f9b-538295873594,3,TOPIC,Written SQL practice,,MUST,FALSE,0,,
+e70aa0ec-94f7-4008-a68f-80c423736f20,3,TOPIC,General aptitude,"English, analytical/math if included in test",NICE,FALSE,0,,
+95d38373-cb5b-4f2e-af1e-7d28b92de9d1,2,MODULE,Viva / Interview Prep,,MUST,,0,,
+6c700af0-8d17-4368-84b9-9b8e55350dcc,3,TOPIC,Project walkthrough,Explain your past projects and portfolio architecture in 3 minutes,MUST,FALSE,0,,
+309fe118-bb17-49d8-884d-b791d5c73f56,3,TOPIC,Technical Q&A rehearsal,Use Q&A sections of study material,MUST,FALSE,0,,
+7b071a1c-6f7c-4512-bbda-ea548fc05b61,3,TOPIC,Behavioral questions,"Why PKSF, teamwork, conflict, learning; STAR method",MUST,FALSE,0,,
+c4a80162-ec83-4c00-b263-338f6d14c926,3,TOPIC,Mock interviews,,SHOULD,FALSE,0,,

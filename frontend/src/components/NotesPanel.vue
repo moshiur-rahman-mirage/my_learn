@@ -13,6 +13,9 @@ import {
   Shrink,
   CircleAlert,
   Check,
+  ChevronLeft,
+  ChevronRight,
+  ChevronsRight,
   FileCode2,
   FileText,
   Folder,
@@ -43,8 +46,14 @@ import ItemDetails from './ItemDetails.vue'
  * [[Name]] in a Markdown note links to another item of the plan; the panel lists the notes that
  * link here and the flashcards (Q:/A:) the note contains.
  */
-const props = defineProps<{ node: TreeNode | null; planId: number; allTags: string[]; tree?: TreeNode[] }>()
-const emit = defineEmits<{ close: []; saved: [itemId: number, hasNotes: boolean]; changed: []; open: [node: TreeNode] }>()
+const props = defineProps<{ node: TreeNode | null; planId: number; allTags: string[]; tree?: TreeNode[]; completing?: boolean }>()
+const emit = defineEmits<{
+  close: []
+  saved: [itemId: number, hasNotes: boolean]
+  changed: []
+  open: [node: TreeNode]
+  toggleComplete: [node: TreeNode]
+}>()
 const toast = useToast()
 
 type Status = 'loading' | 'idle' | 'pending' | 'saving' | 'saved' | 'error'
@@ -326,6 +335,31 @@ function openById(itemId: number) {
   if (target) emit('open', target)
 }
 
+// --- previous / next topic and completion (reading mode footer) ---------------------------------
+/** Topics in plan order (depth-first, as the tree shows them). */
+const topicOrder = computed(() => allNodes.value.filter((n) => n.type === 'TOPIC'))
+const topicIndex = computed(() => (props.node ? topicOrder.value.findIndex((n) => n.id === props.node!.id) : -1))
+const prevTopic = computed(() => (topicIndex.value > 0 ? topicOrder.value[topicIndex.value - 1] : null))
+const nextTopic = computed(() =>
+  topicIndex.value >= 0 && topicIndex.value < topicOrder.value.length - 1 ? topicOrder.value[topicIndex.value + 1] : null,
+)
+/** Next topic not yet done, so "Complete & next" skips what you already finished. */
+const nextPendingTopic = computed(() => {
+  if (topicIndex.value < 0) return null
+  return topicOrder.value.slice(topicIndex.value + 1).find((n) => n.checkable && !n.completed) ?? nextTopic.value
+})
+function goTo(target: TreeNode | null) {
+  if (target) emit('open', target)
+}
+function toggleDone() {
+  if (props.node?.checkable && !props.completing) emit('toggleComplete', props.node)
+}
+function completeAndNext() {
+  const target = nextPendingTopic.value
+  if (props.node?.checkable && !props.node.completed) toggleDone()
+  goTo(target)
+}
+
 const backlinks = ref<Backlink[]>([])
 const cards = ref<ItemCard[]>([])
 const today = () => new Date().toLocaleDateString('en-CA') // yyyy-MM-dd in the viewer's time zone
@@ -479,6 +513,12 @@ function onKey(e: KeyboardEvent) {
   } else if (e.altKey && !e.ctrlKey && !e.metaKey && e.key.toLowerCase() === 'r') {
     e.preventDefault()
     toggleReading()
+  } else if (reading.value && e.altKey && !e.ctrlKey && !e.metaKey && (e.key === 'ArrowLeft' || e.key === 'ArrowRight')) {
+    e.preventDefault()
+    goTo(e.key === 'ArrowLeft' ? prevTopic.value : nextTopic.value)
+  } else if (reading.value && e.altKey && !e.ctrlKey && !e.metaKey && e.key.toLowerCase() === 'c') {
+    e.preventDefault()
+    toggleDone()
   } else if ((e.ctrlKey || e.metaKey) && e.altKey && (e.key === '=' || e.key === '+')) {
     e.preventDefault()
     zoom(1)
@@ -771,7 +811,8 @@ onBeforeUnmount(() => {
               </div>
             </div>
             <p v-if="reading" class="muted mt-2 text-xs">
-              Reading mode — Alt+R or the book button to edit again (double-click a Markdown note to jump into editing).
+              Reading mode — Alt+R or the book button to edit again (double-click a Markdown note to jump into editing). Alt+← / Alt+→ previous /
+              next topic, Alt+C toggles completed.
             </p>
             <p v-else-if="format === 'MARKDOWN'" class="muted mt-2 text-xs">
               Saved automatically as you type (Ctrl+S saves immediately). Markdown (GitHub style) plus: <code>```java</code> highlighted code,
@@ -785,6 +826,63 @@ onBeforeUnmount(() => {
           </div>
           </div>
         </div>
+
+        <!-- reading mode: completed + previous / next topic -->
+        <footer
+          v-if="reading && (topicIndex >= 0 || node?.checkable)"
+          class="flex flex-wrap items-center gap-2 border-t border-slate-200 bg-white/95 px-4 py-2 text-sm dark:border-slate-800 dark:bg-slate-950/95"
+        >
+          <button
+            type="button"
+            class="btn-secondary"
+            :disabled="!prevTopic"
+            :title="prevTopic ? `Previous: ${prevTopic.name} (Alt+←)` : 'This is the first topic'"
+            @click="goTo(prevTopic)"
+          >
+            <ChevronLeft class="size-4" /> <span class="hidden @md:inline">Previous</span>
+          </button>
+
+          <div class="flex min-w-0 flex-1 items-center justify-center gap-3">
+            <label
+              v-if="node?.checkable"
+              class="flex cursor-pointer items-center gap-2 font-medium select-none"
+              :class="node?.completed ? 'text-emerald-700 dark:text-emerald-300' : ''"
+              title="Mark this topic completed (Alt+C)"
+            >
+              <input
+                type="checkbox"
+                class="size-4 accent-emerald-600"
+                :checked="node?.completed"
+                :disabled="completing"
+                @change="toggleDone"
+              />
+              Completed
+              <LoaderCircle v-if="completing" class="size-3.5 animate-spin" />
+            </label>
+            <span v-if="topicIndex >= 0" class="muted text-xs tabular-nums">{{ topicIndex + 1 }} / {{ topicOrder.length }}</span>
+          </div>
+
+          <button
+            v-if="node?.checkable && !node?.completed && nextPendingTopic"
+            type="button"
+            class="btn-primary"
+            :disabled="completing"
+            :title="`Mark completed and open “${nextPendingTopic.name}”`"
+            @click="completeAndNext"
+          >
+            <Check class="size-4" /> <span class="hidden @md:inline">Complete &amp; next</span>
+            <ChevronsRight class="size-4 @md:hidden" />
+          </button>
+          <button
+            type="button"
+            class="btn-secondary"
+            :disabled="!nextTopic"
+            :title="nextTopic ? `Next: ${nextTopic.name} (Alt+→)` : 'This is the last topic'"
+            @click="goTo(nextTopic)"
+          >
+            <span class="hidden @md:inline">Next</span> <ChevronRight class="size-4" />
+          </button>
+        </footer>
       </aside>
     </Transition>
   </Teleport>

@@ -3,12 +3,14 @@ package com.mylearn.tracker.dashboard;
 import com.mylearn.tracker.common.exception.BusinessRuleException;
 import com.mylearn.tracker.dashboard.ActivityCalculator.Activity;
 import com.mylearn.tracker.dashboard.DashboardService.DashboardSummary;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.DateTimeException;
+import java.time.LocalDate;
 import java.time.ZoneId;
 
 @RestController
@@ -17,10 +19,29 @@ public class DashboardController {
 
     private final DashboardService dashboard;
     private final TodayService today;
+    private final CompletedHistoryService completed;
 
-    public DashboardController(DashboardService dashboard, TodayService today) {
+    public DashboardController(DashboardService dashboard, TodayService today, CompletedHistoryService completed) {
         this.dashboard = dashboard;
         this.today = today;
+        this.completed = completed;
+    }
+
+    /**
+     * Topics you completed between two days (inclusive), grouped by day and plan.
+     *
+     * @param from ISO date; defaults to today in {@code tz}
+     * @param to   ISO date; defaults to {@code from}
+     */
+    @GetMapping("/completed")
+    public CompletedHistoryService.CompletedHistory completed(
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to,
+            @RequestParam(required = false) String tz,
+            @RequestParam(required = false) Long planId) {
+        ZoneId zone = zoneOf(tz);
+        LocalDate start = from != null ? from : LocalDate.now(zone);
+        return completed.completed(start, to != null ? to : start, zone, planId);
     }
 
     /** @param tz IANA time zone of the viewer, for "time spent today" */

@@ -291,6 +291,29 @@ export interface Today {
   minutesLast7Days: number
 }
 
+export interface CompletedItem {
+  itemId: number
+  name: string
+  priority: Priority | null
+  /** ancestor names, root first */
+  path: string[]
+  completedAt: string
+}
+
+export interface CompletedDay {
+  date: string
+  count: number
+  plans: { planId: number; planName: string; topics: CompletedItem[] }[]
+}
+
+export interface CompletedHistory {
+  from: string
+  to: string
+  zone: string
+  total: number
+  days: CompletedDay[]
+}
+
 export interface TimeEntry {
   id: number
   minutes: number

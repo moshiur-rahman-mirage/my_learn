@@ -121,6 +121,50 @@ public class ProgressQueries {
                 limit);
     }
 
+    /**
+     * Leaf topics completed by you in {@code [from, to)} (any plan status), oldest first. Topics
+     * that arrived already ticked (import) are left out, like in the activity history.
+     */
+    public List<CompletedTopic> completedBetween(Instant from, Instant to, Long planId) {
+        em.flush();
+        String sql = "SELECT i.id, i.parent_id, i.name, i.priority, i.completed_at, p.id AS plan_id, p.name AS plan_name "
+                + "FROM learning_item i JOIN learning_plan p ON p.id = i.plan_id "
+                + "WHERE i.is_completed = 1 AND i.completed_at >= ? AND i.completed_at < ? "
+                + "AND abs(julianday(i.completed_at) - julianday(i.created_at)) * 86400 > 5 AND " + IS_LEAF_TOPIC
+                + (planId == null ? "" : " AND i.plan_id = ? ")
+                + "ORDER BY i.completed_at";
+        Object[] args = planId == null
+                ? new Object[]{InstantText.format(from), InstantText.format(to)}
+                : new Object[]{InstantText.format(from), InstantText.format(to), planId};
+        return jdbc.query(sql, (rs, n) -> {
+            long parent = rs.getLong("parent_id");
+            return new CompletedTopic(rs.getLong("id"), rs.wasNull() ? null : parent, rs.getString("name"),
+                    rs.getString("priority"), Instant.parse(rs.getString("completed_at")),
+                    rs.getLong("plan_id"), rs.getString("plan_name"));
+        }, args);
+    }
+
+    /** id → (parent id, name) of every item in the given plans, for building ancestor paths. */
+    public Map<Long, NameAndParent> namesOfPlans(java.util.Collection<Long> planIds) {
+        Map<Long, NameAndParent> result = new HashMap<>();
+        if (planIds.isEmpty()) {
+            return result;
+        }
+        String in = String.join(",", java.util.Collections.nCopies(planIds.size(), "?"));
+        jdbc.query("SELECT id, parent_id, name FROM learning_item WHERE plan_id IN (" + in + ")", rs -> {
+            long parent = rs.getLong("parent_id");
+            result.put(rs.getLong("id"), new NameAndParent(rs.wasNull() ? null : parent, rs.getString("name")));
+        }, planIds.toArray());
+        return result;
+    }
+
+    public record CompletedTopic(Long itemId, Long parentId, String name, String priority, Instant completedAt,
+                                 Long planId, String planName) {
+    }
+
+    public record NameAndParent(Long parentId, String name) {
+    }
+
     public record RecentCompletion(Long itemId, String itemName, Instant completedAt, Long planId, String planName) {
     }
 }

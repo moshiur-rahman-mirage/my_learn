@@ -64,7 +64,25 @@ public class ExportService {
      * Columns of the import templates: the export format without {@code id}. Ids only matter
      * in exports of existing items; a hand-written file describes new content.
      */
-    static final String[] TEMPLATE_HEADER = {"level", "type", "name", "description", "priority", "completed"};
+    static final String[] TEMPLATE_HEADER = {"level", "type", "name", "description", "priority", "completed", "content"};
+
+    /** Multi-line Markdown for the example template; the CSV writer quotes it (and doubles any "). */
+    static final String EXAMPLE_CONTENT = """
+            # First topic
+
+            The **content** column is the topic's study note, written in Markdown.
+            Line breaks, commas and "quotes" are fine inside one quoted CSV cell.
+
+            ## Key points
+            - Point one
+            - Point two
+
+            ```java
+            int answer = 42;
+            ```
+
+            Q: What is the answer?
+            A: 42""";
 
     /**
      * A file to fill in by hand and import.
@@ -75,13 +93,13 @@ public class ExportService {
         StringWriter out = new StringWriter();
         try (CSVPrinter csv = new CSVPrinter(out, CSVFormat.DEFAULT.builder().setHeader(TEMPLATE_HEADER).get())) {
             if (withExamples) {
-                csv.printRecord(1, "MODULE", "Phase 1 — Foundations", "Start here", "", "");
-                csv.printRecord(2, "MODULE", "Core concepts", "", "MUST", "");
-                csv.printRecord(3, "TOPIC", "First topic", "What to learn about it", "MUST", "TRUE");
-                csv.printRecord(3, "TOPIC", "Second topic", "", "SHOULD", "FALSE");
-                csv.printRecord(2, "TOPIC", "A topic directly under the phase", "", "NICE", "FALSE");
-                csv.printRecord(1, "MODULE", "Phase 2 — Practice", "", "", "");
-                csv.printRecord(2, "TOPIC", "Build a small project", "", "MUST", "FALSE");
+                csv.printRecord(1, "MODULE", "Phase 1 — Foundations", "Start here", "", "", "");
+                csv.printRecord(2, "MODULE", "Core concepts", "", "MUST", "", "");
+                csv.printRecord(3, "TOPIC", "First topic", "What to learn about it", "MUST", "TRUE", EXAMPLE_CONTENT);
+                csv.printRecord(3, "TOPIC", "Second topic", "", "SHOULD", "FALSE", "Short content works too: **bold**, `code`, [a link](https://example.com).");
+                csv.printRecord(2, "TOPIC", "A topic directly under the phase", "", "NICE", "FALSE", "");
+                csv.printRecord(1, "MODULE", "Phase 2 — Practice", "", "", "", "");
+                csv.printRecord(2, "TOPIC", "Build a small project", "", "MUST", "FALSE", "");
             }
         } catch (IOException e) {
             throw new UncheckedIOException(e);

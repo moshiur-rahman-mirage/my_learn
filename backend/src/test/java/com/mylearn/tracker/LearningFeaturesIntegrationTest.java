@@ -1,6 +1,8 @@
 package com.mylearn.tracker;
 
 import com.mylearn.tracker.common.exception.BusinessRuleException;
+import com.mylearn.tracker.dashboard.CompletedHistoryService;
+import com.mylearn.tracker.dashboard.CompletedHistoryService.CompletedItem;
 import com.mylearn.tracker.dashboard.TodayService;
 import com.mylearn.tracker.dashboard.TodayService.NextTopic;
 import com.mylearn.tracker.item.ItemService;
@@ -48,6 +50,7 @@ class LearningFeaturesIntegrationTest extends IntegrationTest {
     @Autowired TimeLogService time;
     @Autowired ReviewService reviews;
     @Autowired TodayService today;
+    @Autowired CompletedHistoryService completedHistory;
     @Autowired JdbcTemplate jdbc;
 
     Long planId;
@@ -277,5 +280,35 @@ class LearningFeaturesIntegrationTest extends IntegrationTest {
                 .filter(p -> p.planId().equals(planId)).findFirst().orElseThrow();
         assertThat(next.topics()).extracting(NextTopic::name).containsExactly("Core idea", "Tooling", "Intro");
         assertThat(next.topics().getFirst().path()).containsExactly("Basics");
+    }
+
+    @Test
+    void completedHistoryGroupsByDayAndPlan_andSkipsImportedTicks() {
+        ZoneId zone = ZoneId.of("UTC");
+        ItemResponse module = create("Basics", MODULE, null, null);
+        ItemResponse a = create("Intro", TOPIC, module.id(), null);
+        ItemResponse b = create("Setup", TOPIC, module.id(), Priority.MUST);
+        ItemResponse imported = create("Imported", TOPIC, module.id(), null);
+        jdbc.update("UPDATE learning_item SET created_at = '2026-01-01T00:00:00.000Z' WHERE id IN (?, ?)", a.id(), b.id());
+        items.setCompletion(a.id(), true);
+        items.setCompletion(b.id(), true);
+        items.setCompletion(imported.id(), true);
+        jdbc.update("UPDATE learning_item SET completed_at = '2026-03-02T10:00:00.000Z' WHERE id = ?", a.id());
+        jdbc.update("UPDATE learning_item SET completed_at = '2026-03-04T10:00:00.000Z' WHERE id = ?", b.id());
+        jdbc.update("UPDATE learning_item SET created_at = '2026-03-03T10:00:00.000Z', "
+                + "completed_at = '2026-03-03T10:00:01.000Z' WHERE id = ?", imported.id());
+
+        var h = completedHistory.completed(LocalDate.of(2026, 3, 1), LocalDate.of(2026, 3, 5), zone, planId);
+        assertThat(h.total()).isEqualTo(2);
+        assertThat(h.days()).extracting(d -> d.date().toString()).containsExactly("2026-03-04", "2026-03-02");
+        CompletedItem first = h.days().getFirst().plans().getFirst().topics().getFirst();
+        assertThat(first.name()).isEqualTo("Setup");
+        assertThat(first.path()).containsExactly("Basics");
+        assertThat(h.days().getFirst().plans().getFirst().planName()).isEqualTo("Spring Roadmap");
+
+        assertThat(completedHistory.completed(LocalDate.of(2026, 3, 3), LocalDate.of(2026, 3, 3), zone, planId).total())
+                .isZero();
+        assertThatThrownBy(() -> completedHistory.completed(LocalDate.of(2026, 3, 5), LocalDate.of(2026, 3, 1), zone, null))
+                .isInstanceOf(BusinessRuleException.class);
     }
 }

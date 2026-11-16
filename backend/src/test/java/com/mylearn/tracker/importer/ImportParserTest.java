@@ -164,6 +164,25 @@ class ImportParserTest {
         assertThat(ImportParser.parseType("Phase")).isEqualTo(ItemType.MODULE);
     }
 
+    @Test
+    void contentColumnBecomesTheMarkdownNote() {
+        String md = "# Heading\n\nSome **bold**, a list:\n\n- one, two\n- three\n\n```java\nint x = 1;\n```";
+        SheetData csv = sheet("plan",
+                row("level", "type", "name", "description", "priority", "completed", "content"),
+                row("1", "MODULE", "Phase 1", "Start here", "", "", ""),
+                row("2", "TOPIC", "First topic", "Basics of it", "MUST", "TRUE", md));
+
+        ParsedSheet parsed = ImportParser.parse(csv, ImportOptions.AUTO);
+
+        assertThat(parsed.errors()).isEmpty();
+        assertThat(parsed.columns().get(6).role()).isEqualTo(ColumnRole.NOTE);
+        Node topic = parsed.roots().get(0).children.get(0);
+        assertThat(topic.description).isEqualTo("Basics of it");
+        assertThat(topic.note).isEqualTo(md);
+        assertThat(topic.noteFormat).isEqualTo(com.mylearn.tracker.note.NoteFormat.MARKDOWN);
+        assertThat(parsed.roots().get(0).note).isNull();
+    }
+
     private static SheetData sheet(String name, List<String>... rows) {
         return new SheetData(name, Arrays.asList(rows));
     }
