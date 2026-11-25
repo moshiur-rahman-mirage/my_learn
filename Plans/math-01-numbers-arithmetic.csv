@@ -1,0 +1,2818 @@
+﻿level,type,name,description,priority,completed,content
+1,MODULE,Phase 1 — Number Foundations and Fractions (Foundation),"Number sets, properties, factors, GCF/LCM, exponents, order of operations, fractions and decimals",MUST,,"# Phase 1: Number foundations and fractions
+
+This roadmap is the base of all the other math roadmaps. Algebra is arithmetic with letters, so any weakness here (fractions, negatives, percentages) shows up later as ""I don't get algebra"".
+
+Every topic has six parts: **1. What it covers**, **2. Where it is used**, **3. What it means**, **4. Formula & worked example**, **5. Common mistakes**, **6. Practice** (`Q:`/`A:` lines become flashcards in the app).
+
+## Set up your study system first (one evening)
+- **Fixed time:** choose a daily slot (for example 1 hour after dinner). Consistency beats long weekend sessions.
+- **Tools:** a notebook and a pencil. For Phases 1–2, **no calculator**: mental arithmetic is the skill being trained.
+- **Error log:** a page (or spreadsheet) with columns *problem → my mistake → correct method → date to redo*. Redo each entry after 1, 7 and 30 days. The app's review feature does this for topics.
+- **Diagnostic:** before starting, try the Practice section of a few topics cold. Skim the topics you ace and slow down on the ones you miss.
+
+**How to study each topic (about 1 hour):** read sections 1–3, work through every example in section 4 on paper, read section 5, then answer section 6 without looking."
+2,MODULE,Number foundations,"Number sets, properties of operations, factors and primes, GCF/LCM, exponents, order of operations",MUST,,"The building blocks: what kinds of numbers exist, the rules they follow, and how they break into factors."
+3,TOPIC,Number sets and the real number system,"Natural numbers, whole numbers, integers, rationals, irrationals and reals",MUST,FALSE,"# Number sets and the real number system
+
+## 1. What it covers
+- The families of numbers: **natural** ($\mathbb{N}$), **whole**, **integers** ($\mathbb{Z}$), **rational** ($\mathbb{Q}$), **irrational** and **real** ($\mathbb{R}$).
+- How the sets fit inside each other.
+- Classifying any number.
+
+## 2. Where it is used
+- **Programming data types:** `int` stores integers, `float`/`double` approximates real numbers, and some languages have exact fractions (Python's `fractions.Fraction`). Choosing the wrong type causes bugs, e.g. money stored as a float drifts by tiny amounts ($0.1 + 0.2 = 0.30000000000000004$).
+- **Databases:** `INTEGER` vs `DECIMAL(10,2)` columns.
+- **Every later topic:** solving an equation ""over the integers"" or ""over the reals"" changes the answer.
+
+## 3. What it means
+Number sets grew as people needed them:
+- **Natural numbers** $1, 2, 3, \ldots$: for counting things.
+- **Whole numbers** $0, 1, 2, 3, \ldots$: add zero for ""none"".
+- **Integers** $\ldots, -2, -1, 0, 1, 2, \ldots$: add negatives for debt, temperatures below zero, floors below ground.
+- **Rational numbers**: anything that can be written as a fraction $\frac{p}{q}$ of integers ($q \ne 0$): $\frac{3}{4}$, $-2$, $0.5$, $0.333\ldots$. Their decimals either **stop** or **repeat**.
+- **Irrational numbers**: real numbers that can't be written as a fraction, so their decimals go on forever **without repeating**: $\sqrt{2} = 1.41421356\ldots$, $\pi = 3.14159265\ldots$.
+- **Real numbers**: all rationals and irrationals together, i.e. every point on the number line.
+
+Each set sits inside the next, like Russian nesting dolls: natural ⊂ whole ⊂ integer ⊂ rational ⊂ real. Irrationals are the part of the reals outside the rationals.
+
+## 4. Formula & worked example
+$$
+\mathbb{N} \subset \mathbb{W} \subset \mathbb{Z} \subset \mathbb{Q} \subset \mathbb{R} \qquad \mathbb{Q} = \left\{ \tfrac{p}{q} : p, q \in \mathbb{Z},\ q \ne 0 \right\}
+$$
+
+**Example 1.** Classify $-7$.
+- It is an integer, so also rational ($-\frac{7}{1}$) and real. Not natural or whole.
+
+**Example 2.** Classify $0.\overline{36}$ ($0.363636\ldots$).
+- The decimal repeats, so it's rational. (It equals $\frac{36}{99} = \frac{4}{11}$.)
+
+**Example 3.** Classify $\sqrt{16}$ and $\sqrt{17}$.
+- $\sqrt{16} = 4$: natural, whole, integer, rational, real.
+- $\sqrt{17}$: 17 isn't a perfect square, so it is irrational (and real).
+
+**Example 4.** Classify $\frac{22}{7}$.
+- Rational. It is close to $\pi$ but **not equal** to it; $\pi$ is irrational.
+
+## 5. Common mistakes
+- Thinking every square root is irrational. $\sqrt{25} = 5$ is rational.
+- Thinking $\pi = \frac{22}{7}$ or $3.14$. Those are approximations.
+- Forgetting that integers are also rational ($5 = \frac{5}{1}$).
+
+## 6. Practice
+Q: Is $0$ a natural number in this course's convention?
+A: No. $0$ is a whole number (and integer, rational, real).
+
+Q: Classify $-\frac{3}{8}$.
+A: Rational and real.
+
+Q: Classify $\sqrt{50}$.
+A: Irrational (and real), because 50 is not a perfect square.
+
+Q: How can you tell from its decimal that a number is rational?
+A: The decimal either terminates or repeats.
+
+Q: Why is $0.1 + 0.2$ not exactly $0.3$ in most programming languages?
+A: Floats store binary approximations of real numbers; $0.1$ has no exact binary form."
+3,TOPIC,Properties of operations,"Commutative, associative, distributive, identity and inverse properties",MUST,FALSE,"# Properties of operations
+
+## 1. What it covers
+- **Commutative:** order doesn't matter ($a + b = b + a$, $ab = ba$).
+- **Associative:** grouping doesn't matter ($(a + b) + c = a + (b + c)$).
+- **Distributive:** $a(b + c) = ab + ac$.
+- **Identity** ($0$ for adding, $1$ for multiplying) and **inverse** (opposite and reciprocal).
+
+## 2. Where it is used
+- **Mental arithmetic:** $25 \times 37 \times 4 = (25 \times 4) \times 37 = 3700$.
+- **Algebra:** every simplification step (expanding brackets, collecting terms) is one of these properties.
+- **Programming:** parallel computing (MapReduce, GPU sums) relies on addition being associative and commutative, so a sum can be split across many machines. Floating-point addition is only *approximately* associative, which is why parallel sums can differ in the last digits.
+- **Databases:** SQL's `SUM` can add rows in any order because of these properties.
+
+## 3. What it means
+These are the ""rules of the game"" that let you rearrange calculations without changing the answer.
+- **Commutative**: swap the order. True for $+$ and $\times$, **false** for $-$ and $\div$ ($5 - 2 \ne 2 - 5$).
+- **Associative**: regroup. True for $+$ and $\times$, false for $-$ and $\div$.
+- **Distributive**: multiplication ""spreads over"" addition. Buying 3 bags each containing 4 apples and 2 oranges = 12 apples + 6 oranges.
+- **Identity**: the number that changes nothing: $a + 0 = a$, $a \times 1 = a$.
+- **Inverse**: the number that brings you back to the identity: $a + (-a) = 0$, $a \times \frac{1}{a} = 1$.
+
+## 4. Formula & worked example
+$$
+a + b = b + a \qquad (ab)c = a(bc) \qquad a(b + c) = ab + ac \qquad a + (-a) = 0 \qquad a \cdot \tfrac{1}{a} = 1
+$$
+
+**Example 1 (mental math).** $17 + 46 + 3 + 4$
+- Rearrange: $(17 + 3) + (46 + 4) = 20 + 50 = 70$
+
+**Example 2 (distributive).** $8 \times 103$
+- $8(100 + 3) = 800 + 24 = 824$
+
+**Example 3 (distributive backwards, i.e. factoring).** $7 \times 46 + 7 \times 54$
+- $7(46 + 54) = 7 \times 100 = 700$
+
+**Example 4.** Name the property: $4(x + 5) = 4x + 20$.
+- Distributive.
+
+**Example 5.** Show subtraction is not associative.
+- $(10 - 4) - 3 = 3$ but $10 - (4 - 3) = 9$.
+
+## 5. Common mistakes
+- Using commutative or associative rules with subtraction or division.
+- Distributing to only the first term: $3(x + 4) \ne 3x + 4$.
+- Mixing up identity and inverse. The identity for multiplication is $1$; the inverse of $5$ is $\frac{1}{5}$.
+
+## 6. Practice
+Q: Compute $4 \times 19 \times 25$ mentally.
+A: $(4 \times 25) \times 19 = 1900$.
+
+Q: Compute $6 \times 98$ using the distributive property.
+A: $6(100 - 2) = 600 - 12 = 588$.
+
+Q: What is the multiplicative inverse of $\frac{2}{3}$?
+A: $\frac{3}{2}$.
+
+Q: Which property is $(2 + 3) + 4 = 2 + (3 + 4)$?
+A: Associative property of addition.
+
+Q: Is division commutative?
+A: No: $8 \div 2 = 4$ but $2 \div 8 = 0.25$."
+3,TOPIC,"Factors, multiples and prime factorization","Divisibility rules, primes and composites, factor trees",MUST,FALSE,"# Factors, multiples and prime factorization
+
+## 1. What it covers
+- **Factors** (numbers that divide exactly) and **multiples** (results of multiplying).
+- **Prime** and **composite** numbers.
+- **Divisibility rules** for 2, 3, 4, 5, 6, 9, 10.
+- **Prime factorization** with a factor tree.
+
+## 2. Where it is used
+- **Cryptography:** RSA encryption (used in HTTPS) is secure because multiplying two huge primes is easy, but factoring the product back is practically impossible.
+- **Hashing:** hash tables often use a prime number of buckets to spread keys evenly.
+- **Fractions:** simplifying, GCF and LCM all use factorization.
+- **Scheduling:** ""every 4 days"" and ""every 6 days"" line up on common multiples.
+
+## 3. What it means
+A **factor** of $n$ divides $n$ with no remainder: the factors of 12 are $1, 2, 3, 4, 6, 12$. A **multiple** of $n$ is $n \times$ something: the multiples of 12 are $12, 24, 36, \ldots$
+
+A **prime** has exactly two factors, 1 and itself: $2, 3, 5, 7, 11, 13, \ldots$ ($1$ is **not** prime). A **composite** has more than two factors.
+
+**Fundamental theorem of arithmetic:** every whole number above 1 is a product of primes in exactly one way. Primes are the ""atoms"" and every number is a ""molecule"" built from them.
+
+**Divisibility rules** (quick tests):
+- 2: last digit even. 5: last digit 0 or 5. 10: last digit 0.
+- 3: digit sum divisible by 3. 9: digit sum divisible by 9.
+- 4: last two digits divisible by 4. 6: divisible by both 2 and 3.
+
+## 4. Formula & worked example
+**Example 1: factor tree for 360.**
+- $360 = 36 \times 10 = (6 \times 6)(2 \times 5) = (2 \cdot 3)(2 \cdot 3)(2 \cdot 5)$
+- $360 = 2^3 \times 3^2 \times 5$
+
+**Example 2.** Is 2 718 divisible by 3? By 9?
+- Digit sum $2 + 7 + 1 + 8 = 18$: divisible by 3 **and** 9.
+
+**Example 3.** Is 91 prime?
+- Test primes up to $\sqrt{91} \approx 9.5$: 2 no, 3 no ($9 + 1 = 10$), 5 no, 7: $91 = 7 \times 13$. **Composite.**
+- You only need to test primes up to the square root, because factors come in pairs and one of each pair is at most $\sqrt{n}$.
+
+**Example 4: in code.**
+```python
+def is_prime(n):
+    if n < 2:
+        return False
+    i = 2
+    while i * i <= n:          # only test up to the square root
+        if n % i == 0:
+            return False
+        i += 1
+    return True
+print([p for p in range(2, 30) if is_prime(p)])   # [2, 3, 5, 7, 11, 13, 17, 19, 23, 29]
+```
+`n % i == 0` means ""$i$ divides $n$ exactly"". The loop stops at $\sqrt{n}$, which is the same shortcut as Example 3.
+
+## 5. Common mistakes
+- Calling 1 a prime. It has only one factor.
+- Calling 2 composite because it's even. 2 is the only even prime.
+- Stopping a factor tree early with a composite leaf (e.g. leaving a 9 instead of $3 \times 3$).
+
+## 6. Practice
+Q: Prime factorization of 84?
+A: $2^2 \times 3 \times 7$.
+
+Q: List all factors of 36.
+A: $1, 2, 3, 4, 6, 9, 12, 18, 36$.
+
+Q: Is 4 536 divisible by 4?
+A: Yes, the last two digits 36 are divisible by 4.
+
+Q: Is 97 prime?
+A: Yes. No prime up to $\sqrt{97} \approx 9.8$ (2, 3, 5, 7) divides it.
+
+Q: Why does RSA encryption rely on primes?
+A: Multiplying two large primes is easy, but factoring their product is infeasible."
+3,TOPIC,GCF and LCM,Greatest common factor and least common multiple by listing and by prime factors,MUST,FALSE,"# GCF and LCM
+
+## 1. What it covers
+- The **greatest common factor** (GCF, also HCF or GCD): the biggest number that divides two numbers.
+- The **least common multiple** (LCM): the smallest number both divide into.
+- Methods: listing, prime factorization, and Euclid's algorithm.
+
+## 2. Where it is used
+- **Fractions:** simplify with the GCF, and add with the LCM (common denominator).
+- **Scheduling:** two buses every 12 and 18 minutes leave together again after LCM $= 36$ minutes. The same idea applies to cron jobs and repeating events.
+- **Tiling and packing:** the largest square tile that fits a 48 × 60 floor exactly is GCF $= 12$.
+- **Programming:** `math.gcd`, and Euclid's algorithm, one of the oldest algorithms still in use.
+
+## 3. What it means
+- **GCF** = what both numbers **share**. Using prime factors, take the common primes with the **lowest** powers.
+- **LCM** = the smallest number **containing** both. Take **every** prime that appears, with the **highest** power.
+
+**Euclid's algorithm:** the GCF of $a$ and $b$ equals the GCF of $b$ and the remainder of $a \div b$. Repeat until the remainder is 0.
+
+**Shortcut:** $\text{GCF}(a, b) \times \text{LCM}(a, b) = a \times b$.
+
+## 4. Formula & worked example
+**Example 1.** GCF and LCM of 24 and 36 by primes.
+- $24 = 2^3 \times 3$, $36 = 2^2 \times 3^2$
+- GCF $= 2^2 \times 3 = 12$ (lowest powers of the shared primes)
+- LCM $= 2^3 \times 3^2 = 72$ (highest powers of all primes)
+- Check: $12 \times 72 = 864 = 24 \times 36$ ✓
+
+**Example 2: Euclid.** GCF of 252 and 105.
+- $252 = 2 \times 105 + 42$
+- $105 = 2 \times 42 + 21$
+- $42 = 2 \times 21 + 0$ → GCF $= 21$
+
+**Example 3: buses.** Bus A every 12 min, bus B every 18 min, both leave at 8:00. When next together?
+- LCM$(12, 18)$: $12 = 2^2 \cdot 3$, $18 = 2 \cdot 3^2$ → $2^2 \cdot 3^2 = 36$ → at 8:36.
+
+**Example 4: code.**
+```python
+def gcd(a, b):
+    while b:
+        a, b = b, a % b       # Euclid: replace (a, b) with (b, remainder)
+    return a
+def lcm(a, b):
+    return a * b // gcd(a, b)
+print(gcd(252, 105), lcm(12, 18))   # 21 36
+```
+The `while` loop is Euclid's algorithm from Example 2. `lcm` uses the shortcut $\text{LCM} = \frac{ab}{\text{GCF}}$.
+
+## 5. Common mistakes
+- Swapping the rules: GCF takes the **lowest** powers of **shared** primes; LCM takes the **highest** powers of **all** primes.
+- Thinking the LCM is always $a \times b$. That is only true when the GCF is 1.
+- Answering a ""largest"" question with the LCM, or a ""next time together"" question with the GCF.
+
+## 6. Practice
+Q: GCF of 18 and 30?
+A: 6.
+
+Q: LCM of 8 and 12?
+A: 24.
+
+Q: GCF of 7 and 20?
+A: 1 (they are coprime).
+
+Q: Two lights flash every 15 s and 25 s. After how long do they flash together?
+A: LCM $= 75$ s.
+
+Q: GCF$(a, b) = 4$ and $ab = 240$. What is the LCM?
+A: $\frac{240}{4} = 60$."
+3,TOPIC,"Exponents: squares, cubes and powers of ten","Meaning of powers, perfect squares and cubes, powers of ten and place value",MUST,FALSE,"# Exponents: squares, cubes and powers of ten
+
+## 1. What it covers
+- What $a^n$ means: repeated multiplication.
+- Perfect squares up to $15^2$ and cubes up to $10^3$.
+- Powers of ten and their link to place value.
+- Evaluating expressions with exponents.
+
+## 2. Where it is used
+- **Computing:** memory sizes are powers of 2: $2^{10} = 1024$ bytes (1 KiB), $2^{30}$ ≈ 1 GB. A 32-bit integer can hold $2^{32}$ values.
+- **Science:** very large and small quantities (scientific notation, Phase 5).
+- **Area and volume:** $\text{m}^2$ and $\text{m}^3$ are literally squares and cubes.
+- **Growth:** interest, population and viral spread grow by repeated multiplication.
+
+## 3. What it means
+$a^n$ means ""multiply $a$ by itself $n$ times"". $a$ is the **base**, $n$ the **exponent** (or power).
+- $5^3 = 5 \times 5 \times 5 = 125$. **Not** $5 \times 3$.
+- $a^2$ is ""a squared"" because it's the area of a square with side $a$; $a^3$ is ""a cubed"", the volume of a cube.
+
+**Powers of ten** just move the decimal point: $10^3 = 1000$ (three zeros), and multiplying by $10^3$ shifts digits three places left.
+
+Exponents grow **very** fast. A legend says a king agreed to pay rice doubling on each chessboard square: 1, 2, 4, 8, ... The last square alone needs $2^{63} \approx 9.2 \times 10^{18}$ grains, more than all the rice on Earth.
+
+## 4. Formula & worked example
+$$
+a^n = \underbrace{a \times a \times \cdots \times a}_{n \text{ times}} \qquad a^1 = a
+$$
+Squares to memorise: $1, 4, 9, 16, 25, 36, 49, 64, 81, 100, 121, 144, 169, 196, 225$.
+Cubes: $1, 8, 27, 64, 125, 216, 343, 512, 729, 1000$.
+Powers of 2: $2, 4, 8, 16, 32, 64, 128, 256, 512, 1024$.
+
+**Example 1.** $2^5 = 2 \cdot 2 \cdot 2 \cdot 2 \cdot 2 = 32$
+
+**Example 2.** $(-3)^2$ vs $-3^2$
+- $(-3)^2 = (-3)(-3) = 9$
+- $-3^2 = -(3 \cdot 3) = -9$: the exponent applies only to the 3.
+
+**Example 3.** $\left(\frac{2}{3}\right)^3 = \frac{2^3}{3^3} = \frac{8}{27}$
+
+**Example 4.** Evaluate $2x^2 + 3$ for $x = 4$.
+- $2(16) + 3 = 35$. (Square first, then multiply by 2.)
+
+**Example 5.** $4.7 \times 10^3 = 4700$
+
+## 5. Common mistakes
+- $3^4 = 12$. Wrong: it's $81$; exponents mean repeated multiplication, not multiplication by the exponent.
+- $-5^2 = 25$. Wrong: without brackets it's $-25$.
+- $2x^2$ read as $(2x)^2$. The exponent applies only to $x$.
+
+## 6. Practice
+Q: $3^4$?
+A: $81$.
+
+Q: $(-2)^5$?
+A: $-32$.
+
+Q: $13^2$?
+A: $169$.
+
+Q: $\left(\frac{1}{2}\right)^4$?
+A: $\frac{1}{16}$.
+
+Q: How many values can an 8-bit number hold?
+A: $2^8 = 256$."
+3,TOPIC,Order of operations,"BODMAS/PEMDAS with whole numbers, fractions and decimals",MUST,FALSE,"# Order of operations
+
+## 1. What it covers
+- The agreed order: **B**rackets, **O**rders (powers and roots), **D**ivision/**M**ultiplication, **A**ddition/**S**ubtraction (BODMAS = PEMDAS).
+- Left-to-right for operations of equal rank.
+- Fraction bars and nested brackets.
+
+## 2. Where it is used
+- **Programming:** every language has operator precedence. `2 + 3 * 4` is `14`, not `20`. In Python, `-2 ** 2` is `-4`.
+- **Spreadsheets:** `=A1+B1/2` divides only B1. Many formula bugs are missing brackets.
+- **Calculators:** scientific calculators follow these rules; simple ones may not.
+- **All algebra:** evaluating any formula.
+
+## 3. What it means
+Without a shared rule, $2 + 3 \times 4$ could be $20$ or $14$. Mathematicians agreed on an order so everyone gets the same answer:
+1. **Brackets** first (innermost first).
+2. **Orders**: exponents and roots.
+3. **Multiplication and division**, from **left to right**. They have the same rank: neither goes first by default.
+4. **Addition and subtraction**, from **left to right**.
+
+A **fraction bar** acts like brackets around the top and the bottom.
+
+## 4. Formula & worked example
+**Example 1.** $8 + 2 \times 5^2$
+- Power: $5^2 = 25$ → $8 + 2 \times 25$ → multiply: $8 + 50 = 58$
+
+**Example 2.** $24 \div 4 \times 3$
+- Left to right: $6 \times 3 = 18$ (not $24 \div 12 = 2$)
+
+**Example 3.** $10 - 4 + 3$
+- Left to right: $6 + 3 = 9$ (not $10 - 7 = 3$)
+
+**Example 4.** $\dfrac{3 + 9}{2 \times 3} + 1$
+- Top $= 12$, bottom $= 6$ → $2 + 1 = 3$
+
+**Example 5.** $2[5 + (6 - 2)^2] \div 7$
+- Inner: $6 - 2 = 4$ → $4^2 = 16$ → $5 + 16 = 21$ → $2 \times 21 = 42$ → $42 \div 7 = 6$
+
+**Example 6 (fractions).** $\frac{1}{2} + \frac{3}{4} \times \frac{2}{3}$
+- Multiply first: $\frac{3}{4} \cdot \frac{2}{3} = \frac{1}{2}$ → $\frac{1}{2} + \frac{1}{2} = 1$
+
+## 5. Common mistakes
+- Always doing multiplication before division (or addition before subtraction). They are equal rank: go **left to right**.
+- Ignoring the hidden brackets of a fraction bar.
+- Typing $\frac{3 + 9}{6}$ into code as `3 + 9 / 6` instead of `(3 + 9) / 6`.
+
+## 6. Practice
+Q: $6 + 18 \div 3 \times 2$?
+A: $6 + 6 \times 2 = 6 + 12 = 18$.
+
+Q: $(4 + 2)^2 \div 9$?
+A: $36 \div 9 = 4$.
+
+Q: $20 - 2 \times 3^2$?
+A: $20 - 18 = 2$.
+
+Q: $\frac{15 - 3}{2^2} - 1$?
+A: $3 - 1 = 2$.
+
+Q: What does Python print for `10 - 4 - 3`?
+A: $3$ (left to right: $6 - 3$)."
+2,MODULE,Fractions and decimals,"Equivalent fractions, the four operations with fractions and decimals, long division, repeating decimals",MUST,,"Fractions are the topic most adults are shaky on, and the one algebra depends on most. Take your time here."
+3,TOPIC,"Fraction basics: equivalent, simplifying, comparing","What a fraction means, equivalent fractions, lowest terms, mixed numbers, comparing",MUST,FALSE,"# Fraction basics: equivalent, simplifying, comparing
+
+## 1. What it covers
+- What $\frac{a}{b}$ means (part of a whole, and division $a \div b$).
+- **Equivalent fractions** and **simplifying** to lowest terms.
+- **Mixed numbers** and **improper fractions**.
+- **Comparing** fractions.
+
+## 2. Where it is used
+- **Recipes and measurement:** $\frac{3}{4}$ cup, $\frac{1}{2}$ inch.
+- **Probability:** chances are fractions ($\frac{1}{6}$ for a die).
+- **Screen design:** aspect ratios ($\frac{16}{9}$), CSS grid `fr` units, ""two-thirds width"" layouts.
+- **Music:** note lengths are fractions (half note, quarter note).
+- **Algebra:** rational expressions are fractions with letters.
+
+## 3. What it means
+$\frac{3}{4}$: cut a whole into **4** equal parts (the **denominator**) and take **3** of them (the **numerator**). It also means $3 \div 4 = 0.75$.
+
+**Equivalent fractions** describe the same amount: $\frac{1}{2} = \frac{2}{4} = \frac{4}{8}$. Cutting a pizza into more slices doesn't change how much you eat if you take proportionally more slices. You get them by multiplying (or dividing) top and bottom by the same number.
+
+**Simplest form:** divide top and bottom by their GCF.
+
+**Comparing:** give both the same denominator, or cross-multiply.
+
+## 4. Formula & worked example
+$$
+\frac{a}{b} = \frac{a \times k}{b \times k} \qquad \frac{a}{b} < \frac{c}{d} \iff ad < bc \ \ (b, d > 0)
+$$
+
+**Example 1.** Simplify $\frac{36}{48}$.
+- GCF $= 12$ → $\frac{3}{4}$
+
+**Example 2.** Mixed ↔ improper.
+- $3\frac{2}{5} = \frac{3 \times 5 + 2}{5} = \frac{17}{5}$
+- $\frac{23}{4} = 5$ remainder $3$ → $5\frac{3}{4}$
+
+**Example 3.** Compare $\frac{5}{8}$ and $\frac{7}{12}$.
+- Common denominator 24: $\frac{15}{24}$ vs $\frac{14}{24}$ → $\frac{5}{8}$ is bigger.
+- Or cross-multiply: $5 \times 12 = 60$ vs $8 \times 7 = 56$ → $\frac{5}{8} > \frac{7}{12}$.
+
+**Example 4.** Find the missing number: $\frac{3}{7} = \frac{?}{42}$.
+- $7 \times 6 = 42$, so $3 \times 6 = 18$.
+
+## 5. Common mistakes
+- Adding to top and bottom: $\frac{1}{2} \ne \frac{1 + 1}{2 + 1}$. Only **multiply or divide** both.
+- Thinking a bigger denominator means a bigger fraction: $\frac{1}{8} < \frac{1}{4}$.
+- Not fully simplifying: $\frac{12}{18} \to \frac{6}{9}$ still simplifies to $\frac{2}{3}$.
+
+## 6. Practice
+Q: Simplify $\frac{45}{60}$.
+A: $\frac{3}{4}$.
+
+Q: Write $4\frac{1}{3}$ as an improper fraction.
+A: $\frac{13}{3}$.
+
+Q: Which is bigger: $\frac{4}{9}$ or $\frac{5}{11}$?
+A: $\frac{5}{11}$ ($4 \times 11 = 44 < 9 \times 5 = 45$).
+
+Q: $\frac{5}{6} = \frac{?}{48}$
+A: $40$.
+
+Q: Write $\frac{29}{6}$ as a mixed number.
+A: $4\frac{5}{6}$."
+3,TOPIC,Adding and subtracting fractions and mixed numbers,"Common denominators with the LCM, borrowing with mixed numbers",MUST,FALSE,"# Adding and subtracting fractions and mixed numbers
+
+## 1. What it covers
+- Adding and subtracting fractions with the same and with different denominators.
+- Using the LCM as the common denominator.
+- Mixed numbers, including ""borrowing"".
+
+## 2. Where it is used
+- **Cooking and building:** $\frac{3}{4}$ cup + $\frac{2}{3}$ cup; a $2\frac{1}{2}$ m board minus $\frac{7}{8}$ m.
+- **Time:** $\frac{1}{4}$ hour + $\frac{1}{3}$ hour = 35 minutes.
+- **Algebra:** adding rational expressions like $\frac{1}{x} + \frac{1}{x + 1}$ uses exactly the same method.
+- **Electronics:** parallel resistors: $\frac{1}{R} = \frac{1}{R_1} + \frac{1}{R_2}$.
+
+## 3. What it means
+You can only add things of the **same kind**: 2 apples + 3 apples = 5 apples, but 1 half + 1 third isn't ""2 fifths"". First cut both into the **same size pieces** (a common denominator), then add the pieces.
+
+The best common denominator is the **LCM** of the denominators (smallest numbers to work with).
+
+**Steps:** 1. find the LCM, 2. rewrite each fraction, 3. add or subtract the numerators (denominator stays), 4. simplify.
+
+## 4. Formula & worked example
+$$
+\frac{a}{c} + \frac{b}{c} = \frac{a + b}{c} \qquad \frac{a}{b} + \frac{c}{d} = \frac{ad + bc}{bd}
+$$
+
+**Example 1.** $\frac{2}{9} + \frac{4}{9} = \frac{6}{9} = \frac{2}{3}$
+
+**Example 2.** $\frac{3}{4} + \frac{5}{6}$
+- LCM$(4, 6) = 12$: $\frac{9}{12} + \frac{10}{12} = \frac{19}{12} = 1\frac{7}{12}$
+
+**Example 3.** $\frac{7}{10} - \frac{4}{15}$
+- LCM $= 30$: $\frac{21}{30} - \frac{8}{30} = \frac{13}{30}$
+
+**Example 4 (mixed, borrowing).** $5\frac{1}{4} - 2\frac{2}{3}$
+- Common denominator 12: $5\frac{3}{12} - 2\frac{8}{12}$
+- $\frac{3}{12} < \frac{8}{12}$, so borrow 1 from the 5: $4\frac{15}{12} - 2\frac{8}{12} = 2\frac{7}{12}$
+- (Or convert: $\frac{21}{4} - \frac{8}{3} = \frac{63}{12} - \frac{32}{12} = \frac{31}{12} = 2\frac{7}{12}$ ✓)
+
+**Example 5.** Two resistors of 6 Ω and 3 Ω in parallel.
+- $\frac{1}{R} = \frac{1}{6} + \frac{1}{3} = \frac{1}{6} + \frac{2}{6} = \frac{3}{6} = \frac{1}{2}$ → $R = 2$ Ω
+
+## 5. Common mistakes
+- Adding denominators: $\frac{1}{2} + \frac{1}{3} \ne \frac{2}{5}$.
+- Forgetting to change the numerator when changing the denominator.
+- When borrowing in mixed numbers, adding 10 instead of one whole (e.g. $\frac{12}{12}$).
+
+## 6. Practice
+Q: $\frac{1}{2} + \frac{1}{3}$?
+A: $\frac{5}{6}$.
+
+Q: $\frac{5}{8} - \frac{1}{6}$?
+A: $\frac{15}{24} - \frac{4}{24} = \frac{11}{24}$.
+
+Q: $2\frac{3}{5} + 1\frac{4}{5}$?
+A: $3\frac{7}{5} = 4\frac{2}{5}$.
+
+Q: $6 - 2\frac{3}{8}$?
+A: $3\frac{5}{8}$.
+
+Q: Two 4 Ω resistors in parallel?
+A: $\frac{1}{R} = \frac{1}{4} + \frac{1}{4} = \frac{1}{2}$, so $R = 2$ Ω."
+3,TOPIC,Multiplying fractions and mixed numbers,"Multiply tops and bottoms, cancel first, ""of"" means multiply, area model",MUST,FALSE,"# Multiplying fractions and mixed numbers
+
+## 1. What it covers
+- Multiplying fractions: tops times tops, bottoms times bottoms.
+- **Cancelling** before multiplying.
+- Mixed numbers (convert first) and ""a fraction **of** a quantity"".
+
+## 2. Where it is used
+- **Scaling recipes:** $\frac{2}{3}$ of a recipe that needs $\frac{3}{4}$ kg flour.
+- **Probability:** the chance of two independent events is a product: $\frac{1}{2} \times \frac{1}{6}$.
+- **Discounts:** $\frac{1}{4}$ off means paying $\frac{3}{4}$ of the price.
+- **Area:** a field $\frac{1}{2}$ km by $\frac{3}{5}$ km.
+
+## 3. What it means
+""$\frac{1}{2} \times \frac{1}{3}$"" means ""half **of** a third"". Take a third of a chocolate bar, then half of that piece: you get $\frac{1}{6}$ of the bar. So multiplying by a fraction less than 1 makes things **smaller**.
+
+**Area model:** a $1 \times 1$ square split into 2 columns and 3 rows has 6 cells; shading half the columns and a third of the rows overlaps in 1 cell = $\frac{1}{6}$.
+
+**Cancelling:** any top number and any bottom number can be divided by a common factor before multiplying. This keeps numbers small.
+
+## 4. Formula & worked example
+$$
+\frac{a}{b} \times \frac{c}{d} = \frac{ac}{bd}
+$$
+
+**Example 1.** $\frac{2}{3} \times \frac{4}{5} = \frac{8}{15}$
+
+**Example 2 (cancel first).** $\frac{6}{35} \times \frac{14}{9}$
+- 6 and 9 share 3 → $\frac{2}{35} \times \frac{14}{3}$; 14 and 35 share 7 → $\frac{2}{5} \times \frac{2}{3} = \frac{4}{15}$
+
+**Example 3 (of).** $\frac{3}{8}$ of 640 m
+- $\frac{3}{8} \times 640 = 3 \times 80 = 240$ m
+
+**Example 4 (mixed).** $2\frac{1}{4} \times 1\frac{1}{3}$
+- $\frac{9}{4} \times \frac{4}{3} = \frac{36}{12} = 3$ (cancel the 4s and $9 \div 3$ → $3 \times 1 = 3$)
+
+**Example 5 (probability).** Chance of flipping heads **and** rolling a 6.
+- $\frac{1}{2} \times \frac{1}{6} = \frac{1}{12}$
+
+## 5. Common mistakes
+- Multiplying mixed numbers part by part: $2\frac{1}{2} \times 3\frac{1}{2} \ne 6\frac{1}{4}$. Convert first: $\frac{5}{2} \times \frac{7}{2} = \frac{35}{4} = 8\frac{3}{4}$.
+- Finding a common denominator first. That's only needed for adding and subtracting.
+- Cancelling two numbers that are both on top (or both on the bottom). Cancel **top with bottom**.
+
+## 6. Practice
+Q: $\frac{3}{4} \times \frac{2}{9}$?
+A: $\frac{6}{36} = \frac{1}{6}$.
+
+Q: $\frac{5}{6}$ of 72?
+A: $60$.
+
+Q: $1\frac{1}{2} \times 2\frac{2}{3}$?
+A: $\frac{3}{2} \times \frac{8}{3} = 4$.
+
+Q: $\frac{10}{21} \times \frac{7}{15}$?
+A: $\frac{2}{9}$.
+
+Q: A shirt costs 1200 taka and is $\frac{1}{4}$ off. What do you pay?
+A: $\frac{3}{4} \times 1200 = 900$ taka."
+3,TOPIC,Dividing fractions,"Reciprocals, keep-change-flip, why it works, dividing by whole numbers",MUST,FALSE,"# Dividing fractions
+
+## 1. What it covers
+- The **reciprocal** of a fraction.
+- Dividing by a fraction = multiplying by its reciprocal.
+- Why this works, and dividing mixed numbers and whole numbers.
+
+## 2. Where it is used
+- **""How many fit?"" questions:** how many $\frac{3}{4}$ m pieces can be cut from 6 m of wire?
+- **Rates:** walking $\frac{3}{4}$ km in $\frac{1}{4}$ hour → speed $= \frac{3}{4} \div \frac{1}{4} = 3$ km/h.
+- **Unit conversion and recipes.**
+- **Algebra:** dividing rational expressions (complex fractions).
+
+## 3. What it means
+$6 \div \frac{1}{2}$ asks: **how many halves fit into 6?** Each whole has 2 halves, so 12. Notice $6 \div \frac{1}{2} = 6 \times 2$. Dividing by a fraction is the same as multiplying by its flip.
+
+**Why it works:** division undoes multiplication, and multiplying by $\frac{b}{a}$ undoes multiplying by $\frac{a}{b}$, because $\frac{a}{b} \times \frac{b}{a} = 1$.
+
+Memory aid: **keep** the first fraction, **change** $\div$ to $\times$, **flip** the second (keep–change–flip).
+
+## 4. Formula & worked example
+$$
+\frac{a}{b} \div \frac{c}{d} = \frac{a}{b} \times \frac{d}{c} = \frac{ad}{bc}
+$$
+
+**Example 1.** $\frac{2}{3} \div \frac{4}{5} = \frac{2}{3} \times \frac{5}{4} = \frac{10}{12} = \frac{5}{6}$
+
+**Example 2.** $6 \div \frac{3}{4}$
+- $6 \times \frac{4}{3} = 8$: eight $\frac{3}{4}$ m pieces fit in 6 m.
+
+**Example 3.** $\frac{5}{8} \div 10$
+- $\frac{5}{8} \times \frac{1}{10} = \frac{5}{80} = \frac{1}{16}$
+
+**Example 4 (mixed).** $3\frac{1}{3} \div 1\frac{1}{9}$
+- $\frac{10}{3} \div \frac{10}{9} = \frac{10}{3} \times \frac{9}{10} = 3$
+
+**Example 5 (complex fraction).** $\dfrac{\frac{1}{2}}{\frac{3}{8}}$
+- $= \frac{1}{2} \times \frac{8}{3} = \frac{8}{6} = \frac{4}{3}$
+
+## 5. Common mistakes
+- Flipping the **first** fraction instead of the second.
+- Flipping before converting mixed numbers.
+- Expecting division to always make things smaller. Dividing by a number less than 1 makes the answer **bigger**.
+
+## 6. Practice
+Q: Reciprocal of $\frac{7}{3}$? Of $5$?
+A: $\frac{3}{7}$; $\frac{1}{5}$.
+
+Q: $\frac{3}{5} \div \frac{9}{10}$?
+A: $\frac{3}{5} \times \frac{10}{9} = \frac{2}{3}$.
+
+Q: $4 \div \frac{2}{7}$?
+A: $14$.
+
+Q: $2\frac{1}{2} \div \frac{5}{6}$?
+A: $\frac{5}{2} \times \frac{6}{5} = 3$.
+
+Q: How many $\frac{1}{4}$ kg packets can be filled from $3\frac{1}{2}$ kg of rice?
+A: $\frac{7}{2} \div \frac{1}{4} = 14$."
+3,TOPIC,Decimal operations,"Place value, adding, subtracting and multiplying decimals, multiplying by powers of ten",MUST,FALSE,"# Decimal operations
+
+## 1. What it covers
+- Decimal **place value** (tenths, hundredths, thousandths).
+- Adding and subtracting by lining up the decimal point.
+- Multiplying decimals and placing the point.
+- Multiplying and dividing by 10, 100, 1000.
+
+## 2. Where it is used
+- **Money:** prices, bills and bank balances (and why software stores money as integer *paisa/cents* or a `Decimal` type, not float).
+- **Measurements:** 1.75 m, 2.5 kg.
+- **Data and statistics:** averages and percentages are usually decimals.
+- **Programming:** formatting numbers (`round(x, 2)`, `f""{x:.2f}""`).
+
+## 3. What it means
+In $36.582$: 3 tens, 6 ones, then **5 tenths**, **8 hundredths**, **2 thousandths**. Each place is 10 times smaller than the one to its left.
+
+- **Adding/subtracting:** line up the decimal points so that tenths add to tenths, like adding taka to taka and paisa to paisa. Fill gaps with zeros.
+- **Multiplying:** ignore the points, multiply as whole numbers, then the answer has as many decimal places as the two numbers **together**.
+- **× or ÷ by $10^n$:** shift the decimal point $n$ places (right for ×, left for ÷).
+
+## 4. Formula & worked example
+**Example 1.** $12.4 + 3.075$
+```text
+  12.400
++  3.075
+--------
+  15.475
+```
+Line up the points and pad with zeros so every column has the same place value.
+
+**Example 2.** $20 - 7.36$
+- $20.00 - 7.36 = 12.64$
+
+**Example 3.** $3.4 \times 0.25$
+- $34 \times 25 = 850$; decimal places $1 + 2 = 3$ → $0.850 = 0.85$
+
+**Example 4.** $0.06 \times 0.3$
+- $6 \times 3 = 18$; places $2 + 1 = 3$ → $0.018$
+
+**Example 5.** $4.73 \times 100 = 473$; $58.2 \div 1000 = 0.0582$
+
+**Estimate to check:** $3.4 \times 0.25$ is about $3 \times \frac{1}{4} \approx 0.8$ ✓
+
+## 5. Common mistakes
+- Lining up the last digits instead of the decimal points.
+- Counting decimal places wrongly when multiplying (e.g. $0.2 \times 0.3 = 0.6$, but it's $0.06$).
+- Thinking $0.5 \times 0.5$ is bigger than 0.5. Multiplying by a number less than 1 makes things smaller: $0.25$.
+
+## 6. Practice
+Q: $5.8 + 0.47$?
+A: $6.27$.
+
+Q: $10 - 3.25$?
+A: $6.75$.
+
+Q: $1.2 \times 0.4$?
+A: $0.48$.
+
+Q: $0.05 \times 0.04$?
+A: $0.002$.
+
+Q: $7.5 \div 100$?
+A: $0.075$."
+3,TOPIC,Long division and decimal division,"Dividing multi-digit numbers, dividing by decimals, remainders as decimals",MUST,FALSE,"# Long division and decimal division
+
+## 1. What it covers
+- The long-division method.
+- Writing remainders as decimals.
+- Dividing **by** a decimal (shift both numbers).
+
+## 2. Where it is used
+- **Splitting costs:** 2 350 taka shared by 6 people.
+- **Unit prices:** cost per kg or per litre.
+- **Averages:** total ÷ count.
+- **Programming:** integer division `//` and remainder `%` are the quotient and remainder of long division; used for pagination (""page 3 of 12""), time formatting (seconds → minutes:seconds) and wrapping around arrays.
+
+## 3. What it means
+Long division breaks a big division into small steps, one digit at a time: **divide, multiply, subtract, bring down**, repeat.
+
+To divide **by** a decimal, multiply both numbers by the same power of 10 to make the divisor whole. This doesn't change the answer (it's like an equivalent fraction): $\frac{4.5}{0.15} = \frac{450}{15}$.
+
+## 4. Formula & worked example
+$$
+\text{dividend} = \text{divisor} \times \text{quotient} + \text{remainder}
+$$
+
+**Example 1.** $864 \div 6$
+- $8 \div 6 = 1$ r 2 → bring down 6: $26 \div 6 = 4$ r 2 → bring down 4: $24 \div 6 = 4$ r 0 → **144**
+
+**Example 2.** $47 \div 8$ as a decimal.
+- $47 \div 8 = 5$ r 7 → add a decimal point and zeros: $70 \div 8 = 8$ r 6, $60 \div 8 = 7$ r 4, $40 \div 8 = 5$ r 0 → **5.875**
+
+**Example 3.** $4.5 \div 0.15$
+- Multiply both by 100: $450 \div 15 = 30$
+
+**Example 4.** $7.82 \div 2.3$
+- Multiply both by 10: $78.2 \div 23 = 3.4$
+
+**Example 5 (code).** Convert 7 384 seconds to h:m:s.
+```python
+total = 7384
+h, rest = divmod(total, 3600)    # 7384 = 2*3600 + 184
+m, s = divmod(rest, 60)          # 184 = 3*60 + 4
+print(f""{h}:{m:02}:{s:02}"")      # 2:03:04
+```
+`divmod(a, b)` returns the quotient and the remainder of long division in one step.
+
+## 5. Common mistakes
+- Forgetting a 0 in the quotient when a step doesn't divide: $612 \div 6 = 102$, not $12$.
+- Moving the point in only one of the two numbers when dividing by a decimal.
+- Writing the remainder as a decimal digit directly ($47 \div 8 = 5.7$ ✗).
+
+## 6. Practice
+Q: $952 \div 7$?
+A: $136$.
+
+Q: $23 \div 4$ as a decimal?
+A: $5.75$.
+
+Q: $3.6 \div 0.12$?
+A: $30$.
+
+Q: $9.45 \div 0.5$?
+A: $18.9$.
+
+Q: 1000 items on pages of 30. How many full pages, and how many on the last page?
+A: $1000 = 33 \times 30 + 10$: 33 full pages, and 10 items on the 34th page."
+3,TOPIC,Fractions to decimals: terminating and repeating,"Converting both ways, which fractions terminate, repeating decimals to fractions",MUST,FALSE,"# Fractions to decimals: terminating and repeating
+
+## 1. What it covers
+- Converting fractions to decimals by division.
+- **Terminating** vs **repeating** decimals, and how to predict which.
+- Converting decimals (including repeating ones) back to fractions.
+
+## 2. Where it is used
+- **Computing:** $\frac{1}{3}$ and $\frac{1}{10}$ can't be stored exactly in binary floating point, which is the source of rounding bugs in finance software.
+- **Measurement:** converting inches like $\frac{5}{8}$"" to $0.625$"".
+- **Statistics:** probabilities shown as decimals or percentages.
+- **Number sense:** recognising rational numbers.
+
+## 3. What it means
+$\frac{a}{b}$ **is** $a \div b$. Divide, and either the division ends (terminating) or the remainders start repeating, which makes the digits repeat.
+
+**Which fractions terminate?** Simplify the fraction. If the denominator's only prime factors are **2 and 5**, it terminates (because $10 = 2 \times 5$). Otherwise it repeats.
+
+**Repeating → fraction trick:** for $x = 0.\overline{27}$, multiply by 100 (two repeating digits): $100x = 27.\overline{27}$. Subtract: $99x = 27$ → $x = \frac{27}{99} = \frac{3}{11}$. The repeating tails cancel out.
+
+## 4. Formula & worked example
+$$
+0.\overline{d} = \frac{d}{9} \qquad 0.\overline{d_1d_2} = \frac{d_1d_2}{99}
+$$
+
+**Example 1.** $\frac{3}{8} = 3 \div 8 = 0.375$ (terminates: $8 = 2^3$)
+
+**Example 2.** $\frac{5}{12} = 0.41666\ldots = 0.41\overline{6}$ (repeats: $12$ has a factor 3)
+
+**Example 3.** $\frac{7}{20}$: terminating? $20 = 2^2 \cdot 5$ → yes, $0.35$.
+
+**Example 4.** $0.\overline{4}$ to a fraction.
+- $x = 0.444\ldots$, $10x = 4.444\ldots$ → $9x = 4$ → $x = \frac{4}{9}$
+
+**Example 5.** $0.1\overline{6}$ (only the 6 repeats).
+- $10x = 1.666\ldots$, $100x = 16.666\ldots$ → $90x = 15$ → $x = \frac{15}{90} = \frac{1}{6}$
+
+**Example 6.** $0.625$ to a fraction: $\frac{625}{1000} = \frac{5}{8}$
+
+## 5. Common mistakes
+- Writing $\frac{1}{3} = 0.3$ or $0.33$. It is $0.\overline{3}$; $0.33$ is only an approximation.
+- Checking the denominator before simplifying. $\frac{3}{15} = \frac{1}{5}$ terminates even though 15 has a factor 3.
+- Multiplying by the wrong power of 10 (use $10^n$ where $n$ is the length of the repeating block).
+
+## 6. Practice
+Q: $\frac{7}{16}$ as a decimal?
+A: $0.4375$.
+
+Q: Does $\frac{11}{30}$ terminate?
+A: No: $30 = 2 \cdot 3 \cdot 5$ has a factor 3.
+
+Q: $0.\overline{6}$ as a fraction?
+A: $\frac{2}{3}$.
+
+Q: $0.\overline{18}$ as a fraction?
+A: $\frac{18}{99} = \frac{2}{11}$.
+
+Q: Is $0.\overline{9}$ equal to 1?
+A: Yes: $x = 0.\overline{9}$, $10x - x = 9$, so $x = 1$."
+3,TOPIC,Practice & review: Number foundations and fractions,Mixed problem set with worked answers,MUST,FALSE,"# Practice & review: Number foundations and fractions
+
+**How to use this:** 45 minutes, no calculator. Log every miss in your error log.
+
+## Problems
+1. Classify $\sqrt{49}$, $-\frac{2}{5}$, $\sqrt{8}$, $0.\overline{3}$.
+2. Prime factorization of 540, then GCF and LCM of 540 and 168.
+3. Evaluate $36 \div (2 + 1)^2 \times 4 - 5$.
+4. $\frac{5}{6} - \frac{3}{8} + \frac{1}{4}$.
+5. $3\frac{1}{3} \times 2\frac{1}{4} \div 1\frac{1}{2}$.
+6. $2.4 \times 0.15 + 7.2 \div 0.08$.
+7. Write $\frac{13}{40}$ and $\frac{2}{7}$ as decimals (say which repeats).
+8. Write $0.2\overline{7}$ as a fraction.
+9. A rope is $12\frac{1}{2}$ m long. How many $\frac{5}{8}$ m pieces can be cut from it?
+10. Two alarms ring every 45 and 60 minutes, both at 6:00. When do they next ring together?
+
+## Answers
+1. $\sqrt{49} = 7$: natural/whole/integer/rational/real; $-\frac{2}{5}$: rational, real; $\sqrt{8}$: irrational, real; $0.\overline{3} = \frac{1}{3}$: rational, real.
+2. $540 = 2^2 \cdot 3^3 \cdot 5$; $168 = 2^3 \cdot 3 \cdot 7$. GCF $= 2^2 \cdot 3 = 12$; LCM $= 2^3 \cdot 3^3 \cdot 5 \cdot 7 = 7560$.
+3. $36 \div 9 \times 4 - 5 = 4 \times 4 - 5 = 11$.
+4. LCM 24: $\frac{20}{24} - \frac{9}{24} + \frac{6}{24} = \frac{17}{24}$.
+5. $\frac{10}{3} \times \frac{9}{4} \times \frac{2}{3} = \frac{180}{36} = 5$.
+6. $0.36 + 90 = 90.36$.
+7. $0.325$ (terminates); $0.\overline{285714}$ (repeats).
+8. $10x = 2.\overline{7}$, $100x = 27.\overline{7}$ → $90x = 25$ → $x = \frac{25}{90} = \frac{5}{18}$.
+9. $\frac{25}{2} \div \frac{5}{8} = \frac{25}{2} \times \frac{8}{5} = 20$ pieces.
+10. LCM$(45, 60) = 180$ min → 9:00.
+
+## Flashcards
+Q: Rule for adding fractions?
+A: Common denominator (LCM), add numerators, keep the denominator, simplify.
+
+Q: Rule for dividing fractions?
+A: Multiply by the reciprocal of the second fraction.
+
+Q: When does a simplified fraction give a terminating decimal?
+A: When the denominator has no prime factors other than 2 and 5.
+
+Q: GCF vs LCM with prime factors?
+A: GCF: shared primes, lowest powers. LCM: all primes, highest powers."
+1,MODULE,Phase 2 — Negative and Rational Numbers (Foundation),"Number line, absolute value, ordering, the four operations with integers, negative fractions and decimals",MUST,,"# Phase 2: Negative and rational numbers
+
+Negative numbers cause more algebra errors than anything else. The goal of this phase is to make the sign rules automatic, and to understand **why** they work so you never have to guess.
+
+Keep using the **number line** as your picture: positive to the right, negative to the left."
+2,MODULE,Signed numbers,"Meaning, ordering and arithmetic with negative numbers",MUST,,"Every rule here can be checked on a number line, with a thermometer or with money (credit and debt)."
+3,TOPIC,"Negative numbers, the number line and opposites","Meaning of negatives in context, locating numbers, opposites",MUST,FALSE,"# Negative numbers, the number line and opposites
+
+## 1. What it covers
+- What negative numbers mean in real situations.
+- Placing integers, fractions and decimals on a number line.
+- **Opposites** ($5$ and $-5$), and the opposite of an opposite.
+
+## 2. Where it is used
+- **Temperature:** $-5^\circ$C is five degrees below freezing.
+- **Money and accounting:** a balance of $-2000$ taka is a debt; spreadsheets show negatives in red or brackets.
+- **Elevation:** the Dead Sea shore is about $-430$ m (below sea level).
+- **Programming:** negative array indices in Python (`a[-1]` is the last item), and coordinates on the left of or above an origin.
+- **Physics:** direction: velocity $-3$ m/s means moving backwards.
+
+## 3. What it means
+A negative number is a quantity **less than zero**, or a value in the **opposite direction** from positive. On a number line it lies to the left of 0.
+
+**Opposites** are the same distance from 0 on opposite sides: $7$ and $-7$. The minus sign can be read as ""the opposite of"". So $-(-7)$ is ""the opposite of the opposite of 7"", which brings you back to $7$. Turning around twice faces you forward again.
+
+## 4. Formula & worked example
+$$
+-(-a) = a \qquad a + (-a) = 0
+$$
+
+**Example 1.** Write as a signed number: a submarine 250 m below sea level.
+- $-250$ m
+
+**Example 2.** Place $-2.5$, $\frac{3}{4}$, $-\frac{1}{2}$ and $1.5$ on a number line (left to right).
+- $-2.5$, $-\frac{1}{2}$, $\frac{3}{4}$, $1.5$
+
+**Example 3.** Simplify $-(-(-4))$.
+- $-(-4) = 4$, then $-(4) = -4$. An **odd** number of minus signs gives a negative.
+
+**Example 4.** The temperature was $3^\circ$C and fell $8^\circ$. What is it now?
+- $3 - 8 = -5^\circ$C
+
+## 5. Common mistakes
+- Thinking $-8 > -3$ because $8 > 3$. On the number line, $-8$ is further left, so it is **smaller**.
+- Reading $-x$ as ""a negative number"". If $x = -3$, then $-x = 3$ is positive.
+- Mixing up the subtraction sign with the negative sign.
+
+## 6. Practice
+Q: What is the opposite of $-12$?
+A: $12$.
+
+Q: Simplify $-(-(-(-6)))$.
+A: $6$ (four minus signs, an even number).
+
+Q: A diver is at $-18$ m and rises 7 m. New depth?
+A: $-11$ m.
+
+Q: If $x = -5$, what is $-x$?
+A: $5$.
+
+Q: Which is to the left on the number line: $-0.3$ or $-0.25$?
+A: $-0.3$."
+3,TOPIC,Absolute value and distance,"Distance from zero, absolute value in context, distance between two numbers",MUST,FALSE,"# Absolute value and distance
+
+## 1. What it covers
+- **Absolute value** $\lvert a\rvert$: the distance from 0.
+- Absolute value in context (size without direction).
+- **Distance between two numbers**: $\lvert a - b\rvert$.
+
+## 2. Where it is used
+- **Error measurement:** how far off a prediction is, ignoring direction. Machine learning's *mean absolute error* averages $\lvert \text{predicted} - \text{actual}\rvert$.
+- **Programming:** `abs()` for tolerances: `abs(a - b) < 1e-9` is how floats are compared safely.
+- **Finance:** the size of a loss or gain.
+- **Geometry:** distances on a grid (""Manhattan distance"" $\lvert x_1 - x_2\rvert + \lvert y_1 - y_2\rvert$, used in games and pathfinding).
+
+## 3. What it means
+$\lvert a\rvert$ is **how far** $a$ is from 0, whatever the direction. Distance is never negative: $\lvert 5\rvert = 5$ and $\lvert -5\rvert = 5$.
+
+The distance between two numbers on the line is the absolute value of their difference. It doesn't matter which you subtract from which: $\lvert 3 - 8\rvert = \lvert 8 - 3\rvert = 5$.
+
+Think of a taxi fare: it depends on how far you go, not which direction.
+
+## 4. Formula & worked example
+$$
+\lvert a\rvert = \begin{cases} a & a \ge 0 \\ -a & a < 0 \end{cases} \qquad \text{distance}(a, b) = \lvert a - b\rvert
+$$
+
+**Example 1.** $\lvert -13\rvert = 13$, $\lvert 0\rvert = 0$, $\lvert 2.7\rvert = 2.7$
+
+**Example 2.** $-\lvert -4\rvert$
+- $\lvert -4\rvert = 4$, then the outside minus: $-4$
+
+**Example 3.** Distance between $-6$ and $9$.
+- $\lvert -6 - 9\rvert = \lvert -15\rvert = 15$
+
+**Example 4.** A city's coldest temperature was $-12^\circ$C and its hottest $38^\circ$C. What is the range?
+- $\lvert 38 - (-12)\rvert = 50^\circ$C
+
+**Example 5.** Which numbers have $\lvert x\rvert = 7$?
+- $x = 7$ or $x = -7$.
+
+## 5. Common mistakes
+- Thinking absolute value ""removes the minus sign"" from expressions: $\lvert 3 - 8\rvert = \lvert -5\rvert = 5$, not $\lvert 3 + 8\rvert$. Calculate inside first.
+- Writing $-\lvert 4\rvert = 4$. The minus is outside: $-4$.
+- Forgetting the second solution when solving $\lvert x\rvert = k$.
+
+## 6. Practice
+Q: $\lvert -0.75\rvert$?
+A: $0.75$.
+
+Q: Distance between $-3$ and $-11$?
+A: $8$.
+
+Q: $\lvert 5 - 12\rvert - \lvert -2\rvert$?
+A: $7 - 2 = 5$.
+
+Q: Solve $\lvert x\rvert = 4.5$.
+A: $x = 4.5$ or $x = -4.5$.
+
+Q: A forecast says 30°C; the actual is 27°C. Absolute error?
+A: $\lvert 30 - 27\rvert = 3^\circ$C."
+3,TOPIC,Comparing and ordering rational numbers,"Ordering negatives, fractions and decimals; inequality symbols",MUST,FALSE,"# Comparing and ordering rational numbers
+
+## 1. What it covers
+- Using $<$, $>$, $\le$, $\ge$.
+- Comparing negative numbers.
+- Ordering mixed lists of fractions, decimals and negatives.
+
+## 2. Where it is used
+- **Sorting data:** spreadsheets and databases sort numbers ascending or descending; `ORDER BY balance` puts the biggest debts first.
+- **Finance:** comparing returns (a loss of $-2.5\%$ is worse than $-1.8\%$).
+- **Programming:** every `if a < b` comparison; sorting algorithms.
+- **Inequalities in algebra.**
+
+## 3. What it means
+On a number line, **further right means bigger**. So:
+- Any positive number > 0 > any negative number.
+- Among negatives, the one **closer to 0** is bigger: $-2 > -9$. Owing 200 taka is better than owing 900.
+
+**To order a mixed list:** convert everything to decimals (or a common denominator), then place them on a number line.
+
+Symbols: the open side of $<$ faces the bigger number (like a hungry mouth eating the bigger meal).
+
+## 4. Formula & worked example
+$$
+a < b \iff b - a > 0 \qquad a < b \iff -a > -b
+$$
+
+**Example 1.** Compare $-\frac{3}{4}$ and $-\frac{2}{3}$.
+- Decimals: $-0.75$ and $-0.667$. $-0.667$ is closer to 0 → $-\frac{2}{3} > -\frac{3}{4}$
+
+**Example 2.** Order from least to greatest: $0.4, -1.2, -\frac{5}{4}, \frac{1}{3}, -0.5$
+- Decimals: $0.4, -1.2, -1.25, 0.333, -0.5$
+- Order: $-\frac{5}{4}, -1.2, -0.5, \frac{1}{3}, 0.4$
+
+**Example 3.** True or false: $-7 \ge -7$?
+- True ($\ge$ allows equality).
+
+**Example 4.** Which statement is true: $-3 < -5$ or $-3 > -5$?
+- $-3 > -5$ ($-3$ is to the right).
+
+## 5. Common mistakes
+- Ordering negatives by their digits ($-5 < -3$ is right; $-3 < -5$ is wrong).
+- Comparing fractions by their denominators only.
+- Mixing up $<$ and $>$.
+
+## 6. Practice
+Q: Which is greater: $-0.6$ or $-\frac{2}{3}$?
+A: $-0.6$ (since $-\frac{2}{3} \approx -0.667$).
+
+Q: Order: $-2, 1.5, -2.5, 0, -\frac{1}{2}$.
+A: $-2.5, -2, -\frac{1}{2}, 0, 1.5$.
+
+Q: Fill in $<$ or $>$: $-\frac{1}{8} \ ? \ -\frac{1}{10}$.
+A: $<$ ($-0.125 < -0.1$).
+
+Q: If $a < b$, how do $-a$ and $-b$ compare?
+A: $-a > -b$ (taking opposites flips the order).
+
+Q: Which is the bigger loss: $-3.2\%$ or $-2.9\%$?
+A: $-3.2\%$ (it is the smaller number)."
+3,TOPIC,Adding and subtracting integers,"Number-line and money models, subtracting as adding the opposite, long chains",MUST,FALSE,"# Adding and subtracting integers
+
+## 1. What it covers
+- Adding positive and negative integers.
+- Subtraction as **adding the opposite**.
+- Chains like $-4 + 9 - (-6) - 12$.
+
+## 2. Where it is used
+- **Bank balances:** deposits (+) and withdrawals (−).
+- **Temperature changes**, elevation changes, golf scores (relative to par).
+- **Game scores** with penalties.
+- **Algebra:** combining like terms with signed coefficients.
+
+## 3. What it means
+**Number-line model:** start at the first number. Adding a positive moves right; adding a negative moves left.
+
+**Money model:** positive = cash in hand, negative = debt. $-5 + 3$: you owe 5, someone gives you 3, now you owe 2 → $-2$.
+
+**Rules for adding:**
+- **Same signs:** add the sizes, keep the sign. $-4 + (-6) = -10$.
+- **Different signs:** subtract the sizes, take the sign of the bigger size. $-9 + 4 = -5$.
+
+**Subtracting:** taking away a debt is the same as receiving money. So $a - b = a + (-b)$, and in particular **subtracting a negative = adding a positive**: $5 - (-3) = 5 + 3 = 8$.
+
+## 4. Formula & worked example
+$$
+a - b = a + (-b) \qquad a - (-b) = a + b
+$$
+
+**Example 1.** $-7 + 12 = 5$ (different signs: $12 - 7 = 5$, the bigger size is positive)
+
+**Example 2.** $-8 + (-5) = -13$
+
+**Example 3.** $3 - 10 = 3 + (-10) = -7$
+
+**Example 4.** $-6 - (-14) = -6 + 14 = 8$
+
+**Example 5 (chain).** $-4 + 9 - (-6) - 12$
+- Rewrite: $-4 + 9 + 6 - 12$
+- Group positives and negatives: $(9 + 6) + (-4 - 12) = 15 - 16 = -1$
+
+**Example 6.** A lift is at floor $-2$ (basement), goes up 7, then down 9. Where is it?
+- $-2 + 7 - 9 = -4$
+
+## 5. Common mistakes
+- $-3 - 5 = 2$ or $-2$. It is $-8$ (moving further left).
+- $5 - (-3) = 2$. Two minus signs side by side become plus: $8$.
+- Taking the sign of the first number instead of the bigger one: $-3 + 10 = 7$, not $-7$.
+
+## 6. Practice
+Q: $-15 + 9$?
+A: $-6$.
+
+Q: $-4 - 11$?
+A: $-15$.
+
+Q: $7 - (-8)$?
+A: $15$.
+
+Q: $-12 - (-12)$?
+A: $0$.
+
+Q: $10 - 15 + (-3) - (-9)$?
+A: $10 - 15 - 3 + 9 = 1$."
+3,TOPIC,Multiplying and dividing integers,Sign rules and why they work; checking division by multiplication,MUST,FALSE,"# Multiplying and dividing integers
+
+## 1. What it covers
+- The sign rules for $\times$ and $\div$.
+- **Why** negative × negative = positive.
+- Many factors: counting negative signs.
+- Powers of negative numbers.
+
+## 2. Where it is used
+- **Algebra:** expanding $-3(x - 4) = -3x + 12$ and solving equations.
+- **Finance:** losing 500 taka a day for 4 days is $4 \times (-500) = -2000$.
+- **Physics:** directions and charges (opposite charges multiply to a negative force: attraction).
+- **Programming:** flipping a direction with `velocity *= -1` (bouncing off a wall).
+
+## 3. What it means
+**Sign rules:**
+- Same signs → **positive**. Different signs → **negative**.
+- The same rules hold for division.
+
+**Why negative × negative is positive:** look at the pattern
+$3 \times (-2) = -6$, $2 \times (-2) = -4$, $1 \times (-2) = -2$, $0 \times (-2) = 0$. Each step the answer goes **up** by 2. Continue: $(-1) \times (-2) = 2$, $(-2)(-2) = 4$.
+
+Another view: multiplying by $-1$ means ""turn around on the number line"". Turning around twice faces you forward again.
+
+**Many factors:** count the negative signs. Even count → positive; odd count → negative.
+
+## 4. Formula & worked example
+$$
+(+)(+) = + \quad (-)(-) = + \quad (+)(-) = - \quad (-)(+) = -
+$$
+
+**Example 1.** $-6 \times 7 = -42$
+
+**Example 2.** $-8 \times (-5) = 40$
+
+**Example 3.** $-56 \div 8 = -7$; check: $8 \times (-7) = -56$ ✓
+
+**Example 4.** $(-2)(3)(-4)(-1)$
+- Three negatives (odd) → negative. Sizes: $2 \cdot 3 \cdot 4 \cdot 1 = 24$ → $-24$
+
+**Example 5.** $(-1)^{100} = 1$ and $(-1)^{101} = -1$
+
+**Example 6.** $\frac{-36}{-9} = 4$
+
+## 5. Common mistakes
+- Using the addition rule for multiplication (""take the sign of the bigger number"").
+- $-2^4 = 16$. Without brackets it's $-(2^4) = -16$; $(-2)^4 = 16$.
+- Thinking $0 \div (-5)$ is undefined. It is $0$. Only division **by** zero is undefined.
+
+## 6. Practice
+Q: $-9 \times (-4)$?
+A: $36$.
+
+Q: $72 \div (-8)$?
+A: $-9$.
+
+Q: $(-3)^3$?
+A: $-27$.
+
+Q: $(-1)(-2)(-3)(-4)$?
+A: $24$ (four negatives, even).
+
+Q: Why is $(-1) \times (-1) = 1$?
+A: Multiplying by $-1$ reverses direction; reversing twice returns to the original direction."
+3,TOPIC,Operations with negative fractions and decimals,All four operations on signed fractions and decimals,MUST,FALSE,"# Operations with negative fractions and decimals
+
+## 1. What it covers
+- Applying the integer sign rules to fractions and decimals.
+- Where to put the minus sign in a fraction: $-\frac{a}{b} = \frac{-a}{b} = \frac{a}{-b}$.
+- Multi-step calculations with signed rational numbers.
+
+## 2. Where it is used
+- **Finance:** daily percentage changes in stock prices ($-1.25\%$, $+0.8\%$).
+- **Science:** temperature changes like $-2.5^\circ$C per hour.
+- **Statistics:** deviations from the mean are negative and positive decimals.
+- **Algebra:** solving equations with fractional coefficients.
+
+## 3. What it means
+Nothing new! The sign rules from integers apply exactly, and the fraction and decimal methods from Phase 1 apply exactly. Do two separate jobs:
+1. Decide the **sign** with the integer rules.
+2. Work out the **size** with the fraction or decimal method.
+
+A negative fraction can show its minus sign in three equivalent places; the usual convention is in front: $-\frac{3}{4}$.
+
+## 4. Formula & worked example
+$$
+-\frac{a}{b} = \frac{-a}{b} = \frac{a}{-b} \qquad \frac{-a}{-b} = \frac{a}{b}
+$$
+
+**Example 1.** $-\frac{2}{3} + \frac{1}{4}$
+- $-\frac{8}{12} + \frac{3}{12} = -\frac{5}{12}$
+
+**Example 2.** $-\frac{5}{6} - \frac{1}{4}$
+- $-\frac{10}{12} - \frac{3}{12} = -\frac{13}{12}$
+
+**Example 3.** $-\frac{3}{5} \times \left(-\frac{10}{9}\right)$
+- Sign: positive. Size: $\frac{3}{5} \cdot \frac{10}{9} = \frac{2}{3}$ → $\frac{2}{3}$
+
+**Example 4.** $\frac{7}{8} \div \left(-\frac{7}{4}\right)$
+- Sign: negative. Size: $\frac{7}{8} \cdot \frac{4}{7} = \frac{1}{2}$ → $-\frac{1}{2}$
+
+**Example 5.** $-3.6 + 1.25 - (-0.4)$
+- $-3.6 + 1.25 + 0.4 = -1.95$
+
+**Example 6.** $-0.25 \times 1.6 = -0.4$
+
+## 5. Common mistakes
+- Putting minus signs on both top and bottom by accident and then forgetting they cancel.
+- Losing the sign during the ""size"" work. Decide the sign first and write it down.
+- Treating $-\frac{1}{2} + \frac{1}{3}$ as $-\left(\frac{1}{2} + \frac{1}{3}\right)$.
+
+## 6. Practice
+Q: $-\frac{1}{2} + \frac{1}{3}$?
+A: $-\frac{1}{6}$.
+
+Q: $\frac{3}{4} - \left(-\frac{1}{8}\right)$?
+A: $\frac{7}{8}$.
+
+Q: $-\frac{4}{9} \times \frac{3}{8}$?
+A: $-\frac{1}{6}$.
+
+Q: $-2.4 \div (-0.6)$?
+A: $4$.
+
+Q: $-1.5 - 2.75$?
+A: $-4.25$."
+3,TOPIC,Order of operations with negatives,"Exponents and signs, brackets, mixed expressions with signed numbers",MUST,FALSE,"# Order of operations with negatives
+
+## 1. What it covers
+- BODMAS with negative numbers.
+- The difference between $-a^2$ and $(-a)^2$.
+- Substituting negative values into expressions.
+
+## 2. Where it is used
+- **Programming:** `-x**2` in Python is $-(x^2)$; Excel's `=-2^2` gives $4$ (Excel applies the negation first!). Knowing the convention prevents bugs.
+- **Algebra:** evaluating $x^2 - 3x$ at $x = -2$ is a classic exam trap.
+- **Physics formulas** with negative values (deceleration, charges).
+
+## 3. What it means
+The order of operations doesn't change, but there's one trap: the **negative sign is not part of the number unless brackets say so**.
+- $-3^2$ means ""the opposite of $3^2$"" $= -9$.
+- $(-3)^2$ means ""$-3$ times $-3$"" $= 9$.
+
+**When substituting a negative value, always put it in brackets.** For $x = -2$: $x^2 \to (-2)^2 = 4$.
+
+## 4. Formula & worked example
+$$
+-a^2 = -(a^2) \qquad (-a)^2 = a^2 \qquad (-a)^3 = -a^3
+$$
+
+**Example 1.** $-4^2 + (-4)^2 = -16 + 16 = 0$
+
+**Example 2.** Evaluate $x^2 - 3x$ at $x = -2$.
+- $(-2)^2 - 3(-2) = 4 + 6 = 10$
+
+**Example 3.** $-2(3 - 7)^2 \div 4$
+- Brackets: $-4$ → power: $16$ → $-2 \times 16 = -32$ → $\div 4 = -8$
+
+**Example 4.** $\dfrac{-6 - (-2)^3}{-1 - 1}$
+- Top: $-6 - (-8) = 2$; bottom: $-2$ → $-1$
+
+**Example 5.** $5 - 3 \times (-2)^2$
+- $5 - 3 \times 4 = 5 - 12 = -7$
+
+## 5. Common mistakes
+- Substituting without brackets: $x^2$ at $x = -3$ written as $-3^2 = -9$.
+- Treating $-3x$ at $x = -2$ as $-3 - 2$. It is $(-3)(-2) = 6$.
+- Doing the subtraction before multiplication in $5 - 3 \times (-2)^2$.
+
+## 6. Practice
+Q: $-5^2$?
+A: $-25$.
+
+Q: $(-5)^2$?
+A: $25$.
+
+Q: Evaluate $2x^2 + x$ at $x = -3$.
+A: $2(9) + (-3) = 15$.
+
+Q: $-3(-2)^3 + 4$?
+A: $-3(-8) + 4 = 28$.
+
+Q: Evaluate $-x^2$ at $x = -4$.
+A: $-(16) = -16$."
+3,TOPIC,Practice & review: Negative and rational numbers,Mixed problem set with worked answers,MUST,FALSE,"# Practice & review: Negative and rational numbers
+
+**How to use this:** 40 minutes, no calculator.
+
+## Problems
+1. Order from least to greatest: $-1.5, \frac{2}{5}, -\frac{7}{4}, 0, -0.9$.
+2. $-14 + 6 - (-9) - 20$.
+3. $(-3)(-4)(-5) \div (-6)$.
+4. $-\frac{3}{4} + \frac{5}{6} - \left(-\frac{1}{3}\right)$.
+5. $-\frac{9}{10} \div \frac{3}{5} \times \left(-\frac{2}{3}\right)$.
+6. Evaluate $3x^2 - 2x - 5$ at $x = -2$.
+7. $\lvert -8 + 3\rvert - \lvert 4 - 10\rvert$.
+8. At 6 am it was $-7^\circ$C. By noon it rose $15^\circ$, then fell $11^\circ$ by midnight. Midnight temperature?
+9. A company's monthly profits were $+120$, $-45$, $-80$, $+30$ (thousand taka). Find the total and the mean.
+
+## Answers
+1. $-\frac{7}{4}, -1.5, -0.9, 0, \frac{2}{5}$.
+2. $-14 + 6 + 9 - 20 = -19$.
+3. $-60 \div (-6) = 10$.
+4. $-\frac{9}{12} + \frac{10}{12} + \frac{4}{12} = \frac{5}{12}$.
+5. $-\frac{9}{10} \cdot \frac{5}{3} = -\frac{3}{2}$; then $\times \left(-\frac{2}{3}\right) = 1$.
+6. $3(4) + 4 - 5 = 11$.
+7. $5 - 6 = -1$.
+8. $-7 + 15 - 11 = -3^\circ$C.
+9. Total $= 25$ thousand; mean $= 6.25$ thousand taka.
+
+## Flashcards
+Q: Sign rule for multiplying two numbers?
+A: Same signs → positive; different signs → negative.
+
+Q: $a - (-b) = ?$
+A: $a + b$.
+
+Q: $-3^2$ vs $(-3)^2$?
+A: $-9$ vs $9$.
+
+Q: What should you do when substituting a negative value?
+A: Put it in brackets."
+1,MODULE,"Phase 3 — Ratios, Rates and Proportions (Core)","Ratios, ratio tables, sharing, unit rates, speed, proportional relationships, scale, unit conversion",MUST,,"# Phase 3: Ratios, rates and proportions
+
+Ratios compare quantities. Rates compare quantities with **different units** (km per hour, taka per kg). Proportions say two ratios are equal. Together they are the most used maths in daily life and the bridge to linear functions in algebra: a proportional relationship $y = kx$ is the simplest straight line."
+2,MODULE,Ratios and rates,"Ratio notation, equivalent ratios, tape diagrams, unit rates, speed–distance–time",MUST,,"Learn to see every ""for every"", ""per"" and ""out of"" as a ratio."
+3,TOPIC,Ratios: concept and notation,"Part-to-part vs part-to-whole, a:b, a to b, a/b, simplifying ratios",MUST,FALSE,"# Ratios: concept and notation
+
+## 1. What it covers
+- What a ratio is and the three ways to write one: $a : b$, ""a to b"", $\frac{a}{b}$.
+- **Part-to-part** vs **part-to-whole** ratios.
+- Simplifying ratios, including ones with fractions, decimals or different units.
+
+## 2. Where it is used
+- **Screens and images:** aspect ratio $16 : 9$; resizing an image without distortion keeps the ratio.
+- **Cooking and chemistry:** rice to water $1 : 2$; mixing concrete $1 : 2 : 3$ (cement : sand : gravel).
+- **Finance:** debt-to-income ratio, price-to-earnings ratio.
+- **Data science:** class imbalance (e.g. 1 fraud : 99 normal), train/test split $80 : 20$.
+
+## 3. What it means
+A ratio compares two (or more) quantities by **division**: how many of one for each of the other.
+
+In a class of 12 boys and 18 girls:
+- **Part-to-part:** boys : girls $= 12 : 18 = 2 : 3$ (""2 boys for every 3 girls"").
+- **Part-to-whole:** boys : total $= 12 : 30 = 2 : 5$, so $\frac{2}{5}$ of the class are boys.
+
+A ratio is simplified like a fraction: divide every part by the GCF. Both quantities must be in the **same unit** first.
+
+## 4. Formula & worked example
+$$
+a : b = \frac{a}{b} = (ka) : (kb) \quad (k \ne 0)
+$$
+
+**Example 1.** Simplify $45 : 60$.
+- GCF 15 → $3 : 4$
+
+**Example 2.** Simplify $1.2 : 0.8$.
+- ×10: $12 : 8 = 3 : 2$
+
+**Example 3.** Simplify $\frac{2}{3} : \frac{1}{4}$.
+- Multiply by 12 (LCM of 3 and 4): $8 : 3$
+
+**Example 4 (units).** 50 cm to 2 m.
+- Same unit: $50 : 200 = 1 : 4$
+
+**Example 5.** A bag has red and blue marbles in the ratio $3 : 5$. What fraction is red?
+- Total parts $= 8$ → $\frac{3}{8}$
+
+## 5. Common mistakes
+- Mixing part-to-part and part-to-whole: $3 : 5$ red to blue does **not** mean $\frac{3}{5}$ are red.
+- Simplifying with different units ($50$ cm : $2$ m is not $25 : 1$).
+- Reversing the order: ""boys to girls"" must be written boys first.
+
+## 6. Practice
+Q: Simplify $24 : 36 : 60$.
+A: $2 : 3 : 5$.
+
+Q: 15 cats and 25 dogs. Ratio of cats to all animals?
+A: $15 : 40 = 3 : 8$.
+
+Q: Simplify $0.75 : 2.25$.
+A: $1 : 3$.
+
+Q: Simplify 45 minutes : 2 hours.
+A: $45 : 120 = 3 : 8$.
+
+Q: A 1920 × 1080 screen. Simplest aspect ratio?
+A: $16 : 9$."
+3,TOPIC,Equivalent ratios and ratio tables,"Scaling ratios up and down, ratio tables, ratios on a graph",MUST,FALSE,"# Equivalent ratios and ratio tables
+
+## 1. What it covers
+- Making **equivalent ratios** by multiplying or dividing both parts.
+- Testing whether two ratios are equivalent.
+- **Ratio tables** to find missing values.
+- Why equivalent ratio pairs lie on a straight line through the origin.
+
+## 2. Where it is used
+- **Recipe scaling:** a recipe for 4 people scaled to 10.
+- **Responsive images:** keep width : height fixed when resizing (CSS `aspect-ratio`).
+- **Maps:** a scale such as 1 : 50 000.
+- **Currency exchange tables** and price lists.
+
+## 3. What it means
+Equivalent ratios describe the **same relationship** at different sizes. A drink mixed 2 cups juice : 3 cups water tastes the same as 4 : 6 or 10 : 15.
+
+A **ratio table** lists equivalent ratios in columns. You can move along it by multiplying, dividing or **adding columns** (adding two columns of the same ratio gives another equivalent ratio).
+
+**Graph:** plot each pair $(x, y)$. All equivalent pairs lie on one straight line through $(0, 0)$, because $y$ is always the same multiple of $x$.
+
+## 4. Formula & worked example
+$$
+\frac{a}{b} = \frac{c}{d} \iff ad = bc
+$$
+
+**Example 1 (ratio table).** A recipe uses 3 eggs per 2 cups of flour. How many eggs for 7 cups?
+| flour | 2 | 1 | 7 |
+|---|---|---|---|
+| eggs | 3 | 1.5 | 10.5 |
+- Divide by 2 to get 1 cup, then multiply by 7 → $10.5$ eggs.
+
+**Example 2.** Are $6 : 15$ and $10 : 25$ equivalent?
+- Simplify both: $2 : 5$ and $2 : 5$ → yes. (Or cross-multiply: $6 \times 25 = 150 = 15 \times 10$ ✓)
+
+**Example 3.** Resize a 1200 × 800 image to width 450 keeping the ratio.
+- Ratio $3 : 2$ → height $= 450 \times \frac{2}{3} = 300$
+
+**Example 4 (graph).** Pairs from the ratio $1 : 4$: $(1, 4), (2, 8), (3, 12)$. They lie on the line $y = 4x$.
+
+## 5. Common mistakes
+- **Adding** the same number to both parts: $2 : 3 \ne 4 : 5$. Multiply instead.
+- Scaling only one part.
+- Assuming a line that doesn't pass through $(0, 0)$ shows equivalent ratios.
+
+## 6. Practice
+Q: Fill in: $5 : 8 = 20 : ?$
+A: $32$.
+
+Q: Are $4 : 7$ and $12 : 20$ equivalent?
+A: No ($4 \times 20 = 80 \ne 7 \times 12 = 84$).
+
+Q: 3 notebooks cost 240 taka. Cost of 8?
+A: $80$ each → $640$ taka.
+
+Q: Resize 1600 × 900 to height 360.
+A: Width $= 1600 \times \frac{360}{900} = 640$.
+
+Q: What shape do equivalent ratio pairs make on a graph?
+A: A straight line through the origin."
+3,TOPIC,Tape diagrams and sharing in a ratio,"Dividing a total in a given ratio, part-whole and difference problems",MUST,FALSE,"# Tape diagrams and sharing in a ratio
+
+## 1. What it covers
+- Drawing a **tape diagram** (bar model) for ratio problems.
+- **Sharing** a total in a given ratio.
+- Problems given the **difference** between parts, or one part.
+
+## 2. Where it is used
+- **Business:** splitting profit between partners who invested 3 lakh and 5 lakh (ratio $3 : 5$).
+- **Inheritance and budgets:** dividing money by rules.
+- **Mixing:** how much of each ingredient for a 10 kg batch with ratio $2 : 3$.
+- **Data:** splitting a dataset 70 : 15 : 15 into train/validation/test sets.
+
+## 3. What it means
+A tape diagram draws each part of the ratio as equal-sized boxes. For $3 : 5$, draw 3 boxes for A and 5 boxes for B: 8 equal boxes in total.
+
+**Method:**
+1. Total number of parts (boxes) $=$ sum of the ratio numbers.
+2. Value of one part $=$ known amount ÷ number of parts it covers.
+3. Multiply to get each share.
+
+```text
+A: [  ][  ][  ]
+B: [  ][  ][  ][  ][  ]      8 equal boxes in total
+```
+
+## 4. Formula & worked example
+$$
+\text{share of A} = \frac{a}{a + b} \times \text{total}
+$$
+
+**Example 1.** Share 24 000 taka in the ratio $3 : 5$.
+- 8 parts → one part $= 3000$ → A $= 9000$, B $= 15\,000$
+
+**Example 2 (difference).** Ali and Bina share sweets in the ratio $4 : 7$. Bina gets 15 more than Ali. How many sweets in total?
+- Difference $= 7 - 4 = 3$ parts $= 15$ → one part $= 5$ → total $= 11 \times 5 = 55$
+
+**Example 3 (one part known).** Cement : sand $= 1 : 3$. If you have 12 bags of sand, how much cement?
+- 3 parts $= 12$ → 1 part $= 4$ bags of cement.
+
+**Example 4 (three parts).** Split a dataset of 20 000 rows as $70 : 15 : 15$.
+- 100 parts → 1 part $= 200$ → $14\,000$ train, $3000$ validation, $3000$ test.
+
+## 5. Common mistakes
+- Dividing the total by one ratio number instead of the **sum**.
+- In difference problems, dividing the difference by the total parts instead of the difference in parts.
+- Forgetting to answer the actual question (total vs one share).
+
+## 6. Practice
+Q: Share 450 in the ratio $2 : 7$.
+A: $100$ and $350$.
+
+Q: Boys : girls $= 5 : 4$, and there are 20 girls. How many students?
+A: One part $= 5$; total $= 9 \times 5 = 45$.
+
+Q: Ratio $3 : 8$, difference 35. Find both parts.
+A: 5 parts $= 35$ → $21$ and $56$.
+
+Q: Split 1.2 kg in the ratio $1 : 2 : 3$.
+A: $0.2$, $0.4$, $0.6$ kg.
+
+Q: Partners invest 2 lakh and 3 lakh. Profit is 1.5 lakh. Each share?
+A: $0.6$ lakh and $0.9$ lakh."
+3,TOPIC,Unit rates and comparing rates,"Rates per one unit, unit prices, best-buy comparisons",MUST,FALSE,"# Unit rates and comparing rates
+
+## 1. What it covers
+- What a **rate** is (a ratio of different units).
+- The **unit rate**: the amount per **one** unit.
+- Comparing deals with unit prices.
+
+## 2. Where it is used
+- **Shopping:** taka per kg, taka per litre: is the big pack really cheaper?
+- **Mobile data:** taka per GB across plans.
+- **Cloud computing:** cost per hour or per GB-month (AWS pricing is all unit rates).
+- **Performance:** requests per second, frames per second, words per minute.
+- **Fuel efficiency:** km per litre.
+
+## 3. What it means
+A **rate** compares two quantities with **different units**: 300 km in 4 hours. The **unit rate** answers ""how much for **one**?"": $\frac{300}{4} = 75$ km per **1** hour.
+
+To compare offers, convert each to the same unit rate. A unit rate can be flipped: 50 taka per kg also means $\frac{1}{50}$ kg per taka. Choose the version that answers the question.
+
+## 4. Formula & worked example
+$$
+\text{unit rate} = \frac{\text{quantity A}}{\text{quantity B}} \text{ (per 1 unit of B)}
+$$
+
+**Example 1.** 12 eggs cost 150 taka. Unit price?
+- $150 \div 12 = 12.5$ taka per egg
+
+**Example 2 (best buy).** 2 kg rice for 170 taka, or 5 kg for 410 taka?
+- $85$ taka/kg vs $82$ taka/kg → the 5 kg bag is cheaper per kg.
+
+**Example 3.** Plan A: 30 GB for 499 taka. Plan B: 50 GB for 799 taka.
+- A: $\approx 16.6$ taka/GB; B: $\approx 16.0$ taka/GB → B is slightly cheaper per GB (but only if you use the data).
+
+**Example 4.** A server handles 9000 requests in 2.5 minutes. Requests per second?
+- $2.5$ min $= 150$ s → $9000 \div 150 = 60$ requests/s
+
+## 5. Common mistakes
+- Dividing the wrong way (kg per taka instead of taka per kg) and then picking the ""biggest"" as the best deal.
+- Mixing units (minutes vs seconds) before dividing.
+- Ignoring whether you actually need the larger quantity.
+
+## 6. Practice
+Q: 420 km on 35 litres. km per litre?
+A: $12$ km/L.
+
+Q: 6 pens for 90 taka or 10 pens for 140 taka. Better deal?
+A: $15$ vs $14$ taka each → 10 pens.
+
+Q: Typing 1350 words in 30 minutes. Words per minute?
+A: $45$.
+
+Q: A cloud VM costs USD 0.096 per hour. Cost for a 30-day month?
+A: $0.096 \times 720 \approx 69.12$ USD.
+
+Q: 2.4 kg of apples cost 360 taka. Price per kg?
+A: $150$ taka."
+3,TOPIC,"Speed, distance and time","d = st, average speed, unit changes, meeting and overtaking problems",MUST,FALSE,"# Speed, distance and time
+
+## 1. What it covers
+- The formula $d = s \times t$ and its rearrangements.
+- **Average speed** for a journey with several parts.
+- Converting between km/h and m/s.
+- Simple meeting and overtaking problems.
+
+## 2. Where it is used
+- **Travel planning:** arrival times, GPS estimates.
+- **Physics:** the starting point for motion and velocity.
+- **Networking:** download time = file size ÷ bandwidth (a 2 GB file at 100 Mbit/s).
+- **Sports:** pace (minutes per km) for runners.
+- **Logistics:** delivery route timing.
+
+## 3. What it means
+**Speed** is a rate: distance per unit of time. If you go 60 km every hour, then in 3 hours you go 180 km.
+
+**Average speed** = **total** distance ÷ **total** time. It is **not** the average of the speeds, unless you spend equal **times** at each speed.
+
+**Meeting problems:** two objects moving **towards** each other close the gap at the **sum** of their speeds. Moving in the **same** direction, the gap changes at the **difference** of their speeds.
+
+## 4. Formula & worked example
+$$
+d = st \qquad s = \frac{d}{t} \qquad t = \frac{d}{s} \qquad 1 \text{ m/s} = 3.6 \text{ km/h}
+$$
+
+**Example 1.** A bus travels 225 km at 50 km/h. How long?
+- $t = \frac{225}{50} = 4.5$ h $= 4$ h 30 min
+
+**Example 2 (average speed).** 120 km at 60 km/h, then 120 km at 40 km/h. Average speed?
+- Times: 2 h and 3 h → total 240 km in 5 h → $48$ km/h (**not** 50).
+
+**Example 3 (units).** 90 km/h in m/s?
+- $90 \div 3.6 = 25$ m/s
+
+**Example 4 (meeting).** Two trains 300 km apart head towards each other at 70 and 80 km/h. When do they meet?
+- Closing speed $150$ km/h → $t = \frac{300}{150} = 2$ h
+
+**Example 5 (download).** 2 GB file at 100 Mbit/s.
+- 2 GB $= 16\,000$ Mbit (using 1 GB = 8000 Mbit) → $t = 160$ s $\approx 2.7$ min
+
+## 5. Common mistakes
+- Averaging speeds directly when the distances (not the times) are equal.
+- Mixing minutes and hours: 20 minutes $= \frac{1}{3}$ h, **not** 0.2 h.
+- Confusing bits and bytes in data rates (1 byte = 8 bits).
+
+## 6. Practice
+Q: How far in 2 h 15 min at 80 km/h?
+A: $80 \times 2.25 = 180$ km.
+
+Q: 15 m/s in km/h?
+A: $54$ km/h.
+
+Q: Go 30 km at 60 km/h, return at 30 km/h. Average speed?
+A: 60 km in 1.5 h → $40$ km/h.
+
+Q: A runner covers 10 km in 50 minutes. Pace and speed?
+A: 5 min/km; 12 km/h.
+
+Q: A car at 60 km/h leaves 1 h before a car at 90 km/h on the same road. When does the second catch up?
+A: Gap 60 km, closing at 30 km/h → 2 h after it starts."
+2,MODULE,Proportional relationships and conversion,"y = kx, solving proportions, scale drawings, unit conversion",MUST,,Proportional relationships are where arithmetic turns into algebra.
+3,TOPIC,Proportional relationships and the constant of proportionality,"Recognising proportionality in tables, graphs and equations; y = kx",MUST,FALSE,"# Proportional relationships and the constant of proportionality
+
+## 1. What it covers
+- When two quantities are **proportional**.
+- The **constant of proportionality** $k = \frac{y}{x}$.
+- Recognising proportionality in tables, graphs and equations, and writing $y = kx$.
+- What the points $(0, 0)$ and $(1, k)$ mean.
+
+## 2. Where it is used
+- **Pricing:** cost = price per item × number of items.
+- **Physics:** Hooke's law (spring stretch ∝ force), Ohm's law ($V = IR$).
+- **Pay:** wages = hourly rate × hours.
+- **Machine learning:** the simplest model is a straight line through the origin; linear regression generalises it.
+- **Cooking and currency conversion.**
+
+## 3. What it means
+$y$ is proportional to $x$ if $y$ is always the **same multiple** of $x$: $y = kx$. Double $x$ and $y$ doubles; halve $x$ and $y$ halves.
+
+**How to recognise it:**
+- **Table:** $\frac{y}{x}$ is the same for every row.
+- **Graph:** a straight line **through the origin**.
+- **Equation:** $y = kx$ (no ""+ something"").
+
+$k$ is the unit rate: the value of $y$ when $x = 1$. So the graph passes through $(1, k)$. It passes through $(0, 0)$ because zero items cost zero.
+
+**Not proportional:** a taxi fare with a 50 taka starting charge plus 20 taka per km ($y = 20x + 50$) is linear but **not** proportional: 0 km still costs 50.
+
+## 4. Formula & worked example
+$$
+y = kx \qquad k = \frac{y}{x}
+$$
+
+**Example 1.** Is this table proportional?
+| x | 2 | 5 | 8 |
+|---|---|---|---|
+| y | 7 | 17.5 | 28 |
+- $\frac{7}{2} = 3.5$, $\frac{17.5}{5} = 3.5$, $\frac{28}{8} = 3.5$ → yes, $y = 3.5x$.
+
+**Example 2.** Is this proportional? $(1, 4), (2, 7), (3, 10)$
+- $\frac{4}{1} = 4$, $\frac{7}{2} = 3.5$ → no (it's $y = 3x + 1$).
+
+**Example 3.** A worker earns 1350 taka for 9 hours. Write the equation and find the pay for 14 hours.
+- $k = \frac{1350}{9} = 150$ → $y = 150x$ → $y = 150 \times 14 = 2100$ taka
+
+**Example 4.** Ohm's law: 12 V across a resistor gives 0.5 A. What current at 30 V?
+- $I = \frac{V}{R}$ with $R = \frac{12}{0.5} = 24$ Ω → $I = \frac{30}{24} = 1.25$ A
+
+## 5. Common mistakes
+- Calling every straight line proportional. It must pass through the origin.
+- Computing $\frac{x}{y}$ instead of $\frac{y}{x}$ for $k$ (both are constant, but $y = kx$ needs $\frac{y}{x}$).
+- Checking only one row of a table.
+
+## 6. Practice
+Q: $y$ is proportional to $x$, and $y = 18$ when $x = 4$. Find $k$ and $y$ when $x = 10$.
+A: $k = 4.5$; $y = 45$.
+
+Q: Is $y = 5x - 2$ proportional?
+A: No, it doesn't pass through the origin.
+
+Q: What does the point $(1, k)$ on a proportional graph tell you?
+A: The unit rate: $y$ for one unit of $x$.
+
+Q: 5 kg of potatoes cost 175 taka. Equation?
+A: $y = 35x$.
+
+Q: A spring stretches 3 cm under 6 N. Stretch under 10 N?
+A: $k = 0.5$ cm/N → 5 cm."
+3,TOPIC,Solving proportions,"Cross-multiplication, the unit-rate method, inverse proportion",MUST,FALSE,"# Solving proportions
+
+## 1. What it covers
+- Solving $\frac{a}{b} = \frac{x}{d}$ by cross-multiplying.
+- The unit-rate method as an alternative.
+- **Inverse proportion**: when one quantity goes up, the other goes down.
+
+## 2. Where it is used
+- **Medicine:** dosage by body weight (5 mg per kg).
+- **Map reading** and scale models.
+- **Project planning:** workers and time (more workers → less time: inverse).
+- **Estimation:** if 50 out of 200 sampled users clicked, how many of 10 000 will?
+
+## 3. What it means
+A **proportion** is an equation saying two ratios are equal. Cross-multiplying works because multiplying both sides by both denominators clears the fractions:
+$$
+\frac{a}{b} = \frac{c}{d} \Rightarrow ad = bc
+$$
+
+**Inverse proportion:** $xy = k$ (the product is constant). If 4 workers take 6 days, then $4 \times 6 = 24$ worker-days of work; 8 workers take $24 \div 8 = 3$ days. Think of sharing a pizza: more people means a smaller slice each.
+
+**Check which kind** before solving: does doubling one quantity double the other (direct) or halve it (inverse)?
+
+## 4. Formula & worked example
+$$
+\text{direct: } \frac{y_1}{x_1} = \frac{y_2}{x_2} \qquad \text{inverse: } x_1y_1 = x_2y_2
+$$
+
+**Example 1.** Solve $\frac{4}{9} = \frac{x}{27}$.
+- $9x = 108$ → $x = 12$
+
+**Example 2.** Solve $\frac{3}{x + 2} = \frac{5}{10}$.
+- $5(x + 2) = 30$ → $x + 2 = 6$ → $x = 4$
+
+**Example 3 (dosage).** 5 mg per kg. Dose for a 38 kg child?
+- $\frac{5}{1} = \frac{x}{38}$ → $x = 190$ mg
+
+**Example 4 (inverse).** 6 taps fill a tank in 40 minutes. How long with 10 taps?
+- $6 \times 40 = 240$ → $\frac{240}{10} = 24$ min
+
+**Example 5 (sampling).** 18 out of 240 sampled phones were faulty. Estimate faulty phones in 5000.
+- $\frac{18}{240} = \frac{x}{5000}$ → $x = 375$
+
+## 5. Common mistakes
+- Using direct proportion for an inverse situation (more workers → more days ✗).
+- Setting up the proportion with mismatched units or order ($\frac{\text{kg}}{\text{taka}} = \frac{\text{taka}}{\text{kg}}$ ✗).
+- Cross-multiplying across an addition: $\frac{a}{b} + c$ is not a proportion.
+
+## 6. Practice
+Q: Solve $\frac{7}{x} = \frac{21}{36}$.
+A: $21x = 252$ → $x = 12$.
+
+Q: 3 cm on a map is 12 km. What is 7.5 cm?
+A: $30$ km.
+
+Q: 8 workers build a wall in 15 days. How long for 12 workers?
+A: $120 \div 12 = 10$ days.
+
+Q: Direct or inverse: speed and travel time for a fixed distance?
+A: Inverse.
+
+Q: Solve $\frac{x - 1}{4} = \frac{9}{12}$.
+A: $12(x - 1) = 36$ → $x = 4$."
+3,TOPIC,"Scale drawings, maps and scale factors","Scale factors, map scales, enlarging and reducing, how area and volume scale",SHOULD,FALSE,"# Scale drawings, maps and scale factors
+
+## 1. What it covers
+- **Scale factors** for enlarging and reducing shapes.
+- Map and blueprint scales such as $1 : 50\,000$.
+- Why **area** scales by $k^2$ and **volume** by $k^3$.
+
+## 2. Where it is used
+- **Maps and GPS:** converting map distance to real distance.
+- **Architecture:** floor plans at $1 : 100$.
+- **Graphic design and games:** zooming an image by 200% makes its area 4 times bigger (and needs 4 times the pixels).
+- **3D printing and models:** a model car at $1 : 18$.
+- **Biology:** why big animals need thicker legs (weight grows by $k^3$ but bone strength only by $k^2$).
+
+## 3. What it means
+A **scale factor** $k$ multiplies every length. $k > 1$ enlarges, $0 < k < 1$ reduces. Angles don't change.
+
+A map scale $1 : 50\,000$ means 1 cm on the map is 50 000 cm (= 500 m) in real life.
+
+**Area and volume:** if every length is multiplied by $k$, a rectangle's area $\text{length} \times \text{width}$ becomes $k \cdot \text{length} \times k \cdot \text{width} = k^2 \times$ area. A box's volume gets three factors: $k^3$. Doubling a photo's size (k = 2) needs 4 times the paper.
+
+## 4. Formula & worked example
+$$
+\text{new length} = k \times \text{old} \qquad \text{new area} = k^2 \times \text{old} \qquad \text{new volume} = k^3 \times \text{old}
+$$
+
+**Example 1.** Map scale $1 : 25\,000$; distance on the map 6.4 cm. Real distance?
+- $6.4 \times 25\,000 = 160\,000$ cm $= 1.6$ km
+
+**Example 2.** A room is 4.5 m long. How long on a $1 : 50$ plan?
+- $450$ cm $\div 50 = 9$ cm
+
+**Example 3.** A triangle with sides 3, 4, 5 is enlarged by a factor of 2.5. New sides?
+- $7.5$, $10$, $12.5$
+
+**Example 4.** A photo is enlarged from 10 × 15 cm to 30 × 45 cm. How many times more ink (area)?
+- $k = 3$ → area ×$9$
+
+**Example 5.** A model ship is $1 : 100$. The model holds 0.5 litres. How much would the real ship hold (same shape)?
+- Volume ×$100^3 = 1\,000\,000$ → $500\,000$ litres
+
+## 5. Common mistakes
+- Scaling area by $k$ instead of $k^2$.
+- Unit mix-ups in map scales: convert cm to m or km at the end.
+- Using the scale backwards (multiplying when you should divide).
+
+## 6. Practice
+Q: Scale $1 : 200$; a wall is 3 cm on the plan. Real length?
+A: $600$ cm $= 6$ m.
+
+Q: A square of side 4 is scaled by $k = 1.5$. New area?
+A: Side 6, area 36 (= $16 \times 2.25$).
+
+Q: Lengths are halved. What happens to volume?
+A: It becomes $\frac{1}{8}$.
+
+Q: Real distance 12 km, map distance 24 cm. Scale?
+A: $1 : 50\,000$.
+
+Q: Zooming an image to 300% multiplies the pixel count by?
+A: $9$."
+3,TOPIC,Unit conversion and dimensional analysis,"Conversion factors, chaining conversions, area/volume units, units in formulas",MUST,FALSE,"# Unit conversion and dimensional analysis
+
+## 1. What it covers
+- Converting units by multiplying by **conversion factors** (fractions equal to 1).
+- Chaining several conversions.
+- Converting area ($\text{m}^2$) and volume ($\text{m}^3$) units.
+- Checking formulas by their units.
+
+## 2. Where it is used
+- **Engineering and science:** NASA lost the USD 125 million Mars Climate Orbiter in 1999 because one team used pound-seconds and another newton-seconds.
+- **Cooking and medicine:** mL vs teaspoons, mg vs g.
+- **Computing:** bytes ↔ bits, KB ↔ MB ↔ GB, ms ↔ s, and cloud pricing per GB-hour.
+- **Travel and trade:** km ↔ miles, currencies.
+
+## 3. What it means
+A conversion factor is a fraction that equals 1, like $\frac{1000 \text{ m}}{1 \text{ km}}$. Multiplying by 1 doesn't change the quantity, only its units. Choose the fraction so the unit you **don't** want **cancels** (it appears once on top and once on the bottom).
+
+**Area and volume:** $1 \text{ m} = 100 \text{ cm}$, so $1 \text{ m}^2 = 100 \times 100 = 10\,000 \text{ cm}^2$ and $1 \text{ m}^3 = 1\,000\,000 \text{ cm}^3$. Square or cube the factor too.
+
+**Dimensional analysis:** units behave like algebra. If a formula for speed gives $\frac{\text{km}}{\text{h}}$, it's plausible; if it gives $\text{km} \cdot \text{h}$, something is wrong.
+
+## 4. Formula & worked example
+$$
+\text{quantity} \times \frac{\text{new unit}}{\text{old unit}} \quad (\text{factor} = 1)
+$$
+Useful: 1 km = 1000 m, 1 m = 100 cm, 1 kg = 1000 g, 1 L = 1000 mL = 1000 cm³, 1 h = 3600 s, 1 inch = 2.54 cm, 1 mile ≈ 1.609 km.
+
+**Example 1.** 72 km/h to m/s.
+$$
+72 \frac{\text{km}}{\text{h}} \times \frac{1000 \text{ m}}{1 \text{ km}} \times \frac{1 \text{ h}}{3600 \text{ s}} = 20 \frac{\text{m}}{\text{s}}
+$$
+
+**Example 2.** 3.5 m² to cm².
+- $3.5 \times 10\,000 = 35\,000$ cm²
+
+**Example 3.** A tank is 2 m × 1.5 m × 0.8 m. How many litres?
+- $2.4$ m³; $1 \text{ m}^3 = 1000$ L → $2400$ L
+
+**Example 4 (chain).** A tap drips 2 mL every 5 s. Litres per day?
+- $\frac{2 \text{ mL}}{5 \text{ s}} \times \frac{86\,400 \text{ s}}{1 \text{ day}} \times \frac{1 \text{ L}}{1000 \text{ mL}} = 34.56$ L/day
+
+**Example 5 (computing).** 500 MB per day for 30 days in GB? (1 GB = 1000 MB)
+- $15\,000$ MB $= 15$ GB
+
+## 5. Common mistakes
+- Converting area or volume with the length factor ($1 \text{ m}^2 = 100 \text{ cm}^2$ ✗).
+- Putting the conversion fraction upside down, so the units don't cancel.
+- Mixing 1000 and 1024 for KB/MB/GB without saying which (storage vendors use 1000; operating systems often 1024).
+
+## 6. Practice
+Q: 5 hours in seconds?
+A: $18\,000$ s.
+
+Q: 25 m/s in km/h?
+A: $90$ km/h.
+
+Q: 0.6 m³ in litres?
+A: $600$ L.
+
+Q: 12 inches in cm?
+A: $30.48$ cm.
+
+Q: 2 km² in m²?
+A: $2\,000\,000$ m²."
+3,TOPIC,"Practice & review: Ratios, rates and proportions",Mixed problem set with worked answers,MUST,FALSE,"# Practice & review: Ratios, rates and proportions
+
+**How to use this:** 45 minutes; a calculator is allowed for 6–9.
+
+## Problems
+1. Simplify $2.5 : 7.5 : 10$.
+2. Divide 7200 taka among three people in the ratio $2 : 3 : 4$.
+3. Red : blue $= 5 : 3$. There are 18 more red than blue. How many in total?
+4. Which is cheaper per litre: 1.5 L for 95 taka or 2.25 L for 140 taka?
+5. Drive 90 km at 60 km/h and 90 km at 90 km/h. Average speed?
+6. $y$ is proportional to $x$; $y = 52$ when $x = 8$. Find $y$ when $x = 13$.
+7. 5 machines make an order in 12 hours. How long would 3 machines take?
+8. On a $1 : 40\,000$ map, a lake has area 3 cm². Real area in km²?
+9. Convert 1.2 g/cm³ to kg/m³.
+
+## Answers
+1. $1 : 3 : 4$.
+2. 9 parts → 800 each → 1600, 2400, 3200.
+3. 2 parts $= 18$ → 1 part $= 9$ → total $8 \times 9 = 72$.
+4. $63.3$ vs $62.2$ taka/L → the 2.25 L bottle.
+5. Times 1.5 h and 1 h → 180 km in 2.5 h → $72$ km/h.
+6. $k = 6.5$ → $y = 84.5$.
+7. Inverse: $60$ machine-hours ÷ 3 = $20$ h.
+8. 1 cm = 400 m, so 1 cm² = 160 000 m²; area $= 480\,000$ m² $= 0.48$ km².
+9. $1.2 \frac{\text{g}}{\text{cm}^3} \times \frac{1 \text{ kg}}{1000 \text{ g}} \times \frac{1\,000\,000 \text{ cm}^3}{1 \text{ m}^3} = 1200$ kg/m³.
+
+## Flashcards
+Q: Part-to-part $3 : 5$. Fraction that is the first part?
+A: $\frac{3}{8}$.
+
+Q: Average speed formula?
+A: Total distance ÷ total time.
+
+Q: Graph of a proportional relationship?
+A: A straight line through the origin, $y = kx$.
+
+Q: Lengths scale by $k$. Areas and volumes scale by?
+A: $k^2$ and $k^3$."
+1,MODULE,Phase 4 — Percentages (Core),"Converting forms, percent of a quantity, finding the whole, percent change, discounts, tax, interest, error, successive changes",MUST,,"# Phase 4: Percentages
+
+""Per cent"" means ""per hundred"". A percentage is just a fraction with denominator 100, which makes different quantities easy to compare. Percentages are everywhere in money, news, statistics and business dashboards, and they are also where people are most easily misled (a 50% rise followed by a 50% fall is **not** back to the start).
+
+**One idea solves almost every problem in this phase:** a percentage change is a **multiplier**. Up 15% means ×1.15; down 15% means ×0.85."
+2,MODULE,Percent basics and applications,"Conversions, part–percent–whole, change, money applications, interest, error, successive changes",MUST,,Turn every percentage into a decimal multiplier and these problems become one-line calculations.
+3,TOPIC,"Fractions, decimals and percents",Converting between the three forms; benchmark percents,MUST,FALSE,"# Fractions, decimals and percents
+
+## 1. What it covers
+- What ""percent"" means.
+- Converting between fractions, decimals and percents in every direction.
+- Benchmark values to know by heart ($\frac{1}{8} = 12.5\%$, etc.).
+
+## 2. Where it is used
+- **News and reports:** ""inflation 9.5%"", ""turnout 41%"".
+- **Dashboards and analytics:** conversion rate, bounce rate, CPU usage, test coverage.
+- **Probability:** ""70% chance of rain"" = 0.7.
+- **Programming:** progress bars compute `done / total * 100`; CSS widths like `width: 33.33%`.
+- **Exams and grading.**
+
+## 3. What it means
+$\%$ means ""out of 100"": $37\% = \frac{37}{100} = 0.37$.
+- **Percent → decimal:** divide by 100 (move the point 2 left).
+- **Decimal → percent:** multiply by 100 (move the point 2 right).
+- **Fraction → percent:** divide top by bottom, then ×100.
+- **Percent → fraction:** put over 100 and simplify.
+
+Percentages above 100% are fine: $150\% = 1.5$, one and a half times the original.
+
+## 4. Formula & worked example
+$$
+p\% = \frac{p}{100} \qquad \text{fraction} \to \% : \frac{a}{b} \times 100\%
+$$
+Benchmarks: $\frac{1}{2} = 50\%$, $\frac{1}{4} = 25\%$, $\frac{3}{4} = 75\%$, $\frac{1}{5} = 20\%$, $\frac{1}{8} = 12.5\%$, $\frac{1}{3} = 33.\overline{3}\%$, $\frac{2}{3} = 66.\overline{6}\%$, $\frac{1}{10} = 10\%$.
+
+**Example 1.** $\frac{7}{20}$ as a percent: $7 \div 20 = 0.35 = 35\%$
+
+**Example 2.** $0.045 = 4.5\%$
+
+**Example 3.** $64\%$ as a fraction: $\frac{64}{100} = \frac{16}{25}$
+
+**Example 4.** $2.5\%$ as a decimal and fraction: $0.025 = \frac{25}{1000} = \frac{1}{40}$
+
+**Example 5.** $\frac{5}{6}$ as a percent: $0.8\overline{3} \approx 83.3\%$
+
+**Example 6 (code).** A progress bar.
+```python
+done, total = 37, 120
+pct = done / total * 100
+print(f""{pct:.1f}%"")      # 30.8%
+```
+`done / total` gives the fraction as a decimal (0.3083...); multiplying by 100 turns it into a percent, and `:.1f` rounds to one decimal place for display.
+
+## 5. Common mistakes
+- $0.5\% = 0.5$. No: $0.5\% = 0.005$.
+- Moving the decimal point the wrong way.
+- Writing $\frac{1}{3} = 33\%$ exactly. It is $33.\overline{3}\%$.
+
+## 6. Practice
+Q: $\frac{3}{8}$ as a percent?
+A: $37.5\%$.
+
+Q: $0.6\%$ as a decimal?
+A: $0.006$.
+
+Q: $125\%$ as a decimal?
+A: $1.25$.
+
+Q: $85\%$ as a simplified fraction?
+A: $\frac{17}{20}$.
+
+Q: $0.125$ as a percent?
+A: $12.5\%$."
+3,TOPIC,Percent of a quantity and finding the whole,"part = percent × whole, finding any one of the three",MUST,FALSE,"# Percent of a quantity and finding the whole
+
+## 1. What it covers
+- Finding a percent **of** a number.
+- Finding **what percent** one number is of another.
+- Finding the **whole** when you know a part and its percent.
+- Mental shortcuts (10%, 1%, 5%).
+
+## 2. Where it is used
+- **Tips, VAT and service charges.**
+- **Survey results:** 342 of 900 people said yes. What percent?
+- **Exams:** ""you need 40% to pass a 75-mark paper"".
+- **Business metrics:** if 3% of visitors buy and you want 600 sales, how many visitors do you need?
+
+## 3. What it means
+Every percent problem uses one equation with three quantities:
+$$
+\text{part} = \text{percent (as a decimal)} \times \text{whole}
+$$
+Two are given, and you find the third. ""**Of**"" means multiply; ""**is**"" means equals.
+
+**Mental shortcut:** 10% = move the point one place left; 1% = two places; 5% = half of 10%. Build others: 15% = 10% + 5%.
+
+## 4. Formula & worked example
+$$
+\text{part} = p \times W \qquad p = \frac{\text{part}}{W} \qquad W = \frac{\text{part}}{p}
+$$
+
+**Example 1.** 35% of 240 = $0.35 \times 240 = 84$
+
+**Example 2 (mental).** 15% of 860 = $86 + 43 = 129$
+
+**Example 3.** 54 is what percent of 72?
+- $\frac{54}{72} = 0.75 = 75\%$
+
+**Example 4 (find the whole).** 18 students (that's 12% of the school) wear glasses. How many students in total?
+- $W = \frac{18}{0.12} = 150$
+
+**Example 5.** A conversion rate is 2.5%. How many visitors are needed for 600 sales?
+- $W = \frac{600}{0.025} = 24\,000$
+
+**Example 6.** 4% of a number is 7. What is 100%?
+- $\frac{7}{0.04} = 175$
+
+## 5. Common mistakes
+- Dividing the wrong way in ""what percent"": always **part ÷ whole**.
+- Multiplying by 35 instead of 0.35.
+- In ""find the whole"" problems, multiplying instead of dividing.
+
+## 6. Practice
+Q: 8% of 450?
+A: $36$.
+
+Q: 27 out of 45 as a percent?
+A: $60\%$.
+
+Q: 30 is 40% of what?
+A: $75$.
+
+Q: 12.5% of 640?
+A: $80$ (it's $\frac{1}{8}$).
+
+Q: You scored 52 out of 80. Percentage?
+A: $65\%$."
+3,TOPIC,Percent increase and decrease,"Percent change formula, multipliers, finding the original value",MUST,FALSE,"# Percent increase and decrease
+
+## 1. What it covers
+- Increasing or decreasing a value by a percentage, using a **multiplier**.
+- The **percent change** formula.
+- **Reverse percentages**: finding the original price before a change.
+
+## 2. Where it is used
+- **Prices and inflation:** ""rice up 12% this year"".
+- **Salaries:** an 8% raise.
+- **Business dashboards:** month-over-month growth; stock price changes.
+- **Performance engineering:** ""the new query is 35% faster"".
+- **Population and data growth.**
+
+## 3. What it means
+**Multiplier method:** increasing by $p\%$ means keeping 100% and adding $p\%$, so you multiply by $1 + \frac{p}{100}$. Decreasing by $p\%$: multiply by $1 - \frac{p}{100}$.
+- +20% → ×1.20; −20% → ×0.80; +5% → ×1.05; −2.5% → ×0.975.
+
+**Percent change** compares the change with the **original** value:
+$$
+\text{percent change} = \frac{\text{new} - \text{original}}{\text{original}} \times 100\%
+$$
+
+**Reverse:** if the new value is known, **divide** by the multiplier. A shirt costs 1150 taka after a 15% VAT? Original $= 1150 \div 1.15 = 1000$. (Subtracting 15% of 1150 gives the wrong answer.)
+
+## 4. Formula & worked example
+$$
+\text{new} = \text{original} \times \left(1 \pm \frac{p}{100}\right) \qquad \text{original} = \frac{\text{new}}{1 \pm p/100}
+$$
+
+**Example 1.** Increase 2400 by 15%: $2400 \times 1.15 = 2760$
+
+**Example 2.** Decrease 850 by 8%: $850 \times 0.92 = 782$
+
+**Example 3 (percent change).** A price rose from 60 to 75 taka.
+- $\frac{75 - 60}{60} = 0.25 = 25\%$ increase
+
+**Example 4 (decrease).** Page load time fell from 3.2 s to 2.0 s.
+- $\frac{2.0 - 3.2}{3.2} = -0.375$ → 37.5% decrease
+
+**Example 5 (reverse).** After a 20% discount a phone costs 18 400 taka. Original price?
+- $18\,400 \div 0.80 = 23\,000$ taka
+
+## 5. Common mistakes
+- Dividing by the **new** value in the percent change formula. Always divide by the **original**.
+- Reverse percentages by subtracting: $18\,400 - 20\% \text{ of } 18\,400$ ✗. Divide by the multiplier.
+- Saying ""from 4% to 6% is a 2% increase"". It is a **2 percentage point** increase, which is a **50%** relative increase.
+
+## 6. Practice
+Q: Multiplier for a 7% decrease?
+A: $0.93$.
+
+Q: 480 increased by 12.5%?
+A: $540$.
+
+Q: From 250 to 210. Percent change?
+A: $-16\%$ (a 16% decrease).
+
+Q: After a 10% raise, a salary is 33 000. What was it before?
+A: $30\,000$.
+
+Q: Interest rates went from 5% to 6%. Percentage point change and percent change?
+A: 1 percentage point; a 20% increase."
+3,TOPIC,"Discounts, tax, tips, markup and commission",Multi-step money problems with percentages,MUST,FALSE,"# Discounts, tax, tips, markup and commission
+
+## 1. What it covers
+- **Discount** (price goes down) and **sales tax / VAT** (price goes up).
+- **Tips** and service charges.
+- **Markup** (shop price above cost) and **profit margin**.
+- **Commission** (pay as a percent of sales).
+
+## 2. Where it is used
+- **Shopping and restaurants:** sale prices, VAT, service charge.
+- **Retail and e-commerce:** pricing products from cost; e-commerce platforms take a commission per sale.
+- **Freelancing:** platforms like Upwork or Fiverr take a 10–20% fee.
+- **Sales jobs:** salary + commission.
+- **Billing software:** computing invoices with discounts and VAT.
+
+## 3. What it means
+All of these are percent changes, so use multipliers:
+- Discount $d\%$: price × $(1 - d/100)$.
+- Tax, tip or markup $t\%$: amount × $(1 + t/100)$.
+- Commission $c\%$: earnings $= c/100 \times$ sales.
+
+**Markup vs margin:** both compare profit with something different.
+- **Markup** = profit ÷ **cost**.
+- **Margin** = profit ÷ **selling price**.
+A product costing 80 sold at 100 has a 25% markup but a 20% margin.
+
+**Order of discount and tax doesn't matter** for the final price, because multiplication is commutative: $P \times 0.8 \times 1.15 = P \times 1.15 \times 0.8$.
+
+## 4. Formula & worked example
+$$
+\text{markup} = \frac{\text{price} - \text{cost}}{\text{cost}} \qquad \text{margin} = \frac{\text{price} - \text{cost}}{\text{price}}
+$$
+
+**Example 1.** A 3500 taka jacket, 30% off, then 7.5% VAT.
+- $3500 \times 0.70 \times 1.075 = 2633.75$ taka
+
+**Example 2 (tip).** A 1840 taka bill with a 10% service charge and 5% VAT on the bill.
+- Both on the original bill: $1840 \times 1.15 = 2116$ taka (if VAT is charged on bill + service: $1840 \times 1.10 \times 1.05 = 2125.20$; read the rules!)
+
+**Example 3 (markup).** A shop buys a kettle for 1200 taka and marks it up 35%. Selling price and margin?
+- Price $= 1200 \times 1.35 = 1620$; margin $= \frac{420}{1620} \approx 25.9\%$
+
+**Example 4 (commission).** A salesperson earns 15 000 taka basic plus 4% commission on sales of 380 000 taka.
+- $15\,000 + 0.04 \times 380\,000 = 15\,000 + 15\,200 = 30\,200$ taka
+
+**Example 5 (platform fee).** A freelancer bills USD 500; the platform takes 10%. Then a 2% transfer fee applies. Amount received?
+- $500 \times 0.90 \times 0.98 = 441$ USD
+
+## 5. Common mistakes
+- Adding percentages from different bases: 30% off and then 20% off is **not** 50% off ($0.7 \times 0.8 = 0.56$, i.e. 44% off).
+- Confusing markup with margin.
+- Applying tax to the original price when the rule says after the discount (or vice versa when it matters, e.g. fixed fees).
+
+## 6. Practice
+Q: 25% off 2400, then 15% VAT. Final price?
+A: $2400 \times 0.75 \times 1.15 = 2070$.
+
+Q: Cost 500, price 650. Markup and margin?
+A: Markup 30%; margin $\approx 23.1\%$.
+
+Q: 6% commission on 250 000. Earnings?
+A: $15\,000$.
+
+Q: Is ""40% off then 10% off"" the same as 50% off?
+A: No: $0.6 \times 0.9 = 0.54$, i.e. 46% off.
+
+Q: A meal costs 960 taka; tip 15%. Total?
+A: $1104$ taka."
+3,TOPIC,Simple and compound interest,"I = Prt, total amount, comparing with compound interest",MUST,FALSE,"# Simple and compound interest
+
+## 1. What it covers
+- **Simple interest:** $I = Prt$.
+- The total amount $A = P + I$.
+- Finding the rate, time or principal.
+- A first look at **compound interest** $A = P(1 + r)^t$ (covered fully in the Algebra roadmap).
+
+## 2. Where it is used
+- **Banking:** savings accounts, fixed deposits (FDR), savings certificates (Sanchayapatra).
+- **Loans:** personal and car loans, credit cards.
+- **Investing:** comparing returns.
+- **Business finance:** working out the cost of borrowing.
+
+## 3. What it means
+**Interest** is the price of using money. The **principal** $P$ is the amount borrowed or saved, $r$ is the yearly rate (as a decimal) and $t$ is the time in years.
+
+**Simple interest:** interest is charged on the **original principal only**, the same amount every year.
+
+**Compound interest:** each year's interest is added to the balance, and the next year's interest is calculated on the new, larger balance: ""interest on interest"". Over long periods this makes a huge difference. Compounding is like a snowball rolling downhill: it picks up more snow because it's already bigger.
+
+## 4. Formula & worked example
+$$
+I = Prt \qquad A = P + I = P(1 + rt) \qquad \text{compound: } A = P(1 + r)^t
+$$
+
+**Example 1.** 50 000 taka at 8% simple interest for 3 years.
+- $I = 50\,000 \times 0.08 \times 3 = 12\,000$; $A = 62\,000$ taka
+
+**Example 2 (months).** 20 000 at 9% for 8 months.
+- $t = \frac{8}{12}$ → $I = 20\,000 \times 0.09 \times \frac{2}{3} = 1200$
+
+**Example 3 (find the rate).** 15 000 grows to 18 600 in 4 years (simple). Rate?
+- $I = 3600 = 15\,000 \times r \times 4$ → $r = 0.06 = 6\%$
+
+**Example 4 (compare).** 100 000 at 10% for 10 years.
+- Simple: $A = 100\,000(1 + 0.1 \times 10) = 200\,000$
+- Compound: $A = 100\,000 \times 1.1^{10} \approx 259\,374$
+
+**Example 5 (code).** Compound growth year by year.
+```python
+balance = 100_000
+for year in range(1, 11):
+    balance *= 1.10          # add 10% of the current balance
+print(round(balance))        # 259374
+```
+Each loop multiplies the **current** balance by 1.10, which is exactly what compounding means. Ten loops give $100\,000 \times 1.1^{10}$.
+
+## 5. Common mistakes
+- Using 8 instead of 0.08 for $r$.
+- Using months directly as $t$; convert to years.
+- Forgetting to add the principal when asked for the total amount.
+
+## 6. Practice
+Q: Simple interest on 40 000 at 7.5% for 2 years?
+A: $6000$.
+
+Q: Total after 5 years: 10 000 at 6% simple?
+A: $13\,000$.
+
+Q: How long for 25 000 at 8% simple to earn 6000?
+A: $t = \frac{6000}{2000} = 3$ years.
+
+Q: 10 000 at 5% compounded yearly for 2 years?
+A: $10\,000 \times 1.05^2 = 11\,025$.
+
+Q: Why does compound interest beat simple interest over time?
+A: Interest is earned on previous interest, so the base keeps growing."
+3,TOPIC,Percent error,"Comparing measured and true values, relative error",SHOULD,FALSE,"# Percent error
+
+## 1. What it covers
+- **Absolute error** $\lvert \text{measured} - \text{true}\rvert$.
+- **Percent (relative) error**: the error compared with the true value.
+- Why relative error is more meaningful than absolute error.
+
+## 2. Where it is used
+- **Science labs:** comparing experimental results with accepted values.
+- **Machine learning:** MAPE (mean absolute percentage error) for forecasting.
+- **Engineering tolerances:** a resistor rated 100 Ω ± 5%.
+- **Estimation:** how good was the project time estimate?
+
+## 3. What it means
+An error of 1 cm is huge when measuring a 5 cm screw, but tiny when measuring a 100 m field. Percent error puts the error **in proportion** to the true size.
+
+**Steps:** 1. find the difference, 2. take its absolute value, 3. divide by the **true** value, 4. ×100.
+
+## 4. Formula & worked example
+$$
+\text{percent error} = \frac{\lvert \text{measured} - \text{true}\rvert}{\lvert\text{true}\rvert} \times 100\%
+$$
+
+**Example 1.** You measured $g = 9.5$ m/s²; the true value is 9.81.
+- $\frac{0.31}{9.81} \approx 3.2\%$
+
+**Example 2.** You estimated a task at 6 hours; it took 8.
+- $\frac{\lvert 6 - 8\rvert}{8} = 25\%$
+
+**Example 3 (tolerance).** A 220 Ω resistor with ±5% tolerance. Range of possible values?
+- $5\%$ of $220 = 11$ → $209$ to $231$ Ω
+
+**Example 4.** Two errors: 2 g on a 50 g sample vs 5 g on a 1 kg sample. Which is worse?
+- $4\%$ vs $0.5\%$ → the first is worse, despite the smaller absolute error.
+
+## 5. Common mistakes
+- Dividing by the measured value instead of the true value.
+- Forgetting the absolute value (percent error is non-negative).
+- Leaving it as a decimal when a percent is asked for.
+
+## 6. Practice
+Q: Measured 48 cm, true 50 cm. Percent error?
+A: $4\%$.
+
+Q: Forecast 1200 sales, actual 1000. Percent error?
+A: $20\%$.
+
+Q: A 1 kg bag weighs 985 g. Percent error?
+A: $1.5\%$.
+
+Q: Which is worse: 0.5 s error on a 10 s race, or 3 s on a 400 s race?
+A: $5\%$ vs $0.75\%$ → the 10 s race.
+
+Q: Range of a 1000 Ω resistor with ±2% tolerance?
+A: $980$ to $1020$ Ω."
+3,TOPIC,Successive percent changes,"Chaining multipliers, why +50% then −50% isn't zero, average growth",MUST,FALSE,"# Successive percent changes
+
+## 1. What it covers
+- Applying several percent changes one after another.
+- Why increases and decreases don't cancel.
+- Finding the overall percent change of a chain.
+- A first look at average growth rate.
+
+## 2. Where it is used
+- **Investing:** a stock falls 20% and then rises 20%: you've still lost money.
+- **Pricing:** stacked discounts (""extra 10% off sale prices"").
+- **Business reporting:** quarterly growth that compounds into yearly growth.
+- **Inflation:** prices rising several percent a year for many years.
+
+## 3. What it means
+Each change applies to the **new** value, not the original. So multiply the multipliers:
+- +50% then −50%: $1.5 \times 0.5 = 0.75$ → overall **−25%**.
+- −20% then +20%: $0.8 \times 1.2 = 0.96$ → overall **−4%**.
+
+The decrease is applied to a bigger number (or the increase to a smaller one), so the two don't cancel. If you lose half your money, you need a **100%** gain to get back.
+
+## 4. Formula & worked example
+$$
+\text{overall multiplier} = m_1 \times m_2 \times \cdots \times m_n \qquad \text{overall change} = (\text{multiplier} - 1) \times 100\%
+$$
+
+**Example 1.** Price up 10%, then up 10% again.
+- $1.1 \times 1.1 = 1.21$ → +21% (not 20%)
+
+**Example 2.** A 25% discount, then an extra 10% off.
+- $0.75 \times 0.9 = 0.675$ → 32.5% off overall
+
+**Example 3.** An investment of 80 000: −30% in year 1, +40% in year 2.
+- $80\,000 \times 0.7 \times 1.4 = 78\,400$ → still below the start (−2%)
+
+**Example 4 (needed recovery).** After a 40% drop, what rise gets you back?
+- $0.6 \times m = 1$ → $m = 1.\overline{6}$ → a 66.7% rise
+
+**Example 5 (yearly from monthly).** 2% growth per month for 12 months.
+- $1.02^{12} \approx 1.268$ → about 26.8% per year (not 24%)
+
+## 5. Common mistakes
+- Adding the percentages: +10% and +10% ≠ +20%.
+- Assuming −x% then +x% returns to the start.
+- Applying all changes to the original value instead of the running value.
+
+## 6. Practice
+Q: +20% then −20%. Overall?
+A: $1.2 \times 0.8 = 0.96$ → −4%.
+
+Q: Three discounts of 10% each. Overall discount?
+A: $0.9^3 = 0.729$ → 27.1% off.
+
+Q: A 50% loss needs what gain to recover?
+A: 100%.
+
+Q: 1000 grows 5% then 8%. Final value?
+A: $1000 \times 1.05 \times 1.08 = 1134$.
+
+Q: 3% growth each quarter. Yearly growth?
+A: $1.03^4 \approx 1.1255$ → about 12.6%."
+3,TOPIC,Practice & review: Percentages,Mixed problem set with worked answers,MUST,FALSE,"# Practice & review: Percentages
+
+**How to use this:** 45 minutes with a calculator. Write the multiplier for every change before calculating.
+
+## Problems
+1. Write $\frac{9}{40}$ as a percent and $0.35\%$ as a decimal.
+2. 18% of 1250? And 75 is what percent of 300?
+3. 42 is 35% of what number?
+4. A laptop's price falls from 85 000 to 72 250 taka. Percent change?
+5. After 15% VAT a bill is 2760 taka. Bill before VAT?
+6. A shop buys at 640 and sells at 880. Markup and margin?
+7. 120 000 at 9% simple interest for 3 years 6 months. Interest?
+8. 50 000 at 8% compound interest for 3 years. Final amount?
+9. A share price rises 25%, then falls 20%, then rises 10%. Overall change?
+10. A measurement of 3.2 m should have been 3.25 m. Percent error?
+
+## Answers
+1. $22.5\%$; $0.0035$.
+2. $225$; $25\%$.
+3. $42 \div 0.35 = 120$.
+4. $\frac{72\,250 - 85\,000}{85\,000} = -15\%$.
+5. $2760 \div 1.15 = 2400$ taka.
+6. Markup $= \frac{240}{640} = 37.5\%$; margin $= \frac{240}{880} \approx 27.3\%$.
+7. $120\,000 \times 0.09 \times 3.5 = 37\,800$.
+8. $50\,000 \times 1.08^3 = 62\,985.60$.
+9. $1.25 \times 0.8 \times 1.1 = 1.1$ → +10%.
+10. $\frac{0.05}{3.25} \approx 1.54\%$.
+
+## Flashcards
+Q: Multiplier for a $p\%$ increase? Decrease?
+A: $1 + \frac{p}{100}$; $1 - \frac{p}{100}$.
+
+Q: Percent change formula?
+A: $\frac{\text{new} - \text{original}}{\text{original}} \times 100\%$.
+
+Q: How do you find the original price after a known percent change?
+A: Divide the new price by the multiplier.
+
+Q: Simple interest formula?
+A: $I = Prt$."
+1,MODULE,"Phase 5 — Exponents, Roots and Real Numbers (Core)","Exponent rules, zero and negative exponents, scientific notation, square and cube roots, irrational numbers",MUST,,"# Phase 5: Exponents, roots and real numbers
+
+This phase finishes the number toolkit you need for algebra: the **laws of exponents**, **scientific notation** for very large and very small numbers, and **roots**, including the irrational numbers like $\sqrt{2}$ that fill the gaps in the number line."
+2,MODULE,Powers and roots,"Exponent laws, scientific notation, roots, irrational numbers",MUST,,"Each exponent rule comes from the meaning ""repeated multiplication"". If you forget a rule, write out the multiplication and it comes back."
+3,TOPIC,Integer exponent rules,"Product, quotient and power rules; powers of products and quotients",MUST,FALSE,"# Integer exponent rules
+
+## 1. What it covers
+- **Product rule:** $a^m \cdot a^n = a^{m+n}$.
+- **Quotient rule:** $\frac{a^m}{a^n} = a^{m-n}$.
+- **Power rule:** $(a^m)^n = a^{mn}$.
+- Powers of products and quotients: $(ab)^n = a^nb^n$, $\left(\frac{a}{b}\right)^n = \frac{a^n}{b^n}$.
+
+## 2. Where it is used
+- **Algebra:** simplifying expressions like $\frac{6x^5y^2}{2x^3y}$.
+- **Computing:** $2^{10} \times 2^{10} = 2^{20}$ (KB × 1024 = MB); bit shifts `1 << n` compute $2^n$.
+- **Science:** combining quantities in scientific notation.
+- **Algorithms:** complexity like $O(n^2)$ and $O(2^n)$; doubling the input of an $O(n^2)$ algorithm multiplies the time by $2^2 = 4$.
+
+## 3. What it means
+Write the powers out and the rules become obvious:
+- $a^3 \cdot a^2 = (a \cdot a \cdot a)(a \cdot a) = a^5$. **Multiply → add exponents.**
+- $\frac{a^5}{a^2} = \frac{a \cdot a \cdot a \cdot a \cdot a}{a \cdot a} = a^3$. **Divide → subtract exponents.**
+- $(a^2)^3 = a^2 \cdot a^2 \cdot a^2 = a^6$. **Power of a power → multiply exponents.**
+
+These rules work only when the **bases are the same**: $2^3 \cdot 3^2$ can't be combined into one power.
+
+## 4. Formula & worked example
+$$
+a^m a^n = a^{m+n} \qquad \frac{a^m}{a^n} = a^{m-n} \qquad (a^m)^n = a^{mn} \qquad (ab)^n = a^nb^n \qquad \left(\frac{a}{b}\right)^n = \frac{a^n}{b^n}
+$$
+
+**Example 1.** $x^4 \cdot x^7 = x^{11}$
+
+**Example 2.** $\frac{5^9}{5^6} = 5^3 = 125$
+
+**Example 3.** $(y^3)^4 = y^{12}$
+
+**Example 4.** $(2x^3)^4 = 2^4x^{12} = 16x^{12}$
+
+**Example 5.** $\dfrac{12a^5b^3}{4a^2b} = 3a^3b^2$
+
+**Example 6.** $\left(\frac{3m^2}{n}\right)^3 = \frac{27m^6}{n^3}$
+
+## 5. Common mistakes
+- Multiplying exponents in the product rule: $x^2 \cdot x^3 \ne x^6$ (it's $x^5$).
+- Raising only one factor: $(2x)^3 \ne 2x^3$ (it's $8x^3$).
+- Using the rules for sums: $(a + b)^2 \ne a^2 + b^2$.
+
+## 6. Practice
+Q: $a^3 \cdot a^5 \cdot a$?
+A: $a^9$.
+
+Q: $\frac{10^8}{10^3}$?
+A: $10^5$.
+
+Q: $(3x^2)^3$?
+A: $27x^6$.
+
+Q: $\frac{18x^7y^4}{6x^2y^4}$?
+A: $3x^5$.
+
+Q: Can $2^4 \cdot 3^4$ be simplified to a single power?
+A: Yes, $(2 \cdot 3)^4 = 6^4$ (same exponent, so the power-of-a-product rule applies)."
+3,TOPIC,Zero and negative exponents,"a⁰ = 1, a⁻ⁿ = 1/aⁿ, simplifying with negative exponents",MUST,FALSE,"# Zero and negative exponents
+
+## 1. What it covers
+- Why $a^0 = 1$.
+- Why $a^{-n} = \frac{1}{a^n}$.
+- Simplifying expressions and writing answers with positive exponents.
+
+## 2. Where it is used
+- **Science and engineering:** units like $\text{m}\cdot\text{s}^{-2}$ (metres per second squared); prefixes milli $= 10^{-3}$, micro $= 10^{-6}$, nano $= 10^{-9}$.
+- **Computing:** time in nanoseconds; floating-point numbers store a (possibly negative) exponent.
+- **Scientific notation** for small numbers.
+- **Algebra and calculus:** the power rule for derivatives works smoothly with negative exponents ($\frac{1}{x^2} = x^{-2}$).
+
+## 3. What it means
+Look at the pattern of powers of 2, dividing by 2 each step:
+$2^3 = 8$, $2^2 = 4$, $2^1 = 2$, $2^0 = 1$, $2^{-1} = \frac{1}{2}$, $2^{-2} = \frac{1}{4}$.
+
+So $a^0 = 1$ and a negative exponent means **one over** the positive power. The quotient rule agrees: $\frac{a^3}{a^3} = a^{3-3} = a^0$, and anything divided by itself is 1.
+
+A negative exponent **does not make the number negative**: $2^{-3} = \frac{1}{8}$, a small positive number. It means ""divide by $a$ that many times"" instead of multiply.
+
+## 4. Formula & worked example
+$$
+a^0 = 1 \ (a \ne 0) \qquad a^{-n} = \frac{1}{a^n} \qquad \frac{1}{a^{-n}} = a^n \qquad \left(\frac{a}{b}\right)^{-n} = \left(\frac{b}{a}\right)^n
+$$
+
+**Example 1.** $5^{-2} = \frac{1}{25}$
+
+**Example 2.** $(-7)^0 = 1$, but $-7^0 = -1$.
+
+**Example 3.** $\left(\frac{2}{3}\right)^{-3} = \left(\frac{3}{2}\right)^3 = \frac{27}{8}$
+
+**Example 4.** Simplify $x^5 \cdot x^{-8}$ with positive exponents.
+- $x^{-3} = \frac{1}{x^3}$
+
+**Example 5.** Simplify $\dfrac{4a^{-2}b^3}{2a^3b^{-1}}$.
+- $2a^{-2-3}b^{3-(-1)} = 2a^{-5}b^4 = \frac{2b^4}{a^5}$
+
+**Example 6.** $3 \times 10^{-4} = \frac{3}{10\,000} = 0.0003$
+
+## 5. Common mistakes
+- $2^{-3} = -8$. No: $\frac{1}{8}$.
+- $0^0$: it's undefined in basic algebra (many programs return 1 by convention).
+- Moving a coefficient with the variable: $3x^{-2} = \frac{3}{x^2}$, not $\frac{1}{3x^2}$.
+
+## 6. Practice
+Q: $4^{-1}$?
+A: $\frac{1}{4}$.
+
+Q: $10^{-3}$ as a decimal?
+A: $0.001$.
+
+Q: $\left(\frac{1}{5}\right)^{-2}$?
+A: $25$.
+
+Q: Simplify $\frac{x^{-3}}{x^{-7}}$.
+A: $x^4$.
+
+Q: Write $\frac{5}{y^4}$ with a negative exponent.
+A: $5y^{-4}$."
+3,TOPIC,Scientific notation,"Writing, comparing and computing with very large and very small numbers",MUST,FALSE,"# Scientific notation
+
+## 1. What it covers
+- Writing numbers as $a \times 10^n$ with $1 \le a < 10$.
+- Converting to and from ordinary notation.
+- Comparing numbers in scientific notation.
+- Multiplying, dividing, adding and subtracting them.
+
+## 2. Where it is used
+- **Science:** the speed of light $3 \times 10^8$ m/s; an atom's size $\approx 10^{-10}$ m.
+- **Computing:** programming languages print `1e9` or `2.5e-6` (that's $2.5 \times 10^{-6}$); a CPU at 3 GHz does $3 \times 10^9$ cycles per second.
+- **Data:** world data volume in zettabytes ($10^{21}$ bytes).
+- **Economics:** national budgets in trillions.
+
+## 3. What it means
+Scientific notation writes any number as **(a number from 1 to just under 10) × (a power of 10)**. The power of 10 tells you how many places to move the decimal point: positive for big numbers, negative for small ones.
+- $45\,000\,000 = 4.5 \times 10^7$ (point moved 7 left).
+- $0.00062 = 6.2 \times 10^{-4}$ (point moved 4 right).
+
+It avoids long strings of zeros and makes size comparisons instant: compare exponents first.
+
+**Calculating:**
+- **× and ÷:** do the front numbers and the powers of 10 separately (exponent rules), then adjust to $1 \le a < 10$.
+- **+ and −:** first make the powers of 10 the same.
+
+## 4. Formula & worked example
+$$
+N = a \times 10^n,\ 1 \le a < 10 \qquad (a \times 10^m)(b \times 10^n) = ab \times 10^{m+n}
+$$
+
+**Example 1.** $380\,000 = 3.8 \times 10^5$; $0.0000071 = 7.1 \times 10^{-6}$
+
+**Example 2.** $(3 \times 10^4)(5 \times 10^6) = 15 \times 10^{10} = 1.5 \times 10^{11}$
+
+**Example 3.** $\dfrac{8.4 \times 10^{-3}}{2.1 \times 10^{5}} = 4 \times 10^{-8}$
+
+**Example 4.** $6.2 \times 10^5 + 3.5 \times 10^4$
+- $= 6.2 \times 10^5 + 0.35 \times 10^5 = 6.55 \times 10^5$
+
+**Example 5.** How long does light take to travel from the Sun ($1.5 \times 10^{11}$ m) at $3 \times 10^8$ m/s?
+- $\frac{1.5 \times 10^{11}}{3 \times 10^8} = 0.5 \times 10^3 = 500$ s $\approx 8.3$ minutes
+
+**Example 6 (code).**
+```python
+print(3e8 * 500)        # 150000000000.0  (that's 1.5e11)
+print(f""{0.00062:.2e}"") # 6.20e-04
+```
+`3e8` is how code writes $3 \times 10^8$. The format `:.2e` prints a number in scientific notation with two decimals.
+
+## 5. Common mistakes
+- Leaving the front number outside $[1, 10)$: $15 \times 10^{10}$ must become $1.5 \times 10^{11}$.
+- Wrong sign of exponent: small numbers (less than 1) have **negative** exponents.
+- Adding without first matching the exponents.
+
+## 6. Practice
+Q: $52\,000\,000$ in scientific notation?
+A: $5.2 \times 10^7$.
+
+Q: $4.06 \times 10^{-3}$ as a decimal?
+A: $0.00406$.
+
+Q: $(2 \times 10^3)(4.5 \times 10^{-7})$?
+A: $9 \times 10^{-4}$.
+
+Q: Which is bigger: $3 \times 10^{-5}$ or $9 \times 10^{-6}$?
+A: $3 \times 10^{-5}$ (larger exponent).
+
+Q: A 3 GHz CPU: how many cycles in 2 ms?
+A: $3 \times 10^9 \times 2 \times 10^{-3} = 6 \times 10^6$."
+3,TOPIC,Square roots and cube roots,"Evaluating roots, solving x² = p and x³ = p, simplifying square roots",MUST,FALSE,"# Square roots and cube roots
+
+## 1. What it covers
+- The square root $\sqrt{a}$ and cube root $\sqrt[3]{a}$.
+- Solving $x^2 = p$ (two answers) and $x^3 = p$ (one answer).
+- Simplifying square roots like $\sqrt{72} = 6\sqrt{2}$.
+
+## 2. Where it is used
+- **Geometry:** Pythagoras and distances ($\sqrt{x^2 + y^2}$).
+- **Statistics:** the standard deviation is a square root.
+- **Physics:** the time to fall a height $h$ is $\sqrt{2h/g}$.
+- **Graphics and ML:** normalising vectors divides by their length $\sqrt{x^2 + y^2 + z^2}$ (games compute this millions of times per second).
+- **Volume:** the side of a cube holding 1000 L is $\sqrt[3]{1 \text{ m}^3} = 1$ m.
+
+## 3. What it means
+$\sqrt{a}$ asks ""**what number times itself gives $a$**?"" — like finding the side of a square from its area. $\sqrt{49} = 7$ because $7^2 = 49$. The symbol $\sqrt{\ }$ means the **non-negative** root.
+
+But the **equation** $x^2 = 49$ has two solutions, $7$ and $-7$, since $(-7)^2 = 49$ too.
+
+$\sqrt[3]{a}$ asks ""what number cubed gives $a$?"" — the side of a cube from its volume. Cube roots of negatives exist: $\sqrt[3]{-8} = -2$. So $x^3 = p$ has exactly one real solution.
+
+**Simplifying:** pull out perfect-square factors: $\sqrt{ab} = \sqrt{a}\sqrt{b}$.
+
+## 4. Formula & worked example
+$$
+\sqrt{a}\sqrt{b} = \sqrt{ab} \qquad \sqrt{\frac{a}{b}} = \frac{\sqrt{a}}{\sqrt{b}} \qquad x^2 = p \Rightarrow x = \pm\sqrt{p} \qquad x^3 = p \Rightarrow x = \sqrt[3]{p}
+$$
+
+**Example 1.** $\sqrt{144} = 12$, $\sqrt[3]{125} = 5$, $\sqrt[3]{-27} = -3$
+
+**Example 2.** $\sqrt{\frac{9}{64}} = \frac{3}{8}$
+
+**Example 3.** Simplify $\sqrt{72}$.
+- $72 = 36 \times 2$ → $\sqrt{36}\sqrt{2} = 6\sqrt{2}$
+
+**Example 4.** Solve $x^2 = 81$: $x = \pm 9$. Solve $x^3 = -64$: $x = -4$.
+
+**Example 5.** A square garden has area 200 m². Side length?
+- $\sqrt{200} = 10\sqrt{2} \approx 14.14$ m (only the positive root makes sense here)
+
+**Example 6.** $\sqrt{12} + \sqrt{27}$
+- $2\sqrt{3} + 3\sqrt{3} = 5\sqrt{3}$
+
+## 5. Common mistakes
+- $\sqrt{a + b} = \sqrt{a} + \sqrt{b}$. False: $\sqrt{9 + 16} = 5 \ne 3 + 4$.
+- Forgetting the $\pm$ when solving $x^2 = p$.
+- Thinking $\sqrt{-9}$ is $-3$. It has no real value ($-3 \times -3 = 9$).
+
+## 6. Practice
+Q: $\sqrt{0.25}$?
+A: $0.5$.
+
+Q: $\sqrt[3]{1000}$?
+A: $10$.
+
+Q: Simplify $\sqrt{50}$.
+A: $5\sqrt{2}$.
+
+Q: Solve $x^2 = 121$.
+A: $x = \pm 11$.
+
+Q: A cube has volume 343 cm³. Edge length?
+A: $7$ cm."
+3,TOPIC,"Irrational numbers, estimating roots and ordering reals","Locating √2 and √5 on a number line, why √2 is irrational, ordering mixed real numbers",MUST,FALSE,"# Irrational numbers, estimating roots and ordering reals
+
+## 1. What it covers
+- Estimating square roots between two whole numbers (and to one decimal place).
+- Placing irrational numbers like $\sqrt{2}$, $\sqrt{5}$ and $\pi$ on a number line.
+- Why $\sqrt{2}$ is irrational (a short proof).
+- Ordering a mix of roots, fractions, decimals and $\pi$.
+
+## 2. Where it is used
+- **Estimation and sanity checks:** ""$\sqrt{50}$ should be a bit above 7"".
+- **Engineering:** paper sizes (A4) use the ratio $\sqrt{2}$ so that halving a sheet keeps its shape.
+- **Computing:** irrational numbers can't be stored exactly, so code works with approximations; numerical methods (like Newton's method, used inside `sqrt()`) refine estimates.
+- **Mathematics:** understanding that the real number line has no gaps.
+
+## 3. What it means
+**Estimating:** find the two perfect squares around the number. $\sqrt{30}$: $25 < 30 < 36$, so $5 < \sqrt{30} < 6$. 30 is 5 above 25 and 6 below 36, so it sits a little before the halfway point: $\sqrt{30} \approx 5 + \frac{5}{11} \approx 5.45$. (True value $5.477$.)
+
+**Why $\sqrt{2}$ is irrational (proof by contradiction):** suppose $\sqrt{2} = \frac{p}{q}$ in lowest terms. Then $p^2 = 2q^2$, so $p^2$ is even, so $p$ is even: $p = 2k$. Then $4k^2 = 2q^2$ → $q^2 = 2k^2$, so $q$ is even too. But then $\frac{p}{q}$ wasn't in lowest terms, a contradiction. So no such fraction exists.
+
+**Ordering reals:** convert everything to decimals (to 2–3 places) and compare.
+
+## 4. Formula & worked example
+**Example 1.** Estimate $\sqrt{70}$.
+- $64 < 70 < 81$ → between 8 and 9. 70 is 6 of the 17-unit gap → about $8 + \frac{6}{17} \approx 8.35$. (True: $8.367$.)
+
+**Example 2.** Between which two integers is $-\sqrt{20}$?
+- $4 < \sqrt{20} < 5$ → $-5 < -\sqrt{20} < -4$
+
+**Example 3.** Order: $\sqrt{10}$, $\pi$, $3.2$, $\frac{22}{7}$, $3\frac{1}{8}$.
+- Decimals: $3.162$, $3.142$, $3.2$, $3.143$, $3.125$
+- Order: $3\frac{1}{8} < \pi < \frac{22}{7} < \sqrt{10} < 3.2$
+
+**Example 4.** Estimate $\sqrt{2}$ with a calculator-free method (Newton's method): start with $1.5$; next guess $= \frac{1}{2}\left(1.5 + \frac{2}{1.5}\right) = \frac{1}{2}(1.5 + 1.333) = 1.4167$. Once more: $\frac{1}{2}\left(1.4167 + \frac{2}{1.4167}\right) \approx 1.41422$. (True: $1.414214$.)
+```python
+x = 1.5
+for _ in range(4):
+    x = (x + 2 / x) / 2     # average x and 2/x: the true root lies between them
+print(x)                    # 1.414213562373095
+```
+If $x$ is too big, $\frac{2}{x}$ is too small (and vice versa), so their average is a better estimate. Each step roughly doubles the number of correct digits, which is why computers can compute square roots so quickly.
+
+## 5. Common mistakes
+- Guessing from the difference alone ($\sqrt{30} \approx 5.3$ because 30 is ""5 more"" than 25). Use where the number sits between the two squares.
+- Treating $\frac{22}{7}$ or $3.14$ as exactly $\pi$.
+- Forgetting that for negatives the order flips: $-\sqrt{10} < -3$.
+
+## 6. Practice
+Q: Between which integers is $\sqrt{55}$?
+A: $7$ and $8$.
+
+Q: Is $\sqrt{0.09}$ rational?
+A: Yes, it equals $0.3$.
+
+Q: Order: $\sqrt{3}$, $1.7$, $\frac{7}{4}$.
+A: $1.7 < \sqrt{3} \approx 1.732 < 1.75$.
+
+Q: Estimate $\sqrt{40}$ to one decimal place.
+A: About $6.3$ (true $6.325$).
+
+Q: In the proof that $\sqrt{2}$ is irrational, what contradiction is reached?
+A: Both $p$ and $q$ turn out even, so $\frac{p}{q}$ wasn't in lowest terms."
+3,TOPIC,"Practice & review: Exponents, roots and real numbers",Mixed problem set with worked answers,MUST,FALSE,"# Practice & review: Exponents, roots and real numbers
+
+**How to use this:** 40 minutes, no calculator except problem 8.
+
+## Problems
+1. Simplify $\dfrac{(2x^3)^2 \cdot x^{-4}}{8x^{-1}}$.
+2. Evaluate $2^{-3} + 4^0 + \left(\frac{1}{3}\right)^{-2}$.
+3. Write $0.000\,048$ and $7\,030\,000$ in scientific notation.
+4. $(6 \times 10^{-4})(5 \times 10^{9})$ in scientific notation.
+5. $\dfrac{9 \times 10^{3}}{3 \times 10^{-2}}$.
+6. Simplify $\sqrt{98} - \sqrt{18}$.
+7. Solve $x^2 = 196$ and $x^3 = -216$.
+8. A hard disk holds $2 \times 10^{12}$ bytes. How many 4 MB ($4 \times 10^6$ byte) photos fit?
+9. Order: $\sqrt{8}$, $2.8$, $\frac{17}{6}$, $2\frac{3}{4}$.
+10. Classify $\sqrt{121}$, $\sqrt{12}$, $-\frac{9}{3}$, $0.1010010001\ldots$ (the pattern of zeros keeps growing).
+
+## Answers
+1. $\frac{4x^6 \cdot x^{-4}}{8x^{-1}} = \frac{4x^2}{8x^{-1}} = \frac{x^3}{2}$.
+2. $\frac{1}{8} + 1 + 9 = 10\frac{1}{8}$.
+3. $4.8 \times 10^{-5}$; $7.03 \times 10^6$.
+4. $30 \times 10^5 = 3 \times 10^6$.
+5. $3 \times 10^5$.
+6. $7\sqrt{2} - 3\sqrt{2} = 4\sqrt{2}$.
+7. $x = \pm 14$; $x = -6$.
+8. $\frac{2 \times 10^{12}}{4 \times 10^6} = 5 \times 10^5 = 500\,000$ photos.
+9. $2\frac{3}{4} = 2.75 < 2.8 < \sqrt{8} \approx 2.828 < \frac{17}{6} \approx 2.833$.
+10. $11$: natural/whole/integer/rational/real. $\sqrt{12}$: irrational. $-3$: integer, rational, real. The last: irrational (never terminates or repeats).
+
+## Flashcards
+Q: Product, quotient and power rules?
+A: $a^ma^n = a^{m+n}$, $\frac{a^m}{a^n} = a^{m-n}$, $(a^m)^n = a^{mn}$.
+
+Q: $a^{-n} = ?$
+A: $\frac{1}{a^n}$.
+
+Q: Form of scientific notation?
+A: $a \times 10^n$ with $1 \le a < 10$.
+
+Q: Solutions of $x^2 = p$ ($p > 0$)?
+A: $x = \pm\sqrt{p}$."
+2,MODULE,Final review,Cumulative mixed set covering the whole roadmap,MUST,,Mix everything to finish. After this you're ready for the Algebra & Functions roadmap.
+3,TOPIC,Final review: Numbers and arithmetic,Cumulative mixed problems from all phases with answers,MUST,FALSE,"# Final review: Numbers and arithmetic
+
+**How to use this:** 60 minutes; calculator only for problems marked (C). Re-study the topic for every miss.
+
+## Problems
+1. LCM and GCF of 84 and 126.
+2. $\frac{2}{3} \div \left(\frac{5}{6} - \frac{1}{4}\right) \times 1\frac{3}{4}$.
+3. $-3^2 + (-2)^3 - (-4)(-5)$.
+4. Write $0.\overline{45}$ as a fraction in lowest terms.
+5. Share 3600 taka in the ratio $\frac{1}{2} : \frac{1}{3} : \frac{1}{4}$.
+6. A car uses 7.5 L per 100 km. Fuel for a 340 km trip?
+7. (C) A price rises from 1250 to 1450 taka. Percent change? Then it falls 10%. New price?
+8. (C) A coat costs 4370 taka including 15% VAT, after a 5% discount. What was the original pre-VAT, pre-discount price?
+9. Simplify $\dfrac{(3a^{-2}b)^2}{9a^{-5}b^3}$.
+10. (C) The Earth's mass is $5.97 \times 10^{24}$ kg and the Moon's is $7.35 \times 10^{22}$ kg. How many times heavier is the Earth?
+
+## Answers
+1. $84 = 2^2 \cdot 3 \cdot 7$, $126 = 2 \cdot 3^2 \cdot 7$ → GCF $= 42$, LCM $= 252$.
+2. $\frac{5}{6} - \frac{1}{4} = \frac{7}{12}$; $\frac{2}{3} \times \frac{12}{7} = \frac{8}{7}$; $\times \frac{7}{4} = 2$.
+3. $-9 - 8 - 20 = -37$.
+4. $\frac{45}{99} = \frac{5}{11}$.
+5. Multiply by 12: $6 : 4 : 3$ (13 parts) → $1661.54$, $1107.69$, $830.77$ taka (rounded).
+6. $7.5 \times 3.4 = 25.5$ L.
+7. $+16\%$; $1450 \times 0.9 = 1305$ taka.
+8. $4370 = P \times 0.95 \times 1.15$ → $P = \frac{4370}{1.0925} = 4000$ taka.
+9. $\frac{9a^{-4}b^2}{9a^{-5}b^3} = \frac{a}{b}$.
+10. $\frac{5.97 \times 10^{24}}{7.35 \times 10^{22}} \approx 0.812 \times 10^2 \approx 81$ times."

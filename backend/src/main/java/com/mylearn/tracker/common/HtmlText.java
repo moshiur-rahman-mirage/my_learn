@@ -3,7 +3,12 @@ package com.mylearn.tracker.common;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/** Plain text of the (sanitized) HTML the note editor produces, for searching. */
+/**
+ * Plain text of the (sanitized) HTML the note editor produces, for searching.
+ *
+ * <p>Changing what this produces for an existing note? Bump {@code NoteIndexes.INDEX_VERSION} so
+ * the next start re-derives every note.
+ */
 public final class HtmlText {
 
     private static final Pattern TAG = Pattern.compile("<[^>]*>");

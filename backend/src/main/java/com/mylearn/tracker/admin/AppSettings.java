@@ -103,6 +103,30 @@ public class AppSettings {
         save();
     }
 
+    // --- phone sync ---------------------------------------------------------------------------
+
+    private static final String SYNC_TOKEN = "sync.token";
+    private static final java.security.SecureRandom RANDOM = new java.security.SecureRandom();
+
+    /** The pairing token phones send with every sync; created on first use. */
+    public synchronized String syncToken() {
+        String token = props.getProperty(SYNC_TOKEN);
+        if (token == null || token.isBlank()) {
+            token = newSyncToken();
+        }
+        return token;
+    }
+
+    /** Replaces the pairing token, which unpairs every phone. */
+    public synchronized String newSyncToken() {
+        byte[] bytes = new byte[32];
+        RANDOM.nextBytes(bytes);
+        String token = java.util.Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
+        props.setProperty(SYNC_TOKEN, token);
+        save();
+        return token;
+    }
+
     private int intProp(String key, int fallback) {
         try {
             String v = props.getProperty(key);

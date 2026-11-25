@@ -459,3 +459,19 @@ export interface PlanBackupPreview {
   ratings: number
   flashcards: number
 }
+
+// --- phone sync (docs/SYNC_PROTOCOL.md) ---------------------------------------------------------
+
+export interface SyncDevice {
+  deviceId: string
+  name: string | null
+  lastSyncAt: string
+}
+
+/** What the phone needs to pair: this computer's address(es), port and the sync token. */
+export interface SyncPairing {
+  token: string
+  port: number
+  addresses: string[]
+  devices: SyncDevice[]
+}

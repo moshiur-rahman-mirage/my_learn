@@ -1,0 +1,16 @@
+# backend
+backend/target/
+backend/data/
+*.iml
+.idea/
+
+# frontend
+frontend/node_modules/
+frontend/dist/
+frontend/.env.local
+frontend/.env.*.local
+
+# never commit AWS credentials
+.aws/
+*.pem
+.env

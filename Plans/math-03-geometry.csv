@@ -1,0 +1,2621 @@
+﻿level,type,name,description,priority,completed,content
+1,MODULE,"Phase 1 — Lines, Angles, Triangles and Polygons (Foundation)","Basic terms, angle relationships, parallel lines, triangle facts, polygon angles, quadrilaterals, constructions",MUST,,"# Phase 1: Lines, angles, triangles and polygons
+
+Geometry is the maths of **shape, size and position**. It's behind architecture, engineering drawings, maps, computer graphics, game engines, robotics and CAD software. This roadmap goes from basic angle facts to proofs, coordinate geometry, circles and conic sections.
+
+**Related roadmaps:** Pythagoras, right-triangle trigonometry, the unit circle, arc length and sector area are in the **Trigonometry** roadmap; scale drawings and how area and volume scale are in **Numbers & Arithmetic** (Phase 3).
+
+Each topic has six parts: what it covers, where it is used, what it means, formulas with worked examples, common mistakes, and practice flashcards."
+2,MODULE,Lines and angles,"Basic terms, angle pairs, parallel lines and transversals",MUST,,Every geometry fact is built on a handful of angle rules. Learn them well and proofs become easy.
+3,TOPIC,"Points, lines, rays, segments and planes","Undefined terms, notation, collinear and coplanar points, intersections",MUST,FALSE,"# Points, lines, rays, segments and planes
+
+## 1. What it covers
+- The basic objects: **point**, **line**, **plane** (the undefined terms).
+- **Segments** and **rays**, and how to name them.
+- **Collinear** and **coplanar** points; how lines and planes intersect.
+
+## 2. Where it is used
+- **Computer graphics and games:** everything is built from points (vertices), segments (edges) and planes (faces); a ray is cast from the camera for each pixel in ray tracing.
+- **CAD and architecture:** drawings use exact notation for segments and lines.
+- **GIS and maps:** roads are segments, locations are points.
+- **Physics:** light travels in rays.
+
+## 3. What it means
+- A **point** marks a location; it has no size. Named with a capital letter: $A$.
+- A **line** is perfectly straight, has no thickness and goes on **forever** in both directions: $\overleftrightarrow{AB}$.
+- A **segment** is the part of a line between two endpoints: $\overline{AB}$. Its length is written $AB$.
+- A **ray** starts at one point and goes forever in one direction: $\overrightarrow{AB}$ starts at $A$ and passes through $B$. Like a torch beam.
+- A **plane** is a flat surface extending forever (like an endless sheet of paper).
+
+**Collinear** points lie on one line; **coplanar** points lie on one plane. Two different lines meet in at most one point; two planes meet in a line (like two walls meeting at a corner edge).
+
+## 4. Formula & worked example
+**Example 1.** Name all segments in the line $A$–$B$–$C$ (in that order).
+- $\overline{AB}$, $\overline{BC}$, $\overline{AC}$
+
+**Example 2.** Are $\overrightarrow{AB}$ and $\overrightarrow{BA}$ the same ray?
+- No. One starts at $A$ going through $B$; the other starts at $B$ going through $A$.
+
+**Example 3 (segment addition).** $B$ lies on $\overline{AC}$, $AB = 2x + 1$, $BC = x + 5$, $AC = 21$. Find $x$ and $AB$.
+- $2x + 1 + x + 5 = 21$ → $3x = 15$ → $x = 5$, $AB = 11$
+
+**Example 4 (midpoint).** $M$ is the midpoint of $\overline{PQ}$, $PM = 3x - 2$, $MQ = x + 8$.
+- $3x - 2 = x + 8$ → $x = 5$; $PQ = 2 \times 13 = 26$
+
+**Example 5.** How many points determine a line? A plane?
+- Two points determine a line; three non-collinear points determine a plane (that's why a three-legged stool never wobbles).
+
+## 5. Common mistakes
+- Treating a ray's name as reversible.
+- Confusing $\overline{AB}$ (the segment) with $AB$ (its length).
+- Thinking a line has endpoints.
+
+## 6. Practice
+Q: What is the difference between a segment and a ray?
+A: A segment has two endpoints; a ray has one endpoint and goes on forever in one direction.
+
+Q: $AB = 7$, $BC = 12$, and $B$ is between $A$ and $C$. Find $AC$.
+A: $19$.
+
+Q: Where do two distinct planes intersect (if they do)?
+A: In a line.
+
+Q: Why does a three-legged stool never wobble?
+A: Any three non-collinear points lie on exactly one plane.
+
+Q: $M$ is the midpoint of $\overline{AB}$ and $AB = 18$. Find $AM$.
+A: $9$."
+3,TOPIC,Angle types and angle pairs,"Acute, right, obtuse, straight, reflex; complementary, supplementary, vertical and adjacent angles",MUST,FALSE,"# Angle types and angle pairs
+
+## 1. What it covers
+- Measuring angles in degrees; types: **acute, right, obtuse, straight, reflex**.
+- **Complementary** (sum $90^\circ$) and **supplementary** (sum $180^\circ$) angles.
+- **Vertical angles** (equal) and **linear pairs** (sum $180^\circ$).
+- Angle bisectors; angles around a point ($360^\circ$).
+
+## 2. Where it is used
+- **Construction and carpentry:** cutting mitre joints ($45^\circ$ each to make a $90^\circ$ corner).
+- **Navigation:** headings and turns.
+- **Graphics and game dev:** rotation angles, field of view, joint angles in animation rigs.
+- **Proofs:** vertical and supplementary angle facts are used in almost every geometry proof.
+
+## 3. What it means
+An angle is formed by two rays sharing an endpoint (the **vertex**). It measures the amount of turn.
+- **Acute** $< 90^\circ$, **right** $= 90^\circ$, **obtuse** between $90^\circ$ and $180^\circ$, **straight** $= 180^\circ$, **reflex** between $180^\circ$ and $360^\circ$.
+
+**Key facts:**
+- Angles on a **straight line** add to $180^\circ$ (a linear pair).
+- Angles **around a point** add to $360^\circ$.
+- When two lines cross, the **opposite (vertical) angles are equal**. Why: each is supplementary to the same neighbouring angle.
+
+```text
+        \  2  /
+       1 \   / 3       ∠1 = ∠3 (vertical)
+          \ /          ∠2 = ∠4 (vertical)
+          / \          ∠1 + ∠2 = 180° (linear pair)
+       4 /   \
+```
+
+## 4. Formula & worked example
+$$
+\text{complementary: } a + b = 90^\circ \qquad \text{supplementary: } a + b = 180^\circ \qquad \text{around a point: } 360^\circ
+$$
+
+**Example 1.** The complement of $37^\circ$ is $53^\circ$; its supplement is $143^\circ$.
+
+**Example 2.** Two lines cross; one angle is $68^\circ$. Find the other three.
+- Vertical angle $68^\circ$; the two neighbours $112^\circ$ each.
+
+**Example 3 (algebra).** Vertical angles measure $3x + 10$ and $5x - 30$.
+- $3x + 10 = 5x - 30$ → $x = 20$ → each angle $70^\circ$
+
+**Example 4.** An angle is 4 times its supplement. Find it.
+- $x = 4(180 - x)$ → $5x = 720$ → $x = 144^\circ$
+
+**Example 5.** Three angles around a point are $x$, $2x$ and $150^\circ$.
+- $3x + 150 = 360$ → $x = 70^\circ$
+
+## 5. Common mistakes
+- Mixing up complementary ($90^\circ$) and supplementary ($180^\circ$). Memory aid: **C** comes before **S**, and 90 comes before 180.
+- Assuming angles that look equal are equal (diagrams are not always to scale).
+- Treating adjacent angles as vertical angles.
+
+## 6. Practice
+Q: Supplement of $47^\circ$?
+A: $133^\circ$.
+
+Q: Two complementary angles are $2x$ and $3x$. Find them.
+A: $x = 18$: $36^\circ$ and $54^\circ$.
+
+Q: Why are vertical angles equal?
+A: Each forms a linear pair with the same angle, so both equal $180^\circ$ minus it.
+
+Q: Type of angle measuring $210^\circ$?
+A: Reflex.
+
+Q: A linear pair has angles $x + 40$ and $2x - 10$. Find $x$.
+A: $3x + 30 = 180$ → $x = 50$."
+3,TOPIC,Parallel lines and transversals,"Corresponding, alternate interior, alternate exterior and co-interior angles; proving lines parallel",MUST,FALSE,"# Parallel lines and transversals
+
+## 1. What it covers
+- The angle pairs formed when a **transversal** crosses two lines.
+- When the lines are **parallel**: corresponding and alternate angles are equal; co-interior angles add to $180^\circ$.
+- The **converses**: using angles to prove lines are parallel.
+
+## 2. Where it is used
+- **Architecture and engineering:** checking that beams, rails and floors are parallel.
+- **Road and railway design:** crossings and intersections.
+- **Proofs:** the triangle angle sum and many polygon facts come from parallel-line angles.
+- **Optics:** light through a glass slab exits parallel to how it entered.
+
+## 3. What it means
+A **transversal** is a line crossing two other lines, creating 8 angles. If the two lines are **parallel**, the transversal crosses each at the same tilt, so the angle patterns at the two crossings are copies of each other.
+
+- **Corresponding angles** (same position at each crossing, an ""F"" shape) are **equal**.
+- **Alternate interior angles** (between the lines, on opposite sides, a ""Z"" shape) are **equal**.
+- **Alternate exterior angles** (outside, opposite sides) are **equal**.
+- **Co-interior (same-side interior) angles** (between the lines, same side, a ""C"" or ""U"" shape) **add to $180^\circ$**.
+
+**Converses:** if corresponding (or alternate) angles are equal, or co-interior angles add to $180^\circ$, then the lines **are** parallel.
+
+## 4. Formula & worked example
+$$
+\ell \parallel m \Rightarrow \text{corresponding} =, \ \text{alternate} =, \ \text{co-interior sum} = 180^\circ
+$$
+
+**Example 1.** Parallel lines; one angle at the first crossing is $65^\circ$. Its corresponding angle is $65^\circ$, its alternate interior angle is $65^\circ$, and its co-interior angle is $115^\circ$.
+
+**Example 2 (algebra).** Alternate interior angles: $4x - 15$ and $2x + 25$.
+- $4x - 15 = 2x + 25$ → $x = 20$ → $65^\circ$
+
+**Example 3.** Co-interior angles: $3y + 12$ and $2y + 18$.
+- $5y + 30 = 180$ → $y = 30$ → $102^\circ$ and $78^\circ$
+
+**Example 4 (prove parallel).** Corresponding angles measure $72^\circ$ and $72^\circ$. Are the lines parallel? Yes (converse of corresponding angles).
+
+**Example 5 (zig-zag).** Two parallel lines with a point between them; segments from the point make angles $30^\circ$ and $45^\circ$ with the lines. The angle at the point is $30^\circ + 45^\circ = 75^\circ$ (draw a third parallel line through the point and use alternate angles twice).
+
+## 5. Common mistakes
+- Using these equalities when the lines are **not** parallel.
+- Setting co-interior angles equal instead of supplementary.
+- Mislabelling which angles are ""interior"" (between the two lines).
+
+## 6. Practice
+Q: Parallel lines: corresponding angles are $5x$ and $3x + 40$. Find $x$.
+A: $x = 20$.
+
+Q: Co-interior angles are $110^\circ$ and $?$
+A: $70^\circ$.
+
+Q: Alternate interior angles measure $80^\circ$ and $82^\circ$. Are the lines parallel?
+A: No.
+
+Q: Which angle pair forms a ""Z"" shape?
+A: Alternate interior angles.
+
+Q: Parallel lines cut by a transversal; one angle is $128^\circ$. Smallest angle formed?
+A: $52^\circ$."
+2,MODULE,"Triangles, polygons and quadrilaterals","Triangle angle facts and inequality, polygon angle sums, quadrilateral properties, constructions",MUST,,Triangles are the strongest and simplest polygon; every polygon can be split into triangles.
+3,TOPIC,"Triangle angle sum, exterior angles and the triangle inequality","180° sum and its proof, exterior angle theorem, which three lengths form a triangle",MUST,FALSE,"# Triangle angle sum, exterior angles and the triangle inequality
+
+## 1. What it covers
+- The **angle sum** of a triangle is $180^\circ$ (with proof).
+- The **exterior angle theorem**: an exterior angle equals the sum of the two remote interior angles.
+- Classifying triangles by sides and angles.
+- The **triangle inequality**: which three lengths can form a triangle.
+- The largest side is opposite the largest angle.
+
+## 2. Where it is used
+- **Engineering and construction:** triangles make rigid frames (trusses, bridges, roof frames, bicycle frames).
+- **Computer graphics:** every 3D model is a mesh of triangles; GPUs draw billions of them per second.
+- **Navigation and surveying:** triangulation.
+- **Algorithms:** the triangle inequality ($d(a, c) \le d(a, b) + d(b, c)$) is a key property of distance used in nearest-neighbour search and routing.
+
+## 3. What it means
+**Why $180^\circ$:** draw a line through one vertex parallel to the opposite side. The three angles at that vertex form a straight line ($180^\circ$), and by alternate angles they are exactly the three angles of the triangle.
+
+**Exterior angle:** extend one side. The outside angle plus its neighbouring interior angle make $180^\circ$, and so do all three interior angles. So the exterior angle equals the other two interior angles added together.
+
+**Triangle inequality:** any side must be **shorter than the sum of the other two**. Otherwise the two short sides can't reach each other. (Going straight is always shortest, so a detour through a third point can't be shorter.)
+
+**Classifying:**
+- By sides: **equilateral** (3 equal), **isosceles** (2 equal), **scalene** (none equal).
+- By angles: **acute** (all $< 90^\circ$), **right** (one $90^\circ$), **obtuse** (one $> 90^\circ$).
+
+## 4. Formula & worked example
+$$
+A + B + C = 180^\circ \qquad \text{exterior angle} = \text{sum of remote interior angles} \qquad a < b + c
+$$
+
+**Example 1.** Two angles are $47^\circ$ and $78^\circ$. Third angle? → $55^\circ$.
+
+**Example 2.** Angles $x$, $2x$ and $3x$. → $6x = 180$ → $30^\circ, 60^\circ, 90^\circ$ (a right triangle).
+
+**Example 3 (exterior).** Remote interior angles $52^\circ$ and $64^\circ$. Exterior angle? → $116^\circ$.
+
+**Example 4.** Can 4, 7 and 12 form a triangle? $4 + 7 = 11 < 12$ → **no**. Can 5, 8, 12? $5 + 8 = 13 > 12$ → yes.
+
+**Example 5 (range).** Two sides are 6 and 10. Range for the third side $x$? → $4 < x < 16$.
+
+**Example 6.** In $\triangle ABC$, $A = 40^\circ$, $B = 75^\circ$. Which side is longest? $C = 65^\circ$, so the largest angle is $B$ → side $b$ (opposite $B$) is longest.
+
+## 5. Common mistakes
+- Adding the adjacent interior angle in the exterior angle theorem (use the two **remote** ones).
+- Checking the triangle inequality with only one pair. Test the two smaller sides against the largest.
+- Allowing ""equal to"" in the triangle inequality ($3 + 4 = 7$ gives a flat line, not a triangle).
+
+## 6. Practice
+Q: Angles of a triangle are $x + 10$, $2x$, $3x - 40$. Find $x$.
+A: $6x - 30 = 180$ → $x = 35$.
+
+Q: Exterior angle $130^\circ$, one remote interior angle $70^\circ$. Other remote angle?
+A: $60^\circ$.
+
+Q: Can 3, 3, 7 form a triangle?
+A: No ($3 + 3 < 7$).
+
+Q: Two sides are 9 and 4. Possible third sides?
+A: Between 5 and 13 (exclusive).
+
+Q: Why are triangles used in bridges and roofs?
+A: A triangle is rigid: its shape can't change without changing a side length."
+3,TOPIC,Polygons: interior and exterior angle sums,"(n − 2)·180°, regular polygons, exterior angles sum to 360°, tessellations",MUST,FALSE,"# Polygons: interior and exterior angle sums
+
+## 1. What it covers
+- Naming polygons; **regular** polygons (all sides and angles equal).
+- The interior angle sum $(n - 2) \times 180^\circ$.
+- Each interior angle of a regular polygon.
+- The exterior angle sum is always $360^\circ$.
+- Which regular polygons **tessellate** (tile a floor).
+
+## 2. Where it is used
+- **Tiling and design:** floor tiles, honeycombs (hexagons), Islamic geometric art.
+- **Game development:** hex grids for strategy games; polygon meshes.
+- **Engineering:** nuts and bolts are hexagonal; stop signs are octagons.
+- **Robotics and drones:** a robot driving around a polygon turns a total of $360^\circ$.
+
+## 3. What it means
+**Interior sum:** from one vertex of an $n$-sided polygon, draw diagonals to all others. They split it into $n - 2$ triangles, each with $180^\circ$. So the interior angles add to $(n - 2) \times 180^\circ$.
+
+**Exterior sum:** walk around any convex polygon. At each corner you turn by the exterior angle. After going all the way round you face the original direction, having turned exactly one full circle: $360^\circ$, whatever the number of sides.
+
+**Regular polygon:** divide by $n$ to get each angle.
+
+**Tessellation:** regular polygons tile the plane only if their interior angle divides $360^\circ$: triangles ($60^\circ$), squares ($90^\circ$), hexagons ($120^\circ$). Bees use hexagons: they tile with no gaps and use the least wax for the area enclosed.
+
+## 4. Formula & worked example
+$$
+\text{interior sum} = (n - 2) \times 180^\circ \qquad \text{each interior (regular)} = \frac{(n - 2) \times 180^\circ}{n} \qquad \text{each exterior (regular)} = \frac{360^\circ}{n}
+$$
+
+**Example 1.** Interior angle sum of a hexagon: $4 \times 180^\circ = 720^\circ$.
+
+**Example 2.** Each interior angle of a regular octagon: $\frac{6 \times 180^\circ}{8} = 135^\circ$.
+
+**Example 3.** A regular polygon has exterior angles of $24^\circ$. How many sides? → $\frac{360}{24} = 15$.
+
+**Example 4.** A regular polygon has interior angles of $156^\circ$. Sides?
+- Exterior $= 24^\circ$ → $n = 15$
+
+**Example 5.** A pentagon's angles are $100^\circ$, $110^\circ$, $95^\circ$, $120^\circ$ and $x$. Find $x$.
+- Sum $= 540^\circ$ → $x = 115^\circ$
+
+**Example 6.** Can regular pentagons tile a floor? $108^\circ$ doesn't divide $360^\circ$ → no.
+
+## 5. Common mistakes
+- Using $n \times 180^\circ$ instead of $(n - 2) \times 180^\circ$.
+- Thinking the exterior angle sum grows with $n$. It's always $360^\circ$.
+- Applying ""each angle"" formulas to irregular polygons.
+
+## 6. Practice
+Q: Interior angle sum of a decagon (10 sides)?
+A: $1440^\circ$.
+
+Q: Each interior angle of a regular hexagon?
+A: $120^\circ$.
+
+Q: Each exterior angle of a regular 12-gon?
+A: $30^\circ$.
+
+Q: A regular polygon has interior angles of $140^\circ$. How many sides?
+A: Exterior $40^\circ$ → $9$.
+
+Q: Which regular polygons tessellate?
+A: Equilateral triangles, squares and regular hexagons."
+3,TOPIC,Quadrilaterals and their properties,"Parallelograms, rectangles, rhombi, squares, trapezoids, kites; diagonal properties",MUST,FALSE,"# Quadrilaterals and their properties
+
+## 1. What it covers
+- The family of quadrilaterals: **parallelogram, rectangle, rhombus, square, trapezoid (trapezium), kite**.
+- Their side, angle and **diagonal** properties.
+- How to prove which type a quadrilateral is.
+
+## 2. Where it is used
+- **Architecture and furniture:** rectangles everywhere; checking a frame is rectangular by measuring its diagonals (equal diagonals → rectangle).
+- **Mechanisms:** parallelogram linkages keep things level (desk lamps, car jacks, scissor lifts).
+- **UI design:** most layout boxes are rectangles.
+- **Kites and bridges:** kite and trapezoid shapes in trusses.
+
+## 3. What it means
+A quadrilateral has 4 sides; its angles add to $360^\circ$. The special types form a family tree, where each child has all its parent's properties plus more:
+- **Parallelogram:** both pairs of opposite sides parallel. → Opposite sides equal, opposite angles equal, consecutive angles add to $180^\circ$, **diagonals bisect each other**.
+- **Rectangle:** a parallelogram with 4 right angles. → Plus **diagonals are equal**.
+- **Rhombus:** a parallelogram with 4 equal sides. → Plus **diagonals are perpendicular** and bisect the angles.
+- **Square:** both a rectangle and a rhombus: all properties.
+- **Trapezoid:** exactly one pair of parallel sides (the bases). An **isosceles** trapezoid has equal legs and equal base angles.
+- **Kite:** two pairs of equal adjacent sides; diagonals perpendicular.
+
+**Builder's trick:** to check a frame is rectangular, measure both diagonals. Equal diagonals (plus opposite sides equal) means it's a rectangle.
+
+## 4. Formula & worked example
+**Example 1.** In parallelogram $ABCD$, $\angle A = 70^\circ$. Find the other angles.
+- $\angle C = 70^\circ$; $\angle B = \angle D = 110^\circ$
+
+**Example 2.** In a rectangle, one diagonal is $3x + 4$ and the other $5x - 6$.
+- $3x + 4 = 5x - 6$ → $x = 5$ → diagonals 19
+
+**Example 3.** A rhombus has diagonals 12 and 16. Side length?
+- Diagonals bisect each other at right angles: halves 6 and 8 → side $= \sqrt{36 + 64} = 10$
+
+**Example 4.** In an isosceles trapezoid one base angle is $65^\circ$. Find all angles.
+- $65^\circ, 65^\circ, 115^\circ, 115^\circ$
+
+**Example 5.** True or false: every square is a rhombus; every rhombus is a square.
+- True; false.
+
+## 5. Common mistakes
+- Assuming a parallelogram's diagonals are equal (only in rectangles).
+- Assuming a rhombus has right angles.
+- Treating the family tree backwards (a rectangle is a parallelogram, not the other way round).
+
+## 6. Practice
+Q: Which quadrilaterals have perpendicular diagonals?
+A: Rhombus, square and kite.
+
+Q: Consecutive angles of a parallelogram are $2x$ and $3x$. Find them.
+A: $72^\circ$ and $108^\circ$.
+
+Q: Is every rectangle a parallelogram?
+A: Yes.
+
+Q: A rhombus has diagonals 10 and 24. Side length?
+A: $13$.
+
+Q: How do builders check a frame is rectangular?
+A: Measure both diagonals; they must be equal."
+3,TOPIC,Compass and straightedge constructions,"Copying segments and angles, bisectors, perpendiculars, parallels, equilateral triangles",SHOULD,FALSE,"# Compass and straightedge constructions
+
+## 1. What it covers
+- Copying a segment and an angle.
+- Constructing the **perpendicular bisector** of a segment and the **angle bisector**.
+- Constructing a perpendicular through a point and a parallel line.
+- Constructing an equilateral triangle and a regular hexagon.
+
+## 2. Where it is used
+- **Technical drawing and drafting:** these are the basic operations of engineering drawing.
+- **CAD software:** ""perpendicular"", ""bisect"" and ""parallel"" snaps implement these constructions.
+- **Computational geometry:** the perpendicular bisector defines **Voronoi diagrams** (used for nearest-facility maps, cell-tower coverage and game AI).
+- **Understanding proofs:** each construction is justified by congruent triangles.
+
+## 3. What it means
+With only a compass (to draw circles and copy distances) and an unmarked straightedge (to draw lines), you can build exact shapes without measuring.
+
+**Perpendicular bisector of $\overline{AB}$:** with the compass more than half of $AB$, draw arcs from $A$ and from $B$ on both sides. The line through the two crossing points is perpendicular to $\overline{AB}$ and passes through its midpoint. Every point on it is **equally far from $A$ and $B$**.
+
+**Angle bisector:** from the vertex, draw an arc cutting both rays; from those two points, draw equal arcs that cross; join the vertex to the crossing. Every point on it is equally far from the two sides.
+
+**Equilateral triangle:** from each end of a segment, draw a circle with radius equal to the segment; join the ends to a crossing point.
+
+**Regular hexagon:** step the radius around a circle 6 times (the side of a regular hexagon equals its circumradius).
+
+## 4. Formula & worked example
+**Example 1.** Why does the perpendicular bisector construction work?
+- The two crossing points $P$ and $Q$ are each equally far from $A$ and $B$ (same compass width). Triangles $APQ$ and $BPQ$ are congruent (SSS), so $PQ$ splits $AB$ into equal halves at right angles.
+
+**Example 2.** Construct a $60^\circ$ angle: build an equilateral triangle and use one corner. Bisect it for $30^\circ$; bisect again for $15^\circ$.
+
+**Example 3.** Construct a $90^\circ$ angle at point $P$ on a line: mark two points equally far from $P$ on the line and draw their perpendicular bisector. Bisect it for $45^\circ$.
+
+**Example 4 (Voronoi idea).** Three hospitals $A$, $B$, $C$. The perpendicular bisectors of $AB$, $BC$, $CA$ split the map into regions closest to each hospital. (They meet at one point, the **circumcentre**.)
+
+## 5. Common mistakes
+- Changing the compass width between paired arcs.
+- Using a compass width less than half the segment (the arcs don't meet).
+- Measuring with a ruler; constructions must be exact.
+
+## 6. Practice
+Q: What property do points on a perpendicular bisector have?
+A: They are equidistant from the segment's endpoints.
+
+Q: How do you construct a $30^\circ$ angle?
+A: Construct $60^\circ$ (equilateral triangle) and bisect it.
+
+Q: Which triangle congruence rule justifies the angle bisector construction?
+A: SSS.
+
+Q: Where do the perpendicular bisectors of a triangle's sides meet?
+A: At the circumcentre (centre of the circle through all three vertices).
+
+Q: Why can you step the radius 6 times around a circle?
+A: A regular hexagon's side equals the circle's radius (it's 6 equilateral triangles)."
+3,TOPIC,"Practice & review: Lines, angles and polygons",Mixed problem set with worked answers,MUST,FALSE,"# Practice & review: Lines, angles and polygons
+
+**How to use this:** 40 minutes, no calculator. Draw a diagram for every problem.
+
+## Problems
+1. $B$ is between $A$ and $C$; $AB = 3x - 1$, $BC = 2x + 4$, $AC = 28$. Find $AB$.
+2. An angle is $30^\circ$ more than twice its complement. Find it.
+3. Two parallel lines are cut by a transversal; co-interior angles are $(4x + 6)^\circ$ and $(2x + 18)^\circ$. Find both.
+4. A triangle's angles are in the ratio $2 : 3 : 7$. Find them and classify the triangle.
+5. Two sides of a triangle are 8 and 15. What range is possible for the third side?
+6. The exterior angle at $C$ is $125^\circ$ and $\angle A = 48^\circ$. Find $\angle B$.
+7. Interior angle sum of a 14-gon? Each angle if regular?
+8. A regular polygon's interior angle is 5 times its exterior angle. How many sides?
+9. A rhombus has side 13 and one diagonal 10. Find the other diagonal.
+10. In parallelogram $PQRS$, $\angle P = (3y + 15)^\circ$ and $\angle Q = (5y - 3)^\circ$. Find all angles.
+
+## Answers
+1. $5x + 3 = 28$ → $x = 5$ → $AB = 14$.
+2. $x = 2(90 - x) + 30$ → $3x = 210$ → $70^\circ$.
+3. $6x + 24 = 180$ → $x = 26$ → $110^\circ$ and $70^\circ$.
+4. $12$ parts $= 180$ → $30^\circ, 45^\circ, 105^\circ$; obtuse scalene.
+5. $7 < x < 23$.
+6. $125 - 48 = 77^\circ$.
+7. $12 \times 180 = 2160^\circ$; $\frac{2160}{14} \approx 154.3^\circ$.
+8. $e + 5e = 180$ → $e = 30^\circ$ → $12$ sides.
+9. Half-diagonals: 5 and $\sqrt{169 - 25} = 12$ → other diagonal $24$.
+10. Consecutive angles: $8y + 12 = 180$ → $y = 21$ → $\angle P = \angle R = 78^\circ$, $\angle Q = \angle S = 102^\circ$.
+
+## Flashcards
+Q: Interior angle sum of an $n$-gon?
+A: $(n - 2) \times 180^\circ$.
+
+Q: Exterior angle sum of any convex polygon?
+A: $360^\circ$.
+
+Q: Exterior angle theorem?
+A: An exterior angle equals the sum of the two remote interior angles.
+
+Q: Parallel lines: co-interior angles?
+A: Add to $180^\circ$."
+1,MODULE,"Phase 2 — Perimeter, Area, Surface Area and Volume (Foundation)","Areas of polygons and circles, composite shapes, nets and cross sections, surface area and volume of solids, density",MUST,,"# Phase 2: Perimeter, area, surface area and volume
+
+Measurement is the most practical part of geometry: how much paint, flooring, fencing, water, concrete or packaging you need. Every formula here comes from one or two simple ideas (cutting and rearranging, or stacking layers), so focus on **why** each formula works and you won't need to memorise blindly.
+
+**Units:** length in cm or m; area in cm² or m² (squares); volume in cm³ or m³ (cubes). 1 L = 1000 cm³."
+2,MODULE,Area of plane figures,"Rectangles, parallelograms, triangles, trapezoids, composite shapes, circles",MUST,,Area counts how many unit squares cover a shape.
+3,TOPIC,"Area of rectangles, parallelograms and triangles","Base × height, why a parallelogram is a rearranged rectangle, half a parallelogram",MUST,FALSE,"# Area of rectangles, parallelograms and triangles
+
+## 1. What it covers
+- Area as ""number of unit squares"".
+- Rectangle $A = lw$; parallelogram $A = bh$; triangle $A = \frac{1}{2}bh$.
+- Choosing the base and the matching **perpendicular** height.
+- Perimeter vs area.
+
+## 2. Where it is used
+- **Construction and interiors:** flooring, tiles, paint, carpets, land plots.
+- **Computer graphics:** triangle areas are used in rendering (barycentric coordinates for shading and texture mapping).
+- **Agriculture:** crop yield per area (e.g. kg per bigha or per acre).
+- **Screens:** pixel counts ($1920 \times 1080$ is an area).
+
+## 3. What it means
+**Rectangle:** $l$ rows of $w$ unit squares → $lw$.
+
+**Parallelogram:** cut off the triangle on one side and slide it to the other: you get a **rectangle** with the same base and the same height. So $A = bh$, where $h$ is the **perpendicular** height (not the slanted side).
+
+**Triangle:** two copies of any triangle fit together into a parallelogram. So a triangle is **half** of a parallelogram: $A = \frac{1}{2}bh$. Any side can be the base, as long as the height is perpendicular to **that** side.
+
+**Perimeter** is the distance around (fence); **area** is the space inside (grass). Shapes with the same perimeter can have very different areas.
+
+## 4. Formula & worked example
+$$
+A_{\text{rectangle}} = lw \qquad A_{\text{parallelogram}} = bh \qquad A_{\text{triangle}} = \tfrac{1}{2}bh
+$$
+
+**Example 1.** A room 4.5 m × 3.2 m. Floor area? → $14.4$ m². Tiles of 0.4 m × 0.4 m needed? → $\frac{14.4}{0.16} = 90$ tiles.
+
+**Example 2.** A parallelogram with base 12 cm, slanted side 7 cm and height 5 cm.
+- $A = 12 \times 5 = 60$ cm² (the 7 cm side is not used)
+
+**Example 3.** A triangle with base 10 m and height 6.4 m: $A = 32$ m².
+
+**Example 4.** An obtuse triangle: base 8, the height falls outside the triangle and is 5. Area $= 20$ (still $\frac{1}{2}bh$).
+
+**Example 5 (reverse).** A triangle has area 45 cm² and base 15 cm. Height? → $\frac{2 \times 45}{15} = 6$ cm.
+
+**Example 6.** A rectangle has perimeter 40 m. Compare $15 \times 5$ and $10 \times 10$: areas 75 m² and 100 m² (the square has the most area for a given perimeter).
+
+## 5. Common mistakes
+- Using the slanted side as the height.
+- Forgetting the $\frac{1}{2}$ for triangles.
+- Mixing units (cm and m) or giving area in cm instead of cm².
+
+## 6. Practice
+Q: Area of a parallelogram with base 9 and height 4?
+A: $36$.
+
+Q: Triangle with base 14 cm and height 9 cm?
+A: $63$ cm².
+
+Q: A rectangle has area 72 and width 6. Length?
+A: $12$.
+
+Q: Why is a triangle's area half of base × height?
+A: Two copies of the triangle form a parallelogram with area base × height.
+
+Q: How many 30 cm × 30 cm tiles cover a 3 m × 2.7 m floor?
+A: $\frac{8.1}{0.09} = 90$."
+3,TOPIC,Area of trapezoids and composite figures,"Trapezoid formula, splitting and subtracting shapes, polygons on a grid",SHOULD,FALSE,"# Area of trapezoids and composite figures
+
+## 1. What it covers
+- The trapezoid area $A = \frac{1}{2}(a + b)h$.
+- **Composite** shapes: split into simple pieces, or subtract a hole.
+- Areas of polygons drawn on a grid.
+
+## 2. Where it is used
+- **Architecture:** L-shaped rooms, floor plans, land plots with irregular boundaries.
+- **Civil engineering:** cross-sections of canals, embankments and roads are often trapezoids.
+- **Surveying:** the area under a curve is approximated with trapezoids (the trapezoidal rule, used in calculus and numerical software).
+- **Design:** cutting material with holes.
+
+## 3. What it means
+**Trapezoid:** two copies, one flipped, fit together into a parallelogram with base $a + b$ and height $h$. Half of that is $\frac{1}{2}(a + b)h$. Another view: the **average** of the two parallel sides, times the height.
+
+**Composite shapes:**
+- **Add:** split into rectangles, triangles and trapezoids; add the areas.
+- **Subtract:** take a big simple shape and remove the missing part (a frame = outer rectangle − inner rectangle).
+
+## 4. Formula & worked example
+$$
+A_{\text{trapezoid}} = \frac{(a + b)}{2}\,h
+$$
+
+**Example 1.** Trapezoid with parallel sides 8 m and 14 m, height 5 m: $A = \frac{22}{2} \times 5 = 55$ m².
+
+**Example 2 (canal).** A canal cross-section is a trapezoid: top 6 m, bottom 3 m, depth 2 m. Water flowing 1.5 m/s: volume per second?
+- Area $= \frac{9}{2} \times 2 = 9$ m² → $9 \times 1.5 = 13.5$ m³ per second
+
+**Example 3 (L-shape).** A 10 × 8 rectangle with a 4 × 3 corner cut out.
+- $80 - 12 = 68$
+
+**Example 4 (frame).** A photo 20 × 30 cm in a frame 26 × 36 cm. Frame area? → $936 - 600 = 336$ cm²
+
+**Example 5 (grid).** A pentagon on a grid: split it into a rectangle 6 × 4 and a triangle on top with base 6, height 3. Area $= 24 + 9 = 33$.
+
+## 5. Common mistakes
+- Using a slanted leg as the height of a trapezoid.
+- Overlapping pieces when splitting (counting an area twice).
+- Forgetting to subtract holes.
+
+## 6. Practice
+Q: Trapezoid with bases 5 and 11, height 4?
+A: $32$.
+
+Q: A 12 × 9 rectangle with a 3 × 3 square hole. Area?
+A: $99$.
+
+Q: A trapezoid has area 60, height 6 and one base 8. Other base?
+A: $\frac{120}{6} - 8 = 12$.
+
+Q: What is the trapezoid area formula in words?
+A: Average of the parallel sides times the height.
+
+Q: A garden is a 10 m square with a 2 m wide path inside along all edges. Path area?
+A: $100 - 36 = 64$ m²."
+3,TOPIC,Circles: circumference and area,"π, C = 2πr, A = πr², semicircles and composite shapes with circles",MUST,FALSE,"# Circles: circumference and area
+
+## 1. What it covers
+- Radius, diameter and the meaning of $\pi$.
+- **Circumference** $C = 2\pi r = \pi d$.
+- **Area** $A = \pi r^2$ and why.
+- Semicircles, rings (annuli) and composite shapes.
+
+## 2. Where it is used
+- **Wheels:** one turn of a wheel moves it a distance equal to its circumference (bike speedometers and odometers use this).
+- **Engineering:** pipe cross-sections, flow rates, circular tanks.
+- **Pizza economics:** a 12-inch pizza has more than twice the area of an 8-inch one ($\frac{144}{64} = 2.25$).
+- **UI and graphics:** circular buttons, progress rings, radar charts.
+
+## 3. What it means
+For **every** circle, circumference ÷ diameter is the same number: $\pi \approx 3.14159$. So $C = \pi d = 2\pi r$.
+
+**Why $A = \pi r^2$:** cut a circle into many thin pizza slices and lay them alternately point-up and point-down. They form an almost-rectangle with height $r$ and width half the circumference, $\pi r$. Area $\approx \pi r \times r = \pi r^2$. With more slices it becomes exact.
+
+**Ring (annulus):** big circle minus small circle: $\pi(R^2 - r^2)$.
+
+## 4. Formula & worked example
+$$
+C = 2\pi r = \pi d \qquad A = \pi r^2 \qquad A_{\text{ring}} = \pi(R^2 - r^2)
+$$
+
+**Example 1.** Radius 7 cm: $C = 14\pi \approx 43.98$ cm; $A = 49\pi \approx 153.94$ cm².
+
+**Example 2 (wheel).** A bike wheel of diameter 70 cm. How many turns to go 1 km?
+- $C = 70\pi \approx 219.9$ cm → $\frac{100\,000}{219.9} \approx 455$ turns
+
+**Example 3 (reverse).** A circle has area $81\pi$. Radius? → $9$. Circumference? → $18\pi$.
+
+**Example 4 (semicircle).** A window is a 1.2 m × 1.5 m rectangle with a semicircle (diameter 1.2 m) on top. Area?
+- $1.8 + \frac{1}{2}\pi(0.6)^2 \approx 1.8 + 0.565 = 2.365$ m²
+
+**Example 5 (ring).** A circular path 2 m wide around a pond of radius 10 m.
+- $\pi(12^2 - 10^2) = 44\pi \approx 138.2$ m²
+
+**Example 6 (pizza).** 12-inch vs two 8-inch pizzas.
+- $\pi(6)^2 = 36\pi$ vs $2\pi(4)^2 = 32\pi$ → the single 12-inch has more.
+
+## 5. Common mistakes
+- Using the diameter in $\pi r^2$.
+- Confusing circumference (length) with area.
+- Squaring $\pi r$ instead of $r$: $\pi r^2 \ne (\pi r)^2$.
+
+## 6. Practice
+Q: Circumference of a circle with diameter 10?
+A: $10\pi \approx 31.42$.
+
+Q: Area of a circle with radius 5?
+A: $25\pi \approx 78.54$.
+
+Q: Circumference $= 30\pi$. Area?
+A: $r = 15$ → $225\pi$.
+
+Q: Area of a semicircle of radius 4?
+A: $8\pi$.
+
+Q: Doubling the radius multiplies the area by?
+A: $4$."
+2,MODULE,Solids: surface area and volume,"Nets, cross sections, surface area, volume of prisms, cylinders, pyramids, cones, spheres, density",SHOULD,,Surface area is wrapping paper; volume is how much it holds.
+3,TOPIC,"3D figures: nets, cross sections and solids of revolution","Faces, edges, vertices, Euler's formula, nets, slicing solids, rotating shapes",SHOULD,FALSE,"# 3D figures: nets, cross sections and solids of revolution
+
+## 1. What it covers
+- Prisms, pyramids, cylinders, cones and spheres: faces, edges, vertices.
+- **Euler's formula** $V - E + F = 2$.
+- **Nets**: flat patterns that fold into solids.
+- **Cross sections**: the 2D shape you get by slicing a solid.
+- **Solids of revolution**: spinning a 2D shape around an axis.
+
+## 2. Where it is used
+- **Packaging design:** boxes are cut from nets.
+- **Medical imaging:** CT and MRI scans are stacks of cross sections.
+- **3D printing:** the slicer software cuts a model into horizontal cross sections, printed layer by layer.
+- **Manufacturing:** lathes and pottery wheels make solids of revolution (vases, table legs, bottles).
+- **3D graphics:** meshes have vertices, edges and faces.
+
+## 3. What it means
+- **Prism:** two identical, parallel bases joined by rectangles (a box, a Toblerone bar).
+- **Pyramid:** one base, triangular sides meeting at a point.
+- **Cylinder / cone:** like a prism / pyramid with a circular base.
+- **Sphere:** all points at the same distance from a centre.
+
+**Euler's formula:** for any convex polyhedron, vertices − edges + faces $= 2$. A cube: $8 - 12 + 6 = 2$.
+
+**Cross sections:** slicing a cube parallel to a face gives a square; slicing diagonally can give a rectangle, triangle or even a hexagon. Slicing a cone parallel to the base gives a circle; at an angle, an ellipse (Phase 6).
+
+**Solids of revolution:** spin a rectangle around one side → cylinder; a right triangle around a leg → cone; a semicircle around its diameter → sphere.
+
+## 4. Formula & worked example
+$$
+V - E + F = 2
+$$
+
+**Example 1.** A triangular prism: $V = 6$, $E = 9$, $F = 5$ → $6 - 9 + 5 = 2$ ✓
+
+**Example 2.** A polyhedron has 12 vertices and 30 edges. Faces? → $F = 2 - 12 + 30 = 20$ (an icosahedron).
+
+**Example 3.** Which net folds into a cube? A cross shape of 6 squares (one row of 4 with one square above and one below) does; a straight row of 6 does not.
+
+**Example 4.** Cross section of a cylinder sliced vertically through its axis? → a rectangle (height × diameter).
+
+**Example 5.** Spinning a rectangle 3 wide and 5 tall around its 5 cm side gives a cylinder of radius 3 and height 5.
+
+## 5. Common mistakes
+- Counting edges twice when listing them face by face (each edge belongs to two faces).
+- Assuming a cross section is always the same as the base.
+- Mixing up which side is the axis in solids of revolution (that side becomes the height).
+
+## 6. Practice
+Q: Faces, edges and vertices of a square pyramid?
+A: $F = 5$, $E = 8$, $V = 5$.
+
+Q: A polyhedron has 8 faces and 6 vertices. Edges?
+A: $E = V + F - 2 = 12$ (an octahedron).
+
+Q: Cross section of a sphere?
+A: Always a circle.
+
+Q: What solid comes from spinning a right triangle around one leg?
+A: A cone.
+
+Q: Why do 3D printers use cross sections?
+A: They print the object one horizontal slice (layer) at a time."
+3,TOPIC,"Surface area of prisms, cylinders, pyramids, cones and spheres","Adding face areas from nets, lateral area, slant height, sphere surface area",SHOULD,FALSE,"# Surface area of prisms, cylinders, pyramids, cones and spheres
+
+## 1. What it covers
+- Surface area as the total area of all faces (the area of the net).
+- Prisms and cylinders; pyramids and cones (with **slant height**); spheres.
+- Lateral (side) area vs total surface area.
+
+## 2. Where it is used
+- **Packaging:** cardboard needed for a box; label on a can (cylinder lateral area).
+- **Painting and coating:** paint for a tank, plating a part.
+- **Heat transfer:** objects lose heat through their surface; small animals lose heat faster because they have more surface per unit volume.
+- **Chemistry:** finely ground powders react faster (more surface area).
+
+## 3. What it means
+Unfold the solid into its net and add up the areas.
+- **Prism:** 2 bases + rectangles around the side. The side rectangles together form one big rectangle: perimeter of base × height.
+- **Cylinder:** 2 circles + a rectangle (unrolled label) whose width is the circumference $2\pi r$.
+- **Pyramid:** base + triangles with height = **slant height** $\ell$ (measured along the face, not straight down).
+- **Cone:** base circle + curved surface $\pi r\ell$.
+- **Sphere:** $4\pi r^2$, exactly 4 times the area of its largest circle (Archimedes).
+
+## 4. Formula & worked example
+$$
+SA_{\text{prism}} = 2B + Ph \qquad SA_{\text{cylinder}} = 2\pi r^2 + 2\pi rh \qquad SA_{\text{cone}} = \pi r^2 + \pi r\ell \qquad SA_{\text{sphere}} = 4\pi r^2
+$$
+$$
+SA_{\text{pyramid}} = B + \tfrac{1}{2}P\ell \qquad \ell = \sqrt{r^2 + h^2}\ (\text{cone})
+$$
+
+**Example 1.** A box 30 × 20 × 10 cm: $2(600 + 300 + 200) = 2200$ cm²
+
+**Example 2.** A can with radius 4 cm, height 11 cm.
+- Label: $2\pi(4)(11) = 88\pi \approx 276.5$ cm²; total: $88\pi + 32\pi = 120\pi \approx 377.0$ cm²
+
+**Example 3.** A square pyramid, base 10 m, slant height 13 m.
+- $100 + 4 \times \frac{1}{2}(10)(13) = 100 + 260 = 360$ m²
+
+**Example 4.** A cone with radius 6 and height 8: $\ell = 10$ → $36\pi + 60\pi = 96\pi \approx 301.6$
+
+**Example 5.** A ball of radius 11 cm: $4\pi(121) = 484\pi \approx 1520.5$ cm²
+
+## 5. Common mistakes
+- Using the vertical height instead of the slant height for cones and pyramids.
+- Forgetting the bases (or including a base that's open, like an open-top box or a cup).
+- Using diameter instead of radius.
+
+## 6. Practice
+Q: Surface area of a cube with edge 5?
+A: $150$.
+
+Q: Lateral area of a cylinder with $r = 3$, $h = 10$?
+A: $60\pi$.
+
+Q: Surface area of a sphere of radius 3?
+A: $36\pi$.
+
+Q: Slant height of a cone with $r = 5$, $h = 12$?
+A: $13$.
+
+Q: Total surface area of that cone?
+A: $25\pi + 65\pi = 90\pi$."
+3,TOPIC,Volume of prisms and cylinders,"Base area × height, Cavalieri's principle, unit conversions for volume",SHOULD,FALSE,"# Volume of prisms and cylinders
+
+## 1. What it covers
+- Volume as ""number of unit cubes"".
+- $V = Bh$ for any prism or cylinder.
+- **Cavalieri's principle**: slanted (oblique) solids have the same volume.
+- Converting volume units (cm³, m³, litres).
+
+## 2. Where it is used
+- **Water and storage:** tanks, swimming pools, rainwater harvesting.
+- **Construction:** concrete for slabs, columns and foundations.
+- **Shipping:** container volume and cargo planning.
+- **Cloud and data centres:** cooling air volume per rack.
+- **Cooking:** pan capacity.
+
+## 3. What it means
+A prism or cylinder is a stack of identical layers. Each layer has the base area $B$, and there are $h$ layers of thickness 1. So $V = Bh$.
+
+**Cavalieri's principle:** a stack of coins has the same volume whether it's straight or pushed into a slant, because every layer is the same. So an **oblique** prism or cylinder also has $V = Bh$, with $h$ the **perpendicular** height.
+
+**Units:** $1 \text{ m}^3 = 1000$ L; $1 \text{ L} = 1000 \text{ cm}^3$; $1 \text{ mL} = 1 \text{ cm}^3$.
+
+## 4. Formula & worked example
+$$
+V_{\text{prism}} = Bh \qquad V_{\text{box}} = lwh \qquad V_{\text{cylinder}} = \pi r^2 h
+$$
+
+**Example 1.** A fish tank 60 × 30 × 40 cm: $72\,000$ cm³ $= 72$ L.
+
+**Example 2.** A cylindrical tank of radius 1.2 m and height 2 m.
+- $\pi(1.44)(2) \approx 9.05$ m³ $\approx 9048$ L
+
+**Example 3.** A triangular prism: triangle base 6 cm, triangle height 4 cm, prism length 15 cm.
+- $B = 12$ → $V = 180$ cm³
+
+**Example 4 (concrete).** A slab 5 m × 4 m × 0.15 m: $3$ m³ of concrete.
+
+**Example 5 (reverse).** A can must hold 500 mL with radius 4 cm. Height?
+- $500 = 16\pi h$ → $h \approx 9.95$ cm
+
+## 5. Common mistakes
+- Using the slanted edge of an oblique prism instead of the perpendicular height.
+- Mixing cm and m in one calculation.
+- Converting m³ to cm³ with ×100 instead of ×1 000 000.
+
+## 6. Practice
+Q: Volume of a cube with edge 4 cm?
+A: $64$ cm³.
+
+Q: Volume of a cylinder with $r = 5$, $h = 8$?
+A: $200\pi \approx 628.3$.
+
+Q: A pool 25 m × 10 m × 1.8 m holds how many litres?
+A: $450$ m³ $= 450\,000$ L.
+
+Q: State Cavalieri's principle.
+A: Solids with equal heights and equal cross-sectional areas at every level have equal volumes.
+
+Q: How many litres in 1 m³?
+A: $1000$."
+3,TOPIC,"Volume of pyramids, cones and spheres","The one-third rule, sphere volume, composite solids",SHOULD,FALSE,"# Volume of pyramids, cones and spheres
+
+## 1. What it covers
+- Pyramids and cones: $V = \frac{1}{3}Bh$.
+- Spheres: $V = \frac{4}{3}\pi r^3$; hemispheres.
+- Composite solids (e.g. a cylinder with a cone or hemisphere on top).
+
+## 2. Where it is used
+- **Food and packaging:** ice-cream cones, conical paper cups.
+- **Construction:** sand and gravel piles form cones; grain silos are cylinders with conical roofs.
+- **Sports:** ball volumes and air pressure.
+- **Science:** cell, droplet and planet volumes (all near-spheres).
+- **Medicine:** tumour volume estimates.
+
+## 3. What it means
+**One-third rule:** a pyramid holds exactly **one third** of the prism with the same base and height. You can check this with water: three full pyramids exactly fill the prism. The same holds for a cone in a cylinder.
+
+**Sphere:** a sphere fits inside a cylinder of the same radius and height $2r$; Archimedes showed it takes up exactly $\frac{2}{3}$ of that cylinder: $\frac{2}{3}\pi r^2(2r) = \frac{4}{3}\pi r^3$. (He was so proud of this that he asked for it to be carved on his tomb.)
+
+Because volume grows with $r^3$, doubling the radius makes a sphere **8 times** bigger.
+
+## 4. Formula & worked example
+$$
+V_{\text{pyramid}} = \tfrac{1}{3}Bh \qquad V_{\text{cone}} = \tfrac{1}{3}\pi r^2 h \qquad V_{\text{sphere}} = \tfrac{4}{3}\pi r^3
+$$
+
+**Example 1.** A square pyramid, base 9 m, height 10 m: $\frac{1}{3}(81)(10) = 270$ m³
+
+**Example 2.** A cone of radius 3 cm, height 12 cm: $\frac{1}{3}\pi(9)(12) = 36\pi \approx 113.1$ cm³
+
+**Example 3.** A football of radius 11 cm: $\frac{4}{3}\pi(1331) \approx 5575$ cm³ $\approx 5.6$ L
+
+**Example 4 (composite).** An ice-cream cone: cone radius 3 cm, height 10 cm, with a hemisphere of ice cream on top.
+- Cone $30\pi$, hemisphere $\frac{2}{3}\pi(27) = 18\pi$ → $48\pi \approx 150.8$ cm³
+
+**Example 5 (sand pile).** A conical pile 2 m high with base radius 3 m. Truckloads of 6 m³?
+- $V = \frac{1}{3}\pi(9)(2) = 6\pi \approx 18.85$ m³ → 4 truckloads (3.14 rounded up)
+
+## 5. Common mistakes
+- Forgetting the $\frac{1}{3}$ for cones and pyramids.
+- Using $r^2$ instead of $r^3$ for spheres.
+- Using slant height instead of perpendicular height in the volume formula.
+
+## 6. Practice
+Q: Volume of a cone with $r = 6$, $h = 5$?
+A: $60\pi$.
+
+Q: Volume of a sphere with radius 3?
+A: $36\pi$.
+
+Q: Volume of a hemisphere with radius 6?
+A: $144\pi$.
+
+Q: A pyramid and a prism share a base and height. Ratio of volumes?
+A: $1 : 3$.
+
+Q: Doubling a sphere's radius multiplies its volume by?
+A: $8$."
+3,TOPIC,Density and modeling with solids,"Density = mass/volume, population density, modelling real objects with solids",SHOULD,FALSE,"# Density and modeling with solids
+
+## 1. What it covers
+- **Density** $\rho = \frac{m}{V}$ and solving for mass or volume.
+- Other densities: population per km², pixels per inch, energy density.
+- Modelling real objects as combinations of basic solids.
+- Optimisation questions (most volume for least material).
+
+## 2. Where it is used
+- **Engineering:** the weight of a steel beam or concrete slab from its volume.
+- **Shipping and logistics:** volumetric weight pricing.
+- **Urban planning:** population density (Dhaka is one of the densest cities in the world).
+- **Screens:** pixel density (PPI).
+- **Batteries:** energy density (Wh/kg) for phones and electric vehicles.
+
+## 3. What it means
+**Density** tells you how much mass is packed into each unit of volume. Iron is denser than wood, so an iron ball is heavier than a wooden ball of the same size. Water's density is 1 g/cm³ (1000 kg/m³); anything denser sinks.
+
+**Modelling:** real objects are rarely perfect shapes, but you can approximate them: a tree trunk as a cylinder, a hill as a cone, a grain as a sphere. State your assumptions and check that the answer is reasonable.
+
+**Optimisation:** for a given volume, a sphere has the least surface area; among cylinders, the one with height = diameter uses the least material (cans are often close to this).
+
+## 4. Formula & worked example
+$$
+\rho = \frac{m}{V} \qquad m = \rho V \qquad V = \frac{m}{\rho}
+$$
+
+**Example 1.** A steel cube with edge 10 cm, steel density 7.85 g/cm³. Mass?
+- $V = 1000$ cm³ → $m = 7850$ g $= 7.85$ kg
+
+**Example 2.** A stone of mass 540 g displaces 200 cm³ of water. Density? → $2.7$ g/cm³ (likely granite or aluminium-like). Does it float? No ($> 1$).
+
+**Example 3 (tree).** A log is modelled as a cylinder of radius 0.25 m and length 6 m, wood density 600 kg/m³.
+- $V = \pi(0.0625)(6) \approx 1.178$ m³ → $m \approx 707$ kg
+
+**Example 4 (population).** A district has 1.2 million people over 300 km². Density? → $4000$ people/km².
+
+**Example 5 (pixel density).** A 6-inch diagonal phone screen with 2400 × 1080 pixels.
+- Diagonal pixels $= \sqrt{2400^2 + 1080^2} \approx 2632$ → $\frac{2632}{6} \approx 439$ PPI
+
+## 5. Common mistakes
+- Mixing units (g/cm³ with kg/m³; 1 g/cm³ = 1000 kg/m³).
+- Using area instead of volume for mass.
+- Forgetting to state modelling assumptions.
+
+## 6. Practice
+Q: Mass of 2 L of water?
+A: $2$ kg.
+
+Q: Gold is 19.3 g/cm³. Mass of a 5 cm³ gold bar?
+A: $96.5$ g.
+
+Q: A 400 g object has volume 500 cm³. Does it float in water?
+A: Yes, density $0.8 < 1$.
+
+Q: Population density of 50 000 people in 12.5 km²?
+A: $4000$ per km².
+
+Q: Which shape has the smallest surface area for a given volume?
+A: A sphere."
+3,TOPIC,Practice & review: Area and volume,Mixed problem set with worked answers,SHOULD,FALSE,"# Practice & review: Area and volume
+
+**How to use this:** 45 minutes with a calculator. Leave answers in terms of $\pi$ where possible.
+
+## Problems
+1. A parallelogram has base 15 cm and area 105 cm². Height?
+2. A trapezoid-shaped plot has parallel sides 40 m and 25 m, 18 m apart. Area?
+3. A running track is a rectangle 100 m × 60 m with semicircles (diameter 60 m) on both short ends. Perimeter and area enclosed?
+4. A polyhedron has 9 faces and 9 vertices. How many edges?
+5. Surface area of a closed cylinder with diameter 10 cm and height 12 cm.
+6. A cone has radius 9 cm and slant height 15 cm. Height and volume?
+7. A water tank is a cylinder (radius 1 m, height 3 m) with a hemisphere on top. Volume in litres?
+8. A metal sphere of radius 3 cm is melted and recast into a cylinder of radius 2 cm. Height of the cylinder?
+9. Aluminium is 2.7 g/cm³. Mass of a sheet 1 m × 0.5 m × 2 mm?
+
+## Answers
+1. $7$ cm.
+2. $\frac{65}{2} \times 18 = 585$ m².
+3. Perimeter $= 200 + 60\pi \approx 388.5$ m; area $= 6000 + 900\pi \approx 8827$ m².
+4. $E = 9 + 9 - 2 = 16$.
+5. $2\pi(25) + 2\pi(5)(12) = 50\pi + 120\pi = 170\pi \approx 534.1$ cm².
+6. $h = \sqrt{225 - 81} = 12$; $V = \frac{1}{3}\pi(81)(12) = 324\pi \approx 1017.9$ cm³.
+7. $3\pi + \frac{2}{3}\pi = \frac{11\pi}{3} \approx 11.52$ m³ $\approx 11\,519$ L.
+8. $\frac{4}{3}\pi(27) = 36\pi = 4\pi h$ → $h = 9$ cm.
+9. $V = 100 \times 50 \times 0.2 = 1000$ cm³ → $2700$ g $= 2.7$ kg.
+
+## Flashcards
+Q: Area of a trapezoid?
+A: $\frac{(a + b)}{2}h$.
+
+Q: Volume of a cone?
+A: $\frac{1}{3}\pi r^2h$.
+
+Q: Surface area of a sphere?
+A: $4\pi r^2$.
+
+Q: Euler's formula for polyhedra?
+A: $V - E + F = 2$."
+1,MODULE,"Phase 3 — Transformations, Congruence and Similarity (Core)","Translations, reflections, rotations, dilations, symmetry, congruence criteria, proofs, similarity, proportional segments",MUST,,"# Phase 3: Transformations, congruence and similarity
+
+**Transformations** move, flip, turn and resize shapes. They're the mathematics behind every graphics engine: when a game character walks, turns or zooms, the computer applies these transformations to thousands of points per frame.
+
+**Congruent** shapes are exact copies (same shape and size); **similar** shapes have the same shape but may differ in size. These ideas let you prove facts and measure things you can't reach directly."
+2,MODULE,Transformations,"Translations, reflections, rotations, dilations, compositions and symmetry",SHOULD,,A transformation is a rule that moves every point of a shape. Coordinate rules make them easy to compute.
+3,TOPIC,Translations and reflections,"Sliding by a vector, reflecting across axes and the lines y = x and y = −x",SHOULD,FALSE,"# Translations and reflections
+
+## 1. What it covers
+- **Translations:** sliding every point by the same vector $\langle a, b\rangle$.
+- **Reflections:** flipping across the x-axis, y-axis, $y = x$, $y = -x$, or a vertical/horizontal line.
+- Coordinate rules for each.
+
+## 2. Where it is used
+- **Games and UI:** moving sprites and windows (translation); mirrored sprites for facing left/right (reflection).
+- **CSS:** `transform: translate(20px, 10px)` and `scaleX(-1)` (a horizontal reflection).
+- **Physics and optics:** mirror images; angle of incidence = angle of reflection.
+- **Design:** symmetric logos and patterns.
+
+## 3. What it means
+**Translation:** every point moves the same distance in the same direction, like sliding a book across a table. Shape, size and orientation stay the same.
+
+**Reflection:** every point jumps to the other side of a mirror line, the same distance away, so the line is the perpendicular bisector of each point and its image. Shape and size stay the same, but **orientation reverses** (left becomes right, like a mirror).
+
+**Notation:** the image of $A$ is written $A'$ (""A prime"").
+
+## 4. Formula & worked example
+| Transformation | Rule |
+|---|---|
+| Translate by $\langle a, b\rangle$ | $(x, y) \to (x + a,\ y + b)$ |
+| Reflect in x-axis | $(x, y) \to (x, -y)$ |
+| Reflect in y-axis | $(x, y) \to (-x, y)$ |
+| Reflect in $y = x$ | $(x, y) \to (y, x)$ |
+| Reflect in $y = -x$ | $(x, y) \to (-y, -x)$ |
+| Reflect in $x = k$ | $(x, y) \to (2k - x,\ y)$ |
+
+**Example 1.** Translate triangle $A(1, 2)$, $B(4, 2)$, $C(2, 5)$ by $\langle -3, 1\rangle$.
+- $A'(-2, 3)$, $B'(1, 3)$, $C'(-1, 6)$
+
+**Example 2.** Reflect $P(3, -4)$ in the x-axis → $(3, 4)$; in the y-axis → $(-3, -4)$; in $y = x$ → $(-4, 3)$.
+
+**Example 3.** Reflect $(5, 2)$ in the line $x = 1$.
+- Distance from the line is 4 → image at $x = 1 - 4 = -3$ → $(-3, 2)$ (rule: $2(1) - 5 = -3$ ✓)
+
+**Example 4.** Which translation maps $(2, 7)$ to $(-1, 3)$? → $\langle -3, -4\rangle$.
+
+## 5. Common mistakes
+- Changing the wrong coordinate (reflection in the **x-axis** changes **y**).
+- For $y = x$, forgetting to swap.
+- Measuring the distance to a line like $x = k$ from the origin instead of from the line.
+
+## 6. Practice
+Q: Translate $(4, -1)$ by $\langle 2, 5\rangle$.
+A: $(6, 4)$.
+
+Q: Reflect $(-2, 6)$ in the y-axis.
+A: $(2, 6)$.
+
+Q: Reflect $(3, 8)$ in $y = x$.
+A: $(8, 3)$.
+
+Q: Reflect $(1, 4)$ in the line $y = 2$.
+A: $(1, 0)$.
+
+Q: What property does a reflection change that a translation doesn't?
+A: Orientation (it creates a mirror image)."
+3,TOPIC,Rotations,"Rotating about the origin by 90°, 180°, 270°; rotation about any point; the rotation formula",SHOULD,FALSE,"# Rotations
+
+## 1. What it covers
+- Rotation by an angle about a **centre**, anticlockwise for positive angles.
+- Coordinate rules for $90^\circ$, $180^\circ$, $270^\circ$ about the origin.
+- Rotating about a point other than the origin.
+- The general rotation formula (link to trigonometry).
+
+## 2. Where it is used
+- **Games and graphics:** turning characters, spinning wheels, rotating the camera; every 2D/3D engine uses the rotation formula.
+- **Robotics:** robot arm joints rotate; robot heading changes.
+- **Image editing:** rotating photos.
+- **Mechanical engineering:** gears and turbines.
+
+## 3. What it means
+A rotation turns every point around a fixed centre by the same angle, like the hands of a clock (but positive angles go **anticlockwise**). Distances to the centre stay the same; shape and size are kept.
+
+**About the origin:**
+- $90^\circ$: $(x, y) \to (-y, x)$
+- $180^\circ$: $(x, y) \to (-x, -y)$
+- $270^\circ$ (or $-90^\circ$): $(x, y) \to (y, -x)$
+
+**About another point $C$:** translate so that $C$ moves to the origin, rotate, then translate back.
+
+**Any angle:** the general rule uses trig (see the sum identities in the Trigonometry roadmap):
+$$
+(x, y) \to (x\cos\theta - y\sin\theta,\ x\sin\theta + y\cos\theta)
+$$
+
+## 4. Formula & worked example
+**Example 1.** Rotate $A(3, 1)$ by $90^\circ$ about the origin → $(-1, 3)$.
+
+**Example 2.** Rotate $(2, -5)$ by $180^\circ$ → $(-2, 5)$.
+
+**Example 3.** Rotate $(4, 2)$ by $270^\circ$ → $(2, -4)$.
+
+**Example 4 (about a point).** Rotate $P(5, 3)$ by $90^\circ$ about $C(2, 1)$.
+- Shift: $P - C = (3, 2)$ → rotate: $(-2, 3)$ → shift back: $(0, 4)$
+
+**Example 5 (any angle, code).**
+```python
+import math
+def rotate(x, y, deg, cx=0, cy=0):
+    t = math.radians(deg)
+    x, y = x - cx, y - cy                      # move centre to origin
+    xr = x * math.cos(t) - y * math.sin(t)
+    yr = x * math.sin(t) + y * math.cos(t)
+    return round(xr + cx, 6), round(yr + cy, 6)  # move back
+print(rotate(5, 3, 90, 2, 1))   # (0.0, 4.0)
+```
+This follows the three steps of Example 4: translate the centre to the origin, apply the rotation formula, translate back. It works for any angle, not just multiples of 90°.
+
+## 5. Common mistakes
+- Rotating clockwise for a positive angle.
+- Mixing up the $90^\circ$ and $270^\circ$ rules.
+- Rotating about the origin when the question gives another centre.
+
+## 6. Practice
+Q: Rotate $(1, 6)$ by $90^\circ$ about the origin.
+A: $(-6, 1)$.
+
+Q: Rotate $(-3, 4)$ by $180^\circ$.
+A: $(3, -4)$.
+
+Q: Rotate $(2, 7)$ by $270^\circ$.
+A: $(7, -2)$.
+
+Q: What stays the same under a rotation?
+A: Distances, angles, shape and size (and the distance of each point from the centre).
+
+Q: Rotate $(4, 0)$ by $60^\circ$ about the origin.
+A: $(2, 2\sqrt{3})$."
+3,TOPIC,Dilations,"Scale factor and centre, enlargements and reductions, coordinates, effect on length and area",SHOULD,FALSE,"# Dilations
+
+## 1. What it covers
+- A **dilation** with centre $C$ and **scale factor** $k$.
+- Enlargement ($k > 1$) and reduction ($0 < k < 1$).
+- Coordinate rule about the origin and about another centre.
+- What changes (lengths) and what doesn't (angles, parallel lines).
+
+## 2. Where it is used
+- **Zooming:** maps, images, and pinch-to-zoom on phones.
+- **Projectors and cameras:** the image is a dilation of the object.
+- **Responsive design:** scaling layouts and vector icons (SVG) without distortion.
+- **Similar triangles and models:** scale models, architectural drawings.
+
+## 3. What it means
+A dilation stretches or shrinks a shape **from a fixed centre**. Each point moves along the line from the centre, ending $k$ times as far away. It's like a projector: move it back and the image grows, but keeps its shape.
+
+- Lengths multiply by $k$; areas by $k^2$.
+- Angles stay the same; parallel lines stay parallel.
+- The result is **similar** to the original (not congruent, unless $k = 1$).
+
+## 4. Formula & worked example
+$$
+\text{about the origin: } (x, y) \to (kx, ky) \qquad \text{about } C(a, b): (x, y) \to \big(a + k(x - a),\ b + k(y - b)\big)
+$$
+
+**Example 1.** Dilate $A(2, 3)$, $B(4, -1)$ by $k = 3$ about the origin → $A'(6, 9)$, $B'(12, -3)$.
+
+**Example 2.** Dilate $(8, -4)$ by $k = \frac{1}{4}$ → $(2, -1)$.
+
+**Example 3 (centre not origin).** Dilate $P(5, 4)$ by $k = 2$ about $C(1, 2)$.
+- $(1 + 2(4),\ 2 + 2(2)) = (9, 6)$
+
+**Example 4.** A triangle with area 12 is dilated by $k = 2.5$. New area? → $12 \times 6.25 = 75$.
+
+**Example 5.** $A(1, 1)$ maps to $A'(4, 4)$ under a dilation about the origin. Scale factor? → $4$.
+
+## 5. Common mistakes
+- Multiplying areas by $k$ instead of $k^2$.
+- Dilating about the origin when the centre is elsewhere.
+- Thinking a dilation preserves lengths (it doesn't; it preserves angles).
+
+## 6. Practice
+Q: Dilate $(-3, 6)$ by $k = \frac{2}{3}$ about the origin.
+A: $(-2, 4)$.
+
+Q: A segment of length 5 is dilated by $k = 4$. New length?
+A: $20$.
+
+Q: Is a dilated figure congruent or similar to the original?
+A: Similar.
+
+Q: Dilate $(3, 3)$ by $k = 3$ about $(1, 1)$.
+A: $(7, 7)$.
+
+Q: A square's area goes from 9 to 81. Scale factor?
+A: $3$."
+3,TOPIC,"Compositions, symmetry and rigid motions","Sequences of transformations, line and rotational symmetry, what rigid motions preserve",SHOULD,FALSE,"# Compositions, symmetry and rigid motions
+
+## 1. What it covers
+- **Composing** transformations (doing one after another); order matters.
+- **Rigid motions** (translations, reflections, rotations) preserve distance and angle.
+- **Line symmetry** and **rotational symmetry** (order of symmetry).
+- Two reflections = a translation or a rotation.
+
+## 2. Where it is used
+- **Computer graphics:** transformations are combined into one matrix (the ""model-view"" matrix); the order of multiplication matters, which is a classic bug.
+- **Animation rigs:** a hand's position is the composition of shoulder, elbow and wrist rotations.
+- **Design and nature:** logos, snowflakes (6-fold symmetry), flowers, tiles.
+- **Chemistry and crystallography:** molecular and crystal symmetry.
+
+## 3. What it means
+**Composition:** apply one transformation, then another to the result. Order usually matters: rotating then translating gives a different result from translating then rotating.
+
+**Rigid motions** (also called **isometries**) keep every distance and angle the same, so the image is **congruent** to the original. Dilations are not rigid (they change size).
+
+**Symmetry:**
+- **Line symmetry:** a reflection maps the shape onto itself (a butterfly).
+- **Rotational symmetry of order $n$:** a rotation by $\frac{360^\circ}{n}$ maps it onto itself (a regular hexagon has order 6).
+
+## 4. Formula & worked example
+**Example 1.** Reflect $(2, 5)$ in the y-axis, then translate by $\langle 3, -1\rangle$.
+- $(-2, 5)$ → $(1, 4)$
+
+**Example 2 (order matters).** Translate $(2, 5)$ by $\langle 3, -1\rangle$ first, then reflect in the y-axis.
+- $(5, 4)$ → $(-5, 4)$ (different from Example 1)
+
+**Example 3.** Reflect in the x-axis, then in the y-axis. Combined effect?
+- $(x, y) \to (x, -y) \to (-x, -y)$: a $180^\circ$ rotation about the origin.
+
+**Example 4.** Lines of symmetry and rotational order of a square? → 4 lines; order 4.
+
+**Example 5.** A regular pentagon: 5 lines of symmetry, rotational order 5 (smallest angle $72^\circ$).
+
+**Example 6.** The letter ""S"": no line symmetry; rotational symmetry of order 2.
+
+## 5. Common mistakes
+- Assuming compositions can be done in any order.
+- Counting the identity (no turn) as extra rotational symmetry. Order 1 means no rotational symmetry.
+- Calling a dilation a rigid motion.
+
+## 6. Practice
+Q: Rotate $(1, 3)$ by $90^\circ$, then reflect in the x-axis.
+A: $(-3, 1)$ → $(-3, -1)$.
+
+Q: Which transformations are rigid motions?
+A: Translations, reflections and rotations.
+
+Q: Rotational symmetry order of an equilateral triangle?
+A: 3.
+
+Q: Lines of symmetry of a rectangle (non-square)?
+A: 2.
+
+Q: Reflecting across two parallel lines gives what single transformation?
+A: A translation."
+2,MODULE,Congruence and proof,"Congruence criteria, proofs, CPCTC, isosceles and equilateral triangles",MUST,,"Proofs explain **why** something is always true, not just in one drawing."
+3,TOPIC,"Triangle congruence: SSS, SAS, ASA, AAS and HL","What congruence means, the five criteria, and the two that don't work",MUST,FALSE,"# Triangle congruence: SSS, SAS, ASA, AAS and HL
+
+## 1. What it covers
+- **Congruent** triangles: all corresponding sides and angles equal.
+- The shortcuts: **SSS, SAS, ASA, AAS**, and **HL** for right triangles.
+- Why **SSA** and **AAA** don't prove congruence.
+- Writing congruence statements with matching vertex order.
+
+## 2. Where it is used
+- **Engineering and manufacturing:** identical parts must be congruent; triangular frames are rigid because SSS fixes the shape.
+- **Surveying:** measuring an inaccessible distance by building a congruent triangle on accessible ground.
+- **Proofs:** most geometry proofs go through congruent triangles.
+- **Computer vision:** checking whether two shapes match.
+
+## 3. What it means
+Two triangles are **congruent** ($\cong$) if one can be moved by rigid motions to sit exactly on the other. You don't need to check all six parts; some combinations of three force the rest:
+- **SSS:** three sides equal. (That's why triangles are rigid: three fixed lengths allow only one shape.)
+- **SAS:** two sides and the angle **between** them.
+- **ASA:** two angles and the side between them.
+- **AAS:** two angles and a non-included side (the third angle is then fixed anyway).
+- **HL:** in right triangles, hypotenuse and one leg.
+
+**Don't work:**
+- **AAA:** same angles, but sizes can differ (similar, not congruent).
+- **SSA:** can give two different triangles (the ambiguous case from the Trigonometry roadmap).
+
+**Order matters:** $\triangle ABC \cong \triangle DEF$ means $A \leftrightarrow D$, $B \leftrightarrow E$, $C \leftrightarrow F$.
+
+## 4. Formula & worked example
+**Example 1.** $AB = DE$, $BC = EF$, $\angle B = \angle E$. Congruent? → Yes, SAS ($\angle B$ is between $AB$ and $BC$).
+
+**Example 2.** $\angle A = \angle D$, $\angle B = \angle E$, $BC = EF$. → Yes, AAS.
+
+**Example 3.** All three angles equal. → Not enough (AAA).
+
+**Example 4 (river width).** To measure across a river from $A$ to a tree $T$: walk along the bank from $A$ to $B$, continue the same distance to $C$, then walk away from the river at right angles until $D$, where $D$, $B$ and $T$ line up. Then $\triangle ABT \cong \triangle CBD$ (ASA: right angles, $AB = CB$, vertical angles at $B$), so $CD = AT$, which you can measure.
+
+**Example 5.** $\triangle PQR \cong \triangle XYZ$, $PQ = 7$, $\angle R = 40^\circ$. Then $XY = 7$ and $\angle Z = 40^\circ$.
+
+## 5. Common mistakes
+- Using SSA or AAA as a congruence criterion.
+- Using SAS when the angle isn't **between** the two sides.
+- Writing the congruence statement with vertices in the wrong order.
+
+## 6. Practice
+Q: Two sides and the included angle are equal. Which criterion?
+A: SAS.
+
+Q: Why doesn't AAA prove congruence?
+A: Triangles with the same angles can have different sizes.
+
+Q: Right triangles with equal hypotenuses and one equal leg. Criterion?
+A: HL.
+
+Q: $\triangle ABC \cong \triangle KLM$. Which angle equals $\angle B$?
+A: $\angle L$.
+
+Q: Why are triangles used in rigid frames?
+A: SSS: three fixed side lengths allow only one shape."
+3,TOPIC,Writing geometric proofs and CPCTC,"Two-column and paragraph proofs, reasons, using congruent triangles to prove parts equal",MUST,FALSE,"# Writing geometric proofs and CPCTC
+
+## 1. What it covers
+- The structure of a proof: **given**, **prove**, statements and reasons.
+- Two-column and paragraph formats.
+- **CPCTC:** Corresponding Parts of Congruent Triangles are Congruent.
+- Common reasons: definitions, vertical angles, reflexive property, parallel-line angles, congruence criteria.
+
+## 2. Where it is used
+- **Logical thinking:** step-by-step justification is the same skill as debugging and code review (""why is this true?"").
+- **Computer science:** proving algorithms correct; formal verification.
+- **Law and argument:** building a case from accepted facts.
+- **All higher maths.**
+
+## 3. What it means
+A proof is a chain of statements, each justified by something already accepted: a given fact, a definition, a postulate or a theorem proved earlier. Like a court case, every claim needs evidence.
+
+**Typical plan for proving two segments or angles equal:**
+1. Find two triangles that contain them.
+2. Prove the triangles congruent (SSS, SAS, ASA, AAS, HL).
+3. Conclude the parts are equal by **CPCTC**.
+
+**Useful reasons:**
+- **Reflexive property:** a shared side equals itself ($AC = AC$).
+- **Vertical angles are equal.**
+- **Definition of midpoint / bisector / perpendicular.**
+- **Alternate angles** (parallel lines).
+
+## 4. Formula & worked example
+**Example 1.** Given: $AB = CB$ and $BD$ bisects $\angle ABC$ ($D$ on $AC$). Prove: $AD = CD$.
+
+| Statement | Reason |
+|---|---|
+| $AB = CB$ | Given |
+| $\angle ABD = \angle CBD$ | Definition of angle bisector |
+| $BD = BD$ | Reflexive property |
+| $\triangle ABD \cong \triangle CBD$ | SAS |
+| $AD = CD$ | CPCTC |
+
+**Example 2 (paragraph).** Given: $M$ is the midpoint of $\overline{AB}$ and of $\overline{CD}$. Prove: $AC = BD$.
+- Since $M$ is the midpoint of both, $AM = BM$ and $CM = DM$. The angles $\angle AMC$ and $\angle BMD$ are vertical angles, so they're equal. So $\triangle AMC \cong \triangle BMD$ by SAS, and $AC = BD$ by CPCTC.
+
+**Example 3 (parallel lines).** Given: $AB \parallel CD$ and $AB = CD$, with $AD$ and $BC$ meeting at $E$. Prove: $E$ is the midpoint of $AD$.
+- Alternate angles: $\angle BAE = \angle CDE$ and $\angle ABE = \angle DCE$; with $AB = CD$, $\triangle ABE \cong \triangle DCE$ (ASA). By CPCTC, $AE = DE$.
+
+## 5. Common mistakes
+- Using what you want to prove as a reason.
+- Using CPCTC **before** proving the triangles congruent.
+- Missing the reflexive property for a shared side.
+
+## 6. Practice
+Q: What does CPCTC stand for?
+A: Corresponding parts of congruent triangles are congruent.
+
+Q: Two triangles share a side. Which property justifies that the side is equal to itself?
+A: The reflexive property.
+
+Q: What is the usual three-step plan to prove two segments equal?
+A: Find triangles containing them, prove the triangles congruent, then use CPCTC.
+
+Q: Two lines cross at $M$. Why are the opposite angles equal?
+A: Vertical angles are equal.
+
+Q: Can you use CPCTC to prove two triangles are congruent?
+A: No, CPCTC is used after congruence is established."
+3,TOPIC,Isosceles and equilateral triangles,"Base angles theorem and converse, properties of the altitude/median in isosceles triangles, equilateral facts",MUST,FALSE,"# Isosceles and equilateral triangles
+
+## 1. What it covers
+- **Isosceles triangle theorem:** the angles opposite equal sides (base angles) are equal, and its converse.
+- In an isosceles triangle, the line from the apex to the midpoint of the base is also the altitude and the angle bisector.
+- **Equilateral triangles:** all angles $60^\circ$.
+
+## 2. Where it is used
+- **Architecture:** gable roofs and A-frames are isosceles; the vertical centre post is the altitude.
+- **Engineering:** symmetric trusses spread loads evenly.
+- **Design:** equilateral triangles in logos, warning signs, hex grids (6 equilateral triangles).
+- **Proofs and problem solving:** spotting equal sides gives equal angles for free.
+
+## 3. What it means
+Fold an isosceles triangle along its line of symmetry: the two equal sides land on each other, and so do the two **base angles**. So base angles are equal. The fold line goes from the apex to the midpoint of the base, at right angles to it, and splits the apex angle in half. It's the median, altitude and angle bisector all at once.
+
+**Converse:** if two angles are equal, the sides opposite them are equal.
+
+**Equilateral:** all sides equal → all angles equal → each $\frac{180^\circ}{3} = 60^\circ$.
+
+## 4. Formula & worked example
+**Example 1.** Isosceles triangle with apex angle $40^\circ$. Base angles? → $\frac{180 - 40}{2} = 70^\circ$ each.
+
+**Example 2.** A base angle is $52^\circ$. Apex? → $180 - 104 = 76^\circ$.
+
+**Example 3 (algebra).** In $\triangle ABC$, $AB = AC$, $\angle B = 3x + 5$, $\angle C = 5x - 25$. Find $\angle A$.
+- $3x + 5 = 5x - 25$ → $x = 15$ → $\angle B = \angle C = 50^\circ$ → $\angle A = 80^\circ$
+
+**Example 4 (roof).** An A-frame roof has equal rafters 5 m long and a span of 8 m. Height of the ridge?
+- The altitude bisects the base: half-span 4 → height $= \sqrt{25 - 16} = 3$ m
+
+**Example 5 (converse).** A triangle has two $65^\circ$ angles. By the converse, the sides opposite those angles are equal, so the triangle is isosceles (with apex angle $50^\circ$).
+
+## 5. Common mistakes
+- Making the apex angle equal to a base angle.
+- Assuming a triangle is isosceles because it looks it.
+- Forgetting that the altitude of an isosceles triangle bisects the **base** (only from the apex).
+
+## 6. Practice
+Q: Base angles of an isosceles triangle with apex $100^\circ$?
+A: $40^\circ$ each.
+
+Q: Each angle of an equilateral triangle?
+A: $60^\circ$.
+
+Q: A triangle has angles $70^\circ$, $70^\circ$, $40^\circ$. Which sides are equal?
+A: The two sides opposite the $70^\circ$ angles.
+
+Q: Isosceles triangle with equal sides 13 and base 10. Height?
+A: $\sqrt{169 - 25} = 12$.
+
+Q: What three lines coincide from the apex of an isosceles triangle?
+A: The median, the altitude and the angle bisector."
+2,MODULE,Similarity,"Similar figures, AA/SAS/SSS similarity, proportional segments, indirect measurement",MUST,,"Similar figures are scaled copies: same angles, proportional sides."
+3,TOPIC,Similar triangles and similarity criteria,"Definition, scale factor, AA, SAS and SSS similarity, finding missing sides",MUST,FALSE,"# Similar triangles and similarity criteria
+
+## 1. What it covers
+- **Similar** figures: equal angles and proportional sides.
+- The **scale factor**.
+- Similarity shortcuts for triangles: **AA**, **SAS~**, **SSS~**.
+- Finding missing lengths with proportions.
+
+## 2. Where it is used
+- **Photography and optics:** a camera's image is a similar triangle to the scene (pinhole camera).
+- **Maps and models:** scale drawings are similar to reality.
+- **Surveying and astronomy:** measuring heights and distances indirectly.
+- **Computer vision:** estimating an object's distance from its size in a photo.
+- **Trigonometry:** trig ratios exist **because** all right triangles with the same angle are similar.
+
+## 3. What it means
+Similar triangles ($\sim$) have the **same shape**: corresponding angles equal and corresponding sides in the same ratio $k$ (the scale factor).
+
+**Shortcuts:**
+- **AA:** two pairs of equal angles are enough (the third must match too). This is the most used one.
+- **SSS~:** all three pairs of sides in the same ratio.
+- **SAS~:** two pairs of sides in the same ratio and the included angles equal.
+
+**Finding sides:** set up a proportion with **matching** sides in the same order: $\frac{\text{small}}{\text{big}} = \frac{\text{small}}{\text{big}}$.
+
+## 4. Formula & worked example
+$$
+\triangle ABC \sim \triangle DEF \Rightarrow \frac{AB}{DE} = \frac{BC}{EF} = \frac{CA}{FD} = k
+$$
+
+**Example 1.** $\triangle ABC \sim \triangle DEF$, $AB = 6$, $DE = 9$, $BC = 8$. Find $EF$.
+- $k = \frac{9}{6} = 1.5$ → $EF = 12$
+
+**Example 2 (AA).** Two triangles have angles $50^\circ, 60^\circ$ and $60^\circ, 70^\circ$. Similar?
+- Third angles: $70^\circ$ and $50^\circ$ → both are $50^\circ, 60^\circ, 70^\circ$ → yes.
+
+**Example 3 (SSS~).** Sides 4, 6, 8 and 6, 9, 12: ratios $\frac{6}{4} = \frac{9}{6} = \frac{12}{8} = 1.5$ → similar.
+
+**Example 4 (nested triangles).** In $\triangle ABC$, $DE \parallel BC$ with $D$ on $AB$, $E$ on $AC$. $AD = 4$, $DB = 6$, $DE = 5$. Find $BC$.
+- $\triangle ADE \sim \triangle ABC$ (AA, corresponding angles) → $\frac{BC}{5} = \frac{10}{4}$ → $BC = 12.5$
+
+## 5. Common mistakes
+- Matching the wrong sides (use the angle correspondence, not position on the page).
+- In nested triangles, using $DB$ instead of the whole side $AB$.
+- Thinking similar means congruent.
+
+## 6. Practice
+Q: Minimum information for AA similarity?
+A: Two pairs of equal angles.
+
+Q: $\triangle PQR \sim \triangle STU$ with $k = 3$ and $PQ = 4$. Find $ST$.
+A: $12$.
+
+Q: Are triangles with sides 3, 4, 5 and 9, 12, 15 similar?
+A: Yes, ratio 3.
+
+Q: Similar triangles: $\frac{x}{6} = \frac{10}{4}$. Find $x$.
+A: $15$.
+
+Q: Why are all equilateral triangles similar?
+A: All their angles are $60^\circ$ (AA)."
+3,TOPIC,"Proportional segments: triangle proportionality, midsegment and angle bisector theorems","Side-splitter theorem, midsegment theorem, angle bisector theorem",MUST,FALSE,"# Proportional segments: triangle proportionality, midsegment and angle bisector theorems
+
+## 1. What it covers
+- **Triangle proportionality (side-splitter) theorem:** a line parallel to one side divides the other two sides proportionally.
+- **Midsegment theorem:** the segment joining two midpoints is parallel to the third side and half its length.
+- **Angle bisector theorem:** an angle bisector divides the opposite side in the ratio of the adjacent sides.
+
+## 2. Where it is used
+- **Construction:** dividing a beam or board into equal parts using parallel lines.
+- **Design and drafting:** scaling drawings; finding midpoints quickly.
+- **Computer graphics:** linear interpolation along edges uses these proportions.
+- **Problem solving:** quick ways to find lengths without trig.
+
+## 3. What it means
+- **Side-splitter:** if $DE \parallel BC$ in $\triangle ABC$, then $\frac{AD}{DB} = \frac{AE}{EC}$. The parallel line makes a smaller similar triangle, so the pieces are in proportion.
+- **Midsegment:** joining the midpoints of two sides gives a segment parallel to the third side and **half** as long (the smaller triangle has scale factor $\frac{1}{2}$).
+- **Angle bisector:** the bisector of $\angle A$ meets $BC$ at $D$ with $\frac{BD}{DC} = \frac{AB}{AC}$. The longer neighbouring side gets the longer piece.
+
+## 4. Formula & worked example
+$$
+DE \parallel BC \Rightarrow \frac{AD}{DB} = \frac{AE}{EC} \qquad \text{midsegment} = \tfrac{1}{2}\,\text{third side} \qquad \frac{BD}{DC} = \frac{AB}{AC}
+$$
+
+**Example 1 (side-splitter).** $AD = 6$, $DB = 4$, $AE = 9$. Find $EC$.
+- $\frac{6}{4} = \frac{9}{EC}$ → $EC = 6$
+
+**Example 2 (midsegment).** The midsegment of a triangle is $3x - 1$ and the parallel side is $4x + 8$.
+- $2(3x - 1) = 4x + 8$ → $x = 5$ → midsegment 14, side 28
+
+**Example 3 (angle bisector).** $AB = 10$, $AC = 15$, $BC = 20$. The bisector of $\angle A$ meets $BC$ at $D$. Find $BD$.
+- $\frac{BD}{DC} = \frac{10}{15} = \frac{2}{3}$ → $BD = \frac{2}{5}(20) = 8$
+
+**Example 4 (dividing a board).** To split a board into 3 equal parts without measuring it, lay a ruler at an angle with marks at 0, 10, 20, 30 cm touching the two edges; parallel lines through the marks divide the board equally (side-splitter theorem).
+
+## 5. Common mistakes
+- Using $\frac{AD}{AB}$ on one side and $\frac{AE}{EC}$ on the other (mix of piece and whole).
+- Making the midsegment equal to the third side instead of half.
+- In the angle bisector theorem, matching each piece with the wrong side (each piece goes with the side **next to it**).
+
+## 6. Practice
+Q: Midsegment parallel to a side of length 18. Its length?
+A: $9$.
+
+Q: $DE \parallel BC$, $AD = 5$, $DB = 10$, $AE = 4$. Find $EC$.
+A: $8$.
+
+Q: Angle bisector: $AB = 6$, $AC = 9$, $BC = 10$. Find $BD$.
+A: $\frac{6}{15}(10) = 4$.
+
+Q: What can you say about the four small triangles formed by the three midsegments of a triangle?
+A: They are congruent, each similar to the original with scale factor $\frac{1}{2}$.
+
+Q: State the side-splitter theorem.
+A: A line parallel to one side of a triangle divides the other two sides proportionally."
+3,TOPIC,Indirect measurement with similar triangles,"Shadows, mirrors, pinhole cameras, measuring heights and widths",MUST,FALSE,"# Indirect measurement with similar triangles
+
+## 1. What it covers
+- Measuring heights and distances you can't reach, using similar triangles.
+- The **shadow method**, the **mirror method** and the pinhole camera.
+- Estimating distances from apparent size.
+
+## 2. Where it is used
+- **Surveying and forestry:** tree and building heights.
+- **History:** Thales measured the height of the Great Pyramid from its shadow around 600 BCE.
+- **Photography and computer vision:** estimating distance from the size of an object in an image (used in self-driving car perception).
+- **Astronomy:** the size of the Sun and Moon from eclipses and shadows.
+
+## 3. What it means
+**Shadows:** at a given moment, the sun's rays are parallel, so a person and a tree make similar triangles with their shadows:
+$$
+\frac{\text{tree height}}{\text{tree shadow}} = \frac{\text{person height}}{\text{person shadow}}
+$$
+
+**Mirror:** put a mirror on the ground and step back until you see the top of the tree in it. The angles of incidence and reflection are equal, so your triangle and the tree's triangle are similar.
+
+**Pinhole camera / camera:** the object and its image form similar triangles through the hole (or lens).
+
+## 4. Formula & worked example
+**Example 1 (shadow).** A 1.6 m person casts a 2 m shadow; a tree casts a 15 m shadow.
+- $\frac{h}{15} = \frac{1.6}{2}$ → $h = 12$ m
+
+**Example 2 (mirror).** A mirror lies 8 m from a building. A person whose eyes are 1.5 m high stands 1.2 m from the mirror and sees the top. Building height?
+- $\frac{h}{8} = \frac{1.5}{1.2}$ → $h = 10$ m
+
+**Example 3 (pinhole camera).** A 2 m tall person is 5 m from a pinhole; the screen is 0.1 m behind the hole. Image height?
+- $\frac{x}{0.1} = \frac{2}{5}$ → $x = 0.04$ m $= 4$ cm (upside down)
+
+**Example 4 (thumb trick).** Holding a 1.5 cm wide thumb at arm's length (60 cm), it just covers a car about 4.5 m long. Distance to the car?
+- $\frac{d}{4.5} = \frac{60}{1.5}$ → $d = 180$ m
+
+## 5. Common mistakes
+- Mixing up which measurements belong to which triangle.
+- Using shadows measured at different times (the sun's angle changes).
+- Forgetting eye height when it matters.
+
+## 6. Practice
+Q: A 2 m pole casts a 3 m shadow; a building casts a 45 m shadow. Height?
+A: $30$ m.
+
+Q: Why are the shadow triangles similar?
+A: The sun's rays are parallel, so the angles match (AA).
+
+Q: A mirror is 10 m from a tree; you stand 2 m from the mirror with eyes at 1.6 m. Tree height?
+A: $8$ m.
+
+Q: In a pinhole camera, the image is 3 cm tall at 6 cm from the hole; the object is 10 m away. Object height?
+A: $5$ m.
+
+Q: Who first measured the Great Pyramid with shadows?
+A: Thales of Miletus."
+3,TOPIC,"Practice & review: Transformations, congruence and similarity",Mixed problem set with worked answers,MUST,FALSE,"# Practice & review: Transformations, congruence and similarity
+
+**How to use this:** 45 minutes. Draw diagrams.
+
+## Problems
+1. Reflect $A(3, -2)$ in $y = x$, then translate by $\langle -1, 4\rangle$.
+2. Rotate $(6, 1)$ by $90^\circ$ about $(2, 3)$.
+3. Dilate the triangle $(0, 0)$, $(4, 0)$, $(0, 2)$ by $k = 1.5$ about the origin. Find the new area.
+4. Which criterion (if any) proves congruence? (a) $AB = DE$, $AC = DF$, $\angle B = \angle E$. (b) $\angle A = \angle D$, $AB = DE$, $\angle B = \angle E$.
+5. Given: $AB \parallel DC$, $AB = DC$. Prove $\triangle ABC \cong \triangle CDA$ (quadrilateral $ABCD$ with diagonal $AC$).
+6. Isosceles $\triangle PQR$ with $PQ = PR$ and $\angle Q = 2x + 10$, $\angle P = 3x$. Find all angles.
+7. $DE \parallel BC$ in $\triangle ABC$; $AD = x$, $DB = x + 3$, $AE = 4$, $EC = 6$. Find $x$.
+8. A 1.8 m person casts a 2.4 m shadow when a flagpole casts a 16 m shadow. Flagpole height?
+9. Two similar cylinders have heights 6 and 9. The small one holds 400 mL. How much does the large one hold?
+
+## Answers
+1. $(-2, 3)$ → $(-3, 7)$.
+2. $(6, 1) - (2, 3) = (4, -2)$ → rotate: $(2, 4)$ → add back: $(4, 7)$.
+3. New vertices $(0, 0)$, $(6, 0)$, $(0, 3)$; area $9$ (original 4, × 2.25).
+4. (a) SSA → not a valid criterion. (b) ASA ✓.
+5. $AB = CD$ (given); $\angle BAC = \angle DCA$ (alternate angles, $AB \parallel DC$); $AC = CA$ (reflexive) → SAS.
+6. $\angle Q = \angle R = 2x + 10$; $3x + 2(2x + 10) = 180$ → $x = \frac{160}{7} \approx 22.86$ → $\angle P \approx 68.6^\circ$, $\angle Q = \angle R \approx 55.7^\circ$.
+7. $\frac{x}{x + 3} = \frac{4}{6}$ → $6x = 4x + 12$ → $x = 6$.
+8. $\frac{h}{16} = \frac{1.8}{2.4}$ → $h = 12$ m.
+9. $k = 1.5$ → volume × $3.375$ → $1350$ mL.
+
+## Flashcards
+Q: Rule for rotating $90^\circ$ about the origin?
+A: $(x, y) \to (-y, x)$.
+
+Q: Five triangle congruence criteria?
+A: SSS, SAS, ASA, AAS, HL.
+
+Q: Most common triangle similarity shortcut?
+A: AA (two equal angles).
+
+Q: Midsegment theorem?
+A: It is parallel to the third side and half its length."
+1,MODULE,Phase 4 — Coordinate Geometry (Core),"Distance and midpoint, dividing a segment, coordinate proofs, shoelace area, equation of a circle",MUST,,"# Phase 4: Coordinate geometry
+
+Coordinate (analytic) geometry, invented by Descartes, puts shapes on a grid so that geometry problems become algebra problems. It's how computers handle geometry: every game engine, CAD program, GPS and mapping app stores shapes as coordinates and uses these formulas."
+2,MODULE,Analytic geometry,"Distance, midpoint, section formula, slopes in proofs, polygon area, circles",MUST,,"With coordinates, you can prove and measure using only arithmetic."
+3,TOPIC,Distance and midpoint formulas,"Deriving the distance formula from Pythagoras, midpoint as an average, finding endpoints",MUST,FALSE,"# Distance and midpoint formulas
+
+## 1. What it covers
+- The **distance formula** between two points (from Pythagoras).
+- The **midpoint formula** (average the coordinates).
+- Finding a missing endpoint given the midpoint.
+- Distance in 3D.
+
+## 2. Where it is used
+- **Games:** distance checks for collisions, aggro range, nearest target.
+- **Machine learning:** Euclidean distance in k-nearest neighbours and k-means clustering.
+- **Maps and GPS:** ""nearest restaurant"" (on small scales; on the globe the haversine formula is used).
+- **Graphics:** midpoints for subdividing lines and meshes.
+
+## 3. What it means
+Between $(x_1, y_1)$ and $(x_2, y_2)$, draw a right triangle: horizontal leg $x_2 - x_1$, vertical leg $y_2 - y_1$. The distance is the hypotenuse, so Pythagoras gives the formula.
+
+The **midpoint** is halfway in each direction: the **average** of the x-coordinates and the average of the y-coordinates.
+
+## 4. Formula & worked example
+$$
+d = \sqrt{(x_2 - x_1)^2 + (y_2 - y_1)^2} \qquad M = \left(\frac{x_1 + x_2}{2},\ \frac{y_1 + y_2}{2}\right)
+$$
+In 3D: $d = \sqrt{\Delta x^2 + \Delta y^2 + \Delta z^2}$.
+
+**Example 1.** Distance from $(-2, 1)$ to $(4, 9)$: $\sqrt{36 + 64} = 10$.
+
+**Example 2.** Midpoint of $(3, -5)$ and $(9, 1)$: $(6, -2)$.
+
+**Example 3 (missing endpoint).** $M(2, 3)$ is the midpoint of $A(-1, 7)$ and $B$. Find $B$.
+- $\frac{-1 + x}{2} = 2$ → $x = 5$; $\frac{7 + y}{2} = 3$ → $y = -1$ → $B(5, -1)$
+
+**Example 4 (classify).** Is $A(0, 0)$, $B(4, 0)$, $C(2, 2\sqrt{3})$ equilateral?
+- $AB = 4$, $BC = \sqrt{4 + 12} = 4$, $AC = \sqrt{4 + 12} = 4$ → yes.
+
+**Example 5 (3D).** Distance from $(1, 2, 3)$ to $(4, 6, 15)$: $\sqrt{9 + 16 + 144} = 13$.
+
+## 5. Common mistakes
+- Subtracting in different orders for $x$ and $y$ (it doesn't matter after squaring, but be consistent).
+- Forgetting to square negative differences correctly: $(-3)^2 = 9$.
+- Subtracting instead of averaging for the midpoint.
+
+## 6. Practice
+Q: Distance between $(1, 1)$ and $(4, 5)$?
+A: $5$.
+
+Q: Midpoint of $(-6, 2)$ and $(4, 8)$?
+A: $(-1, 5)$.
+
+Q: Midpoint $(0, 0)$, one endpoint $(3, -7)$. Other endpoint?
+A: $(-3, 7)$.
+
+Q: Distance from the origin to $(5, 12)$?
+A: $13$.
+
+Q: Which theorem gives the distance formula?
+A: Pythagoras."
+3,TOPIC,Dividing a segment in a given ratio,"Section formula, points a fraction of the way along, linear interpolation",MUST,FALSE,"# Dividing a segment in a given ratio
+
+## 1. What it covers
+- Finding the point that divides $\overline{AB}$ in the ratio $m : n$ (the **section formula**).
+- Finding a point a fraction $t$ of the way from $A$ to $B$.
+- The link to **linear interpolation** (""lerp"").
+- The centroid of a triangle.
+
+## 2. Where it is used
+- **Animation and games:** `lerp(a, b, t)` moves an object smoothly from $A$ to $B$ as $t$ goes from 0 to 1; colour gradients blend the same way.
+- **Graphics:** Bézier curves are built from repeated lerps.
+- **Physics:** the centre of mass of two objects divides the segment between them in the inverse ratio of their masses.
+- **Data:** interpolating missing values between two readings.
+
+## 3. What it means
+A point a fraction $t$ of the way from $A$ to $B$ is $A + t(B - A)$: start at $A$ and move $t$ of the full journey. For $t = \frac{1}{2}$ you get the midpoint.
+
+**Ratio $m : n$** means the point is $\frac{m}{m + n}$ of the way from $A$ to $B$. Written as a weighted average, $B$'s weight is $m$ and $A$'s weight is $n$ (each endpoint is weighted by the **other** part of the ratio).
+
+**Centroid** (balance point) of a triangle: the average of the three vertices. It lies $\frac{2}{3}$ of the way along each median.
+
+## 4. Formula & worked example
+$$
+P = A + t(B - A) \qquad P = \left(\frac{nx_1 + mx_2}{m + n},\ \frac{ny_1 + my_2}{m + n}\right) \qquad G = \left(\frac{x_1 + x_2 + x_3}{3},\ \frac{y_1 + y_2 + y_3}{3}\right)
+$$
+
+**Example 1.** Divide $A(1, 2)$ to $B(10, 14)$ in the ratio $1 : 2$.
+- $t = \frac{1}{3}$: $P = (1 + 3,\ 2 + 4) = (4, 6)$
+
+**Example 2.** Divide $A(-2, 5)$ to $B(6, -3)$ in the ratio $3 : 1$.
+- $t = \frac{3}{4}$: $P = (-2 + 6,\ 5 - 6) = (4, -1)$
+
+**Example 3 (centroid).** Triangle $(0, 0)$, $(6, 0)$, $(3, 9)$: $G = (3, 3)$.
+
+**Example 4 (lerp in code).**
+```python
+def lerp(a, b, t):
+    return a + (b - a) * t
+start, end = (100, 400), (500, 100)
+for t in (0, 0.25, 0.5, 1):
+    print(t, (lerp(start[0], end[0], t), lerp(start[1], end[1], t)))
+# 0 (100, 400) / 0.25 (200.0, 325.0) / 0.5 (300.0, 250.0) / 1 (500, 100)
+```
+Each frame of an animation increases `t` a little, and `lerp` returns the point that fraction of the way along. At $t = 0.5$ it returns the midpoint $(300, 250)$; at $t = 1$, the end point $(500, 100)$.
+
+**Example 5 (centre of mass).** Masses of 2 kg at $x = 0$ and 6 kg at $x = 8$: the balance point divides the segment $6 : 2 = 3 : 1$ from the lighter mass → $x = 6$.
+
+## 5. Common mistakes
+- Using $\frac{m}{n}$ instead of $\frac{m}{m + n}$ as the fraction.
+- Swapping the weights in the section formula.
+- Confusing ""from A"" with ""from B"".
+
+## 6. Practice
+Q: Point $\frac{1}{4}$ of the way from $(0, 0)$ to $(8, 12)$?
+A: $(2, 3)$.
+
+Q: Divide $(2, 1)$ to $(11, 7)$ in the ratio $2 : 1$.
+A: $(8, 5)$.
+
+Q: Centroid of $(1, 2)$, $(5, 2)$, $(3, 8)$?
+A: $(3, 4)$.
+
+Q: What does `lerp(a, b, 0.5)` return?
+A: The midpoint of $a$ and $b$.
+
+Q: Ratio $2 : 3$. What fraction of the way from $A$ is the point?
+A: $\frac{2}{5}$."
+3,TOPIC,Coordinate proofs with slopes and distances,"Proving parallel, perpendicular, parallelograms, right triangles and other properties with coordinates",MUST,FALSE,"# Coordinate proofs with slopes and distances
+
+## 1. What it covers
+- Using **slopes** (parallel: equal; perpendicular: product $-1$) and **distances** to prove properties.
+- Classifying triangles and quadrilaterals from coordinates.
+- Choosing convenient coordinates for general proofs.
+
+## 2. Where it is used
+- **Computer graphics and CAD:** checking that walls are perpendicular, that a shape is a rectangle, that lines are parallel.
+- **Robotics:** verifying path geometry.
+- **Geometry proofs:** coordinate proofs are often easier than classical ones.
+- **GIS:** validating plot boundaries.
+
+## 3. What it means
+**Toolbox:**
+| To show... | Use |
+|---|---|
+| Segments are parallel | Equal slopes |
+| Segments are perpendicular | Slopes multiply to $-1$ (or one horizontal, one vertical) |
+| Segments are equal | Distance formula |
+| Segments bisect each other | Same midpoint |
+
+**General proofs:** place the figure cleverly, e.g. a right angle at the origin with sides along the axes, using letters like $(a, 0)$ and $(0, b)$. Then the proof covers **every** such figure.
+
+## 4. Formula & worked example
+**Example 1.** Is $A(1, 1)$, $B(5, 3)$, $C(7, 7)$, $D(3, 5)$ a parallelogram?
+- Slopes: $AB = \frac{2}{4} = \frac{1}{2}$, $DC = \frac{2}{4} = \frac{1}{2}$; $BC = \frac{4}{2} = 2$, $AD = \frac{4}{2} = 2$ → both pairs parallel → yes.
+- Is it a rhombus? $AB = \sqrt{20}$, $BC = \sqrt{20}$ → all sides $\sqrt{20}$ → yes, a rhombus (slopes $\frac{1}{2}$ and $2$ aren't perpendicular, so not a square).
+
+**Example 2.** Is $P(-1, 2)$, $Q(3, 4)$, $R(5, 0)$ a right triangle?
+- $PQ$: $\frac{2}{4} = \frac{1}{2}$; $QR$: $\frac{-4}{2} = -2$; product $-1$ → right angle at $Q$.
+
+**Example 3 (general proof).** Prove the midpoint of the hypotenuse of a right triangle is equally far from all three vertices.
+- Place $O(0, 0)$, $A(2a, 0)$, $B(0, 2b)$. Midpoint of $AB$: $M(a, b)$.
+- $MO = \sqrt{a^2 + b^2}$, $MA = \sqrt{a^2 + b^2}$, $MB = \sqrt{a^2 + b^2}$ ✓ (using $2a$, $2b$ avoids fractions).
+
+**Example 4 (diagonals).** Show the diagonals of the parallelogram in Example 1 bisect each other.
+- Midpoint of $AC$: $(4, 4)$; midpoint of $BD$: $(4, 4)$ ✓
+
+## 5. Common mistakes
+- Checking only one pair of sides for a parallelogram.
+- Concluding ""rectangle"" from equal opposite sides alone (that's any parallelogram).
+- Placing a general figure with too many specific numbers, so the proof only covers one case.
+
+## 6. Practice
+Q: How do you show two segments are perpendicular with coordinates?
+A: Show their slopes multiply to $-1$.
+
+Q: $A(0, 0)$, $B(4, 0)$, $C(4, 3)$, $D(0, 3)$. Rectangle?
+A: Yes: opposite sides parallel, adjacent sides horizontal/vertical.
+
+Q: Show $(0, 0)$, $(3, 4)$, $(6, 0)$ is isosceles.
+A: Two sides have length 5.
+
+Q: How do you show diagonals bisect each other?
+A: Show they have the same midpoint.
+
+Q: Why use $(2a, 0)$ instead of $(a, 0)$ in some proofs?
+A: Midpoints come out without fractions."
+3,TOPIC,Area on the coordinate plane and the shoelace formula,"Areas of polygons from vertices, the shoelace formula, signed area",MUST,FALSE,"# Area on the coordinate plane and the shoelace formula
+
+## 1. What it covers
+- Finding polygon areas from coordinates by **decomposition** (boxing in and subtracting).
+- The **shoelace formula** for any simple polygon.
+- Perimeter from coordinates.
+- What the sign of the shoelace result means (orientation).
+
+## 2. Where it is used
+- **GIS and land records:** computing plot areas from surveyed corner coordinates.
+- **Computer graphics:** polygon area and winding order (clockwise vs anticlockwise decides which side of a triangle faces the camera, used for back-face culling).
+- **Robotics:** area covered by a cleaning robot.
+- **Computational geometry libraries** (Shapely, PostGIS) use this formula.
+
+## 3. What it means
+**Boxing method:** draw the smallest rectangle around the polygon, then subtract the right triangles in the corners.
+
+**Shoelace formula:** list the vertices in order (around the shape) and repeat the first at the end. Multiply diagonally down-right and add; multiply diagonally up-right and subtract. Half the absolute value is the area. The criss-cross pattern looks like shoelaces.
+
+The result before taking the absolute value is **positive if the vertices go anticlockwise**, negative if clockwise.
+
+## 4. Formula & worked example
+$$
+A = \frac{1}{2}\left\lvert \sum_{i=1}^{n} (x_iy_{i+1} - x_{i+1}y_i) \right\rvert \quad (\text{with } x_{n+1} = x_1,\ y_{n+1} = y_1)
+$$
+
+**Example 1 (triangle).** $A(1, 1)$, $B(5, 2)$, $C(3, 6)$.
+- Sum: $(1 \cdot 2 - 5 \cdot 1) + (5 \cdot 6 - 3 \cdot 2) + (3 \cdot 1 - 1 \cdot 6) = -3 + 24 - 3 = 18$
+- Area $= 9$
+
+**Example 2 (quadrilateral).** $(0, 0)$, $(4, 0)$, $(5, 3)$, $(1, 4)$.
+- $(0 - 0) + (12 - 0) + (20 - 3) + (0 - 0) = 29$ → area $14.5$
+
+**Example 3 (boxing).** Triangle $(0, 0)$, $(6, 2)$, $(2, 5)$.
+- Box $6 \times 5 = 30$; corner triangles: $\frac{1}{2}(6)(2) = 6$, $\frac{1}{2}(4)(3) = 6$, $\frac{1}{2}(2)(5) = 5$ → $30 - 17 = 13$
+- Shoelace check: $(0 - 0) + (30 - 4) + (0 - 0) = 26$ → $13$ ✓
+
+**Example 4 (code).**
+```python
+def shoelace(pts):
+    s = 0
+    for i in range(len(pts)):
+        x1, y1 = pts[i]
+        x2, y2 = pts[(i + 1) % len(pts)]   # wrap around to the first point
+        s += x1 * y2 - x2 * y1
+    return abs(s) / 2
+print(shoelace([(0, 0), (4, 0), (5, 3), (1, 4)]))   # 14.5
+```
+`(i + 1) % len(pts)` makes the last vertex pair up with the first, closing the polygon. Remove `abs` to get the signed area (positive = anticlockwise).
+
+## 5. Common mistakes
+- Listing vertices out of order (crossing the shape).
+- Forgetting to close the loop (pair the last vertex with the first).
+- Forgetting the $\frac{1}{2}$ or the absolute value.
+
+## 6. Practice
+Q: Shoelace area of $(0, 0)$, $(4, 0)$, $(0, 3)$?
+A: $6$.
+
+Q: Area of the square $(1, 1)$, $(4, 1)$, $(4, 4)$, $(1, 4)$?
+A: $9$.
+
+Q: What does a negative shoelace sum (before absolute value) mean?
+A: The vertices are listed clockwise.
+
+Q: Area of triangle $(2, 3)$, $(8, 3)$, $(5, 9)$?
+A: Base 6, height 6 → $18$.
+
+Q: Why must vertices be listed in order around the polygon?
+A: Otherwise the edges cross and the formula gives a wrong area."
+3,TOPIC,Equation of a circle,"(x − h)² + (y − k)² = r², completing the square, points inside/outside, tangents",MUST,FALSE,"# Equation of a circle
+
+## 1. What it covers
+- The standard form $(x - h)^2 + (y - k)^2 = r^2$ (centre $(h, k)$, radius $r$).
+- Converting the general form $x^2 + y^2 + Dx + Ey + F = 0$ by **completing the square**.
+- Testing whether a point is inside, on or outside a circle.
+- The tangent line at a point.
+
+## 2. Where it is used
+- **Games:** circular collision detection (`dx*dx + dy*dy <= r*r`).
+- **GPS and cell towers:** all points at a given distance from a tower form a circle; intersecting circles locates a phone.
+- **CAD and CNC:** circular arcs and holes.
+- **UI:** detecting a click inside a circular button.
+
+## 3. What it means
+A circle is every point at distance $r$ from the centre $(h, k)$. Write that with the distance formula and square both sides:
+$$
+\sqrt{(x - h)^2 + (y - k)^2} = r \ \Rightarrow\ (x - h)^2 + (y - k)^2 = r^2
+$$
+
+**Inside/outside test:** compute $(x - h)^2 + (y - k)^2$ and compare with $r^2$: less → inside, equal → on, greater → outside. No square root needed, which is why games use squared distances.
+
+**Tangent at a point:** perpendicular to the radius at that point.
+
+## 4. Formula & worked example
+$$
+(x - h)^2 + (y - k)^2 = r^2
+$$
+
+**Example 1.** Centre $(3, -2)$, radius 5: $(x - 3)^2 + (y + 2)^2 = 25$.
+
+**Example 2.** Centre and radius of $(x + 1)^2 + (y - 4)^2 = 18$: $(-1, 4)$, $r = 3\sqrt{2}$.
+
+**Example 3 (complete the square).** $x^2 + y^2 - 6x + 8y - 11 = 0$
+- $(x^2 - 6x + 9) + (y^2 + 8y + 16) = 11 + 9 + 16 = 36$ → $(x - 3)^2 + (y + 4)^2 = 36$ → centre $(3, -4)$, $r = 6$
+
+**Example 4 (inside?).** Is $(1, 2)$ inside $(x - 3)^2 + (y + 1)^2 = 16$?
+- $4 + 9 = 13 < 16$ → inside.
+
+**Example 5 (tangent).** Tangent to $x^2 + y^2 = 25$ at $(3, 4)$.
+- Radius slope $\frac{4}{3}$ → tangent slope $-\frac{3}{4}$: $y - 4 = -\frac{3}{4}(x - 3)$ → $3x + 4y = 25$
+
+**Example 6 (circle from a diameter).** Endpoints $(-2, 1)$ and $(6, 7)$.
+- Centre $(2, 4)$; $r = \frac{1}{2}\sqrt{64 + 36} = 5$ → $(x - 2)^2 + (y - 4)^2 = 25$
+
+## 5. Common mistakes
+- Sign of the centre: $(x + 1)^2$ means $h = -1$.
+- Forgetting to take the square root for $r$ (if the right side is 18, $r = \sqrt{18}$, not 18).
+- Not adding the same numbers to both sides when completing the square.
+
+## 6. Practice
+Q: Equation of the circle with centre $(0, 0)$ and radius 7?
+A: $x^2 + y^2 = 49$.
+
+Q: Centre and radius of $(x - 5)^2 + (y + 2)^2 = 9$?
+A: $(5, -2)$, $r = 3$.
+
+Q: Convert $x^2 + y^2 + 4x - 2y - 4 = 0$.
+A: $(x + 2)^2 + (y - 1)^2 = 9$: centre $(-2, 1)$, $r = 3$.
+
+Q: Is $(5, 5)$ inside $x^2 + y^2 = 49$?
+A: $50 > 49$ → just outside.
+
+Q: Tangent to a circle at a point is ... to the radius at that point?
+A: Perpendicular."
+3,TOPIC,Practice & review: Coordinate geometry,Mixed problem set with worked answers,MUST,FALSE,"# Practice & review: Coordinate geometry
+
+**How to use this:** 40 minutes, no calculator.
+
+## Problems
+1. Find the distance and midpoint between $(-3, 7)$ and $(5, 1)$.
+2. $M(4, -1)$ is the midpoint of $\overline{PQ}$ with $P(10, 3)$. Find $Q$.
+3. Find the point dividing $(-4, 2)$ to $(8, 11)$ in the ratio $1 : 2$.
+4. Show $A(-2, -1)$, $B(2, 1)$, $C(1, 3)$, $D(-3, 1)$ is a rectangle.
+5. Shoelace area of $(1, 0)$, $(5, 1)$, $(4, 5)$, $(0, 3)$.
+6. Write $x^2 + y^2 - 10x + 2y + 1 = 0$ in standard form.
+7. Tangent to $(x - 1)^2 + (y - 2)^2 = 25$ at $(4, 6)$.
+8. Centroid of $(-1, 4)$, $(5, 2)$, $(2, -3)$.
+
+## Answers
+1. $d = \sqrt{64 + 36} = 10$; $M(1, 4)$.
+2. $Q(-2, -5)$.
+3. $t = \frac{1}{3}$: $(-4 + 4,\ 2 + 3) = (0, 5)$.
+4. Slopes: $AB = \frac{1}{2}$, $BC = -2$, $CD = \frac{1}{2}$, $DA = -2$; opposite sides parallel and $\frac{1}{2} \times (-2) = -1$ → right angles → rectangle.
+5. $(1 - 0) + (25 - 4) + (12 - 0) + (0 - 3) = 31$ → $15.5$.
+6. $(x - 5)^2 + (y + 1)^2 = 25$: centre $(5, -1)$, $r = 5$.
+7. Radius slope $\frac{4}{3}$ → tangent slope $-\frac{3}{4}$: $y - 6 = -\frac{3}{4}(x - 4)$ → $3x + 4y = 36$.
+8. $(2, 1)$.
+
+## Flashcards
+Q: Distance formula?
+A: $\sqrt{(x_2 - x_1)^2 + (y_2 - y_1)^2}$.
+
+Q: Standard form of a circle?
+A: $(x - h)^2 + (y - k)^2 = r^2$.
+
+Q: Shoelace formula idea?
+A: Half the absolute value of $\sum(x_iy_{i+1} - x_{i+1}y_i)$ around the polygon.
+
+Q: Centroid of a triangle?
+A: The average of the three vertices."
+1,MODULE,Phase 5 — Circle Theorems (Core),"Chords, tangents, secants, arcs; central and inscribed angles; cyclic quadrilaterals; segment lengths",SHOULD,,"# Phase 5: Circle theorems
+
+Circles have surprisingly many exact angle and length relationships. These theorems appear in exams, in engineering (gears, arches, wheels) and in computer graphics (fitting circles through points). For arc length and sector area, see the **Trigonometry** roadmap (Phase 2)."
+2,MODULE,Angles and lengths in circles,"Vocabulary, inscribed angles, cyclic quadrilaterals, tangents, chord and secant lengths",SHOULD,,Most circle problems are solved by spotting one of a few key patterns.
+3,TOPIC,"Circle vocabulary: chords, tangents, secants and arcs","Radius, diameter, chord, secant, tangent, minor and major arcs, perpendicular from centre to chord",SHOULD,FALSE,"# Circle vocabulary: chords, tangents, secants and arcs
+
+## 1. What it covers
+- **Radius, diameter, chord, secant, tangent**.
+- **Arcs** (minor, major, semicircle) and their measure in degrees.
+- The perpendicular from the centre to a chord **bisects** the chord.
+- Equal chords are equally far from the centre.
+
+## 2. Where it is used
+- **Engineering:** finding the radius of a pipe or arch from a measured chord and its height (sagitta).
+- **Archaeology:** reconstructing the full size of a broken plate from a fragment.
+- **Road design:** curves as circular arcs.
+- **Computer graphics:** fitting a circle through three points.
+
+## 3. What it means
+- **Chord:** a segment joining two points on the circle. The longest chord is the **diameter**.
+- **Secant:** a line that cuts the circle at two points.
+- **Tangent:** a line that touches the circle at exactly one point.
+- **Arc:** part of the circle. A **minor arc** is less than $180^\circ$, a **major arc** more. An arc's measure equals the central angle that cuts it off.
+
+**Key fact:** the line from the centre perpendicular to a chord cuts it exactly in half. (The centre is equally far from both ends, so it lies on the chord's perpendicular bisector.) This gives right triangles: $r^2 = d^2 + \left(\frac{c}{2}\right)^2$, where $d$ is the distance from the centre to the chord.
+
+## 4. Formula & worked example
+$$
+r^2 = d^2 + \left(\frac{c}{2}\right)^2
+$$
+
+**Example 1.** A chord of length 16 is 6 from the centre. Radius? → $\sqrt{36 + 64} = 10$.
+
+**Example 2.** A circle of radius 13 has a chord 5 from the centre. Chord length? → half $= \sqrt{169 - 25} = 12$ → $24$.
+
+**Example 3 (broken plate).** A fragment's chord is 20 cm and the arc's height above the chord (sagitta) is 4 cm. Radius?
+- $d = r - 4$: $r^2 = (r - 4)^2 + 100$ → $0 = -8r + 16 + 100$ → $r = 14.5$ cm
+
+**Example 4.** An arc has a central angle of $110^\circ$. Its major arc measures $250^\circ$.
+
+## 5. Common mistakes
+- Using the full chord instead of half in the right triangle.
+- Confusing a secant (line) with a chord (segment).
+- Assuming a line that ""looks"" tangent is tangent.
+
+## 6. Practice
+Q: Radius 10, chord 12. Distance from the centre to the chord?
+A: $8$.
+
+Q: What does the perpendicular from the centre do to a chord?
+A: It bisects it.
+
+Q: A minor arc is $75^\circ$. Major arc?
+A: $285^\circ$.
+
+Q: Longest chord in a circle?
+A: The diameter.
+
+Q: Chord 10 cm, sagitta 1 cm. Radius?
+A: $r^2 = (r - 1)^2 + 25$ → $r = 13$ cm."
+3,TOPIC,Central and inscribed angles,"Inscribed angle = half the central angle, angles in the same segment, angle in a semicircle (Thales)",SHOULD,FALSE,"# Central and inscribed angles
+
+## 1. What it covers
+- **Central angle** (vertex at the centre) = arc measure.
+- **Inscribed angle** (vertex on the circle) = half the arc (half the central angle on the same arc).
+- Inscribed angles on the same arc are equal.
+- **Thales' theorem:** an angle inscribed in a semicircle is $90^\circ$.
+
+## 2. Where it is used
+- **Carpentry:** finding the centre of a circular board with a set square (Thales).
+- **Photography and theatres:** every seat on a circle through the stage edges sees the stage at the same angle (inscribed angle theorem), used in designing viewing positions.
+- **Football analytics:** shooting angles to the goal.
+- **Navigation:** fixing position from the angle between two landmarks.
+
+## 3. What it means
+The **inscribed angle theorem**: an angle drawn from a point on the circle to the ends of an arc is **half** the central angle on that arc.
+
+Consequences:
+- All inscribed angles standing on the same arc are **equal** (wherever the vertex sits on the remaining arc).
+- If the arc is a **semicircle** (the chord is a diameter), the central angle is $180^\circ$, so the inscribed angle is $90^\circ$ (Thales).
+
+**Carpenter's trick:** put the corner of a set square on the edge of a circular board; where its two edges cross the circle are the ends of a diameter. Do it twice; the diameters cross at the centre.
+
+## 4. Formula & worked example
+$$
+\text{inscribed angle} = \tfrac{1}{2} \times \text{central angle} = \tfrac{1}{2} \times \text{arc}
+$$
+
+**Example 1.** Central angle $100^\circ$ → inscribed angle on the same arc $50^\circ$.
+
+**Example 2.** An inscribed angle is $35^\circ$. Its arc? → $70^\circ$.
+
+**Example 3.** $AB$ is a diameter and $C$ is on the circle; $\angle CAB = 28^\circ$. Find $\angle CBA$.
+- $\angle ACB = 90^\circ$ (Thales) → $\angle CBA = 62^\circ$
+
+**Example 4 (same arc).** Points $C$ and $D$ on the same side of chord $AB$; $\angle ACB = 40^\circ$. Then $\angle ADB = 40^\circ$.
+
+**Example 5 (algebra).** Inscribed angle $3x + 5$ and central angle $8x - 10$ on the same arc.
+- $8x - 10 = 2(3x + 5)$ → $x = 10$ → inscribed $35^\circ$, central $70^\circ$
+
+## 5. Common mistakes
+- Making the inscribed angle equal to the central angle (it's half).
+- Using inscribed angles that stand on different arcs.
+- Missing a diameter (and the free right angle) in a diagram.
+
+## 6. Practice
+Q: Central angle $140^\circ$. Inscribed angle on the same arc?
+A: $70^\circ$.
+
+Q: An angle inscribed in a semicircle measures?
+A: $90^\circ$.
+
+Q: Two inscribed angles stand on the same arc. One is $48^\circ$. The other?
+A: $48^\circ$.
+
+Q: Inscribed angle $55^\circ$. Arc measure?
+A: $110^\circ$.
+
+Q: How can a set square find the centre of a circle?
+A: Its corner on the circle marks a diameter between where its edges cross the circle; two diameters cross at the centre."
+3,TOPIC,Cyclic quadrilaterals,"Opposite angles supplementary, exterior angle equals interior opposite angle, testing for cyclic",SHOULD,FALSE,"# Cyclic quadrilaterals
+
+## 1. What it covers
+- A **cyclic quadrilateral** has all four vertices on a circle.
+- **Opposite angles add to $180^\circ$** (and its converse).
+- An exterior angle equals the interior opposite angle.
+- Which quadrilaterals are always cyclic.
+
+## 2. Where it is used
+- **Geometry problems and olympiads:** a powerful tool for finding angles.
+- **Engineering linkages:** four-bar linkage analysis.
+- **Computer vision and graphics:** checking whether four points lie on one circle (used in Delaunay triangulation, which builds good triangle meshes for terrain and finite-element analysis).
+
+## 3. What it means
+Each angle of a cyclic quadrilateral is an inscribed angle. Two opposite angles stand on arcs that together make the whole circle ($360^\circ$). Half of $360^\circ$ is $180^\circ$, so **opposite angles are supplementary**.
+
+**Converse:** if a quadrilateral's opposite angles add to $180^\circ$, its vertices lie on a circle.
+
+Rectangles and squares are always cyclic; a non-rectangular parallelogram never is; isosceles trapezoids always are.
+
+## 4. Formula & worked example
+$$
+\angle A + \angle C = 180^\circ \qquad \angle B + \angle D = 180^\circ
+$$
+
+**Example 1.** Cyclic $ABCD$ with $\angle A = 85^\circ$, $\angle B = 110^\circ$. Find $\angle C$ and $\angle D$. → $95^\circ$ and $70^\circ$.
+
+**Example 2.** Is a quadrilateral with angles $70^\circ$, $100^\circ$, $110^\circ$, $80^\circ$ (in order) cyclic?
+- $70 + 110 = 180$ ✓ and $100 + 80 = 180$ ✓ → yes.
+
+**Example 3 (exterior angle).** Side $DC$ of cyclic $ABCD$ is extended past $C$; $\angle A = 75^\circ$. Exterior angle at $C$? → $75^\circ$ (it's supplementary to $\angle C$, which is supplementary to $\angle A$).
+
+**Example 4 (algebra).** Opposite angles $2x + 30$ and $4x - 30$. → $6x = 180$ → $x = 30$ → $90^\circ$ and $90^\circ$.
+
+## 5. Common mistakes
+- Adding **adjacent** angles to $180^\circ$ instead of opposite ones.
+- Assuming every quadrilateral is cyclic.
+- Forgetting the converse can prove four points are concyclic.
+
+## 6. Practice
+Q: In a cyclic quadrilateral, $\angle B = 64^\circ$. Find $\angle D$.
+A: $116^\circ$.
+
+Q: Is every rectangle cyclic?
+A: Yes (opposite angles $90^\circ + 90^\circ$).
+
+Q: Angles $95^\circ$, $85^\circ$, $85^\circ$, $95^\circ$ in order. Cyclic?
+A: Yes, $95 + 85 = 180$ for both opposite pairs.
+
+Q: Can a non-rectangular parallelogram be cyclic?
+A: No (opposite angles are equal, so they'd both have to be $90^\circ$).
+
+Q: Exterior angle of a cyclic quadrilateral equals which angle?
+A: The interior opposite angle."
+3,TOPIC,Tangents to circles,"Tangent ⊥ radius, two tangents from an external point, tangent length, tangent–chord angle",SHOULD,FALSE,"# Tangents to circles
+
+## 1. What it covers
+- A tangent is **perpendicular** to the radius at the point of contact.
+- Two tangents from an external point are **equal in length**.
+- Tangent length with Pythagoras.
+- The **tangent–chord angle** equals half the intercepted arc (alternate segment theorem).
+
+## 2. Where it is used
+- **Engineering:** belts around pulleys (the straight parts are tangents), gear teeth design.
+- **Roads and railways:** straight track joins a circular curve along a tangent so there's no sudden turn.
+- **Astronomy and line of sight:** how far you can see to the horizon (your line of sight is tangent to the Earth).
+- **Graphics:** smooth joins between lines and arcs in fonts and CAD.
+
+## 3. What it means
+A tangent just touches the circle. The radius to the touching point is the **shortest** path from the centre to the tangent line, and the shortest path to a line is always perpendicular. So **tangent ⊥ radius**.
+
+**Two tangents from one point** to a circle have equal lengths, like two equal ropes from a point to a ball (the two right triangles are congruent by HL).
+
+**Horizon distance:** from height $h$ above a sphere of radius $R$, the tangent length is $\sqrt{(R + h)^2 - R^2} = \sqrt{2Rh + h^2} \approx \sqrt{2Rh}$.
+
+## 4. Formula & worked example
+$$
+\text{tangent length from } P = \sqrt{OP^2 - r^2} \qquad \text{tangent–chord angle} = \tfrac{1}{2}\,\text{arc}
+$$
+
+**Example 1.** $P$ is 13 cm from the centre of a circle with radius 5. Tangent length? → $\sqrt{169 - 25} = 12$ cm.
+
+**Example 2.** Two tangents from $P$ touch the circle at $A$ and $B$; $PA = 3x + 2$, $PB = 5x - 6$. → $x = 4$, both 14.
+
+**Example 3.** Tangents from $P$ meet at angle $\angle APB = 50^\circ$. Find $\angle AOB$ (centre $O$).
+- Quadrilateral $PAOB$ has two right angles: $\angle AOB = 360 - 90 - 90 - 50 = 130^\circ$
+
+**Example 4 (horizon).** How far can you see from a 100 m tower? ($R \approx 6371$ km $= 6\,371\,000$ m)
+- $d \approx \sqrt{2 \times 6\,371\,000 \times 100} \approx 35\,700$ m $\approx 36$ km
+
+**Example 5 (tangent–chord).** A tangent and a chord meet at the point of contact, cutting off an arc of $120^\circ$. Angle between them? → $60^\circ$.
+
+## 5. Common mistakes
+- Forgetting the right angle between the tangent and the radius.
+- Using the distance to the circle's edge instead of to the centre in the tangent length formula.
+- Confusing a tangent with a secant that's nearly tangent.
+
+## 6. Practice
+Q: Angle between a tangent and the radius at the point of contact?
+A: $90^\circ$.
+
+Q: Radius 8, $P$ is 17 from the centre. Tangent length?
+A: $15$.
+
+Q: Two tangents from $P$; one is 9 cm. The other?
+A: $9$ cm.
+
+Q: Tangents from $P$ make $\angle AOB = 110^\circ$. Find $\angle APB$.
+A: $70^\circ$.
+
+Q: Approximate horizon distance from a height of 2 m?
+A: $\sqrt{2 \times 6\,371\,000 \times 2} \approx 5$ km."
+3,TOPIC,"Chords, secants and segment lengths","Intersecting chords, secant–secant and tangent–secant products (power of a point)",SHOULD,FALSE,"# Chords, secants and segment lengths
+
+## 1. What it covers
+- **Intersecting chords:** $a \cdot b = c \cdot d$.
+- **Two secants** from an external point: whole × outside part are equal.
+- **Tangent and secant:** $t^2 = \text{whole} \times \text{outside}$.
+- The unifying idea: **power of a point**.
+
+## 2. Where it is used
+- **Engineering:** finding a pipe's or tunnel's radius from accessible measurements.
+- **Optics:** lens and mirror geometry.
+- **Geometry problems:** finding lengths quickly without trig.
+- **Computational geometry:** the power of a point is used in circle and sphere intersection tests.
+
+## 3. What it means
+All three rules come from **similar triangles** created by inscribed angles. They share one idea: from a point $P$, every line through $P$ meeting the circle at two points $A$ and $B$ gives the same product $PA \cdot PB$. This constant is the **power of the point**.
+- Inside the circle: the two pieces of each chord.
+- Outside: the outside part × the whole secant.
+- A tangent is a secant whose two points have merged, so its product is $t \cdot t = t^2$.
+
+## 4. Formula & worked example
+$$
+\text{chords: } a \cdot b = c \cdot d \qquad \text{secants: } PA \cdot PB = PC \cdot PD \qquad \text{tangent: } PT^2 = PA \cdot PB
+$$
+
+**Example 1 (chords).** Two chords cross; one is split into 4 and 9, the other into 6 and $x$. → $36 = 6x$ → $x = 6$.
+
+**Example 2 (secants).** From $P$, a secant has outside part 5 and whole length 12; another has outside part 4 and whole $x$. → $60 = 4x$ → $x = 15$.
+
+**Example 3 (tangent–secant).** A tangent from $P$ has length $t$; a secant from $P$ has outside part 4 and whole 16. → $t^2 = 64$ → $t = 8$.
+
+**Example 4 (tunnel).** An arched tunnel: the floor chord is 8 m wide and the arch's highest point is 6 m above the floor's midpoint. Radius of the arch circle?
+- The vertical diameter through the midpoint is split into 6 and $2r - 6$; the chord into 4 and 4: $6(2r - 6) = 16$ → $2r - 6 = \frac{8}{3}$ → $r \approx 4.33$ m
+
+## 5. Common mistakes
+- Using ""outside × inside"" instead of ""outside × **whole**"" for secants.
+- Mixing segment pieces from different chords.
+- Forgetting the tangent is squared.
+
+## 6. Practice
+Q: Chords cross with pieces 3 and 8, and 4 and $x$. Find $x$.
+A: $6$.
+
+Q: Tangent length 6; a secant's outside part is 4. Whole secant?
+A: $36 = 4 \cdot w$ → $9$.
+
+Q: Secants: outside 2, whole 10; outside 4, whole $x$. Find $x$.
+A: $5$.
+
+Q: What is the ""power of a point""?
+A: The constant product $PA \cdot PB$ for any line through $P$ meeting the circle at $A$ and $B$.
+
+Q: Which earlier idea proves these rules?
+A: Similar triangles (from equal inscribed angles)."
+3,TOPIC,Practice & review: Circle theorems,Mixed problem set with worked answers,SHOULD,FALSE,"# Practice & review: Circle theorems
+
+**How to use this:** 40 minutes. Mark every right angle and equal length on your diagram first.
+
+## Problems
+1. A circle of radius 17 has a chord 15 from the centre. Chord length?
+2. Inscribed angle $\angle ACB = 38^\circ$. Central angle $\angle AOB$?
+3. $AB$ is a diameter, $C$ on the circle, $AC = 7$, $BC = 24$. Find the radius.
+4. Cyclic $PQRS$: $\angle P = (5x)^\circ$, $\angle R = (3x + 20)^\circ$. Find $\angle P$.
+5. Tangents $PA$ and $PB$ with $\angle APB = 64^\circ$. Find $\angle OAB$ ($O$ = centre).
+6. Chords cross with pieces $x$ and $x + 2$, and 4 and 6. Find $x$.
+7. A tangent of length 10 and a secant from the same point with outside part 5. Find the inside part of the secant.
+
+## Answers
+1. Half-chord $= \sqrt{289 - 225} = 8$ → $16$.
+2. $76^\circ$.
+3. $\angle C = 90^\circ$ → $AB = 25$ → $r = 12.5$.
+4. $8x + 20 = 180$ → $x = 20$ → $100^\circ$.
+5. $\angle AOB = 116^\circ$; $\triangle OAB$ is isosceles → $\angle OAB = 32^\circ$.
+6. $x(x + 2) = 24$ → $x = 4$.
+7. $100 = 5 \cdot w$ → whole $= 20$ → inside part $15$.
+
+## Flashcards
+Q: Inscribed angle vs central angle on the same arc?
+A: Inscribed = half the central angle.
+
+Q: Angle in a semicircle?
+A: $90^\circ$ (Thales).
+
+Q: Opposite angles of a cyclic quadrilateral?
+A: Add to $180^\circ$.
+
+Q: Tangent–secant rule?
+A: $t^2 = \text{outside} \times \text{whole}$."
+1,MODULE,Phase 6 — Conic Sections (Advanced),"Parabola, ellipse, hyperbola from focus definitions; standard forms; identifying conics; applications",NICE,,"# Phase 6: Conic sections
+
+Slice a double cone with a plane and you get a **circle**, **ellipse**, **parabola** or **hyperbola**, depending on the angle of the cut. These curves describe planetary orbits, satellite dishes, headlights, bridge cables, GPS-like navigation and the paths of thrown objects."
+2,MODULE,The conic sections,"Parabolas, ellipses, hyperbolas, identification and applications",NICE,,"Each conic has a simple distance definition, and each definition leads to its equation."
+3,TOPIC,Parabolas from focus and directrix,"Definition, y² = 4px and x² = 4py, vertex form, reflective property",NICE,FALSE,"# Parabolas from focus and directrix
+
+## 1. What it covers
+- The **definition:** all points equally far from a **focus** (point) and a **directrix** (line).
+- Standard forms $x^2 = 4py$ and $y^2 = 4px$; shifted forms.
+- Finding the focus, directrix and axis.
+- The **reflective property**.
+
+## 2. Where it is used
+- **Satellite dishes and radio telescopes:** incoming parallel signals reflect to the focus, where the receiver sits.
+- **Car headlights and torches:** a bulb at the focus sends light out in a parallel beam.
+- **Solar cookers and solar power towers.**
+- **Projectile motion:** thrown objects follow parabolas (ignoring air resistance).
+- **Suspension bridges:** the cables carrying a uniform deck hang in a parabola.
+
+## 3. What it means
+A parabola is the set of points whose distance to the focus equals their distance to the directrix. The vertex sits halfway between them; $p$ is the distance from the vertex to the focus.
+
+For a vertex at the origin, focus $(0, p)$ and directrix $y = -p$: setting the two distances equal and squaring gives $x^2 = 4py$.
+- $p > 0$: opens up; $p < 0$: opens down. $y^2 = 4px$ opens right or left.
+
+**Reflective property:** any ray coming in parallel to the axis bounces off the parabola straight through the focus, which is why dishes collect signals at one point.
+
+## 4. Formula & worked example
+$$
+x^2 = 4py:\ \text{focus } (0, p),\ \text{directrix } y = -p \qquad (x - h)^2 = 4p(y - k):\ \text{vertex } (h, k)
+$$
+
+**Example 1.** $x^2 = 12y$: $4p = 12$ → $p = 3$; focus $(0, 3)$, directrix $y = -3$, opens up.
+
+**Example 2.** $y^2 = -8x$: $p = -2$; focus $(-2, 0)$, directrix $x = 2$, opens left.
+
+**Example 3.** Equation with focus $(0, -5)$ and directrix $y = 5$: $p = -5$ → $x^2 = -20y$.
+
+**Example 4 (satellite dish).** A dish is 60 cm across and 10 cm deep. Where should the receiver go?
+- Vertex at the origin: the rim point $(30, 10)$ is on $x^2 = 4py$ → $900 = 40p$ → $p = 22.5$ cm above the vertex.
+
+**Example 5 (shifted).** $(x - 2)^2 = 8(y + 1)$: vertex $(2, -1)$, $p = 2$, focus $(2, 1)$, directrix $y = -3$.
+
+## 5. Common mistakes
+- Using $4p$ as the focal distance (it's $p$).
+- Mixing up which form opens vertically ($x^2 = \ldots$) vs horizontally ($y^2 = \ldots$).
+- Putting the directrix on the same side as the focus.
+
+## 6. Practice
+Q: Focus of $x^2 = 4y$?
+A: $(0, 1)$.
+
+Q: Directrix of $y^2 = 16x$?
+A: $x = -4$.
+
+Q: Parabola with vertex at the origin and focus $(3, 0)$?
+A: $y^2 = 12x$.
+
+Q: Why do satellite dishes have a parabolic shape?
+A: Parallel incoming signals reflect to the focus, where the receiver is.
+
+Q: A headlight reflector is 20 cm wide and 5 cm deep. Bulb distance from the vertex?
+A: $100 = 20p$ → $p = 5$ cm."
+3,TOPIC,Ellipses,"Two-focus definition, standard form, vertices, foci c² = a² − b², eccentricity, orbits",NICE,FALSE,"# Ellipses
+
+## 1. What it covers
+- The **definition:** the sum of the distances to two **foci** is constant ($2a$).
+- Standard form $\frac{x^2}{a^2} + \frac{y^2}{b^2} = 1$ and shifted forms.
+- **Vertices**, **co-vertices**, foci with $c^2 = a^2 - b^2$.
+- **Eccentricity** $e = \frac{c}{a}$.
+
+## 2. Where it is used
+- **Astronomy:** planets orbit the Sun in ellipses with the Sun at one focus (Kepler's first law); satellite orbits.
+- **Medicine:** lithotripsy machines shatter kidney stones by focusing shock waves from one focus of an elliptical reflector to the other.
+- **Architecture:** whispering galleries (St Paul's Cathedral): a whisper at one focus is heard clearly at the other.
+- **Graphics:** drawing ellipses and ovals (SVG `<ellipse>`).
+
+## 3. What it means
+**String construction:** pin two tacks (the foci), loop a string around them and a pencil, and draw while keeping the string tight. The total distance from the pencil to the two pins is always the string length: that's an ellipse.
+
+- $a$: half the long axis (major axis); vertices at $(\pm a, 0)$ when horizontal.
+- $b$: half the short axis (minor axis).
+- $c$: distance from the centre to each focus, with $c^2 = a^2 - b^2$.
+- **Eccentricity** $e = \frac{c}{a}$, from 0 (a circle) to nearly 1 (very stretched). Earth's orbit has $e \approx 0.017$, almost a circle.
+
+The larger denominator tells you the direction of the major axis.
+
+## 4. Formula & worked example
+$$
+\frac{(x - h)^2}{a^2} + \frac{(y - k)^2}{b^2} = 1 \ (a > b,\ \text{horizontal}) \qquad c^2 = a^2 - b^2 \qquad e = \frac{c}{a}
+$$
+
+**Example 1.** $\frac{x^2}{25} + \frac{y^2}{9} = 1$: $a = 5$, $b = 3$, $c = 4$. Vertices $(\pm 5, 0)$, co-vertices $(0, \pm 3)$, foci $(\pm 4, 0)$, $e = 0.8$.
+
+**Example 2.** $\frac{x^2}{16} + \frac{y^2}{36} = 1$: vertical major axis, $a = 6$, $b = 4$, $c = \sqrt{20} = 2\sqrt{5}$; foci $(0, \pm 2\sqrt{5})$.
+
+**Example 3 (write).** Centre $(0, 0)$, vertex $(7, 0)$, focus $(5, 0)$: $b^2 = 49 - 25 = 24$ → $\frac{x^2}{49} + \frac{y^2}{24} = 1$.
+
+**Example 4 (whispering gallery).** An elliptical room is 40 m long and 30 m wide. Where are the foci?
+- $a = 20$, $b = 15$ → $c = \sqrt{400 - 225} \approx 13.2$ m from the centre along the long axis.
+
+## 5. Common mistakes
+- Using $c^2 = a^2 + b^2$ (that's for hyperbolas).
+- Taking $a$ from the $x^2$ term even when the $y^2$ denominator is bigger.
+- Forgetting that $a$ and $b$ are square roots of the denominators.
+
+## 6. Practice
+Q: Vertices and foci of $\frac{x^2}{100} + \frac{y^2}{64} = 1$?
+A: Vertices $(\pm 10, 0)$; $c = 6$, foci $(\pm 6, 0)$.
+
+Q: Eccentricity of that ellipse?
+A: $0.6$.
+
+Q: What is the eccentricity of a circle?
+A: $0$.
+
+Q: Ellipse with vertices $(0, \pm 5)$ and co-vertices $(\pm 2, 0)$?
+A: $\frac{x^2}{4} + \frac{y^2}{25} = 1$.
+
+Q: Where is the Sun in a planet's elliptical orbit?
+A: At one focus."
+3,TOPIC,Hyperbolas,"Difference-of-distances definition, standard form, vertices, foci c² = a² + b², asymptotes, navigation",NICE,FALSE,"# Hyperbolas
+
+## 1. What it covers
+- The **definition:** the **difference** of distances to two foci is constant ($2a$).
+- Standard forms $\frac{x^2}{a^2} - \frac{y^2}{b^2} = 1$ (opens left/right) and $\frac{y^2}{a^2} - \frac{x^2}{b^2} = 1$ (opens up/down).
+- Vertices, foci ($c^2 = a^2 + b^2$) and **asymptotes** $y = \pm\frac{b}{a}x$.
+
+## 2. Where it is used
+- **Navigation:** LORAN and some GPS-like systems locate a ship from the **difference** in arrival times of signals from two stations, which puts it on a hyperbola. Two pairs of stations give two hyperbolas; the ship is where they cross. Mobile networks locate phones the same way (TDOA).
+- **Astronomy:** comets and spacecraft moving fast enough to escape follow hyperbolic paths (slingshot manoeuvres).
+- **Architecture:** cooling towers of power plants are hyperboloids (strong and use less material).
+- **Physics:** $xy = k$ (a rotated hyperbola) describes Boyle's law ($PV$ = constant).
+
+## 3. What it means
+For an ellipse, the **sum** of the distances to the foci is constant; for a hyperbola, the **difference** is constant. This gives two separate branches, opening away from each other.
+
+- $a$: centre to vertex. $c$: centre to focus, now with $c^2 = a^2 + b^2$ (foci are **outside** the vertices).
+- **Asymptotes:** far from the centre, the branches approach the lines $y = \pm\frac{b}{a}x$. To sketch, draw the box $2a$ by $2b$ around the centre; its diagonals are the asymptotes.
+- The **positive** term tells you the direction it opens.
+
+## 4. Formula & worked example
+$$
+\frac{x^2}{a^2} - \frac{y^2}{b^2} = 1:\ \text{vertices } (\pm a, 0),\ \text{foci } (\pm c, 0),\ c^2 = a^2 + b^2,\ \text{asymptotes } y = \pm\frac{b}{a}x
+$$
+
+**Example 1.** $\frac{x^2}{9} - \frac{y^2}{16} = 1$: $a = 3$, $b = 4$, $c = 5$. Vertices $(\pm 3, 0)$, foci $(\pm 5, 0)$, asymptotes $y = \pm\frac{4}{3}x$.
+
+**Example 2.** $\frac{y^2}{4} - \frac{x^2}{12} = 1$: opens up/down; $a = 2$, $b = 2\sqrt{3}$, $c = 4$; vertices $(0, \pm 2)$, foci $(0, \pm 4)$, asymptotes $y = \pm\frac{2}{2\sqrt{3}}x = \pm\frac{1}{\sqrt{3}}x$.
+
+**Example 3 (write).** Vertices $(\pm 4, 0)$, foci $(\pm 5, 0)$: $b^2 = 25 - 16 = 9$ → $\frac{x^2}{16} - \frac{y^2}{9} = 1$.
+
+**Example 4 (navigation idea).** Two stations 100 km apart send signals at the same moment; a ship receives one signal earlier, and the difference in distance works out as 60 km. The ship lies on a hyperbola with foci at the stations and $2a = 60$ → $a = 30$, $c = 50$, $b = 40$.
+
+## 5. Common mistakes
+- Using $c^2 = a^2 - b^2$ (that's the ellipse).
+- Getting the opening direction wrong (follow the positive term).
+- Swapping $a$ and $b$ in the asymptote slope (for horizontal hyperbolas it's $\frac{b}{a}$).
+
+## 6. Practice
+Q: Foci of $\frac{x^2}{16} - \frac{y^2}{9} = 1$?
+A: $c = 5$ → $(\pm 5, 0)$.
+
+Q: Asymptotes of $\frac{x^2}{25} - \frac{y^2}{4} = 1$?
+A: $y = \pm\frac{2}{5}x$.
+
+Q: Which way does $\frac{y^2}{9} - x^2 = 1$ open?
+A: Up and down.
+
+Q: What is constant for every point on a hyperbola?
+A: The difference of its distances to the two foci.
+
+Q: Relationship between $a$, $b$, $c$ for a hyperbola?
+A: $c^2 = a^2 + b^2$."
+3,TOPIC,Identifying conics and applications,"Recognising a conic from its general equation, completing the square, real-world uses",NICE,FALSE,"# Identifying conics and applications
+
+## 1. What it covers
+- Recognising circles, ellipses, parabolas and hyperbolas from $Ax^2 + Cy^2 + Dx + Ey + F = 0$.
+- Completing the square to reach standard form.
+- Choosing the right conic for a real situation.
+
+## 2. Where it is used
+- **Physics and engineering:** recognising orbit types from energy (circle/ellipse = bound, parabola = just escaping, hyperbola = escaping).
+- **Computer vision:** fitting ellipses to detected edges (e.g. pupils in eye tracking, coins).
+- **Architecture and design:** arches, domes, reflectors.
+
+## 3. What it means
+For $Ax^2 + Cy^2 + Dx + Ey + F = 0$ (no $xy$ term), look at $A$ and $C$:
+| Condition | Conic |
+|---|---|
+| $A = C$ | Circle |
+| $A$ and $C$ same sign, $A \ne C$ | Ellipse |
+| One of $A$, $C$ is 0 | Parabola |
+| $A$ and $C$ opposite signs | Hyperbola |
+
+Then complete the square in $x$ and $y$ to find the centre (or vertex) and the other features. (Degenerate cases like a single point or two lines can occur; you'll notice them when the right side becomes 0 or negative.)
+
+## 4. Formula & worked example
+**Example 1.** $4x^2 + 9y^2 - 16x + 18y - 11 = 0$
+- Same sign, different → ellipse.
+- $4(x^2 - 4x + 4) + 9(y^2 + 2y + 1) = 11 + 16 + 9 = 36$ → $\frac{(x - 2)^2}{9} + \frac{(y + 1)^2}{4} = 1$
+- Centre $(2, -1)$, $a = 3$ (horizontal), $b = 2$.
+
+**Example 2.** $y^2 - 4y - 8x + 20 = 0$
+- No $x^2$ term → parabola. $(y - 2)^2 = 8x - 16 = 8(x - 2)$ → vertex $(2, 2)$, opens right, $p = 2$.
+
+**Example 3.** $x^2 - y^2 + 6x + 4y - 3 = 0$
+- Opposite signs → hyperbola. $(x + 3)^2 - (y - 2)^2 = 3 + 9 - 4 = 8$ → $\frac{(x + 3)^2}{8} - \frac{(y - 2)^2}{8} = 1$; centre $(-3, 2)$.
+
+**Example 4.** $2x^2 + 2y^2 - 8x + 12y + 6 = 0$ → circle: $(x - 2)^2 + (y + 3)^2 = 10$.
+
+**Example 5 (choose the conic).** A comet passes the Sun once and never returns → hyperbola (or parabola). Earth's orbit → ellipse. A fountain's water jet → parabola.
+
+## 5. Common mistakes
+- Forgetting to factor out the coefficient of $x^2$ or $y^2$ before completing the square.
+- Not adding the right amounts to the other side (multiply by the factored coefficient).
+- Misclassifying when $A$ and $C$ are equal but negative (still a circle, if anything).
+
+## 6. Practice
+Q: Classify $3x^2 + 3y^2 - 12 = 0$.
+A: Circle ($x^2 + y^2 = 4$).
+
+Q: Classify $x^2 + 4y^2 - 4 = 0$.
+A: Ellipse.
+
+Q: Classify $y = 2x^2 - 3x + 1$.
+A: Parabola.
+
+Q: Classify $9x^2 - 4y^2 = 36$.
+A: Hyperbola.
+
+Q: Which conic describes a bound planetary orbit?
+A: An ellipse."
+3,TOPIC,Practice & review: Conic sections,Mixed problem set with worked answers,NICE,FALSE,"# Practice & review: Conic sections
+
+**How to use this:** 40 minutes, no calculator. Sketch each conic.
+
+## Problems
+1. Find the focus and directrix of $x^2 = -6y$.
+2. Write the parabola with vertex $(1, 3)$ and focus $(1, 5)$.
+3. Find the vertices, foci and eccentricity of $\frac{x^2}{169} + \frac{y^2}{144} = 1$.
+4. Write the ellipse with foci $(0, \pm 3)$ and vertices $(0, \pm 5)$.
+5. Find the vertices, foci and asymptotes of $\frac{y^2}{36} - \frac{x^2}{64} = 1$.
+6. Classify and write in standard form: $x^2 + 4y^2 + 6x - 8y + 9 = 0$.
+7. A searchlight reflector is 40 cm across and 10 cm deep. Where should the bulb go?
+
+## Answers
+1. $4p = -6$ → $p = -1.5$; focus $(0, -1.5)$, directrix $y = 1.5$.
+2. $p = 2$: $(x - 1)^2 = 8(y - 3)$.
+3. $a = 13$, $b = 12$, $c = 5$; vertices $(\pm 13, 0)$, foci $(\pm 5, 0)$, $e = \frac{5}{13}$.
+4. $a = 5$, $c = 3$, $b = 4$: $\frac{x^2}{16} + \frac{y^2}{25} = 1$.
+5. $a = 6$, $b = 8$, $c = 10$; vertices $(0, \pm 6)$, foci $(0, \pm 10)$, asymptotes $y = \pm\frac{3}{4}x$.
+6. Ellipse: $(x + 3)^2 + 4(y - 1)^2 = -9 + 9 + 4 = 4$ → $\frac{(x + 3)^2}{4} + (y - 1)^2 = 1$.
+7. $(20, 10)$ on $x^2 = 4py$: $400 = 40p$ → $p = 10$ cm from the vertex.
+
+## Flashcards
+Q: Focus definition of a parabola?
+A: Points equidistant from the focus and the directrix.
+
+Q: Ellipse: $c^2 = ?$
+A: $a^2 - b^2$.
+
+Q: Hyperbola: $c^2 = ?$
+A: $a^2 + b^2$.
+
+Q: Asymptotes of $\frac{x^2}{a^2} - \frac{y^2}{b^2} = 1$?
+A: $y = \pm\frac{b}{a}x$."
+2,MODULE,Final review,Cumulative mixed set covering the whole roadmap,MUST,,"Mix everything. After this, continue with Calculus or Linear Algebra."
+3,TOPIC,Final review: Geometry,Cumulative mixed problems from all phases with answers,MUST,FALSE,"# Final review: Geometry
+
+**How to use this:** 60 minutes; calculator allowed. Re-study the topic for every miss.
+
+## Problems
+1. Parallel lines are cut by a transversal; alternate interior angles are $(7x - 12)^\circ$ and $(4x + 18)^\circ$. Find the angle.
+2. Each interior angle of a regular polygon is $162^\circ$. How many sides?
+3. A trapezoid has bases 9 and 15 and legs 5 and 5 (isosceles). Find its height and area.
+4. A cone has volume $96\pi$ cm³ and radius 6 cm. Find its height and slant height.
+5. Rotate $(4, -3)$ by $270^\circ$ about the origin, then reflect in $y = x$.
+6. $\triangle ABC \sim \triangle DEF$ with $AB = 8$, $DE = 12$, and the area of $\triangle ABC$ is 32. Area of $\triangle DEF$?
+7. Show that $(1, 2)$, $(4, 6)$, $(8, 3)$ form a right isosceles triangle.
+8. Write $x^2 + y^2 + 8x - 6y = 0$ in standard form; give the centre and radius.
+9. Chord $AB$ subtends a $96^\circ$ central angle. Find the inscribed angle on the major arc and on the minor arc.
+10. Identify $25x^2 - 4y^2 = 100$ and give its asymptotes.
+
+## Answers
+1. $7x - 12 = 4x + 18$ → $x = 10$ → $58^\circ$.
+2. Exterior $18^\circ$ → $20$ sides.
+3. Half the difference of bases $= 3$ → $h = \sqrt{25 - 9} = 4$; area $= \frac{24}{2} \times 4 = 48$.
+4. $\frac{1}{3}\pi(36)h = 96\pi$ → $h = 8$; $\ell = 10$.
+5. $(4, -3) \to (-3, -4)$ → reflect: $(-4, -3)$.
+6. $k = 1.5$ → $32 \times 2.25 = 72$.
+7. Sides: $\sqrt{9 + 16} = 5$, $\sqrt{16 + 9} = 5$, $\sqrt{49 + 1} = \sqrt{50}$; $25 + 25 = 50$ → right angle at $(4, 6)$, two equal sides → right isosceles.
+8. $(x + 4)^2 + (y - 3)^2 = 25$; centre $(-4, 3)$, $r = 5$.
+9. On the major arc: $48^\circ$; on the minor arc: $180 - 48 = 132^\circ$ (cyclic quadrilateral).
+10. $\frac{x^2}{4} - \frac{y^2}{25} = 1$: hyperbola opening left/right; asymptotes $y = \pm\frac{5}{2}x$."

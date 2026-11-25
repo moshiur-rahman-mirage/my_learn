@@ -25,6 +25,9 @@ import java.util.regex.Pattern;
  * The markers may be bold ({@code **Q:**}) or list items ({@code - Q:}). The question may also
  * span several lines until the {@code A:} line. Code fences inside an answer are kept whole, and
  * markers inside code blocks are ignored. Pure logic, no database.
+ *
+ * <p>Changing what this produces for an existing note? Bump {@code NoteIndexes.INDEX_VERSION} so
+ * the next start re-derives every note.
  */
 public final class FlashcardParser {
 

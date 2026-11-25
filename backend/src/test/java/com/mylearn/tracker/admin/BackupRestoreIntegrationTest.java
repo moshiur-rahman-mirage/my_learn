@@ -86,6 +86,7 @@ class BackupRestoreIntegrationTest {
     void restoreFromUploadedFile() throws Exception {
         plans.create(new CreatePlanRequest("From USB", null));
         byte[] file = Files.readAllBytes(Path.of(backups.backupNow().path()));
+        String epochInBackup = syncEpoch();
         jdbc.update("DELETE FROM learning_plan");
 
         mvc.perform(multipart("/api/admin/restore").file(new MockMultipartFile("file", "copy.db", null, file)))
@@ -93,6 +94,12 @@ class BackupRestoreIntegrationTest {
                 .andExpect(jsonPath("$.restoredFrom").value("copy.db"))
                 .andExpect(jsonPath("$.plans").value(1));
         assertThat(plans.search(null, null)).extracting(PlanResponse::name).containsExactly("From USB");
+        // paired phones must notice that the history was replaced
+        assertThat(syncEpoch()).hasSize(32).isNotEqualTo(epochInBackup);
+    }
+
+    private String syncEpoch() {
+        return jdbc.queryForObject("SELECT value FROM app_meta WHERE key = 'sync_epoch'", String.class);
     }
 
     @Test
@@ -124,7 +131,17 @@ class BackupRestoreIntegrationTest {
                 "trg_search_note_delete"}) {
             oldDb.execute("DROP TRIGGER " + trigger);
         }
-        for (String table : new String[]{"note_ref", "flashcard", "item_confidence", "search_index", "item_review", "item_tag", "tag", "time_log", "item_link", "item_note"}) {
+        // undo V7 (sync): its triggers, tables and the plan's external_id
+        for (String trigger : oldDb.queryForList(
+                "SELECT name FROM sqlite_master WHERE type = 'trigger' AND (name LIKE 'trg_sync_%' OR name LIKE 'trg_%_external_id')",
+                String.class)) {
+            oldDb.execute("DROP TRIGGER " + trigger);
+        }
+        oldDb.execute("DROP TABLE sync_change");
+        oldDb.execute("DROP TABLE sync_device");
+        oldDb.execute("DROP INDEX ux_plan_external_id");
+        oldDb.execute("ALTER TABLE learning_plan DROP COLUMN external_id");
+        for (String table : new String[]{"app_meta", "note_ref", "flashcard", "item_confidence", "search_index", "item_review", "item_tag", "tag", "time_log", "item_link", "item_note"}) {
             oldDb.execute("DROP TABLE " + table);
         }
         oldDb.execute("ALTER TABLE learning_plan DROP COLUMN target_date");
@@ -139,6 +156,10 @@ class BackupRestoreIntegrationTest {
         assertThat(jdbc.queryForObject("SELECT COUNT(*) FROM search_index WHERE search_index MATCH 'times'", Integer.class))
                 .isEqualTo(0); // plans aren't indexed, items are
         assertThat(jdbc.queryForObject("SELECT COUNT(*) FROM sqlite_master WHERE name = 'search_index'", Integer.class)).isEqualTo(1);
+        // V7 gives existing rows a sync key and a change line, so the phone's first sync carries them
+        assertThat(jdbc.queryForObject("""
+                SELECT COUNT(*) FROM learning_plan p JOIN sync_change c ON c.entity = 'plan' AND c.key = p.external_id
+                WHERE p.name = 'Old times'""", Integer.class)).isEqualTo(1);
     }
 
     @Test

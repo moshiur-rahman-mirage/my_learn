@@ -35,6 +35,7 @@ import type {
   SearchResult,
   SyncPreview,
   SyncResult,
+  SyncPairing,
   TagCount,
   TimeEntry,
   Today,
@@ -241,4 +242,10 @@ export const planBackupApi = {
     if (newPlanName) form.append('newPlanName', newPlanName)
     return request<ImportResult>('POST', '/api/import/backup/confirm', form)
   },
+}
+
+export const phoneSyncApi = {
+  pairing: () => request<SyncPairing>('GET', '/api/sync/pairing'),
+  /** A new token unpairs every phone. */
+  newToken: () => request<SyncPairing>('POST', '/api/sync/pairing/token'),
 }

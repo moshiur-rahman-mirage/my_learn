@@ -1,0 +1,3205 @@
+﻿level,type,name,description,priority,completed,content
+1,MODULE,Phase 1 — Right-Triangle Trigonometry (Foundation),"Pythagoras, the six trig ratios, exact values, solving right triangles and real-world uses",MUST,,"# Phase 1: Right-triangle trigonometry
+
+**Trigonometry** means ""triangle measuring"". It connects the **angles** of a triangle with the **lengths** of its sides. Once you know a few of these, you can calculate everything else without measuring it.
+
+Every topic in this roadmap has the same six parts:
+
+1. **What it covers:** the scope of the topic in a few lines.
+2. **Where it is used:** real uses in programming, games, engineering, physics and everyday life.
+3. **What it means:** a plain-words explanation with an analogy.
+4. **Formula & worked example:** the formulas, then solved problems step by step.
+5. **Common mistakes:** the traps that cost marks.
+6. **Practice:** `Q:`/`A:` lines that become flashcards in the app.
+
+**What you need first:** angles in degrees, the fact that a triangle's angles add up to $180^\circ$, square roots, and solving simple equations such as $\frac{x}{5} = 0.6$.
+
+**How to study each topic (about 1 hour):** read sections 1–3 (10 min), work through every example in section 4 with pencil and paper (25 min), read section 5, then answer section 6 without looking (20 min). Redo anything you missed the next day."
+2,MODULE,Right triangles and the trig ratios,"Pythagoras, special triangles, SOH-CAH-TOA, exact values, inverse trig, solving triangles",MUST,,"This module builds the core toolkit. A right triangle has one $90^\circ$ angle. Its longest side, opposite the right angle, is the **hypotenuse**."
+3,TOPIC,Angles and right-triangle vocabulary,"Degrees, angle sum, hypotenuse, opposite and adjacent sides, labelling convention",MUST,FALSE,"# Angles and right-triangle vocabulary
+
+## 1. What it covers
+- How angles are measured in degrees, and the angle sum of a triangle.
+- The names of a right triangle's sides: **hypotenuse**, **opposite** and **adjacent**.
+- The standard labelling convention: capital letters for angles, small letters for the sides opposite them.
+
+## 2. Where it is used
+- **Everywhere else in this roadmap.** Every trig formula is written with these names, so mixing them up breaks every later topic.
+- **Construction and carpentry:** ""square"" corners are $90^\circ$; roof pitches are angles.
+- **Games and graphics:** a character's facing direction is an angle; the distance to a target is a hypotenuse.
+
+## 3. What it means
+An **angle** measures how far you turn. A full turn is $360^\circ$, a half turn (a straight line) is $180^\circ$, and a quarter turn (a corner) is $90^\circ$.
+
+In a **right triangle**, one angle is exactly $90^\circ$. The other two angles share the remaining $90^\circ$, so they are both **acute** (less than $90^\circ$).
+
+The side names depend on **which acute angle you are standing at**:
+- **Hypotenuse:** the longest side, always opposite the right angle. It never changes.
+- **Opposite:** the side across from your angle; it does not touch your angle.
+- **Adjacent:** the side next to your angle that is *not* the hypotenuse.
+
+**Analogy:** stand at a corner of a triangular garden. The fence you look straight across at is ""opposite"". The fence you are leaning on that runs to the square corner is ""adjacent"". The long diagonal fence is the hypotenuse.
+
+```text
+            B
+            |\
+            | \
+       a    |  \   c  (hypotenuse)
+ (opposite  |   \
+   to A)    |    \
+            |_____\
+            C   b   A
+           (90°) (adjacent to A)
+```
+The picture shows the labelling convention: the angle at A faces side $a$, B faces $b$, and C (the right angle) faces $c$. From angle A, $a$ is opposite and $b$ is adjacent. From angle B, they swap: $b$ is opposite and $a$ is adjacent.
+
+## 4. Formula & worked example
+**Angle sum of any triangle:**
+$$
+A + B + C = 180^\circ
+$$
+In a right triangle with $C = 90^\circ$:
+$$
+A + B = 90^\circ
+$$
+
+**Example 1.** A right triangle has $A = 35^\circ$. Find $B$.
+- $A + B = 90^\circ$, so $B = 90^\circ - 35^\circ = 55^\circ$.
+
+**Example 2.** In the triangle above, $a = 3$, $b = 4$, $c = 5$. Name the sides from angle B.
+- The hypotenuse is always $c = 5$.
+- Opposite B is $b = 4$ (it doesn't touch B).
+- Adjacent to B is $a = 3$.
+
+**Example 3.** A triangle has angles $40^\circ$ and $50^\circ$. Is it a right triangle?
+- The third angle is $180^\circ - 40^\circ - 50^\circ = 90^\circ$. Yes.
+
+## 5. Common mistakes
+- Calling the hypotenuse ""adjacent"" because it touches your angle. The hypotenuse is **never** called adjacent.
+- Forgetting that opposite and adjacent **swap** when you switch to the other acute angle.
+- Labelling the hypotenuse from the wrong angle: it is always opposite the $90^\circ$ angle, whichever acute angle you are using.
+
+## 6. Practice
+Q: In a right triangle, one acute angle is $62^\circ$. What is the other?
+A: $90^\circ - 62^\circ = 28^\circ$.
+
+Q: Which side of a right triangle is always the longest?
+A: The hypotenuse, the side opposite the right angle.
+
+Q: From angle A, side $a$ is opposite. What is side $a$ from angle B?
+A: Adjacent. Opposite and adjacent swap between the two acute angles.
+
+Q: Can a triangle have two right angles? Why?
+A: No. Two $90^\circ$ angles already add up to $180^\circ$, leaving $0^\circ$ for the third angle."
+3,TOPIC,Pythagorean theorem and triples,"a² + b² = c², finding missing sides, converse, common triples, distance formula",MUST,FALSE,"# Pythagorean theorem and triples
+
+## 1. What it covers
+- The Pythagorean theorem $a^2 + b^2 = c^2$, and using it to find a missing side.
+- The **converse**: testing whether a triangle is right-angled.
+- **Pythagorean triples** such as 3-4-5 and 5-12-13.
+- The **distance formula** between two points, which is Pythagoras on a grid.
+
+## 2. Where it is used
+- **Programming and games:** the distance between two points, $\sqrt{(x_2-x_1)^2 + (y_2-y_1)^2}$, is used in collision detection, ""nearest enemy"" and k-nearest-neighbours in machine learning (Euclidean distance).
+- **Screens:** a ""55-inch TV"" is measured along the diagonal, the hypotenuse of the screen.
+- **Construction:** builders mark 3 m and 4 m along two walls; if the diagonal is exactly 5 m, the corner is square (the 3-4-5 rule).
+- **Navigation:** walking 3 km east then 4 km north puts you 5 km from the start.
+
+## 3. What it means
+In a right triangle, if you build a square on each side, **the two small squares together have exactly the same area as the big square** on the hypotenuse.
+
+**Analogy:** cutting diagonally across a rectangular field is shorter than walking along two edges. Pythagoras tells you exactly how much shorter.
+
+The theorem only works for **right** triangles. The **converse** says: if $a^2 + b^2 = c^2$ is true for a triangle's three sides (with $c$ the longest), then it *is* a right triangle.
+
+A **Pythagorean triple** is three whole numbers that fit the theorem. Multiplying a triple by any number gives another triple: 3-4-5 → 6-8-10 → 9-12-15.
+
+## 4. Formula & worked example
+$$
+a^2 + b^2 = c^2 \qquad c = \sqrt{a^2 + b^2} \qquad a = \sqrt{c^2 - b^2}
+$$
+**Distance between** $(x_1, y_1)$ and $(x_2, y_2)$:
+$$
+d = \sqrt{(x_2 - x_1)^2 + (y_2 - y_1)^2}
+$$
+Common triples: **3-4-5, 5-12-13, 8-15-17, 7-24-25** (and their multiples).
+
+**Example 1: find the hypotenuse.** Legs $6$ and $8$.
+- $c^2 = 6^2 + 8^2 = 36 + 64 = 100$
+- $c = \sqrt{100} = 10$ (a 3-4-5 triple, doubled)
+
+**Example 2: find a leg.** A 13 m ladder reaches 12 m up a wall. How far from the wall is its foot?
+- $a^2 + 12^2 = 13^2$
+- $a^2 = 169 - 144 = 25$, so $a = 5$ m
+
+**Example 3: converse.** Is a triangle with sides 7, 9 and 12 right-angled?
+- Longest side is 12: $7^2 + 9^2 = 49 + 81 = 130$, but $12^2 = 144$.
+- $130 \ne 144$, so it is **not** a right triangle. (Since $130 < 144$, the angle opposite 12 is obtuse.)
+
+**Example 4: distance.** From $(1, 2)$ to $(7, 10)$:
+- $d = \sqrt{(7-1)^2 + (10-2)^2} = \sqrt{36 + 64} = \sqrt{100} = 10$
+
+**In code** (this is how games measure distance):
+```python
+import math
+def dist(x1, y1, x2, y2):
+    return math.hypot(x2 - x1, y2 - y1)   # same as sqrt(dx*dx + dy*dy)
+print(dist(1, 2, 7, 10))   # 10.0
+```
+`math.hypot` computes $\sqrt{dx^2 + dy^2}$ without overflow problems. Games often skip the square root and compare *squared* distances, because if $d_1^2 < d_2^2$ then $d_1 < d_2$, and square roots are slow.
+
+## 5. Common mistakes
+- Adding when finding a **leg**. For a leg you subtract: $a^2 = c^2 - b^2$.
+- Writing $\sqrt{a^2 + b^2} = a + b$. It is not: $\sqrt{9 + 16} = 5$, not $7$.
+- Using the theorem on a triangle that is not right-angled.
+- Putting the wrong side as $c$. The hypotenuse (longest side) must be $c$.
+
+## 6. Practice
+Q: Legs are 5 and 12. Find the hypotenuse.
+A: $\sqrt{25 + 144} = \sqrt{169} = 13$.
+
+Q: Hypotenuse 17, one leg 8. Find the other leg.
+A: $\sqrt{289 - 64} = \sqrt{225} = 15$.
+
+Q: Is 9, 40, 41 a right triangle?
+A: Yes: $81 + 1600 = 1681 = 41^2$.
+
+Q: Distance from $(-2, 1)$ to $(4, 9)$?
+A: $\sqrt{6^2 + 8^2} = \sqrt{100} = 10$.
+
+Q: A TV screen is 48 inches wide and 27 inches tall. What is its diagonal size?
+A: $\sqrt{48^2 + 27^2} = \sqrt{2304 + 729} = \sqrt{3033} \approx 55.1$ inches, a ""55-inch"" TV."
+3,TOPIC,Special right triangles,"45-45-90 and 30-60-90 side ratios, derived from a square and an equilateral triangle",MUST,FALSE,"# Special right triangles
+
+## 1. What it covers
+- The **45-45-90** triangle: sides in the ratio $1 : 1 : \sqrt{2}$.
+- The **30-60-90** triangle: sides in the ratio $1 : \sqrt{3} : 2$.
+- Where these ratios come from, so you can rebuild them instead of memorising.
+
+## 2. Where it is used
+- **Exact trig values:** $\sin 30^\circ$, $\cos 45^\circ$, $\tan 60^\circ$ and so on are read straight off these two triangles (next topics).
+- **Engineering drawings:** set squares come in exactly these two shapes.
+- **Graphics:** isometric game art uses 30° angles; diagonal movement on a grid uses 45° (moving one step diagonally covers $\sqrt{2} \approx 1.414$ units, which is why diagonal movement must be normalised in games).
+- **Exams:** questions without calculators expect you to use these exact values.
+
+## 3. What it means
+These two triangles appear so often that their side ratios are worth knowing by heart.
+
+**45-45-90:** cut a square along its diagonal. You get two triangles, each with two equal legs. If each leg is $1$, the diagonal is $\sqrt{1^2 + 1^2} = \sqrt{2}$.
+
+**30-60-90:** cut an equilateral triangle (all sides $2$, all angles $60^\circ$) down the middle. You get a triangle with hypotenuse $2$, a short side $1$ (half the base), and a height of $\sqrt{2^2 - 1^2} = \sqrt{3}$.
+
+**Analogy:** these are the ""times tables"" of trigonometry. You could work them out each time, but knowing them makes everything faster.
+
+```text
+ 45-45-90                30-60-90
+     /|                      /|
+ √2 / | 1             2     / |  √3
+   /45|                    /30|
+  /___|                   /___|
+    1                    60  1
+```
+In the 30-60-90 triangle, the **short side (1) is opposite 30°**, the **middle side ($\sqrt{3}$) is opposite 60°**, and the hypotenuse is twice the short side.
+
+## 4. Formula & worked example
+$$
+45\text{-}45\text{-}90:\quad \text{leg} : \text{leg} : \text{hyp} = 1 : 1 : \sqrt{2}
+$$
+$$
+30\text{-}60\text{-}90:\quad \text{short} : \text{long} : \text{hyp} = 1 : \sqrt{3} : 2
+$$
+
+**Example 1.** A 45-45-90 triangle has legs of 7. Find the hypotenuse.
+- hyp $= 7\sqrt{2} \approx 9.90$
+
+**Example 2.** A 45-45-90 triangle has hypotenuse 10. Find each leg.
+- leg $= \dfrac{10}{\sqrt{2}} = \dfrac{10\sqrt{2}}{2} = 5\sqrt{2} \approx 7.07$
+
+**Example 3.** A 30-60-90 triangle has hypotenuse 12. Find the other sides.
+- short side (opposite 30°) $= 12 \div 2 = 6$
+- long side (opposite 60°) $= 6\sqrt{3} \approx 10.39$
+
+**Example 4.** A 30-60-90 triangle has long side $9$. Find the short side and hypotenuse.
+- short $= \dfrac{9}{\sqrt{3}} = \dfrac{9\sqrt{3}}{3} = 3\sqrt{3}$
+- hyp $= 2 \times 3\sqrt{3} = 6\sqrt{3}$
+
+## 5. Common mistakes
+- Swapping $\sqrt{3}$ and $2$. The hypotenuse is always the longest side, and $2 > \sqrt{3} \approx 1.73$.
+- Putting the short side opposite 60°. The shortest side is always opposite the smallest angle (30°).
+- Leaving $\sqrt{2}$ in the denominator when an exact answer is asked for. Rationalise it: $\frac{1}{\sqrt{2}} = \frac{\sqrt{2}}{2}$.
+
+## 6. Practice
+Q: 45-45-90 with legs 4. Hypotenuse?
+A: $4\sqrt{2}$.
+
+Q: 30-60-90 with short side 5. Other two sides?
+A: Long side $5\sqrt{3}$, hypotenuse $10$.
+
+Q: 30-60-90 with hypotenuse 8. Side opposite 60°?
+A: Short side is 4, so the side opposite 60° is $4\sqrt{3}$.
+
+Q: How is the 45-45-90 triangle derived?
+A: Cut a unit square along its diagonal; the diagonal is $\sqrt{1^2 + 1^2} = \sqrt{2}$.
+
+Q: A square has a diagonal of 20 cm. What is its side length?
+A: $\frac{20}{\sqrt{2}} = 10\sqrt{2} \approx 14.14$ cm."
+3,TOPIC,The six trig ratios (SOH-CAH-TOA),"sin, cos, tan and their reciprocals csc, sec, cot from a right triangle",MUST,FALSE,"# The six trig ratios (SOH-CAH-TOA)
+
+## 1. What it covers
+- The three main ratios: **sine**, **cosine** and **tangent**.
+- The three reciprocal ratios: **cosecant**, **secant** and **cotangent**.
+- The memory aid **SOH-CAH-TOA**, and why the ratios depend only on the angle, not the triangle's size.
+
+## 2. Where it is used
+- **Games and graphics:** moving a sprite at speed $v$ in direction $\theta$ means $dx = v\cos\theta$, $dy = v\sin\theta$. Rotating any image or 3D model uses sin and cos.
+- **Physics:** splitting a force or velocity into horizontal and vertical parts.
+- **Construction:** a ramp or roof slope is a tangent: rise ÷ run.
+- **Surveying:** measuring a building's height from an angle and a distance.
+- **Signals and audio:** sound waves and AC electricity are sine waves (Phase 2).
+
+## 3. What it means
+Take any two right triangles with the same acute angle $\theta$, one small and one big. They are **similar**: the big one is a scaled-up copy. So the **ratio** of any two sides is the same in both. That fixed ratio depends only on $\theta$, and we give it a name.
+
+**Analogy:** a ramp with a 1-in-12 slope is equally steep whether it is 1 m long or 100 m long. The steepness depends on the angle, not the size. Trig ratios are exact ""steepness numbers"" for an angle.
+
+- **sine** $\theta$: how much of the hypotenuse is ""going up"" (opposite ÷ hypotenuse).
+- **cosine** $\theta$: how much is ""going across"" (adjacent ÷ hypotenuse).
+- **tangent** $\theta$: the slope, rise ÷ run (opposite ÷ adjacent).
+
+The reciprocals are just the three main ratios flipped upside down.
+
+## 4. Formula & worked example
+$$
+\sin\theta = \frac{\text{opp}}{\text{hyp}} \qquad \cos\theta = \frac{\text{adj}}{\text{hyp}} \qquad \tan\theta = \frac{\text{opp}}{\text{adj}}
+$$
+**SOH-CAH-TOA:** **S**in = **O**pp/**H**yp, **C**os = **A**dj/**H**yp, **T**an = **O**pp/**A**dj.
+
+$$
+\csc\theta = \frac{1}{\sin\theta} = \frac{\text{hyp}}{\text{opp}} \qquad \sec\theta = \frac{1}{\cos\theta} = \frac{\text{hyp}}{\text{adj}} \qquad \cot\theta = \frac{1}{\tan\theta} = \frac{\text{adj}}{\text{opp}}
+$$
+A useful link: $\tan\theta = \dfrac{\sin\theta}{\cos\theta}$.
+
+**Example 1.** A right triangle has opp $= 3$, adj $= 4$, hyp $= 5$ (from angle $\theta$). Find all six ratios.
+- $\sin\theta = \frac{3}{5}$, $\cos\theta = \frac{4}{5}$, $\tan\theta = \frac{3}{4}$
+- $\csc\theta = \frac{5}{3}$, $\sec\theta = \frac{5}{4}$, $\cot\theta = \frac{4}{3}$
+
+**Example 2.** $\sin\theta = \frac{5}{13}$ and $\theta$ is acute. Find $\cos\theta$ and $\tan\theta$.
+- Draw it: opp $= 5$, hyp $= 13$. Pythagoras: adj $= \sqrt{169 - 25} = 12$.
+- $\cos\theta = \frac{12}{13}$, $\tan\theta = \frac{5}{12}$
+
+**Example 3: a game.** A bullet travels at 10 units per frame at $30^\circ$ above the x-axis. How far does it move in x and y each frame?
+- $dx = 10\cos 30^\circ = 10 \times 0.866 = 8.66$
+- $dy = 10\sin 30^\circ = 10 \times 0.5 = 5$
+```python
+import math
+speed, angle = 10, math.radians(30)   # Python's trig functions use radians
+dx, dy = speed * math.cos(angle), speed * math.sin(angle)
+print(round(dx, 2), round(dy, 2))     # 8.66 5.0
+```
+Notice `math.radians(30)`: programming languages expect angles in **radians**, not degrees (Phase 2 explains radians). Forgetting this conversion is the most common trig bug in code.
+
+## 5. Common mistakes
+- Using the side names from the wrong angle. Always relabel opposite and adjacent for the angle you are working with.
+- Thinking $\sin\theta$ means $\sin \times \theta$. It is a function of $\theta$, like $f(\theta)$.
+- Calculator in the wrong mode (radians instead of degrees). Check: $\sin 30$ should give $0.5$.
+- Mixing up $\csc$ and $\sec$: **csc goes with sin**, **sec goes with cos** (each pair has exactly one ""co"").
+
+## 6. Practice
+Q: What does SOH-CAH-TOA stand for?
+A: $\sin = \frac{\text{opp}}{\text{hyp}}$, $\cos = \frac{\text{adj}}{\text{hyp}}$, $\tan = \frac{\text{opp}}{\text{adj}}$.
+
+Q: opp $= 8$, adj $= 15$. Find $\sin\theta$.
+A: hyp $= 17$, so $\sin\theta = \frac{8}{17}$.
+
+Q: $\cos\theta = \frac{3}{5}$ ($\theta$ acute). Find $\tan\theta$ and $\csc\theta$.
+A: opp $= 4$, so $\tan\theta = \frac{4}{3}$ and $\csc\theta = \frac{5}{4}$.
+
+Q: What is the reciprocal of $\cos\theta$?
+A: $\sec\theta = \frac{1}{\cos\theta}$.
+
+Q: Why does $\sin 40^\circ$ have the same value in every right triangle?
+A: All right triangles with a $40^\circ$ angle are similar, so the ratio opp/hyp is the same in each."
+3,TOPIC,"Exact values at 30°, 45° and 60°","sin, cos, tan of special angles without a calculator, the hand trick and table",MUST,FALSE,"# Exact values at 30°, 45° and 60°
+
+## 1. What it covers
+- The exact sin, cos and tan of $30^\circ$, $45^\circ$ and $60^\circ$ (plus $0^\circ$ and $90^\circ$).
+- How to read them off the special triangles.
+- A memory pattern so you never need to memorise a table blindly.
+
+## 2. Where it is used
+- **Exams without calculators:** answers are expected as exact values such as $\frac{\sqrt{3}}{2}$, not $0.866$.
+- **Later topics:** the unit circle, identities and equations all reuse these values.
+- **Graphics:** rotation matrices for $90^\circ$, $45^\circ$ and $30^\circ$ use these exact numbers, and hexagonal grids in games are built on $60^\circ$.
+- **Engineering:** three-phase electrical power is $120^\circ$ apart, which uses $\frac{\sqrt{3}}{2}$.
+
+## 3. What it means
+These are not new facts, just SOH-CAH-TOA applied to the two special triangles:
+- 45-45-90 with sides $1, 1, \sqrt{2}$.
+- 30-60-90 with sides $1, \sqrt{3}, 2$.
+
+**Memory pattern for sine:** write $\frac{\sqrt{0}}{2}, \frac{\sqrt{1}}{2}, \frac{\sqrt{2}}{2}, \frac{\sqrt{3}}{2}, \frac{\sqrt{4}}{2}$ for $0^\circ, 30^\circ, 45^\circ, 60^\circ, 90^\circ$. Simplify: $0, \frac{1}{2}, \frac{\sqrt{2}}{2}, \frac{\sqrt{3}}{2}, 1$. **Cosine is the same list backwards.** Tangent is sine ÷ cosine.
+
+**Analogy:** like knowing $7 \times 8 = 56$ instantly instead of adding 7 eight times.
+
+## 4. Formula & worked example
+| angle | $0^\circ$ | $30^\circ$ | $45^\circ$ | $60^\circ$ | $90^\circ$ |
+|---|---|---|---|---|---|
+| $\sin$ | $0$ | $\frac{1}{2}$ | $\frac{\sqrt{2}}{2}$ | $\frac{\sqrt{3}}{2}$ | $1$ |
+| $\cos$ | $1$ | $\frac{\sqrt{3}}{2}$ | $\frac{\sqrt{2}}{2}$ | $\frac{1}{2}$ | $0$ |
+| $\tan$ | $0$ | $\frac{\sqrt{3}}{3}$ | $1$ | $\sqrt{3}$ | undefined |
+
+**Example 1: derive $\sin 60^\circ$.** In the 30-60-90 triangle, the side opposite $60^\circ$ is $\sqrt{3}$ and the hypotenuse is $2$.
+- $\sin 60^\circ = \frac{\sqrt{3}}{2}$
+
+**Example 2: derive $\tan 30^\circ$.** Opposite $30^\circ$ is $1$, adjacent is $\sqrt{3}$.
+- $\tan 30^\circ = \frac{1}{\sqrt{3}} = \frac{\sqrt{3}}{3} \approx 0.577$
+
+**Example 3: evaluate exactly.** $2\sin 30^\circ + \cos^2 45^\circ$
+- $= 2 \cdot \frac{1}{2} + \left(\frac{\sqrt{2}}{2}\right)^2 = 1 + \frac{2}{4} = \frac{3}{2}$
+
+**Example 4.** Why is $\tan 90^\circ$ undefined?
+- $\tan 90^\circ = \frac{\sin 90^\circ}{\cos 90^\circ} = \frac{1}{0}$, and you can't divide by zero. Geometrically, a line at $90^\circ$ is vertical, and a vertical line has no defined slope.
+
+## 5. Common mistakes
+- Swapping $\sin 30^\circ$ and $\sin 60^\circ$. Check with size: a bigger angle (up to $90^\circ$) has a bigger sine, so $\sin 60^\circ > \sin 30^\circ$.
+- Writing $\cos^2 45^\circ$ as $\cos(45^2)$. $\cos^2\theta$ means $(\cos\theta)^2$.
+- Thinking $\sin 60^\circ = 2\sin 30^\circ$. It isn't: $\frac{\sqrt{3}}{2} \ne 1$. Sine is not linear.
+
+## 6. Practice
+Q: Exact value of $\cos 30^\circ$?
+A: $\frac{\sqrt{3}}{2}$.
+
+Q: Exact value of $\tan 60^\circ$?
+A: $\sqrt{3}$.
+
+Q: Exact value of $\sin 45^\circ$?
+A: $\frac{\sqrt{2}}{2}$.
+
+Q: Evaluate $\sin^2 60^\circ + \cos^2 60^\circ$.
+A: $\frac{3}{4} + \frac{1}{4} = 1$.
+
+Q: Evaluate $4\cos 60^\circ \tan 45^\circ$.
+A: $4 \cdot \frac{1}{2} \cdot 1 = 2$."
+3,TOPIC,Inverse trig: finding angles,"sin⁻¹, cos⁻¹, tan⁻¹ on a calculator to find an angle from a ratio",MUST,FALSE,"# Inverse trig: finding angles
+
+## 1. What it covers
+- Using $\sin^{-1}$, $\cos^{-1}$ and $\tan^{-1}$ (also written arcsin, arccos, arctan) to find an **angle** when you know a **ratio**.
+- Choosing which inverse to use from the two sides you know.
+- Calculator use, and `atan2` in programming.
+
+## 2. Where it is used
+- **Games:** to make an enemy face the player, compute the angle with `atan2(dy, dx)`. Every top-down shooter does this.
+- **Robotics:** inverse kinematics finds the joint angles that put a robot arm's hand at a target point.
+- **Construction:** a ramp rises 1 m over 12 m. What angle is that? ($\tan^{-1}\frac{1}{12} \approx 4.8^\circ$.)
+- **Navigation:** converting a position change into a heading.
+
+## 3. What it means
+Normal trig goes **angle → ratio**: $\sin 30^\circ = 0.5$.
+Inverse trig goes **ratio → angle**: $\sin^{-1}(0.5) = 30^\circ$. It answers ""which angle has this sine?""
+
+**Analogy:** a trig function is like a dictionary from English to French. The inverse is the French-to-English dictionary.
+
+**Notation warning:** $\sin^{-1} x$ means the inverse function, **not** $\frac{1}{\sin x}$. The reciprocal $\frac{1}{\sin x}$ is $\csc x$.
+
+For right triangles the angle is always between $0^\circ$ and $90^\circ$, and the calculator gives that angle directly. (For other angles there are more solutions; see Phase 4.)
+
+## 4. Formula & worked example
+$$
+\theta = \sin^{-1}\!\left(\frac{\text{opp}}{\text{hyp}}\right) \qquad \theta = \cos^{-1}\!\left(\frac{\text{adj}}{\text{hyp}}\right) \qquad \theta = \tan^{-1}\!\left(\frac{\text{opp}}{\text{adj}}\right)
+$$
+**Choosing:** look at the two sides you **know** relative to the angle, and pick the ratio that uses exactly those two.
+
+**Example 1.** opp $= 7$, hyp $= 10$. Find $\theta$.
+- Known: opp and hyp → sine.
+- $\theta = \sin^{-1}(0.7) \approx 44.4^\circ$
+
+**Example 2.** A ladder 6 m long has its foot 2 m from the wall. What angle does it make with the ground?
+- From the ground angle: adj $= 2$ (along the ground), hyp $= 6$ → cosine.
+- $\theta = \cos^{-1}\left(\frac{2}{6}\right) \approx 70.5^\circ$
+
+**Example 3.** A road rises 15 m over a horizontal distance of 200 m. Angle of the road?
+- opp $= 15$, adj $= 200$ → tangent.
+- $\theta = \tan^{-1}(0.075) \approx 4.3^\circ$
+
+**Example 4: in a game.** The player is at $(2, 3)$ and an enemy at $(7, 8)$. Which way should the enemy face?
+```python
+import math
+dx, dy = 2 - 7, 3 - 8                       # vector from enemy to player: (-5, -5)
+angle = math.degrees(math.atan2(dy, dx))
+print(angle)                                # -135.0  (down-left)
+```
+`atan2(dy, dx)` is a smarter $\tan^{-1}$: it looks at the signs of both $dx$ and $dy$, so it returns the right direction in all four quadrants (from $-180^\circ$ to $180^\circ$). Plain `atan(dy/dx)` can't tell $(-5,-5)$ from $(5,5)$, and crashes when $dx = 0$.
+
+## 5. Common mistakes
+- Reading $\sin^{-1}x$ as $\frac{1}{\sin x}$.
+- Taking $\sin^{-1}$ of a number bigger than 1 (an error: no angle has sine $1.5$). If you get that, a side is probably in the wrong place, for example opp > hyp.
+- Calculator in radian mode: $\sin^{-1}(0.5)$ shows $0.5236$ instead of $30$.
+
+## 6. Practice
+Q: $\tan\theta = 1$. Find the acute angle $\theta$.
+A: $\theta = \tan^{-1}(1) = 45^\circ$.
+
+Q: adj $= 9$, hyp $= 15$. Find $\theta$.
+A: $\cos^{-1}(0.6) \approx 53.1^\circ$.
+
+Q: What is the difference between $\sin^{-1}x$ and $(\sin x)^{-1}$?
+A: $\sin^{-1}x$ is the angle whose sine is $x$; $(\sin x)^{-1} = \frac{1}{\sin x} = \csc x$.
+
+Q: Why use `atan2(dy, dx)` instead of `atan(dy/dx)` in code?
+A: `atan2` uses the signs of both inputs to give the correct quadrant, and works when $dx = 0$.
+
+Q: A wheelchair ramp must not be steeper than 1:12. What is the maximum angle?
+A: $\tan^{-1}\left(\frac{1}{12}\right) \approx 4.76^\circ$."
+3,TOPIC,Solving right triangles,Find every missing side and angle from two known parts,MUST,FALSE,"# Solving right triangles
+
+## 1. What it covers
+- ""Solving"" a triangle means finding **all** its unknown sides and angles.
+- Two cases: you know **one side and one acute angle**, or you know **two sides**.
+- A step-by-step method that always works.
+
+## 2. Where it is used
+- **Surveying and mapping:** measuring land and heights that can't be reached directly.
+- **Engineering:** working out the lengths of beams and braces in trusses, roofs and bridges.
+- **Physics:** finding the magnitude and direction of a resultant force or velocity.
+- **Game development:** computing a camera's view distance, or how far a projectile lands.
+
+## 3. What it means
+A right triangle has 3 sides and 2 unknown angles (the third angle is $90^\circ$). **If you know any two of them (with at least one being a side), you can find all the rest.**
+
+Your three tools:
+1. **Angle sum:** the two acute angles add up to $90^\circ$.
+2. **Pythagoras:** links the three sides.
+3. **SOH-CAH-TOA:** links two sides with an angle.
+
+**Analogy:** a sudoku. Once a few cells are filled in, the rules force every other cell.
+
+**The method:**
+1. Sketch the triangle and label what you know.
+2. Find the missing angle with $90^\circ - \theta$.
+3. For a missing side: choose the trig ratio that uses the side you **know** and the side you **want**.
+4. Set up the equation and solve it (multiply or divide).
+5. Check: the longest side should be opposite the largest angle.
+
+## 4. Formula & worked example
+If $\sin\theta = \frac{x}{h}$, then $x = h\sin\theta$ (unknown on top: multiply).
+If $\sin\theta = \frac{5}{h}$, then $h = \frac{5}{\sin\theta}$ (unknown on the bottom: divide).
+
+**Example 1: one side and one angle.** $A = 32^\circ$, $C = 90^\circ$, hypotenuse $c = 20$. Solve the triangle.
+- $B = 90^\circ - 32^\circ = 58^\circ$
+- Side $a$ (opposite $A$): $\sin 32^\circ = \frac{a}{20}$ → $a = 20\sin 32^\circ \approx 20(0.5299) \approx 10.60$
+- Side $b$ (adjacent to $A$): $\cos 32^\circ = \frac{b}{20}$ → $b = 20\cos 32^\circ \approx 16.96$
+- Check: $10.60^2 + 16.96^2 \approx 112.4 + 287.6 = 400 = 20^2$ ✓
+
+**Example 2: unknown on the bottom.** $A = 40^\circ$, opposite side $a = 9$. Find the hypotenuse.
+- $\sin 40^\circ = \frac{9}{c}$ → $c = \frac{9}{\sin 40^\circ} \approx \frac{9}{0.6428} \approx 14.00$
+
+**Example 3: two sides.** Legs $a = 5$ and $b = 8$. Solve the triangle.
+- $c = \sqrt{25 + 64} = \sqrt{89} \approx 9.43$
+- $A = \tan^{-1}\left(\frac{5}{8}\right) \approx 32.0^\circ$
+- $B = 90^\circ - 32.0^\circ = 58.0^\circ$
+
+## 5. Common mistakes
+- Rounding too early. Keep full calculator values until the final answer, or the errors add up.
+- Multiplying when the unknown is in the denominator. If $\cos\theta = \frac{6}{x}$, then $x = \frac{6}{\cos\theta}$, not $6\cos\theta$.
+- Using a side you calculated (and rounded) when an original given side would do. Use given values where you can.
+
+## 6. Practice
+Q: $A = 25^\circ$, hypotenuse $= 12$. Find side $a$ (opposite $A$).
+A: $a = 12\sin 25^\circ \approx 5.07$.
+
+Q: $B = 60^\circ$, adjacent side to B $= 7$. Find the hypotenuse.
+A: $c = \frac{7}{\cos 60^\circ} = 14$.
+
+Q: Legs are 6 and 6. Find both acute angles.
+A: $\tan^{-1}(1) = 45^\circ$ each.
+
+Q: Hypotenuse 10, one leg 6. Solve the triangle.
+A: Other leg $8$; angle opposite 6 is $\sin^{-1}(0.6) \approx 36.9^\circ$; other angle $\approx 53.1^\circ$.
+
+Q: $A = 50^\circ$, adjacent side $b = 4$. Find the opposite side $a$.
+A: $a = 4\tan 50^\circ \approx 4.77$."
+3,TOPIC,Complementary angles and cofunctions,"sin θ = cos(90° − θ), tan θ = cot(90° − θ), and why ""co"" means complement",MUST,FALSE,"# Complementary angles and cofunctions
+
+## 1. What it covers
+- **Complementary angles:** two angles that add up to $90^\circ$.
+- **Cofunction identities:** $\sin\theta = \cos(90^\circ - \theta)$, and similar pairs.
+- Why the ""co"" in cosine, cotangent and cosecant means ""complement"".
+
+## 2. Where it is used
+- **Simplifying expressions** in identities and calculus (Phase 4).
+- **Graphs:** the cosine wave is just the sine wave shifted by $90^\circ$ (Phase 2).
+- **Solving problems quickly:** knowing $\cos 70^\circ = \sin 20^\circ$ lets you switch to whichever is easier.
+- **Physics:** components of a force along a slope swap sin and cos depending on which angle is measured.
+
+## 3. What it means
+In a right triangle, the two acute angles $A$ and $B$ are complementary: $A + B = 90^\circ$.
+
+The side that is **opposite** $A$ is **adjacent** to $B$, and the other way round. So ""opp/hyp from A"" is exactly the same fraction as ""adj/hyp from B"". In other words, the sine of one angle is the cosine of the other.
+
+**Analogy:** two people standing at opposite corners of the same triangle describe the same fence differently: one calls it ""across from me"", the other ""next to me"". Same fence, different viewpoint.
+
+That's where the names come from: **co**sine is the sine of the **co**mplement. The same goes for **co**tangent and **co**secant.
+
+## 4. Formula & worked example
+$$
+\sin\theta = \cos(90^\circ - \theta) \qquad \cos\theta = \sin(90^\circ - \theta)
+$$
+$$
+\tan\theta = \cot(90^\circ - \theta) \qquad \sec\theta = \csc(90^\circ - \theta)
+$$
+
+**Example 1.** Write $\cos 72^\circ$ as a sine.
+- $\cos 72^\circ = \sin(90^\circ - 72^\circ) = \sin 18^\circ$
+
+**Example 2.** Find $\theta$ if $\sin(2\theta) = \cos(\theta + 30^\circ)$, with both angles acute.
+- Sine of one equals cosine of the other, so the angles are complementary:
+- $2\theta + \theta + 30^\circ = 90^\circ$ → $3\theta = 60^\circ$ → $\theta = 20^\circ$
+- Check: $\sin 40^\circ = \cos 50^\circ$ ✓
+
+**Example 3.** Simplify $\dfrac{\sin 35^\circ}{\cos 55^\circ}$.
+- $\cos 55^\circ = \sin 35^\circ$, so the fraction is $1$.
+
+**Example 4.** Check with exact values: $\sin 30^\circ = \frac{1}{2}$ and $\cos 60^\circ = \frac{1}{2}$. Since $30^\circ + 60^\circ = 90^\circ$, they match ✓
+
+## 5. Common mistakes
+- Thinking $\sin\theta = \cos\theta$ in general. They are equal only at $45^\circ$ (in the first quadrant).
+- Using $180^\circ$ instead of $90^\circ$. Complementary means adding to $90^\circ$; **supplementary** means adding to $180^\circ$.
+- Pairing $\tan$ with $\sec$. The cofunction pairs are sin-cos, tan-cot and sec-csc.
+
+## 6. Practice
+Q: Write $\sin 25^\circ$ as a cosine.
+A: $\cos 65^\circ$.
+
+Q: What is the complement of $38^\circ$?
+A: $52^\circ$.
+
+Q: Simplify $\tan 20^\circ \cdot \tan 70^\circ$.
+A: $\tan 70^\circ = \cot 20^\circ = \frac{1}{\tan 20^\circ}$, so the product is $1$.
+
+Q: Solve $\cos(x + 10^\circ) = \sin(2x + 20^\circ)$ for acute angles.
+A: $3x + 30^\circ = 90^\circ$, so $x = 20^\circ$.
+
+Q: What does the ""co"" in cosine mean?
+A: Complement: $\cos\theta$ is the sine of the complementary angle $90^\circ - \theta$."
+2,MODULE,Right-triangle applications,"Elevation and depression, bearings and navigation, mixed practice",MUST,,"Now use the toolkit on real situations. The hardest part is usually turning words into a correct sketch, so always draw first."
+3,TOPIC,Angles of elevation and depression,Measuring heights and distances by looking up or down from a horizontal line,MUST,FALSE,"# Angles of elevation and depression
+
+## 1. What it covers
+- The **angle of elevation** (looking up) and the **angle of depression** (looking down).
+- Turning a word problem into a right triangle.
+- Two-step problems with two angles from different positions.
+
+## 2. Where it is used
+- **Surveying:** the height of a building, tree or mountain without climbing it.
+- **Aviation:** a pilot's glide path is usually a $3^\circ$ angle of descent.
+- **Military and sports:** range finders, golf rangefinders, artillery.
+- **Games:** the camera pitch angle; whether a turret can aim up at a flying target.
+- **Lighthouses and ships:** the distance of a boat from the angle down to it.
+
+## 3. What it means
+Both angles are measured from a **horizontal** line, never from the vertical.
+- **Elevation:** you look **up** from the horizontal to an object above you.
+- **Depression:** you look **down** from the horizontal to an object below you.
+
+**Key fact:** the angle of depression from A down to B **equals** the angle of elevation from B up to A. The two horizontal lines are parallel, so these are alternate angles.
+
+**Analogy:** standing on a cliff looking down at a boat, and the person in the boat looking up at you: both of you see the same tilt of the line between you.
+
+```text
+  A  ________ horizontal
+     \ ) depression angle
+      \
+       \  line of sight
+        \
+         \( elevation angle
+  ________\ B
+        horizontal
+```
+
+## 4. Formula & worked example
+Most problems use **tangent**, because you usually know or want the horizontal distance (adjacent) and the height (opposite):
+$$
+\text{height} = \text{distance} \times \tan(\text{angle})
+$$
+
+**Example 1.** From 50 m away, the angle of elevation to the top of a tree is $35^\circ$. How tall is the tree?
+- $h = 50\tan 35^\circ \approx 50(0.7002) \approx 35.0$ m
+
+**Example 2.** From a 80 m cliff, the angle of depression to a boat is $12^\circ$. How far is the boat from the foot of the cliff?
+- The angle of elevation from the boat to the cliff top is also $12^\circ$.
+- $\tan 12^\circ = \frac{80}{d}$ → $d = \frac{80}{\tan 12^\circ} \approx \frac{80}{0.2126} \approx 376.4$ m
+
+**Example 3: two angles.** From point P, the angle of elevation to a tower's top is $30^\circ$. Walking 40 m closer, it is $45^\circ$. Find the tower's height $h$.
+- Let $x$ be the distance from the closer point to the tower.
+- From the closer point: $\tan 45^\circ = \frac{h}{x}$ → $h = x$.
+- From P: $\tan 30^\circ = \frac{h}{x + 40}$ → $\frac{\sqrt{3}}{3}(x + 40) = h = x$.
+- $\sqrt{3}(x + 40) = 3x$ → $x(3 - \sqrt{3}) = 40\sqrt{3}$ → $x = \frac{40\sqrt{3}}{3 - \sqrt{3}} \approx 54.6$ m
+- So $h \approx 54.6$ m.
+
+**Example 4: add the eye height.** A person whose eyes are 1.6 m above the ground sees the top of a pole at $40^\circ$ from 10 m away.
+- Height above eye level $= 10\tan 40^\circ \approx 8.39$ m; pole height $\approx 8.39 + 1.6 = 9.99$ m.
+
+## 5. Common mistakes
+- Measuring the angle of depression from the **vertical** (the cliff face). It is measured from the horizontal.
+- Forgetting the observer's eye height when the problem gives it.
+- Putting the angle of depression at the top of the cliff inside the triangle. Use the equal elevation angle at the bottom instead.
+
+## 6. Practice
+Q: From 30 m away, the elevation to a building's top is $60^\circ$. Height?
+A: $30\tan 60^\circ = 30\sqrt{3} \approx 52.0$ m.
+
+Q: From a 100 m tower, the angle of depression to a car is $25^\circ$. Horizontal distance?
+A: $\frac{100}{\tan 25^\circ} \approx 214.5$ m.
+
+Q: Is the angle of depression from A to B equal to the angle of elevation from B to A?
+A: Yes. They are alternate angles between parallel horizontal lines.
+
+Q: A kite string is 60 m long at an elevation of $50^\circ$. How high is the kite?
+A: $60\sin 50^\circ \approx 46.0$ m (the string is the hypotenuse).
+
+Q: A plane descends at $3^\circ$ from 900 m altitude. How far horizontally to touchdown?
+A: $\frac{900}{\tan 3^\circ} \approx 17\,173$ m, about 17.2 km."
+3,TOPIC,Bearings and navigation,"Compass and three-figure bearings, turning journeys into right triangles",MUST,FALSE,"# Bearings and navigation
+
+## 1. What it covers
+- **Three-figure bearings** (such as $045^\circ$) and **compass bearings** (such as N45°E).
+- Converting a journey into north/south and east/west parts.
+- Finding the distance and bearing back to the start.
+
+## 2. Where it is used
+- **Ships and aircraft:** courses and headings are given as bearings.
+- **GPS and maps apps:** route directions, ""head north-east"".
+- **Drones and robotics:** turning a target position into a heading.
+- **Hiking and orienteering:** compass navigation.
+- **Game maps:** converting a heading angle into x/y movement (note that maths angles start from east and go anticlockwise, while bearings start from north and go clockwise).
+
+## 3. What it means
+A **three-figure bearing** is the angle measured **clockwise from north**, always written with three digits: east is $090^\circ$, south $180^\circ$, west $270^\circ$.
+
+A **compass bearing** like N30°E means ""face north, then turn $30^\circ$ towards east"".
+
+To do maths with a journey, split each leg into **east** and **north** parts with sin and cos. For a bearing $\beta$ and distance $d$:
+- east part $= d\sin\beta$
+- north part $= d\cos\beta$
+
+(This is the opposite of the usual maths x/y, because bearings are measured from north, not from the x-axis.)
+
+**Analogy:** a treasure map that says ""walk 10 paces at bearing 060"". You can replace that with ""walk about 8.7 paces east and 5 paces north"".
+
+## 4. Formula & worked example
+$$
+\Delta E = d\sin\beta \qquad \Delta N = d\cos\beta
+$$
+Negative $\Delta E$ means west; negative $\Delta N$ means south.
+**Back bearing:** the bearing to return is $\beta \pm 180^\circ$.
+
+**Example 1.** A ship sails 20 km on a bearing of $060^\circ$. How far east and north is it?
+- $\Delta E = 20\sin 60^\circ \approx 17.32$ km east
+- $\Delta N = 20\cos 60^\circ = 10$ km north
+
+**Example 2.** A plane flies 300 km due east, then 400 km due north. How far is it from the start, and on what bearing?
+- Distance $= \sqrt{300^2 + 400^2} = 500$ km.
+- The angle east of north: $\tan\theta = \frac{300}{400}$ → $\theta \approx 36.9^\circ$.
+- Bearing $\approx 036.9^\circ$.
+
+**Example 3.** The bearing from A to B is $070^\circ$. What is the bearing from B to A?
+- $070^\circ + 180^\circ = 250^\circ$.
+
+**Example 4: two legs.** A hiker walks 5 km on $030^\circ$, then 8 km on $120^\circ$. Distance from the start?
+- Leg 1: $\Delta E = 5\sin 30^\circ = 2.5$, $\Delta N = 5\cos 30^\circ \approx 4.33$
+- Leg 2: $\Delta E = 8\sin 120^\circ \approx 6.93$, $\Delta N = 8\cos 120^\circ = -4$
+- Total: $E \approx 9.43$, $N \approx 0.33$
+- Distance $\approx \sqrt{9.43^2 + 0.33^2} \approx 9.44$ km
+- (The two legs are exactly $90^\circ$ apart, so you could also use $\sqrt{5^2 + 8^2} = \sqrt{89} \approx 9.43$ km ✓.)
+
+## 5. Common mistakes
+- Measuring anticlockwise, or from east. Bearings go **clockwise from north**.
+- Writing $45^\circ$ instead of $045^\circ$ for a three-figure bearing.
+- Using cos for east and sin for north (the maths-axis habit). For bearings it's **sin → east, cos → north**.
+
+## 6. Practice
+Q: What three-figure bearing is due west?
+A: $270^\circ$.
+
+Q: Convert the compass bearing S40°E to a three-figure bearing.
+A: Facing south ($180^\circ$), turning $40^\circ$ towards east (anticlockwise): $180^\circ - 40^\circ = 140^\circ$.
+
+Q: A boat sails 12 km on $150^\circ$. How far south does it go?
+A: $\Delta N = 12\cos 150^\circ \approx -10.39$, so 10.39 km south.
+
+Q: The bearing of B from A is $215^\circ$. What is the bearing of A from B?
+A: $215^\circ - 180^\circ = 035^\circ$.
+
+Q: Walk 6 km north then 6 km east. Bearing back to the start?
+A: Bearing from start is $045^\circ$, so back is $225^\circ$."
+3,TOPIC,Practice & review: Right-triangle trigonometry,Mixed problem set with worked answers covering all of Phase 1,MUST,FALSE,"# Practice & review: Right-triangle trigonometry
+
+**How to use this:** set a 45-minute timer. Do every problem on paper before you look at the answers. For each miss, write in your error log *what* went wrong (wrong ratio? calculator mode? sketch?) and redo it tomorrow. Aim for at least 80%.
+
+## Problems
+1. Legs 9 and 12. Find the hypotenuse.
+2. A 30-60-90 triangle has short side 7. Find the other two sides exactly.
+3. $\tan\theta = \frac{7}{24}$ ($\theta$ acute). Find $\sin\theta$ and $\sec\theta$.
+4. Evaluate exactly: $\sin 60^\circ \cos 30^\circ - \sin 30^\circ \cos 60^\circ$.
+5. Hypotenuse 25, angle $A = 38^\circ$. Find both legs.
+6. opp $= 11$, adj $= 4$. Find the angle.
+7. Solve for $x$ (acute): $\sin(3x) = \cos(x + 10^\circ)$.
+8. From 45 m away, the elevation to the top of a statue is $28^\circ$. The observer's eyes are 1.5 m high. How tall is the statue?
+9. From a 60 m lighthouse, the angles of depression to two boats in a straight line with it are $30^\circ$ and $20^\circ$. How far apart are the boats?
+10. A ship sails 15 km on $040^\circ$, then 10 km on $130^\circ$. How far is it from port, and on what bearing?
+
+## Answers
+1. $\sqrt{81 + 144} = 15$.
+2. Long side $7\sqrt{3}$, hypotenuse $14$.
+3. hyp $= 25$; $\sin\theta = \frac{7}{25}$, $\sec\theta = \frac{25}{24}$.
+4. $\frac{\sqrt{3}}{2}\cdot\frac{\sqrt{3}}{2} - \frac{1}{2}\cdot\frac{1}{2} = \frac{3}{4} - \frac{1}{4} = \frac{1}{2}$. (This is $\sin(60^\circ - 30^\circ)$, as you'll see in Phase 4.)
+5. $a = 25\sin 38^\circ \approx 15.39$, $b = 25\cos 38^\circ \approx 19.70$.
+6. $\tan^{-1}(2.75) \approx 70.0^\circ$.
+7. $4x + 10^\circ = 90^\circ$ → $x = 20^\circ$.
+8. $45\tan 28^\circ + 1.5 \approx 23.93 + 1.5 \approx 25.4$ m.
+9. Near boat: $\frac{60}{\tan 30^\circ} \approx 103.9$ m. Far boat: $\frac{60}{\tan 20^\circ} \approx 164.8$ m. Apart $\approx 60.9$ m.
+10. The legs are $90^\circ$ apart, so distance $= \sqrt{15^2 + 10^2} \approx 18.03$ km. At the port, the angle between the first leg and the straight line to the ship is $\tan^{-1}\frac{10}{15} \approx 33.7^\circ$ (turning clockwise), so bearing $\approx 040^\circ + 33.7^\circ = 073.7^\circ$. (Check with components: $E = 15\sin 40^\circ + 10\sin 130^\circ \approx 9.64 + 7.66 = 17.30$; $N = 15\cos 40^\circ + 10\cos 130^\circ \approx 11.49 - 6.43 = 5.06$; bearing $= \tan^{-1}\frac{17.30}{5.06} \approx 73.7^\circ$ ✓.)
+
+## Flashcards
+Q: Three tools for solving a right triangle?
+A: Angle sum ($A + B = 90^\circ$), Pythagoras, and SOH-CAH-TOA.
+
+Q: Which ratio do you use when you know the opposite side and want the adjacent?
+A: Tangent.
+
+Q: Exact $\sin 30^\circ$, $\cos 45^\circ$, $\tan 60^\circ$?
+A: $\frac{1}{2}$, $\frac{\sqrt{2}}{2}$, $\sqrt{3}$.
+
+Q: The unknown is in the denominator: $\cos 50^\circ = \frac{8}{x}$. What is $x$?
+A: $x = \frac{8}{\cos 50^\circ} \approx 12.45$.
+
+Q: Bearing: which trig function gives the east component?
+A: Sine: $\Delta E = d\sin\beta$."
+1,MODULE,Phase 2 — Trigonometric Functions (Core),"Radians, the unit circle, trig of any angle, graphs, transformations, inverse functions, periodic models",MUST,,"# Phase 2: Trigonometric functions
+
+In Phase 1, angles lived inside right triangles, so they were always between $0^\circ$ and $90^\circ$. Now we free them: angles can be $150^\circ$, $-45^\circ$ or $1000^\circ$. The tool that makes this possible is the **unit circle**. Once sine and cosine are defined for every angle, they become **functions** whose graphs are waves, and waves describe sound, light, tides, AC power and anything else that repeats.
+
+**What you need first:** Phase 1, plus the coordinate plane and the idea of a function $y = f(x)$."
+2,MODULE,Radians and the unit circle,"Radian measure, arc length, the unit circle, any-angle trig, exact values everywhere",MUST,,"The unit circle turns trigonometry from ""triangle ratios"" into ""coordinates on a circle""."
+3,TOPIC,Radians and degree conversion,"What a radian is, converting degrees ⇄ radians, why programming uses radians",MUST,FALSE,"# Radians and degree conversion
+
+## 1. What it covers
+- What a **radian** is: the angle where the arc length equals the radius.
+- Converting between degrees and radians.
+- The common angles in both units, and why calculus and code use radians.
+
+## 2. Where it is used
+- **Every programming language:** `Math.sin`, `math.cos`, `numpy.sin`, CSS `rotate(1.57rad)` and GPU shaders all take radians.
+- **Calculus:** the neat rule ""the derivative of $\sin x$ is $\cos x$"" is only true when $x$ is in radians.
+- **Physics:** angular speed (rad/s), rotating machinery, wheels, orbits.
+- **Engineering:** motor controllers, robot joints, signal processing ($\omega = 2\pi f$).
+
+## 3. What it means
+Degrees are a human choice: someone decided a full turn is 360. Radians come from the circle itself.
+
+Take a circle of radius $r$. Lay a piece of string of length $r$ along the edge. The angle at the centre that this string covers is **1 radian** (about $57.3^\circ$).
+
+How many radii fit around the whole circle? The circumference is $2\pi r$, so exactly $2\pi$ of them. So:
+$$
+360^\circ = 2\pi \text{ rad} \qquad 180^\circ = \pi \text{ rad}
+$$
+
+**Analogy:** degrees are like measuring distance in ""steps"" (depends who walks); radians are like measuring in ""radius lengths"" (built into the circle).
+
+A radian has no units really: it is length ÷ length. When an angle has no degree symbol, assume radians.
+
+## 4. Formula & worked example
+$$
+\text{radians} = \text{degrees} \times \frac{\pi}{180} \qquad \text{degrees} = \text{radians} \times \frac{180}{\pi}
+$$
+
+| degrees | $0^\circ$ | $30^\circ$ | $45^\circ$ | $60^\circ$ | $90^\circ$ | $180^\circ$ | $270^\circ$ | $360^\circ$ |
+|---|---|---|---|---|---|---|---|---|
+| radians | $0$ | $\frac{\pi}{6}$ | $\frac{\pi}{4}$ | $\frac{\pi}{3}$ | $\frac{\pi}{2}$ | $\pi$ | $\frac{3\pi}{2}$ | $2\pi$ |
+
+**Example 1.** Convert $150^\circ$ to radians.
+- $150 \times \frac{\pi}{180} = \frac{150\pi}{180} = \frac{5\pi}{6}$
+
+**Example 2.** Convert $\frac{7\pi}{4}$ to degrees.
+- $\frac{7\pi}{4} \times \frac{180}{\pi} = \frac{7 \times 180}{4} = 315^\circ$
+
+**Example 3.** Convert 2 radians to degrees.
+- $2 \times \frac{180}{\pi} \approx 114.6^\circ$
+
+**Shortcut:** think of $\pi$ as $180^\circ$. Then $\frac{\pi}{6} = \frac{180^\circ}{6} = 30^\circ$ and $\frac{2\pi}{3} = \frac{360^\circ}{3} = 120^\circ$.
+
+**In code:**
+```python
+import math
+print(math.sin(30))                 # -0.988  wrong! 30 radians, not 30 degrees
+print(math.sin(math.radians(30)))   # 0.5     correct
+print(math.degrees(math.pi / 3))    # 60.0
+```
+The first line is a classic bug: the function silently treats 30 as radians. Always convert degrees with `math.radians` (or multiply by $\pi/180$) before calling trig functions in code.
+
+## 5. Common mistakes
+- Multiplying by $\frac{180}{\pi}$ when going **to** radians. To get radians, $\pi$ goes on top.
+- Calculator in degree mode when the problem is in radians (or the reverse).
+- Thinking $\pi$ is $180$. $\pi \approx 3.14159$ radians, which happens to **equal** $180^\circ$ as an angle.
+
+## 6. Practice
+Q: Convert $240^\circ$ to radians.
+A: $\frac{240\pi}{180} = \frac{4\pi}{3}$.
+
+Q: Convert $\frac{5\pi}{3}$ to degrees.
+A: $300^\circ$.
+
+Q: How many degrees is 1 radian, approximately?
+A: About $57.3^\circ$.
+
+Q: What is the definition of 1 radian?
+A: The angle at the centre of a circle where the arc length equals the radius.
+
+Q: Why does `Math.sin(90)` in JavaScript not return 1?
+A: It treats 90 as radians. Use `Math.sin(Math.PI / 2)` or convert: `90 * Math.PI / 180`."
+3,TOPIC,"Arc length, sector area and angular speed","s = rθ, A = ½r²θ, v = rω",MUST,FALSE,"# Arc length, sector area and angular speed
+
+## 1. What it covers
+- **Arc length** $s = r\theta$: the distance along a circle's edge.
+- **Sector area** $A = \frac{1}{2}r^2\theta$: the area of a ""pizza slice"".
+- **Angular speed** $\omega$ and **linear speed** $v = r\omega$.
+
+## 2. Where it is used
+- **Mechanical engineering:** belt and gear drives, wheel speed vs car speed.
+- **Robotics:** a wheeled robot turning by angle $\theta$ moves its wheels a distance $r\theta$ (odometry).
+- **UI design:** progress rings and pie charts draw arcs and sectors (the SVG and Canvas `arc` functions take radians).
+- **Astronomy and GPS:** distance along the Earth's surface between two places at the same longitude.
+- **Hard disks and turntables:** a point near the edge moves faster than one near the centre at the same rpm.
+
+## 3. What it means
+A radian is defined so that, on a circle of radius $r$, an angle of $\theta$ radians covers an arc of exactly $r\theta$. That is why radians make circle formulas so short.
+
+The sector area is the fraction $\frac{\theta}{2\pi}$ of the whole circle's area $\pi r^2$:
+$$
+\frac{\theta}{2\pi} \times \pi r^2 = \frac{1}{2}r^2\theta
+$$
+
+**Angular speed** $\omega$ is how fast the angle changes (radians per second). A point at distance $r$ from the centre moves along its arc at linear speed $v = r\omega$.
+
+**Analogy:** on a merry-go-round, everyone turns at the same angular speed, but the child on the outer edge travels much further each second than the one near the middle.
+
+## 4. Formula & worked example
+$$
+s = r\theta \qquad A = \tfrac{1}{2}r^2\theta \qquad v = r\omega \qquad (\theta, \omega \text{ in radians})
+$$
+In degrees you need the extra factor: $s = 2\pi r \cdot \frac{\theta^\circ}{360}$.
+Revolutions per minute to rad/s: $\omega = \text{rpm} \times \frac{2\pi}{60}$.
+
+**Example 1.** Arc length of a $60^\circ$ arc on a circle of radius 9 cm.
+- $\theta = \frac{\pi}{3}$, so $s = 9 \cdot \frac{\pi}{3} = 3\pi \approx 9.42$ cm
+
+**Example 2.** Area of a pizza slice with radius 15 cm and angle $\frac{\pi}{4}$.
+- $A = \frac{1}{2}(15)^2\left(\frac{\pi}{4}\right) = \frac{225\pi}{8} \approx 88.4$ cm²
+
+**Example 3.** A car's wheel has radius 0.3 m and spins at 800 rpm. How fast is the car?
+- $\omega = 800 \times \frac{2\pi}{60} \approx 83.78$ rad/s
+- $v = 0.3 \times 83.78 \approx 25.1$ m/s $\approx 90.5$ km/h
+
+**Example 4.** Dhaka and another city lie on the same meridian, $5^\circ$ of latitude apart. Earth's radius is about 6371 km. Distance between them?
+- $\theta = 5 \times \frac{\pi}{180} \approx 0.08727$ rad; $s \approx 6371 \times 0.08727 \approx 556$ km
+
+## 5. Common mistakes
+- Using degrees in $s = r\theta$. With $\theta = 60$ you get an arc of $540$ cm on a 9 cm circle, which is impossible.
+- Mixing up $\frac{1}{2}r^2\theta$ with $\frac{1}{2}r\theta$.
+- Forgetting to convert rpm to rad/s (one revolution is $2\pi$ radians, not 1).
+
+## 6. Practice
+Q: Arc length for $r = 4$, $\theta = 2.5$ rad?
+A: $s = 10$.
+
+Q: Sector area for $r = 6$, $\theta = \frac{\pi}{3}$?
+A: $\frac{1}{2}(36)\frac{\pi}{3} = 6\pi \approx 18.85$.
+
+Q: An arc of length 12 sits on a circle of radius 8. What is the angle?
+A: $\theta = \frac{12}{8} = 1.5$ rad $\approx 85.9^\circ$.
+
+Q: Convert 60 rpm to rad/s.
+A: $60 \times \frac{2\pi}{60} = 2\pi \approx 6.28$ rad/s.
+
+Q: A fan blade tip is 0.5 m from the centre, turning at 10 rad/s. Linear speed?
+A: $v = 0.5 \times 10 = 5$ m/s."
+3,TOPIC,The unit circle,"Defining sin and cos as coordinates (cos θ, sin θ) for any angle",MUST,FALSE,"# The unit circle
+
+## 1. What it covers
+- The **unit circle**: radius 1, centred at the origin.
+- The key definition: the point at angle $\theta$ is $(\cos\theta, \sin\theta)$.
+- Positive and negative angles, angles beyond $360^\circ$, and **coterminal** angles.
+
+## 2. Where it is used
+- **Computer graphics:** to place points on a circle (clock faces, radial menus, circular particle effects): $x = c_x + r\cos\theta$, $y = c_y + r\sin\theta$.
+- **Rotation:** rotating a point in 2D and 3D uses the unit-circle idea (rotation matrices, Phase 4 and Linear Algebra).
+- **Signal processing and electronics:** phasors and complex numbers $e^{i\theta} = \cos\theta + i\sin\theta$.
+- **Physics:** anything spinning or orbiting.
+
+## 3. What it means
+Draw a circle of radius 1 around the origin. Start at the point $(1, 0)$ on the positive x-axis and turn **anticlockwise** by angle $\theta$. You land on a point $(x, y)$. **By definition:**
+$$
+\cos\theta = x \qquad \sin\theta = y
+$$
+
+Why does this match SOH-CAH-TOA? Drop a line from the point to the x-axis. You get a right triangle with hypotenuse $1$, so $\cos\theta = \frac{x}{1} = x$ and $\sin\theta = \frac{y}{1} = y$. Same answer, but now it works for **any** angle, even ones no triangle could hold.
+
+**Analogy:** imagine the tip of a clock hand of length 1, but turning anticlockwise from 3 o'clock. Cosine is how far right (or left) the tip is; sine is how high (or low) it is.
+
+- **Negative angles** turn **clockwise**: $-90^\circ$ points straight down.
+- **Angles over $360^\circ$** go round more than once: $450^\circ$ lands where $90^\circ$ does.
+- **Coterminal angles** land on the same point; they differ by full turns: $\theta + 360^\circ k$ (or $\theta + 2\pi k$).
+
+**Tangent** on the unit circle: $\tan\theta = \frac{y}{x} = \frac{\sin\theta}{\cos\theta}$, which is the slope of the line from the origin to the point.
+
+## 4. Formula & worked example
+$$
+P(\theta) = (\cos\theta,\ \sin\theta) \qquad x^2 + y^2 = 1 \;\Rightarrow\; \cos^2\theta + \sin^2\theta = 1
+$$
+A circle of radius $r$ centred at $(c_x, c_y)$: $\big(c_x + r\cos\theta,\ c_y + r\sin\theta\big)$.
+
+**Example 1.** The four quarter points:
+- $0$: $(1, 0)$, so $\cos 0 = 1$, $\sin 0 = 0$
+- $\frac{\pi}{2}$: $(0, 1)$, so $\cos\frac{\pi}{2} = 0$, $\sin\frac{\pi}{2} = 1$
+- $\pi$: $(-1, 0)$, so $\cos\pi = -1$, $\sin\pi = 0$
+- $\frac{3\pi}{2}$: $(0, -1)$, so $\cos\frac{3\pi}{2} = 0$, $\sin\frac{3\pi}{2} = -1$
+
+**Example 2.** Find a positive and a negative angle coterminal with $50^\circ$.
+- $50^\circ + 360^\circ = 410^\circ$; $50^\circ - 360^\circ = -310^\circ$
+
+**Example 3.** Where does $\frac{17\pi}{6}$ land?
+- Subtract $2\pi = \frac{12\pi}{6}$: $\frac{17\pi}{6} - \frac{12\pi}{6} = \frac{5\pi}{6}$ ($150^\circ$), in quadrant II.
+
+**Example 4: code.** Place 12 hour marks on a clock face of radius 100 centred at $(200, 200)$.
+```python
+import math
+for h in range(12):
+    theta = math.pi / 2 - h * (2 * math.pi / 12)   # 12 o'clock is at 90°, clockwise
+    x = 200 + 100 * math.cos(theta)
+    y = 200 - 100 * math.sin(theta)                 # screen y grows downward, so subtract
+    print(h or 12, round(x), round(y))
+```
+Each mark is $\frac{2\pi}{12}$ apart. Because a clock goes clockwise, the angle *decreases*. Screen coordinates have y pointing down, so we subtract the sine.
+
+## 5. Common mistakes
+- Swapping the coordinates: it is $(\cos, \sin)$, x first. ""C before S, X before Y.""
+- Turning clockwise for positive angles. Positive is **anticlockwise**.
+- Forgetting that on a screen the y-axis points down, which flips the direction of rotation.
+
+## 6. Practice
+Q: On the unit circle, which coordinate is $\sin\theta$?
+A: The y-coordinate.
+
+Q: What are $\cos\pi$ and $\sin\pi$?
+A: $\cos\pi = -1$, $\sin\pi = 0$.
+
+Q: Find an angle between $0^\circ$ and $360^\circ$ coterminal with $-120^\circ$.
+A: $240^\circ$.
+
+Q: Where does $\frac{9\pi}{4}$ land?
+A: Same place as $\frac{\pi}{4}$, at $\left(\frac{\sqrt{2}}{2}, \frac{\sqrt{2}}{2}\right)$.
+
+Q: Why is $\cos^2\theta + \sin^2\theta = 1$?
+A: The point $(\cos\theta, \sin\theta)$ lies on the unit circle $x^2 + y^2 = 1$."
+3,TOPIC,Trig of any angle: reference angles and signs,"Quadrants, ASTC sign rule, reference angles, evaluating trig beyond 90°",MUST,FALSE,"# Trig of any angle: reference angles and signs
+
+## 1. What it covers
+- The four **quadrants** and which trig functions are positive in each (**ASTC**).
+- The **reference angle**: the acute angle to the x-axis.
+- Evaluating sin, cos and tan of any angle using reference angle + sign.
+- Finding all trig values from one given value and a quadrant.
+
+## 2. Where it is used
+- **Physics:** a force pointing down-left has negative x and y components; signs matter.
+- **Games:** when an object moves at $210^\circ$, both $dx$ and $dy$ are negative.
+- **Solving trig equations** (Phase 4): $\sin x = 0.5$ has a solution in quadrant I **and** quadrant II.
+- **Electrical engineering:** phase angles beyond $90^\circ$.
+
+## 3. What it means
+Every angle's point on the unit circle is a ""mirror image"" of a point in quadrant I. The **reference angle** is the acute angle between the terminal side and the **x-axis**. The trig values have the same size as the reference angle's; only the **sign** changes, depending on the quadrant.
+
+Signs follow from the coordinates: $\cos = x$, $\sin = y$.
+- **Quadrant I** ($0$–$90^\circ$): $x > 0$, $y > 0$: **All** positive.
+- **Quadrant II** ($90$–$180^\circ$): $x < 0$, $y > 0$: only **Sine** positive.
+- **Quadrant III** ($180$–$270^\circ$): $x < 0$, $y < 0$: only **Tangent** positive (negative ÷ negative).
+- **Quadrant IV** ($270$–$360^\circ$): $x > 0$, $y < 0$: only **Cosine** positive.
+
+Memory aid: **A**ll **S**tudents **T**ake **C**alculus, going anticlockwise from quadrant I.
+
+**Analogy:** four rooms built as mirror copies of each other. The furniture is the same size in every room; only its direction (sign) is flipped.
+
+## 4. Formula & worked example
+**Reference angle** $\theta'$ for $\theta$ between $0^\circ$ and $360^\circ$:
+| Quadrant | $\theta'$ |
+|---|---|
+| I | $\theta$ |
+| II | $180^\circ - \theta$ |
+| III | $\theta - 180^\circ$ |
+| IV | $360^\circ - \theta$ |
+Then: $\text{trig}(\theta) = \pm\,\text{trig}(\theta')$, with the sign from ASTC.
+
+**Example 1.** Find $\sin 150^\circ$.
+- Quadrant II, reference angle $30^\circ$, sine positive in QII.
+- $\sin 150^\circ = +\sin 30^\circ = \frac{1}{2}$
+
+**Example 2.** Find $\cos 225^\circ$.
+- Quadrant III, reference $45^\circ$, cosine negative in QIII.
+- $\cos 225^\circ = -\frac{\sqrt{2}}{2}$
+
+**Example 3.** Find $\tan\frac{5\pi}{3}$.
+- $\frac{5\pi}{3} = 300^\circ$, quadrant IV, reference $60^\circ$, tangent negative in QIV.
+- $\tan 300^\circ = -\sqrt{3}$
+
+**Example 4.** $\cos\theta = -\frac{3}{5}$ and $\theta$ is in quadrant III. Find $\sin\theta$ and $\tan\theta$.
+- Reference triangle: adj $3$, hyp $5$, so opp $4$.
+- In QIII, sine is negative and tangent positive: $\sin\theta = -\frac{4}{5}$, $\tan\theta = \frac{4}{3}$.
+
+**Example 5.** Find $\sin(-30^\circ)$.
+- $-30^\circ$ is in quadrant IV (coterminal with $330^\circ$), reference $30^\circ$, sine negative.
+- $\sin(-30^\circ) = -\frac{1}{2}$
+
+## 5. Common mistakes
+- Measuring the reference angle to the **y-axis**. It is always to the **x-axis**.
+- Getting the size right but forgetting the sign.
+- Giving a reference angle larger than $90^\circ$. It is always between $0^\circ$ and $90^\circ$.
+
+## 6. Practice
+Q: Reference angle of $200^\circ$?
+A: $20^\circ$.
+
+Q: Which trig functions are positive in quadrant II?
+A: Sine (and its reciprocal cosecant).
+
+Q: $\cos 120^\circ = ?$
+A: $-\frac{1}{2}$.
+
+Q: $\tan 135^\circ = ?$
+A: $-1$.
+
+Q: $\sin\theta = \frac{5}{13}$, $\theta$ in QII. Find $\cos\theta$.
+A: $-\frac{12}{13}$."
+3,TOPIC,Exact values all around the unit circle,"All 16 special points, building them from 30°, 45°, 60° and the quadrant signs",MUST,FALSE,"# Exact values all around the unit circle
+
+## 1. What it covers
+- The coordinates of all 16 standard points: multiples of $\frac{\pi}{6}$ and $\frac{\pi}{4}$.
+- Evaluating any trig function at these angles without a calculator, in degrees or radians.
+- Reciprocal functions (csc, sec, cot) at special angles.
+
+## 2. Where it is used
+- **Exams:** most unit-circle questions are ""evaluate exactly"".
+- **Phase 4 equations:** solutions of $2\sin x = 1$ come straight from this circle.
+- **Calculus:** limits, derivatives and integrals constantly evaluate at $\frac{\pi}{6}$, $\frac{\pi}{4}$, $\frac{\pi}{3}$, $\frac{\pi}{2}$, $\pi$.
+- **Graphics:** hexagonal grids ($60^\circ$), 8-direction movement ($45^\circ$), and rotations by $90^\circ$.
+
+## 3. What it means
+There's nothing new to memorise. You only need:
+1. The quadrant I values: $\left(\frac{\sqrt{3}}{2}, \frac{1}{2}\right)$ at $30^\circ$, $\left(\frac{\sqrt{2}}{2}, \frac{\sqrt{2}}{2}\right)$ at $45^\circ$, $\left(\frac{1}{2}, \frac{\sqrt{3}}{2}\right)$ at $60^\circ$.
+2. Mirror them into the other quadrants and attach signs.
+
+**Analogy:** you only need to know one quarter of a symmetric pattern (like one quarter of a snowflake) to draw the whole thing.
+
+**Radian pattern trick:** in each quadrant, the special angles have the same denominators.
+- Over 6 ($\frac{\pi}{6}, \frac{5\pi}{6}, \frac{7\pi}{6}, \frac{11\pi}{6}$): reference $30^\circ$, so the coordinates are $\frac{\sqrt{3}}{2}$ and $\frac{1}{2}$ (x is the bigger one).
+- Over 4 ($\frac{\pi}{4}, \frac{3\pi}{4}, \frac{5\pi}{4}, \frac{7\pi}{4}$): reference $45^\circ$, both coordinates $\frac{\sqrt{2}}{2}$.
+- Over 3 ($\frac{\pi}{3}, \frac{2\pi}{3}, \frac{4\pi}{3}, \frac{5\pi}{3}$): reference $60^\circ$, so the coordinates are $\frac{1}{2}$ and $\frac{\sqrt{3}}{2}$ (y is the bigger one).
+
+## 4. Formula & worked example
+| $\theta$ | $\frac{2\pi}{3}$ ($120^\circ$) | $\frac{3\pi}{4}$ ($135^\circ$) | $\frac{5\pi}{6}$ ($150^\circ$) | $\frac{7\pi}{6}$ ($210^\circ$) | $\frac{5\pi}{4}$ ($225^\circ$) | $\frac{4\pi}{3}$ ($240^\circ$) | $\frac{5\pi}{3}$ ($300^\circ$) | $\frac{7\pi}{4}$ ($315^\circ$) | $\frac{11\pi}{6}$ ($330^\circ$) |
+|---|---|---|---|---|---|---|---|---|---|
+| $\cos$ | $-\frac{1}{2}$ | $-\frac{\sqrt{2}}{2}$ | $-\frac{\sqrt{3}}{2}$ | $-\frac{\sqrt{3}}{2}$ | $-\frac{\sqrt{2}}{2}$ | $-\frac{1}{2}$ | $\frac{1}{2}$ | $\frac{\sqrt{2}}{2}$ | $\frac{\sqrt{3}}{2}$ |
+| $\sin$ | $\frac{\sqrt{3}}{2}$ | $\frac{\sqrt{2}}{2}$ | $\frac{1}{2}$ | $-\frac{1}{2}$ | $-\frac{\sqrt{2}}{2}$ | $-\frac{\sqrt{3}}{2}$ | $-\frac{\sqrt{3}}{2}$ | $-\frac{\sqrt{2}}{2}$ | $-\frac{1}{2}$ |
+
+**Example 1.** $\sin\frac{4\pi}{3}$
+- Over 3 → reference $60^\circ$, quadrant III (between $\pi$ and $\frac{3\pi}{2}$), sine negative.
+- $= -\frac{\sqrt{3}}{2}$
+
+**Example 2.** $\sec\frac{3\pi}{4}$
+- $\cos\frac{3\pi}{4} = -\frac{\sqrt{2}}{2}$, so $\sec = \frac{1}{-\sqrt{2}/2} = -\frac{2}{\sqrt{2}} = -\sqrt{2}$
+
+**Example 3.** $\cot\frac{11\pi}{6}$
+- $\cos = \frac{\sqrt{3}}{2}$, $\sin = -\frac{1}{2}$, so $\cot = \frac{\cos}{\sin} = -\sqrt{3}$
+
+**Example 4.** Evaluate $\cos\frac{\pi}{3} + \sin\frac{7\pi}{6} + \tan\frac{5\pi}{4}$.
+- $= \frac{1}{2} + \left(-\frac{1}{2}\right) + 1 = 1$
+
+**Example 5.** Find $\sin\left(-\frac{3\pi}{4}\right)$.
+- Coterminal with $\frac{5\pi}{4}$ (QIII), reference $45^\circ$: $-\frac{\sqrt{2}}{2}$
+
+## 5. Common mistakes
+- Giving $\frac{\sqrt{3}}{2}$ to the wrong coordinate. For **""over 6""** angles, x (cos) is the big one; for **""over 3""**, y (sin) is the big one.
+- Guessing the quadrant for radian angles. Compare with $\frac{\pi}{2} = \frac{3\pi}{6} = \frac{2\pi}{4}$ and $\pi = \frac{6\pi}{6} = \frac{4\pi}{4}$ to place it.
+- Leaving $\frac{2}{\sqrt{2}}$ unsimplified; it is $\sqrt{2}$.
+
+## 6. Practice
+Q: $\cos\frac{5\pi}{6}$?
+A: $-\frac{\sqrt{3}}{2}$.
+
+Q: $\sin\frac{5\pi}{3}$?
+A: $-\frac{\sqrt{3}}{2}$.
+
+Q: $\tan\frac{2\pi}{3}$?
+A: $\frac{\sqrt{3}/2}{-1/2} = -\sqrt{3}$.
+
+Q: $\csc\frac{7\pi}{6}$?
+A: $\frac{1}{-1/2} = -2$.
+
+Q: In which quadrant is $\frac{7\pi}{4}$, and what is its reference angle?
+A: Quadrant IV; reference angle $\frac{\pi}{4}$."
+3,TOPIC,Practice & review: Radians and the unit circle,Mixed problem set with worked answers,MUST,FALSE,"# Practice & review: Radians and the unit circle
+
+**How to use this:** 40 minutes, no calculator except for problems 3–4. Log every miss.
+
+## Problems
+1. Convert $210^\circ$ to radians and $\frac{11\pi}{12}$ to degrees.
+2. Find the arc length and sector area for $r = 10$, $\theta = 72^\circ$.
+3. A bicycle wheel of radius 35 cm turns at 3 revolutions per second. How fast does the bike go, in km/h?
+4. Find two angles (one positive, one negative) coterminal with $\frac{2\pi}{5}$.
+5. Evaluate exactly: $\sin\frac{2\pi}{3}$, $\cos\frac{7\pi}{4}$, $\tan\frac{7\pi}{6}$.
+6. $\tan\theta = -\frac{8}{15}$ and $\theta$ is in quadrant II. Find $\sin\theta$ and $\cos\theta$.
+7. Evaluate exactly: $\sin^2\frac{\pi}{6} + \cos\frac{\pi}{3} \cdot \sec\frac{5\pi}{3}$.
+8. Find $\cos(-480^\circ)$.
+
+## Answers
+1. $\frac{7\pi}{6}$; $165^\circ$.
+2. $\theta = \frac{2\pi}{5}$; $s = 4\pi \approx 12.57$; $A = \frac{1}{2}(100)\frac{2\pi}{5} = 20\pi \approx 62.83$.
+3. $\omega = 6\pi$ rad/s; $v = 0.35 \times 6\pi \approx 6.60$ m/s $\approx 23.8$ km/h.
+4. $\frac{12\pi}{5}$ and $-\frac{8\pi}{5}$.
+5. $\frac{\sqrt{3}}{2}$; $\frac{\sqrt{2}}{2}$; $\frac{\sqrt{3}}{3}$.
+6. Reference triangle 8-15-17. In QII: $\sin\theta = \frac{8}{17}$, $\cos\theta = -\frac{15}{17}$.
+7. $\frac{1}{4} + \frac{1}{2}\cdot 2 = \frac{5}{4}$.
+8. $-480^\circ + 720^\circ = 240^\circ$, so $\cos = -\frac{1}{2}$.
+
+## Flashcards
+Q: Unit-circle definition of $\cos\theta$ and $\sin\theta$?
+A: The point at angle $\theta$ on the unit circle is $(\cos\theta, \sin\theta)$.
+
+Q: ASTC stands for?
+A: All (QI), Sine (QII), Tangent (QIII), Cosine (QIV): the positive functions in each quadrant.
+
+Q: Arc length formula (radians)?
+A: $s = r\theta$.
+
+Q: The point at $\frac{\pi}{3}$ on the unit circle?
+A: $\left(\frac{1}{2}, \frac{\sqrt{3}}{2}\right)$."
+2,MODULE,Graphs of trigonometric functions,"Sine and cosine waves, amplitude, period, shifts, tangent and reciprocal graphs, inverse functions, modeling",MUST,,"Unwrap the unit circle onto a straight line and you get a wave. This module is about reading, drawing and building those waves."
+3,TOPIC,Graphs of sine and cosine,"The basic wave shapes, key points, domain, range, period, symmetry",MUST,FALSE,"# Graphs of sine and cosine
+
+## 1. What it covers
+- The graphs of $y = \sin x$ and $y = \cos x$.
+- Their five key points per cycle, domain, range and period.
+- Symmetry: sine is **odd**, cosine is **even**; and cosine is sine shifted by $\frac{\pi}{2}$.
+
+## 2. Where it is used
+- **Sound and music:** a pure tone is a sine wave; every sound is a sum of sine waves (Fourier analysis, MP3 compression, equalisers).
+- **Electricity:** household AC voltage is a sine wave (50 Hz in Bangladesh).
+- **Animation:** smooth bobbing, pulsing and breathing effects: `y = base + 5 * sin(time)`.
+- **Radio, Wi-Fi and phones:** carrier waves are sinusoids.
+- **Physics:** springs, pendulums and waves.
+
+## 3. What it means
+Walk round the unit circle at a steady pace and record your **height** ($y = \sin x$) at each moment. Plot height against angle and you get the sine wave. Record your **left-right position** ($x = \cos x$) instead and you get the cosine wave.
+
+Because you come back to the start after $2\pi$, the pattern repeats every $2\pi$: the **period** is $2\pi$. Because the circle has radius 1, the values never go above 1 or below $-1$: the **range** is $[-1, 1]$.
+
+**Analogy:** a Ferris wheel. Your height above the hub goes up and down smoothly in a sine pattern, again and again.
+
+**Five key points** for one cycle on $[0, 2\pi]$ (split into quarters):
+- $\sin$: $0 \to 1 \to 0 \to -1 \to 0$ (starts in the **middle**, going up)
+- $\cos$: $1 \to 0 \to -1 \to 0 \to 1$ (starts at the **top**)
+
+```mermaid
+xychart-beta
+    title ""y = sin x (starts at 0) and y = cos x (starts at 1)""
+    x-axis ""x (degrees)"" [0, 45, 90, 135, 180, 225, 270, 315, 360]
+    y-axis ""y"" -1 --> 1
+    line [0, 0.71, 1, 0.71, 0, -0.71, -1, -0.71, 0]
+    line [1, 0.71, 0, -0.71, -1, -0.71, 0, 0.71, 1]
+```
+
+## 4. Formula & worked example
+| | $y = \sin x$ | $y = \cos x$ |
+|---|---|---|
+| Domain | all real numbers | all real numbers |
+| Range | $[-1, 1]$ | $[-1, 1]$ |
+| Period | $2\pi$ | $2\pi$ |
+| Zeros | $x = k\pi$ | $x = \frac{\pi}{2} + k\pi$ |
+| Maximum $1$ at | $\frac{\pi}{2} + 2k\pi$ | $2k\pi$ |
+| Symmetry | odd: $\sin(-x) = -\sin x$ | even: $\cos(-x) = \cos x$ |
+
+Shift relation:
+$$
+\cos x = \sin\!\left(x + \frac{\pi}{2}\right)
+$$
+
+**Example 1.** Where does $\sin x = 0$ on $[0, 4\pi]$?
+- $x = 0, \pi, 2\pi, 3\pi, 4\pi$
+
+**Example 2.** Is $\cos(-\frac{\pi}{3})$ equal to $\cos\frac{\pi}{3}$?
+- Yes, cosine is even: both are $\frac{1}{2}$.
+
+**Example 3.** Without a calculator, which is larger: $\sin 2$ or $\sin 3$ (radians)?
+- The peak is at $\frac{\pi}{2} \approx 1.57$, after which sine decreases until $\pi \approx 3.14$. Both 2 and 3 are in that decreasing part, so $\sin 2 > \sin 3$. (Check: $0.909 > 0.141$.)
+
+**Example 4: animation.** Make a ball bob up and down by 20 pixels, once every 2 seconds.
+```python
+import math
+def ball_y(t, base=300):
+    return base + 20 * math.sin(math.pi * t)   # period = 2π / π = 2 seconds
+```
+At $t = 0$ the ball is at the base, at $t = 0.5$ s it is at $\text{base} + 20$, at $t = 1.5$ s at $\text{base} - 20$. The number 20 sets the height of the bob (amplitude) and $\pi$ sets the speed (period); the next topic explains both.
+
+## 5. Common mistakes
+- Starting the cosine graph at 0. Cosine starts at its **maximum**, $(0, 1)$.
+- Thinking the period is $360$ when the x-axis is in radians. In radians it is $2\pi \approx 6.28$.
+- Expecting $\sin x$ to reach 2 or more. Without a multiplier, the range is $[-1, 1]$.
+
+## 6. Practice
+Q: Period and range of $y = \cos x$?
+A: Period $2\pi$; range $[-1, 1]$.
+
+Q: The five key y-values of $\sin x$ over one period?
+A: $0, 1, 0, -1, 0$.
+
+Q: Is sine even or odd?
+A: Odd: $\sin(-x) = -\sin x$.
+
+Q: Where on $[0, 2\pi]$ does $\cos x$ reach its minimum?
+A: At $x = \pi$, value $-1$.
+
+Q: How is the cosine graph related to the sine graph?
+A: It is the sine graph shifted left by $\frac{\pi}{2}$: $\cos x = \sin(x + \frac{\pi}{2})$."
+3,TOPIC,"Amplitude, period and midline",y = A sin(Bx) + D: stretching and lifting the wave,MUST,FALSE,"# Amplitude, period and midline
+
+## 1. What it covers
+- The **amplitude** $\lvert A\rvert$: how tall the wave is.
+- The **period** $\frac{2\pi}{B}$: how long one cycle lasts.
+- The **midline** $y = D$: the centre line the wave moves around.
+- Reading these from an equation, and writing an equation from a graph.
+
+## 2. Where it is used
+- **Audio:** amplitude is loudness, period sets pitch (frequency $= \frac{1}{\text{period}}$). Concert A is 440 Hz.
+- **Electricity:** Bangladesh mains is 220–230 V at 50 Hz; the period is $\frac{1}{50} = 0.02$ s.
+- **Weather and climate:** daily temperature swings around an average (the midline).
+- **Game feel:** screen shake, ""breathing"" UI buttons, hovering items: you choose height (A), speed (B) and position (D).
+
+## 3. What it means
+Start from $y = \sin x$ and change three dials:
+- **$A$ (amplitude):** stretches the wave vertically. $y = 3\sin x$ goes from $-3$ to $3$. If $A$ is negative, the wave is also flipped upside down.
+- **$B$ (frequency):** squeezes the wave horizontally. A bigger $B$ means more cycles in the same space, so a **shorter** period: $\frac{2\pi}{B}$.
+- **$D$ (vertical shift):** lifts the whole wave up or down. The midline becomes $y = D$.
+
+**Analogy:** a music equaliser: A is the volume knob, B is the pitch knob, D raises the baseline.
+
+Max $= D + \lvert A\rvert$ and min $= D - \lvert A\rvert$. Going the other way: amplitude $= \frac{\max - \min}{2}$ and midline $= \frac{\max + \min}{2}$.
+
+## 4. Formula & worked example
+$$
+y = A\sin(Bx) + D \qquad y = A\cos(Bx) + D
+$$
+$$
+\text{amplitude} = \lvert A\rvert \qquad \text{period} = \frac{2\pi}{\lvert B\rvert} \qquad \text{midline}: y = D \qquad \text{frequency} = \frac{\lvert B\rvert}{2\pi}
+$$
+
+**Example 1.** Describe $y = 4\cos(3x) - 1$.
+- Amplitude $4$; period $\frac{2\pi}{3}$; midline $y = -1$; max $3$, min $-5$.
+
+**Example 2.** Describe $y = -2\sin\left(\frac{x}{2}\right)$.
+- Amplitude $2$ (the minus sign flips it); period $\frac{2\pi}{1/2} = 4\pi$; midline $y = 0$.
+- It starts at 0 and goes **down** first.
+
+**Example 3: from a graph.** A wave has max 7, min $-1$, starts at its max at $x = 0$, and repeats every $\pi$. Write its equation.
+- Amplitude $= \frac{7 - (-1)}{2} = 4$; midline $= \frac{7 + (-1)}{2} = 3$
+- Period $\pi$ → $B = \frac{2\pi}{\pi} = 2$
+- Starts at max → cosine: $y = 4\cos(2x) + 3$
+
+**Example 4: electricity.** Mains voltage of 220 V (RMS) has a peak of $220\sqrt{2} \approx 311$ V and a frequency of 50 Hz.
+- Period $= 0.02$ s → $B = \frac{2\pi}{0.02} = 100\pi$
+- $V(t) = 311\sin(100\pi t)$
+
+## 5. Common mistakes
+- Thinking the period is $B$. The period is $\frac{2\pi}{B}$; a **larger** $B$ means a **shorter** period.
+- Taking amplitude as max − min. That is the full height; amplitude is **half** of it.
+- Saying the amplitude is negative. Amplitude is always $\lvert A\rvert$; the sign only flips the wave.
+
+## 6. Practice
+Q: Amplitude, period and midline of $y = 5\sin(4x) + 2$?
+A: Amplitude 5, period $\frac{\pi}{2}$, midline $y = 2$.
+
+Q: Max and min of $y = -3\cos x + 1$?
+A: Max $4$, min $-2$.
+
+Q: A sine wave has period $6$. What is $B$?
+A: $B = \frac{2\pi}{6} = \frac{\pi}{3}$.
+
+Q: Max 10, min 2, starts at the midline going up, period $2\pi$. Equation?
+A: $y = 4\sin x + 6$.
+
+Q: A sound wave has frequency 440 Hz. What is its period?
+A: $\frac{1}{440} \approx 0.00227$ s."
+3,TOPIC,Phase shift and full transformations,"y = A sin(B(x − C)) + D, graphing from key points",MUST,FALSE,"# Phase shift and full transformations
+
+## 1. What it covers
+- The **phase shift** $C$: sliding the wave left or right.
+- The full form $y = A\sin(B(x - C)) + D$ and the factoring trap in $\sin(Bx - c)$.
+- Graphing a transformed wave from its five key points.
+
+## 2. Where it is used
+- **Electrical engineering:** voltage and current in AC circuits are out of phase; the shift tells you about the load (capacitive or inductive).
+- **Noise-cancelling headphones:** they play the same sound shifted by half a period, so the waves cancel.
+- **Seasonal modelling:** the warmest day isn't January 1; the phase shift moves the peak to the right month.
+- **Animation:** several objects with the same wave but different phase shifts create a ""wave"" effect (like a crowd doing a stadium wave, or a loading spinner).
+
+## 3. What it means
+$C$ slides the whole wave horizontally: **right** if $C > 0$, **left** if $C < 0$. Inside the bracket the sign looks backwards: $\sin(x - 2)$ moves **right** by 2.
+
+Why backwards? $y = \sin(x - 2)$ reaches the value $\sin 0$ when $x - 2 = 0$, that is at $x = 2$. Everything happens 2 units **later**.
+
+**The factoring trap:** in $y = \sin(2x - \pi)$, the shift is **not** $\pi$. Factor out $B$ first: $\sin\left(2\left(x - \frac{\pi}{2}\right)\right)$, so the shift is $\frac{\pi}{2}$.
+
+**Analogy:** two runners on the same circular track at the same speed, one starting a few seconds later. Same motion, shifted in time: that's phase.
+
+**Graphing recipe:**
+1. Write it as $A\sin(B(x - C)) + D$.
+2. The cycle starts at $x = C$ and ends at $x = C + \frac{2\pi}{B}$.
+3. Split that interval into 4 equal steps (each $\frac{\text{period}}{4}$).
+4. Place the key points: for sine, midline → max → midline → min → midline (flipped if $A < 0$). Then add $D$ to all y-values.
+
+## 4. Formula & worked example
+$$
+y = A\sin\big(B(x - C)\big) + D \qquad \text{phase shift} = C = \frac{c}{B} \text{ for } \sin(Bx - c)
+$$
+
+**Example 1.** Describe $y = 3\sin\left(2x - \frac{\pi}{2}\right) + 1$.
+- Factor: $3\sin\left(2\left(x - \frac{\pi}{4}\right)\right) + 1$
+- Amplitude 3, period $\pi$, shift $\frac{\pi}{4}$ right, midline $y = 1$.
+- Key x-values: $\frac{\pi}{4}$, $\frac{\pi}{2}$, $\frac{3\pi}{4}$, $\pi$, $\frac{5\pi}{4}$ (steps of $\frac{\pi}{4}$).
+- Key y-values: $1, 4, 1, -2, 1$.
+
+**Example 2.** Describe $y = \cos\left(x + \frac{\pi}{3}\right)$.
+- $x + \frac{\pi}{3} = x - \left(-\frac{\pi}{3}\right)$: shift $\frac{\pi}{3}$ **left**.
+
+**Example 3: model temperature.** In a city the average daily temperature ranges from $12^\circ$C (mid-January) to $30^\circ$C (mid-July). Model it with $t$ in months ($t = 0$ is January 1).
+- Amplitude $= 9$, midline $= 21$, period $= 12$ → $B = \frac{2\pi}{12} = \frac{\pi}{6}$
+- The minimum is around $t = 0.5$ (mid-January). Use a negative cosine, which starts at its minimum: $T(t) = -9\cos\left(\frac{\pi}{6}(t - 0.5)\right) + 21$
+- Check mid-July ($t = 6.5$): $-9\cos(\pi) + 21 = 9 + 21 = 30$ ✓
+
+**Example 4: the same wave written two ways.** Show that $\sin\left(x + \frac{\pi}{2}\right) = \cos x$.
+- A sine wave starts at the midline; moving it left by a quarter period ($\frac{\pi}{2}$) makes it start at its peak, exactly like cosine. (Phase 4 proves this with the sum identity.)
+
+## 5. Common mistakes
+- Reading $\sin(3x - \pi)$ as a shift of $\pi$. Factor first: the shift is $\frac{\pi}{3}$.
+- Shifting the wrong way: $x + 2$ means **left** 2.
+- Doing the vertical shift before the stretch when plotting points. Multiply by $A$ first, then add $D$.
+
+## 6. Practice
+Q: Phase shift of $y = \sin(x - \frac{\pi}{6})$?
+A: $\frac{\pi}{6}$ to the right.
+
+Q: Phase shift of $y = 2\cos(4x + \pi)$?
+A: $4\left(x + \frac{\pi}{4}\right)$, so $\frac{\pi}{4}$ to the left.
+
+Q: First key point (start of cycle) of $y = \sin\left(2\left(x - 1\right)\right)$?
+A: $x = 1$, on the midline going up.
+
+Q: Write a cosine with amplitude 2, period $\pi$, shifted right $\frac{\pi}{8}$, midline $y = -1$.
+A: $y = 2\cos\left(2\left(x - \frac{\pi}{8}\right)\right) - 1$.
+
+Q: Why do noise-cancelling headphones work?
+A: They add a copy of the sound shifted by half a period ($\pi$). $\sin(x + \pi) = -\sin x$, so the two waves add to zero."
+3,TOPIC,Graph of tangent,"Period π, vertical asymptotes, zeros, transformations of y = tan x",MUST,FALSE,"# Graph of tangent
+
+## 1. What it covers
+- The graph of $y = \tan x$: shape, period $\pi$, asymptotes and zeros.
+- Why tangent has **vertical asymptotes** where cosine is zero.
+- Transformations: $y = A\tan(B(x - C)) + D$.
+
+## 2. Where it is used
+- **Slopes:** $\tan\theta$ is the slope of a line at angle $\theta$; as $\theta \to 90^\circ$ the slope blows up.
+- **Cameras and 3D graphics:** the field-of-view in a perspective projection uses $\tan\left(\frac{\text{fov}}{2}\right)$; a field of view near $180^\circ$ breaks because of the asymptote.
+- **Rotating searchlight:** a lighthouse beam hitting a straight wall: the spot's position is $d\tan\theta$, and it races off to infinity as the beam turns parallel to the wall.
+- **Machine learning:** the related $\tanh$ function is a common activation function.
+
+## 3. What it means
+$\tan x = \frac{\sin x}{\cos x}$. Whenever $\cos x = 0$ (at $x = \pm\frac{\pi}{2}, \pm\frac{3\pi}{2}, \ldots$), we're dividing by zero, so the graph shoots up to $+\infty$ on one side and comes from $-\infty$ on the other: a **vertical asymptote**.
+
+Between asymptotes the graph rises steadily from $-\infty$ to $+\infty$, crossing zero where $\sin x = 0$ (at $0, \pm\pi, \ldots$).
+
+Unlike sine and cosine, tangent repeats every $\pi$, not $2\pi$: the point opposite on the unit circle, $(-x, -y)$, gives the same ratio $\frac{-y}{-x} = \frac{y}{x}$.
+
+**Analogy:** shining a torch from the centre of a room onto a wall. As you rotate it towards being parallel to the wall, the spot on the wall runs away faster and faster, off to infinity.
+
+```mermaid
+xychart-beta
+    title ""y = tan x for one period (-80° to 80°)""
+    x-axis ""x (degrees)"" [-80, -60, -45, -30, 0, 30, 45, 60, 80]
+    y-axis ""y"" -6 --> 6
+    line [-5.67, -1.73, -1, -0.58, 0, 0.58, 1, 1.73, 5.67]
+```
+
+## 4. Formula & worked example
+| $y = \tan x$ | |
+|---|---|
+| Period | $\pi$ |
+| Domain | $x \ne \frac{\pi}{2} + k\pi$ |
+| Range | all real numbers |
+| Zeros | $x = k\pi$ |
+| Asymptotes | $x = \frac{\pi}{2} + k\pi$ |
+| Symmetry | odd: $\tan(-x) = -\tan x$ |
+
+For $y = A\tan(B(x - C)) + D$: period $= \frac{\pi}{\lvert B\rvert}$ (note $\pi$, not $2\pi$). There is no amplitude, since tangent has no max or min; $A$ is a vertical stretch.
+
+**Example 1.** Period and asymptotes of $y = \tan(2x)$.
+- Period $\frac{\pi}{2}$.
+- Asymptotes where $2x = \frac{\pi}{2} + k\pi$ → $x = \frac{\pi}{4} + \frac{k\pi}{2}$.
+
+**Example 2.** Describe $y = 3\tan\left(x - \frac{\pi}{4}\right)$.
+- Period $\pi$; shifted right $\frac{\pi}{4}$; it crosses zero at $x = \frac{\pi}{4}$.
+- Asymptotes at $x - \frac{\pi}{4} = \pm\frac{\pi}{2}$ → $x = -\frac{\pi}{4}$ and $x = \frac{3\pi}{4}$ (for the central cycle).
+- At $x = \frac{\pi}{2}$: $y = 3\tan\frac{\pi}{4} = 3$.
+
+**Example 3: searchlight.** A light 50 m from a straight wall rotates. Where does the beam hit the wall at $\theta = 60^\circ$ from the perpendicular?
+- Position $= 50\tan 60^\circ = 50\sqrt{3} \approx 86.6$ m from the nearest point.
+
+## 5. Common mistakes
+- Using $\frac{2\pi}{B}$ for the tangent period. It is $\frac{\pi}{B}$.
+- Talking about the ""amplitude"" of tangent. It has none.
+- Drawing the curve crossing an asymptote, or connecting the pieces across it.
+
+## 6. Practice
+Q: Period of $y = \tan x$?
+A: $\pi$.
+
+Q: Where are the asymptotes of $y = \tan x$?
+A: $x = \frac{\pi}{2} + k\pi$, where $\cos x = 0$.
+
+Q: Period of $y = \tan\left(\frac{x}{3}\right)$?
+A: $\frac{\pi}{1/3} = 3\pi$.
+
+Q: Zeros of $y = \tan(x - \pi/6)$ in $[0, \pi)$?
+A: $x = \frac{\pi}{6}$.
+
+Q: Why does tangent repeat every $\pi$ and not $2\pi$?
+A: Opposite points on the unit circle $(x, y)$ and $(-x, -y)$ give the same ratio $\frac{y}{x}$."
+3,TOPIC,"Graphs of csc, sec and cot","Reciprocal graphs drawn from sine, cosine and tangent, with asymptotes",SHOULD,FALSE,"# Graphs of csc, sec and cot
+
+## 1. What it covers
+- The graphs of $y = \csc x$, $y = \sec x$ and $y = \cot x$.
+- The trick: draw the reciprocal from the ""parent"" graph (sin, cos, tan).
+- Domains, ranges and asymptotes.
+
+## 2. Where it is used
+- **Calculus:** derivatives such as $\frac{d}{dx}\tan x = \sec^2 x$ and integrals of $\sec x$ appear constantly.
+- **Optics and physics:** $\sec\theta$ appears in path-length calculations (light going through a slab at an angle travels $t\sec\theta$).
+- **Surveying and navigation:** older formulas use these reciprocal functions.
+- **Exam questions:** graph recognition and domain/range.
+
+## 3. What it means
+$\csc x = \frac{1}{\sin x}$, so:
+- Where $\sin x = 0$, $\csc x$ has a **vertical asymptote**.
+- Where $\sin x = \pm 1$ (peaks and troughs), $\csc x = \pm 1$ too: the graphs **touch**.
+- Where $\lvert\sin x\rvert$ is small, $\lvert\csc x\rvert$ is huge.
+
+So the csc graph is a series of U-shapes: opening **up** above each sine hump and opening **down** below each sine trough. $\sec x$ does the same with cosine. $\cot x = \frac{\cos x}{\sin x}$ looks like tangent reflected: it **falls** between asymptotes at $x = k\pi$.
+
+**Analogy:** a see-saw. When the parent function goes low, the reciprocal goes high, and when the parent hits zero the reciprocal flies off to infinity.
+
+## 4. Formula & worked example
+| | $\csc x$ | $\sec x$ | $\cot x$ |
+|---|---|---|---|
+| Asymptotes | $x = k\pi$ | $x = \frac{\pi}{2} + k\pi$ | $x = k\pi$ |
+| Range | $y \le -1$ or $y \ge 1$ | $y \le -1$ or $y \ge 1$ | all reals |
+| Period | $2\pi$ | $2\pi$ | $\pi$ |
+| Parent | $\sin x$ | $\cos x$ | $\tan x$ (reciprocal) |
+
+**Example 1.** Find the range of $y = 3\sec x$.
+- $\sec x$ is $\le -1$ or $\ge 1$, so $3\sec x$ is $\le -3$ or $\ge 3$.
+
+**Example 2.** Sketch plan for $y = \csc(2x)$ on $[0, \pi]$.
+- Parent: $y = \sin(2x)$, period $\pi$. Zeros at $0, \frac{\pi}{2}, \pi$ → asymptotes there.
+- Peak of $\sin 2x$ at $\frac{\pi}{4}$ ($y = 1$) → an upward U with its lowest point at $\left(\frac{\pi}{4}, 1\right)$.
+- Trough at $\frac{3\pi}{4}$ ($y = -1$) → a downward U with its highest point at $\left(\frac{3\pi}{4}, -1\right)$.
+
+**Example 3.** Is $\sec x = 0.5$ possible?
+- No: $\sec x = 0.5$ would need $\cos x = 2$, which is impossible. The range of $\sec$ skips $(-1, 1)$.
+
+## 5. Common mistakes
+- Thinking reciprocal means inverse: $\csc x \ne \sin^{-1} x$.
+- Putting asymptotes of $\sec x$ where **sine** is zero. Sec goes with **cosine**.
+- Giving $\cot x$ asymptotes at $\frac{\pi}{2} + k\pi$; that's where $\cot x = 0$. Its asymptotes are at $k\pi$.
+
+## 6. Practice
+Q: Where are the asymptotes of $y = \sec x$?
+A: Where $\cos x = 0$: $x = \frac{\pi}{2} + k\pi$.
+
+Q: Range of $y = \csc x$?
+A: $(-\infty, -1] \cup [1, \infty)$.
+
+Q: At $x = \frac{\pi}{2}$, what is $\csc x$?
+A: $\frac{1}{\sin(\pi/2)} = 1$.
+
+Q: Can $\csc x = -0.3$?
+A: No, $\lvert\csc x\rvert$ is always at least 1.
+
+Q: Period of $y = \cot(2x)$?
+A: $\frac{\pi}{2}$."
+3,TOPIC,Inverse trig functions: domains and ranges,"arcsin, arccos, arctan as functions, restricted domains, principal values, compositions",MUST,FALSE,"# Inverse trig functions: domains and ranges
+
+## 1. What it covers
+- Why sine must be **restricted** before it can have an inverse.
+- The principal ranges: $\arcsin$ and $\arctan$ in $\left[-\frac{\pi}{2}, \frac{\pi}{2}\right]$, $\arccos$ in $[0, \pi]$.
+- Evaluating exactly, and compositions like $\sin(\arccos x)$ and $\arcsin(\sin x)$.
+
+## 2. Where it is used
+- **Programming:** `asin`, `acos`, `atan` and `atan2` return principal values; knowing the range explains ""why did I get $-30^\circ$ and not $330^\circ$?""
+- **Calculus:** $\int \frac{dx}{1 + x^2} = \arctan x + C$; inverse trig appears in many integrals.
+- **Machine learning and stats:** the angle between two vectors (cosine similarity) is $\arccos\left(\frac{a \cdot b}{\lvert a\rvert\lvert b\rvert}\right)$.
+- **Robotics:** inverse kinematics.
+
+## 3. What it means
+A function has an inverse only if each output comes from **one** input. But sine gives $0.5$ at $30^\circ$, $150^\circ$, $390^\circ$, and so on, so ""undoing"" $0.5$ is ambiguous.
+
+The fix: use only one piece of the sine wave where every value from $-1$ to $1$ appears **exactly once**. For sine that piece is $\left[-\frac{\pi}{2}, \frac{\pi}{2}\right]$. The inverse then always returns an angle from that piece: the **principal value**.
+
+**Analogy:** asking ""who has the name Rahim?"" in a whole city gives many people. Restrict to one classroom where names are unique, and you get one answer.
+
+- $\arcsin$: input $[-1, 1]$, output $\left[-\frac{\pi}{2}, \frac{\pi}{2}\right]$ (QIV and QI)
+- $\arccos$: input $[-1, 1]$, output $[0, \pi]$ (QI and QII), because cosine is one-to-one there.
+- $\arctan$: input any real number, output $\left(-\frac{\pi}{2}, \frac{\pi}{2}\right)$.
+
+## 4. Formula & worked example
+$$
+y = \arcsin x \iff \sin y = x,\ -\tfrac{\pi}{2} \le y \le \tfrac{\pi}{2}
+$$
+$$
+y = \arccos x \iff \cos y = x,\ 0 \le y \le \pi
+$$
+$$
+y = \arctan x \iff \tan y = x,\ -\tfrac{\pi}{2} < y < \tfrac{\pi}{2}
+$$
+
+**Example 1.** $\arcsin\left(-\frac{1}{2}\right)$
+- Which angle in $\left[-\frac{\pi}{2}, \frac{\pi}{2}\right]$ has sine $-\frac{1}{2}$? $-\frac{\pi}{6}$.
+
+**Example 2.** $\arccos\left(-\frac{\sqrt{2}}{2}\right)$
+- Which angle in $[0, \pi]$ has cosine $-\frac{\sqrt{2}}{2}$? $\frac{3\pi}{4}$.
+
+**Example 3.** $\arcsin\left(\sin\frac{5\pi}{6}\right)$
+- $\sin\frac{5\pi}{6} = \frac{1}{2}$, and $\arcsin\frac{1}{2} = \frac{\pi}{6}$. **Not** $\frac{5\pi}{6}$, because that is outside the principal range.
+
+**Example 4.** $\sin\left(\arccos\frac{3}{5}\right)$
+- Let $\theta = \arccos\frac{3}{5}$, so $\cos\theta = \frac{3}{5}$ with $\theta$ in $[0, \pi]$.
+- Triangle: adj 3, hyp 5, opp 4. Sine is positive on $[0, \pi]$, so $\sin\theta = \frac{4}{5}$.
+
+**Example 5: angle between vectors.** $a = (1, 0)$, $b = (1, 1)$.
+- $\cos\theta = \frac{a \cdot b}{\lvert a\rvert\lvert b\rvert} = \frac{1}{1 \cdot \sqrt{2}}$ → $\theta = \arccos\frac{\sqrt{2}}{2} = \frac{\pi}{4}$
+
+## 5. Common mistakes
+- Giving an answer outside the principal range, such as $\arccos(-1/2) = -\frac{2\pi}{3}$. It must be in $[0, \pi]$: $\frac{2\pi}{3}$.
+- Assuming $\arcsin(\sin x) = x$ always. That's true only when $x$ is in $\left[-\frac{\pi}{2}, \frac{\pi}{2}\right]$.
+- Using different ranges for arcsin and arccos. Arcsin uses quadrants I and IV; arccos uses I and II.
+
+## 6. Practice
+Q: Range of $\arccos x$?
+A: $[0, \pi]$.
+
+Q: $\arctan(-1)$?
+A: $-\frac{\pi}{4}$.
+
+Q: $\arccos\left(-\frac{1}{2}\right)$?
+A: $\frac{2\pi}{3}$.
+
+Q: $\cos\left(\arcsin\frac{5}{13}\right)$?
+A: $\frac{12}{13}$ (cosine is positive in the arcsin range).
+
+Q: $\arccos\left(\cos\frac{7\pi}{6}\right)$?
+A: $\cos\frac{7\pi}{6} = -\frac{\sqrt{3}}{2}$, so the answer is $\frac{5\pi}{6}$."
+3,TOPIC,Modeling periodic phenomena,"Building sinusoidal models for tides, daylight, Ferris wheels and circular motion",MUST,FALSE,"# Modeling periodic phenomena
+
+## 1. What it covers
+- Turning a word description or data into $y = A\sin(B(t - C)) + D$ or a cosine model.
+- Choosing sine or cosine based on where the cycle starts.
+- Using the model to predict and to answer ""when"" questions.
+
+## 2. Where it is used
+- **Oceanography:** tide tables and harbour planning.
+- **Energy:** solar panel output over a day; electricity demand over a year.
+- **Biology and health:** circadian rhythms, breathing, heartbeat models.
+- **Business analytics:** seasonal sales patterns in time-series forecasting (sine and cosine ""seasonality features"" in machine learning models).
+- **Engineering:** vibration and rotating-machinery analysis.
+
+## 3. What it means
+Anything that repeats regularly can be approximated by a sine wave. You need four facts:
+1. **Max and min** → amplitude $A = \frac{\max - \min}{2}$ and midline $D = \frac{\max + \min}{2}$.
+2. **Period** → $B = \frac{2\pi}{\text{period}}$.
+3. **A starting reference** → the phase shift $C$.
+
+**Choosing the function** (it makes $C$ easier):
+- Starts at the **max** → $A\cos(\ldots)$.
+- Starts at the **min** → $-A\cos(\ldots)$.
+- Starts at the **midline going up** → $A\sin(\ldots)$.
+- Starts at the **midline going down** → $-A\sin(\ldots)$.
+
+**Analogy:** fitting a sine wave is like tuning a guitar string to match a note: adjust the volume (A), pitch (B), timing (C) and baseline (D) until it matches.
+
+## 4. Formula & worked example
+$$
+y = A\cos\big(B(t - C)\big) + D, \quad A = \frac{\max - \min}{2},\ D = \frac{\max + \min}{2},\ B = \frac{2\pi}{\text{period}}
+$$
+
+**Example 1: Ferris wheel.** A wheel of diameter 40 m has its centre 22 m above the ground and turns once every 8 minutes. You board at the bottom at $t = 0$. Model your height.
+- Max $42$, min $2$ → $A = 20$, $D = 22$. Period 8 → $B = \frac{\pi}{4}$.
+- Start at the min → $h(t) = -20\cos\left(\frac{\pi}{4}t\right) + 22$
+- After 2 minutes: $h(2) = -20\cos\frac{\pi}{2} + 22 = 22$ m (level with the centre) ✓
+
+**Example 2: tides.** High tide of 5 m at 3:00 am, low tide of 1 m at 9:15 am. Model the depth and find the depth at noon.
+- $A = 2$, $D = 3$. High-to-low is half a period: 6.25 h → period $12.5$ h → $B = \frac{2\pi}{12.5} \approx 0.5027$.
+- Starts at max at $t = 3$: $d(t) = 2\cos\big(0.5027(t - 3)\big) + 3$
+- At noon ($t = 12$): $d = 2\cos(0.5027 \times 9) + 3 = 2\cos(4.524) + 3 \approx 2(-0.187) + 3 \approx 2.63$ m
+
+**Example 3: ""when"" question.** On the Ferris wheel, when are you first 32 m high?
+- $-20\cos\left(\frac{\pi}{4}t\right) + 22 = 32$ → $\cos\left(\frac{\pi}{4}t\right) = -\frac{1}{2}$
+- $\frac{\pi}{4}t = \frac{2\pi}{3}$ → $t = \frac{8}{3} \approx 2.67$ minutes.
+
+**Example 4: seasonality feature in ML.** To let a model know that December is next to January, encode the month $m$ (1–12) as two features:
+```python
+import math
+month_sin = math.sin(2 * math.pi * m / 12)
+month_cos = math.cos(2 * math.pi * m / 12)
+```
+This places the 12 months on a circle (period 12), so month 12 and month 1 end up close together, which a plain number 1–12 cannot show. Both features are needed: sine alone gives the same value for mirror-image months (months 2 and 4 both give $\sin 60^\circ = \sin 120^\circ \approx 0.866$), and cosine tells them apart ($+0.5$ vs $-0.5$).
+
+## 5. Common mistakes
+- Using the time from high to low as the full period. High → low is **half** a period.
+- Forgetting the phase shift when the cycle doesn't start at $t = 0$.
+- Mixing degree and radian mode when evaluating the model on a calculator. Use radians with $B = \frac{2\pi}{\text{period}}$.
+
+## 6. Practice
+Q: Max 18, min 6, period 24. Find $A$, $D$, $B$.
+A: $A = 6$, $D = 12$, $B = \frac{\pi}{12}$.
+
+Q: A model starts at its minimum at $t = 0$. Which function form should you use?
+A: $y = -A\cos(Bt) + D$.
+
+Q: High tide at 1 pm, next low tide at 7 pm. What is the period?
+A: 12 hours.
+
+Q: Daylight in a city varies from 10.5 h (Dec 21) to 13.5 h (Jun 21). Amplitude and midline?
+A: $A = 1.5$ h, midline $12$ h.
+
+Q: Why is a month encoded as both sine and cosine in machine-learning features?
+A: Together they place the months on a circle, so December and January are close, and each month gets a unique point."
+3,TOPIC,Practice & review: Trigonometric graphs,Mixed problem set with worked answers,MUST,FALSE,"# Practice & review: Trigonometric graphs
+
+**How to use this:** 45 minutes. Sketch every graph by hand from key points. Log every miss.
+
+## Problems
+1. State the amplitude, period, phase shift and midline of $y = -2\sin\left(3x + \frac{\pi}{2}\right) + 4$.
+2. List the five key points of one cycle of $y = 3\cos\left(\frac{x}{2}\right) - 1$, starting at $x = 0$.
+3. Write a sine equation: amplitude 5, period $\frac{2\pi}{3}$, shift $\frac{\pi}{6}$ right, midline $y = 2$.
+4. Find the period and the asymptotes in $[0, \pi]$ of $y = \tan(3x)$.
+5. Give the range of $y = 2\csc x + 1$.
+6. Evaluate exactly: $\arcsin\left(\frac{\sqrt{3}}{2}\right)$, $\arccos(0)$, $\arctan(\sqrt{3})$.
+7. Evaluate: $\tan\left(\arcsin\left(-\frac{3}{5}\right)\right)$.
+8. A pendulum swings so its horizontal displacement varies between $-12$ cm and $12$ cm, completing one swing (there and back) every 1.6 s. It starts at the far right. Write a model.
+9. Daylight hours: max 13.4 h on day 172, min 10.9 h, period 365 days. Model the daylight $L(d)$.
+
+## Answers
+1. $-2\sin\left(3\left(x + \frac{\pi}{6}\right)\right) + 4$: amplitude 2 (flipped), period $\frac{2\pi}{3}$, shift $\frac{\pi}{6}$ left, midline $y = 4$.
+2. Period $4\pi$, step $\pi$: $(0, 2)$, $(\pi, -1)$, $(2\pi, -4)$, $(3\pi, -1)$, $(4\pi, 2)$.
+3. $y = 5\sin\left(3\left(x - \frac{\pi}{6}\right)\right) + 2$.
+4. Period $\frac{\pi}{3}$; asymptotes where $3x = \frac{\pi}{2} + k\pi$ → $x = \frac{\pi}{6}, \frac{\pi}{2}, \frac{5\pi}{6}$.
+5. $2\csc x \le -2$ or $\ge 2$ → $y \le -1$ or $y \ge 3$.
+6. $\frac{\pi}{3}$; $\frac{\pi}{2}$; $\frac{\pi}{3}$.
+7. $\theta$ in QIV with $\sin\theta = -\frac{3}{5}$, $\cos\theta = \frac{4}{5}$ → $\tan\theta = -\frac{3}{4}$.
+8. $x(t) = 12\cos\left(\frac{2\pi}{1.6}t\right) = 12\cos(1.25\pi t)$.
+9. $A = 1.25$, $D = 12.15$, $B = \frac{2\pi}{365}$, max at day 172: $L(d) = 1.25\cos\left(\frac{2\pi}{365}(d - 172)\right) + 12.15$.
+
+## Flashcards
+Q: Period of $A\sin(Bx)$ and of $A\tan(Bx)$?
+A: $\frac{2\pi}{\lvert B\rvert}$ and $\frac{\pi}{\lvert B\rvert}$.
+
+Q: Phase shift of $\sin(Bx - c)$?
+A: $\frac{c}{B}$ (factor out $B$ first).
+
+Q: Principal range of $\arcsin$?
+A: $\left[-\frac{\pi}{2}, \frac{\pi}{2}\right]$.
+
+Q: Where does $\csc x$ have asymptotes?
+A: Where $\sin x = 0$: $x = k\pi$."
+1,MODULE,Phase 3 — Non-Right Triangles (Core),"Law of sines, the ambiguous case, law of cosines, triangle area, real-world applications",MUST,,"# Phase 3: Non-right triangles
+
+SOH-CAH-TOA only works when there's a $90^\circ$ angle. Real triangles (a plot of land, three cell towers, the forces on a crane) usually don't have one. Two laws handle **every** triangle: the **law of sines** and the **law of cosines**.
+
+**Labelling (used in every topic):** angles $A$, $B$, $C$; the side opposite each is $a$, $b$, $c$.
+
+**Which law?** It depends on what you know:
+| You know | Name | Use |
+|---|---|---|
+| Two angles + any side | AAS / ASA | Law of sines |
+| Two sides + a non-included angle | SSA | Law of sines (watch the ambiguous case) |
+| Two sides + the included angle | SAS | Law of cosines |
+| All three sides | SSS | Law of cosines |"
+2,MODULE,Laws of sines and cosines,"Solving any triangle, the ambiguous SSA case, area formulas, applications",MUST,,"These two laws, plus the angle sum $A + B + C = 180^\circ$, solve every triangle."
+3,TOPIC,Law of sines,"a/sin A = b/sin B = c/sin C, solving AAS and ASA triangles",MUST,FALSE,"# Law of sines
+
+## 1. What it covers
+- The law of sines: $\frac{a}{\sin A} = \frac{b}{\sin B} = \frac{c}{\sin C}$.
+- Why it's true (from the height of the triangle).
+- Solving triangles when you know two angles and a side (AAS and ASA).
+
+## 2. Where it is used
+- **Surveying:** measuring the distance to a point across a river from two angles and a baseline (triangulation).
+- **GPS and phone location:** triangulation from known points.
+- **Astronomy:** the distance to nearby stars via parallax.
+- **Navigation:** fixing a ship's position from bearings to two lighthouses.
+- **Forestry:** the height of a tree on a slope.
+
+## 3. What it means
+In any triangle, **bigger angles face bigger sides**, and the law of sines makes this exact: each side divided by the sine of its opposite angle gives the same number.
+
+**Why it is true.** Drop a height $h$ from $C$ to side $c$. From the two right triangles this creates:
+$h = b\sin A$ and $h = a\sin B$. So $b\sin A = a\sin B$, which rearranges to $\frac{a}{\sin A} = \frac{b}{\sin B}$. The same trick with another height brings in $c$.
+
+**Analogy:** in a family, a taller parent casts a longer shadow. Each ""side : opposite-angle"" pair keeps the same ratio, like a fixed exchange rate.
+
+(That common ratio equals $2R$, the diameter of the circle through all three corners. You won't need that often, but it's a nice check.)
+
+## 4. Formula & worked example
+$$
+\frac{a}{\sin A} = \frac{b}{\sin B} = \frac{c}{\sin C} \qquad \text{or flipped:} \qquad \frac{\sin A}{a} = \frac{\sin B}{b} = \frac{\sin C}{c}
+$$
+Use the first form to find a **side**, the flipped form to find an **angle**.
+
+**Example 1 (AAS).** $A = 40^\circ$, $B = 75^\circ$, $a = 12$. Solve the triangle.
+- $C = 180^\circ - 40^\circ - 75^\circ = 65^\circ$
+- $b = \frac{a\sin B}{\sin A} = \frac{12\sin 75^\circ}{\sin 40^\circ} \approx \frac{12(0.9659)}{0.6428} \approx 18.03$
+- $c = \frac{12\sin 65^\circ}{\sin 40^\circ} \approx \frac{12(0.9063)}{0.6428} \approx 16.92$
+- Check: largest angle $B$ faces largest side $b$ ✓
+
+**Example 2 (ASA): across a river.** Two points A and B are 200 m apart on one bank. A tree C is on the other bank. Angle $CAB = 52^\circ$, angle $CBA = 61^\circ$. How far is the tree from A?
+- $C = 180^\circ - 52^\circ - 61^\circ = 67^\circ$, and the side opposite $C$ is $AB = 200$.
+- $AC$ is opposite angle $B$: $AC = \frac{200\sin 61^\circ}{\sin 67^\circ} \approx \frac{200(0.8746)}{0.9205} \approx 190.0$ m
+- Width of the river (perpendicular distance from C to AB): $190.0\sin 52^\circ \approx 149.7$ m
+
+**Example 3: find an angle.** $a = 10$, $b = 7$, $A = 80^\circ$. Find $B$.
+- $\sin B = \frac{7\sin 80^\circ}{10} \approx 0.6894$ → $B \approx 43.6^\circ$
+- (Could $B$ be $180^\circ - 43.6^\circ = 136.4^\circ$? Then $A + B > 180^\circ$, so no. One triangle only. The next topic covers when two triangles are possible.)
+
+## 5. Common mistakes
+- Pairing a side with the wrong angle. Always pair a side with the angle **opposite** it.
+- Using the law of sines for SAS or SSS. You need at least one complete side-angle opposite pair.
+- Forgetting $\sin^{-1}$ gives only the acute answer; an obtuse angle with the same sine may also work (ambiguous case).
+
+## 6. Practice
+Q: State the law of sines.
+A: $\frac{a}{\sin A} = \frac{b}{\sin B} = \frac{c}{\sin C}$.
+
+Q: $A = 30^\circ$, $a = 5$, $B = 45^\circ$. Find $b$.
+A: $b = \frac{5\sin 45^\circ}{\sin 30^\circ} = 5\sqrt{2} \approx 7.07$.
+
+Q: Which triangle cases (AAS, ASA, SAS, SSS, SSA) use the law of sines?
+A: AAS, ASA and SSA.
+
+Q: $B = 50^\circ$, $C = 70^\circ$, $a = 9$. Find $b$.
+A: $A = 60^\circ$; $b = \frac{9\sin 50^\circ}{\sin 60^\circ} \approx 7.96$.
+
+Q: In a triangle, angle $A$ is the largest. Which side is longest?
+A: Side $a$, opposite $A$."
+3,TOPIC,The ambiguous case (SSA),"When two sides and a non-included angle give 0, 1 or 2 triangles",MUST,FALSE,"# The ambiguous case (SSA)
+
+## 1. What it covers
+- Why knowing two sides and a **non-included** angle (SSA) can give **no triangle, one, or two**.
+- A reliable test using the height $h = b\sin A$, or using $\sin^{-1}$ and checking the obtuse option.
+- Solving both triangles when two exist.
+
+## 2. Where it is used
+- **Surveying and navigation:** a bearing and two distances can match two different positions; you must use extra information to pick the right one.
+- **Engineering and CAD:** constraint solvers in design software meet exactly this ambiguity when a sketch is under-constrained.
+- **Robotics:** a two-link arm can reach a point ""elbow up"" or ""elbow down""; these are the two triangles.
+- **Exams:** a classic trick question.
+
+## 3. What it means
+Imagine you know angle $A$, side $b$ (next to $A$) and side $a$ (opposite $A$). Fix side $b$ and the angle at $A$. Now side $a$ is like a **swinging arm** hinged at $C$, which must reach the line from $A$.
+- If $a$ is too short to reach the line → **no triangle**.
+- If $a$ just touches the line at a right angle → **one right triangle**.
+- If $a$ is a bit longer, it can hit the line at **two** points → **two triangles**.
+- If $a$ is longer than $b$, it hits once on the useful side → **one triangle**.
+
+**Analogy:** a door hinge with a fixed-length chain to the floor: depending on the chain length, it may not reach, touch at one point, or reach at two points (one in front, one behind).
+
+The ""touching"" height is $h = b\sin A$.
+
+## 4. Formula & worked example
+For acute $A$ (with $h = b\sin A$):
+| Condition | Triangles |
+|---|---|
+| $a < h$ | 0 |
+| $a = h$ | 1 (right triangle) |
+| $h < a < b$ | **2** |
+| $a \ge b$ | 1 |
+If $A$ is obtuse: one triangle if $a > b$, otherwise none.
+
+**Practical method:** compute $\sin B = \frac{b\sin A}{a}$.
+- If $\sin B > 1$ → no triangle.
+- Otherwise $B_1 = \sin^{-1}(\ldots)$ and $B_2 = 180^\circ - B_1$. Keep each one where $A + B < 180^\circ$.
+
+**Example 1 (two triangles).** $A = 35^\circ$, $a = 8$, $b = 12$.
+- $h = 12\sin 35^\circ \approx 6.88$; $6.88 < 8 < 12$ → two triangles.
+- $\sin B = \frac{12\sin 35^\circ}{8} \approx 0.8604$ → $B_1 \approx 59.4^\circ$, $B_2 \approx 120.6^\circ$
+- Triangle 1: $C_1 = 180^\circ - 35^\circ - 59.4^\circ = 85.6^\circ$, $c_1 = \frac{8\sin 85.6^\circ}{\sin 35^\circ} \approx 13.91$
+- Triangle 2: $C_2 = 180^\circ - 35^\circ - 120.6^\circ = 24.4^\circ$, $c_2 = \frac{8\sin 24.4^\circ}{\sin 35^\circ} \approx 5.76$
+
+**Example 2 (no triangle).** $A = 50^\circ$, $a = 5$, $b = 10$.
+- $\sin B = \frac{10\sin 50^\circ}{5} \approx 1.532 > 1$ → impossible.
+
+**Example 3 (one triangle).** $A = 40^\circ$, $a = 15$, $b = 10$.
+- $a \ge b$ → one triangle. $\sin B = \frac{10\sin 40^\circ}{15} \approx 0.4285$ → $B \approx 25.4^\circ$.
+- $B_2 = 154.6^\circ$ would give $A + B_2 = 194.6^\circ > 180^\circ$ ✗.
+
+## 5. Common mistakes
+- Stopping after $\sin^{-1}$ and missing the second triangle.
+- Keeping the obtuse $B_2$ without checking $A + B_2 < 180^\circ$.
+- Thinking the ambiguity also happens with SAS or ASA. It only happens with SSA.
+
+## 6. Practice
+Q: Which given information can produce two different triangles?
+A: SSA: two sides and an angle not between them.
+
+Q: $A = 30^\circ$, $b = 10$, $a = 5$. How many triangles?
+A: $h = 10\sin 30^\circ = 5 = a$, so exactly one (a right triangle).
+
+Q: $A = 30^\circ$, $b = 10$, $a = 7$. How many triangles?
+A: $h = 5 < 7 < 10$, so two.
+
+Q: $A = 120^\circ$, $a = 6$, $b = 8$. How many triangles?
+A: None: $A$ is obtuse and $a < b$.
+
+Q: You get $B_1 = 48^\circ$ from $\sin^{-1}$. What is the other candidate?
+A: $B_2 = 132^\circ$ (keep it only if $A + 132^\circ < 180^\circ$)."
+3,TOPIC,Law of cosines,"c² = a² + b² − 2ab cos C, solving SAS and SSS triangles",MUST,FALSE,"# Law of cosines
+
+## 1. What it covers
+- The law of cosines: $c^2 = a^2 + b^2 - 2ab\cos C$.
+- Its link to Pythagoras.
+- Solving triangles when you know two sides and the angle between them (SAS), or all three sides (SSS).
+
+## 2. Where it is used
+- **Navigation and aviation:** the distance between two ships or planes travelling in different directions.
+- **Geometry in code:** the angle between two vectors; this law is the dot-product formula $a \cdot b = \lvert a\rvert\lvert b\rvert\cos\theta$ in disguise.
+- **Robotics:** inverse kinematics of a two-link arm (shoulder–elbow–hand triangle).
+- **Engineering:** the resultant of two forces that are not perpendicular.
+- **Sports analytics:** distance between players from angles and positions.
+
+## 3. What it means
+The law of cosines is **Pythagoras with a correction term**.
+- If $C = 90^\circ$: $\cos C = 0$, and the law becomes $c^2 = a^2 + b^2$.
+- If $C$ is **smaller** than $90^\circ$: $\cos C > 0$, so we subtract: $c$ is shorter than the Pythagoras value (the sides close in).
+- If $C$ is **larger** than $90^\circ$: $\cos C < 0$, so we add: $c$ is longer (the sides open out).
+
+**Analogy:** a pair of scissors. With the blades at $90^\circ$, the gap between the tips is the Pythagoras distance. Close them and the gap shrinks; open them wide and it grows. The $-2ab\cos C$ term is exactly how much.
+
+**Choose the right form:** the angle on the right always matches the side on the left.
+
+## 4. Formula & worked example
+$$
+c^2 = a^2 + b^2 - 2ab\cos C \qquad a^2 = b^2 + c^2 - 2bc\cos A \qquad b^2 = a^2 + c^2 - 2ac\cos B
+$$
+To find an angle (SSS), rearrange:
+$$
+\cos C = \frac{a^2 + b^2 - c^2}{2ab}
+$$
+
+**Example 1 (SAS).** $a = 7$, $b = 10$, $C = 50^\circ$. Find $c$.
+- $c^2 = 49 + 100 - 2(7)(10)\cos 50^\circ = 149 - 140(0.6428) \approx 149 - 89.99 = 59.01$
+- $c \approx 7.68$
+
+**Example 2 (SSS).** $a = 5$, $b = 7$, $c = 9$. Find the largest angle.
+- The largest angle is opposite the longest side, $c$.
+- $\cos C = \frac{25 + 49 - 81}{2(5)(7)} = \frac{-7}{70} = -0.1$ → $C \approx 95.7^\circ$ (obtuse)
+- Then use the law of sines (or cosines again) for the others.
+
+**Example 3: two ships.** Two ships leave port at the same time. One sails 30 km on a bearing of $040^\circ$, the other 45 km on a bearing of $160^\circ$. How far apart are they?
+- The angle between their paths is $160^\circ - 40^\circ = 120^\circ$.
+- $d^2 = 30^2 + 45^2 - 2(30)(45)\cos 120^\circ = 900 + 2025 + 1350 = 4275$
+- $d \approx 65.4$ km
+
+**Example 4: robot arm.** Upper arm 30 cm, forearm 25 cm. The hand must reach a point 40 cm from the shoulder. What is the elbow angle $E$?
+- $\cos E = \frac{30^2 + 25^2 - 40^2}{2(30)(25)} = \frac{900 + 625 - 1600}{1500} = -0.05$ → $E \approx 92.9^\circ$
+
+## 5. Common mistakes
+- Calculating $(a^2 + b^2 - 2ab)\cos C$. The order of operations is $a^2 + b^2 - (2ab\cos C)$.
+- Pairing the wrong angle with the side on the left. In $c^2 = \ldots\cos C$, $C$ must be opposite $c$.
+- With SSS, finding a smaller angle first using the law of sines and then missing that the largest angle is obtuse. **Find the largest angle first with the law of cosines** (it handles obtuse angles correctly, since cosine is negative there).
+
+## 6. Practice
+Q: State the law of cosines for side $a$.
+A: $a^2 = b^2 + c^2 - 2bc\cos A$.
+
+Q: What does the law of cosines become when the angle is $90^\circ$?
+A: Pythagoras' theorem: $c^2 = a^2 + b^2$.
+
+Q: $a = 8$, $b = 5$, $C = 60^\circ$. Find $c$.
+A: $c^2 = 64 + 25 - 40 = 49$, so $c = 7$.
+
+Q: Sides 4, 5, 6. Find the angle opposite 6.
+A: $\cos C = \frac{16 + 25 - 36}{40} = 0.125$, so $C \approx 82.8^\circ$.
+
+Q: Which law do you use for SAS?
+A: The law of cosines."
+3,TOPIC,Triangle area: ½ab sin C and Heron's formula,"Area from two sides and the included angle, or from three sides",MUST,FALSE,"# Triangle area: ½ab sin C and Heron's formula
+
+## 1. What it covers
+- The area formula $\text{Area} = \frac{1}{2}ab\sin C$ (two sides and the angle between them).
+- **Heron's formula**, which uses only the three sides.
+- Choosing between them, and using area to find a missing angle or side.
+
+## 2. Where it is used
+- **Land surveying and property:** a plot's area from measured boundaries (any polygon can be split into triangles).
+- **Computer graphics:** meshes are made of triangles; areas are used in shading, collision and mesh simplification. In code, the 2D cross product gives $2 \times$ the area of a triangle.
+- **Construction:** the amount of material for triangular roof sections or sails.
+- **GIS and maps:** the area of a region from its corner coordinates.
+
+## 3. What it means
+The basic area formula is $\frac{1}{2} \times \text{base} \times \text{height}$. But the height is often unknown. If you know sides $a$ and $b$ and the angle $C$ between them, the height from the end of $a$ down onto $b$ is $a\sin C$ (SOH-CAH-TOA). So:
+$$
+\text{Area} = \tfrac{1}{2} \cdot b \cdot (a\sin C) = \tfrac{1}{2}ab\sin C
+$$
+
+**Heron's formula** needs only the three sides, with no angles at all. It uses the **semi-perimeter** $s$ (half the perimeter).
+
+**Analogy:** two sticks joined by a hinge. Opening the hinge to $90^\circ$ gives the most area ($\sin 90^\circ = 1$); closing it flat gives zero area ($\sin 0^\circ = 0$).
+
+## 4. Formula & worked example
+$$
+\text{Area} = \tfrac{1}{2}ab\sin C = \tfrac{1}{2}bc\sin A = \tfrac{1}{2}ac\sin B
+$$
+$$
+\text{Heron:} \quad s = \frac{a + b + c}{2}, \qquad \text{Area} = \sqrt{s(s - a)(s - b)(s - c)}
+$$
+
+**Example 1.** Two sides 8 and 11 with $40^\circ$ between them.
+- Area $= \frac{1}{2}(8)(11)\sin 40^\circ \approx 44(0.6428) \approx 28.28$
+
+**Example 2 (Heron).** Sides 13, 14, 15.
+- $s = 21$; Area $= \sqrt{21 \cdot 8 \cdot 7 \cdot 6} = \sqrt{7056} = 84$
+
+**Example 3: find an angle from area.** A triangle has sides 10 and 12 and area 30. Find the angle between those sides.
+- $30 = \frac{1}{2}(10)(12)\sin C = 60\sin C$ → $\sin C = 0.5$ → $C = 30^\circ$ **or** $150^\circ$ (both give the same area).
+
+**Example 4: a plot of land.** A four-sided plot $ABCD$ has $AB = 40$ m, $BC = 30$ m, angle $B = 90^\circ$, $CD = 35$ m and $DA = 45$ m. Find its area.
+- Split along diagonal $AC$: $AC = \sqrt{40^2 + 30^2} = 50$.
+- Triangle $ABC$: $\frac{1}{2}(40)(30) = 600$ m².
+- Triangle $ACD$ (sides 50, 35, 45): $s = 65$, area $= \sqrt{65 \cdot 15 \cdot 30 \cdot 20} = \sqrt{585\,000} \approx 764.9$ m².
+- Total $\approx 1364.9$ m².
+
+**In code (cross product):** area of a triangle from its corner coordinates.
+```python
+def tri_area(ax, ay, bx, by, cx, cy):
+    return abs((bx - ax) * (cy - ay) - (cx - ax) * (by - ay)) / 2
+print(tri_area(0, 0, 4, 0, 0, 3))   # 6.0
+```
+The expression inside `abs` is the 2D cross product of vectors AB and AC, which equals $\lvert AB\rvert\lvert AC\rvert\sin A$. Halving it is exactly $\frac{1}{2}bc\sin A$. Graphics code uses its sign too: positive means the corners go anticlockwise.
+
+## 5. Common mistakes
+- Using an angle that is **not between** the two sides. The angle must be the one formed by those two sides.
+- Forgetting the $\frac{1}{2}$.
+- In Heron's formula, using the full perimeter instead of the semi-perimeter.
+
+## 6. Practice
+Q: Area of a triangle with sides 6 and 9 and an included angle of $30^\circ$?
+A: $\frac{1}{2}(6)(9)(0.5) = 13.5$.
+
+Q: Heron's formula?
+A: $\sqrt{s(s-a)(s-b)(s-c)}$ with $s = \frac{a+b+c}{2}$.
+
+Q: Area of a triangle with sides 5, 5, 6?
+A: $s = 8$; $\sqrt{8 \cdot 3 \cdot 3 \cdot 2} = \sqrt{144} = 12$.
+
+Q: Two sides 10 and 10. Which included angle gives the largest area?
+A: $90^\circ$ (area 50), because $\sin C$ is largest at $90^\circ$.
+
+Q: Area of an equilateral triangle with side 4?
+A: $\frac{1}{2}(4)(4)\sin 60^\circ = 4\sqrt{3} \approx 6.93$."
+3,TOPIC,"Applications: navigation, surveying and forces",Choosing the right law in multi-step real-world problems,MUST,FALSE,"# Applications: navigation, surveying and forces
+
+## 1. What it covers
+- Multi-step problems that combine bearings, the law of sines, the law of cosines and area.
+- Adding two forces or velocities at an angle (the resultant).
+- A checklist for turning a story into a triangle.
+
+## 2. Where it is used
+- **Aviation:** a plane's real path when wind blows across it (ground speed and drift angle).
+- **Shipping and rescue:** finding a vessel's position from two shore stations.
+- **Structural engineering:** forces in cables and beams that meet at angles.
+- **Telecom:** locating a phone from signal angles at two or three towers.
+- **Game physics:** combining velocity vectors.
+
+## 3. What it means
+Real problems hide the triangle in a story. The work is mostly **drawing it correctly**; the maths is just one of the two laws.
+
+**Checklist:**
+1. Draw a sketch. Mark north lines for bearings.
+2. Find the triangle and label its three corners.
+3. Use angle facts (parallel north lines, straight lines = $180^\circ$) to get the **interior** angles.
+4. Decide which case it is (SAS, SSS, ASA, AAS, SSA) and pick the law.
+5. Solve, then check that the answer makes sense (largest side opposite largest angle).
+
+**Adding two forces:** put them ""tip to tail"". They form two sides of a triangle; the resultant is the third side. If the forces meet at angle $\theta$ (tail to tail), the angle **inside** the triangle is $180^\circ - \theta$.
+
+**Analogy:** two people pulling a box with ropes at an angle. The box moves as if one stronger person pulled along the diagonal.
+
+## 4. Formula & worked example
+Resultant of forces $F_1$ and $F_2$ with angle $\theta$ between them (tail to tail):
+$$
+R^2 = F_1^2 + F_2^2 + 2F_1F_2\cos\theta
+$$
+(This is the law of cosines with $\cos(180^\circ - \theta) = -\cos\theta$.)
+
+**Example 1: forces.** Two ropes pull a box with 60 N and 80 N, with $50^\circ$ between them. Find the resultant.
+- $R^2 = 3600 + 6400 + 2(60)(80)\cos 50^\circ \approx 10\,000 + 6171 = 16\,171$ → $R \approx 127.2$ N
+- Direction from the 60 N rope: $\frac{\sin\alpha}{80} = \frac{\sin 130^\circ}{127.2}$ → $\sin\alpha \approx 0.4818$ → $\alpha \approx 28.8^\circ$
+
+**Example 2: wind.** A plane heads due north at 400 km/h. A wind blows from the west (towards the east) at 60 km/h. Find the ground speed and the actual track.
+- The two velocities are at $90^\circ$, so: speed $= \sqrt{400^2 + 60^2} \approx 404.5$ km/h
+- Drift: $\tan^{-1}\frac{60}{400} \approx 8.5^\circ$ → track $\approx 008.5^\circ$
+
+**Example 3: two lookout stations.** Stations A and B are 10 km apart, with B due east of A. A fire is seen from A on a bearing of $050^\circ$ and from B on a bearing of $320^\circ$. How far is the fire from A?
+- At A, the angle between AB (east, $090^\circ$) and AF ($050^\circ$) is $40^\circ$.
+- At B, the direction to A is west ($270^\circ$); BF is $320^\circ$, so the angle is $50^\circ$.
+- Angle at F $= 180^\circ - 40^\circ - 50^\circ = 90^\circ$.
+- $AF = 10\sin 50^\circ \approx 7.66$ km (it happens to be a right triangle here; in general use the law of sines: $AF = \frac{10\sin 50^\circ}{\sin 90^\circ}$).
+
+**Example 4: two ships.** From port, ship P sails 20 km on $070^\circ$ and ship Q sails 35 km on $150^\circ$. Find the distance PQ and the bearing of Q from P.
+- Angle at port $= 150^\circ - 70^\circ = 80^\circ$.
+- $PQ^2 = 400 + 1225 - 2(20)(35)\cos 80^\circ \approx 1625 - 243.1 = 1381.9$ → $PQ \approx 37.17$ km
+- Angle at P: $\frac{\sin P}{35} = \frac{\sin 80^\circ}{37.17}$ → $\sin P \approx 0.9273$ → $P \approx 68.0^\circ$. Take the acute value: PQ is the longest side, so the largest angle is the $80^\circ$ at the port, and P must be smaller than that.
+- At P, the back bearing to port is $070^\circ + 180^\circ = 250^\circ$. Q lies $68.0^\circ$ anticlockwise from that direction (towards the south): bearing $\approx 250^\circ - 68.0^\circ = 182.0^\circ$.
+
+## 5. Common mistakes
+- Using a bearing directly as an interior angle. Work out the angle **inside** the triangle first.
+- For forces, using the angle between the forces in the law of cosines without changing it to $180^\circ - \theta$ (or using the $+2F_1F_2\cos\theta$ form).
+- Not drawing a sketch. Nearly every error in these problems starts with a missing or wrong sketch.
+
+## 6. Practice
+Q: Two forces of 5 N and 12 N act at $90^\circ$. Resultant?
+A: $13$ N.
+
+Q: Two forces of 10 N each act at $60^\circ$ to each other. Resultant?
+A: $R^2 = 100 + 100 + 200(0.5) = 300$, so $R = 10\sqrt{3} \approx 17.3$ N.
+
+Q: Two ships leave port with $100^\circ$ between their courses, after travelling 8 km and 15 km. Distance apart?
+A: $\sqrt{64 + 225 - 240\cos 100^\circ} \approx \sqrt{330.7} \approx 18.2$ km.
+
+Q: First step in any applied trigonometry problem?
+A: Draw and label a sketch, then find the interior angles.
+
+Q: In SAS, which law gives the third side?
+A: The law of cosines."
+3,TOPIC,Practice & review: Non-right triangles,Mixed problem set with worked answers,MUST,FALSE,"# Practice & review: Non-right triangles
+
+**How to use this:** 50 minutes with a calculator. For each problem, first write which case it is (AAS, ASA, SSA, SAS or SSS) and which law you'll use.
+
+## Problems
+1. $A = 42^\circ$, $C = 71^\circ$, $c = 15$. Find $a$.
+2. $a = 9$, $b = 14$, $C = 105^\circ$. Find $c$.
+3. $a = 6$, $b = 8$, $c = 11$. Find all three angles.
+4. $A = 28^\circ$, $a = 9$, $b = 15$. How many triangles? Solve them.
+5. Area of a triangle with $a = 12$, $b = 9$, $C = 65^\circ$.
+6. A triangular field has sides 120 m, 150 m and 200 m. Find its area.
+7. Two forces of 30 N and 45 N act at $70^\circ$ to each other. Find the resultant.
+8. From a point on level ground, the angle of elevation to the top of a hill is $25^\circ$. After walking 300 m directly towards it, the angle is $40^\circ$. Find the hill's height.
+
+## Answers
+1. AAS: $a = \frac{15\sin 42^\circ}{\sin 71^\circ} \approx 10.62$.
+2. SAS: $c^2 = 81 + 196 - 252\cos 105^\circ \approx 277 + 65.22 = 342.2$, so $c \approx 18.50$.
+3. SSS: $\cos C = \frac{36 + 64 - 121}{96} \approx -0.2188$ → $C \approx 102.6^\circ$; $\sin A = \frac{6\sin C}{11} \approx 0.5323$ → $A \approx 32.2^\circ$; $B \approx 45.2^\circ$.
+4. SSA: $h = 15\sin 28^\circ \approx 7.04 < 9 < 15$ → two triangles. $\sin B = \frac{15\sin 28^\circ}{9} \approx 0.7825$ → $B_1 \approx 51.5^\circ$, $C_1 \approx 100.5^\circ$, $c_1 = \frac{9\sin 100.5^\circ}{\sin 28^\circ} \approx 18.85$. $B_2 \approx 128.5^\circ$, $C_2 \approx 23.5^\circ$, $c_2 = \frac{9\sin 23.5^\circ}{\sin 28^\circ} \approx 7.64$.
+5. $\frac{1}{2}(12)(9)\sin 65^\circ \approx 48.94$.
+6. $s = 235$; area $= \sqrt{235 \cdot 115 \cdot 85 \cdot 35} \approx \sqrt{80\,399\,375} \approx 8966.6$ m².
+7. $R^2 = 900 + 2025 + 2700\cos 70^\circ \approx 2925 + 923.4 = 3848.4$ → $R \approx 62.0$ N.
+8. In the triangle (first point, second point, hilltop): the angle at the second point is $180^\circ - 40^\circ = 140^\circ$, at the top $40^\circ - 25^\circ = 15^\circ$. The distance from the second point to the top $= \frac{300\sin 25^\circ}{\sin 15^\circ} \approx 489.9$ m. Height $= 489.9\sin 40^\circ \approx 314.9$ m.
+
+## Flashcards
+Q: Which law for SSS and SAS?
+A: Law of cosines.
+
+Q: Which law for AAS and ASA?
+A: Law of sines.
+
+Q: Area of a triangle from two sides and the included angle?
+A: $\frac{1}{2}ab\sin C$.
+
+Q: When can SSA give two triangles?
+A: When $A$ is acute and $b\sin A < a < b$."
+1,MODULE,Phase 4 — Identities and Equations (Advanced),"Fundamental, Pythagorean, sum/difference, double/half-angle identities; proofs; solving trig equations",MUST,,"# Phase 4: Identities and equations
+
+An **identity** is an equation that is true for **every** value of the variable, like $\sin^2 x + \cos^2 x = 1$. An **equation** is true only for **some** values, like $\sin x = \frac{1}{2}$, and solving it means finding them.
+
+Identities are the ""algebra rules"" of trigonometry. You use them to **simplify** expressions, **prove** that two expressions are equal, and **rewrite** equations into a form you can solve. Calculus uses them heavily, especially for integrals.
+
+**What you need first:** Phases 1–2 (unit circle, exact values, ASTC) and algebra: factoring, quadratics, fractions."
+2,MODULE,Trigonometric identities,The core identity families and how to prove identities,MUST,,"Learn each family by **deriving** it once. Then you only need to remember the start, not a long list."
+3,TOPIC,"Reciprocal, quotient, even-odd and cofunction identities",The fundamental identities and simplifying expressions to sin and cos,MUST,FALSE,"# Reciprocal, quotient, even-odd and cofunction identities
+
+## 1. What it covers
+- **Reciprocal identities:** $\csc x = \frac{1}{\sin x}$, $\sec x = \frac{1}{\cos x}$, $\cot x = \frac{1}{\tan x}$.
+- **Quotient identities:** $\tan x = \frac{\sin x}{\cos x}$, $\cot x = \frac{\cos x}{\sin x}$.
+- **Even-odd identities:** what happens with $-x$.
+- **Cofunction identities** in radians.
+- The main simplification strategy: **rewrite everything in sin and cos**.
+
+## 2. Where it is used
+- **Calculus:** before differentiating or integrating, expressions are simplified with these identities.
+- **Physics and engineering formulas:** expressions such as $\frac{\sin\theta}{\cos\theta}$ simplify to $\tan\theta$.
+- **Computer algebra systems:** tools like SymPy and Wolfram apply exactly these rewrite rules.
+- **Signal processing:** even and odd functions (cosine and sine) are the basis of the Fourier cosine and sine series.
+
+## 3. What it means
+These identities come directly from definitions, not from any clever proof:
+- Reciprocal and quotient: from the definitions in Phase 1.
+- Even-odd: reflect the angle across the x-axis on the unit circle. The point $(\cos x, \sin x)$ becomes $(\cos x, -\sin x)$. So cosine stays the same (**even**) and sine changes sign (**odd**).
+- Cofunction: complementary angles from Phase 1.
+
+**Strategy:** when an expression mixes many functions, convert all of them to **sin and cos**. Then use fraction algebra. This works almost every time.
+
+**Analogy:** converting every currency to taka before adding up a bill. Once everything is in one ""currency"" (sin and cos), it's easy to combine.
+
+## 4. Formula & worked example
+$$
+\tan x = \frac{\sin x}{\cos x} \quad \cot x = \frac{\cos x}{\sin x} \quad \csc x = \frac{1}{\sin x} \quad \sec x = \frac{1}{\cos x}
+$$
+$$
+\sin(-x) = -\sin x \quad \cos(-x) = \cos x \quad \tan(-x) = -\tan x
+$$
+$$
+\sin\!\left(\tfrac{\pi}{2} - x\right) = \cos x \qquad \cos\!\left(\tfrac{\pi}{2} - x\right) = \sin x \qquad \tan\!\left(\tfrac{\pi}{2} - x\right) = \cot x
+$$
+
+**Example 1.** Simplify $\tan x \cos x$.
+- $= \frac{\sin x}{\cos x} \cdot \cos x = \sin x$
+
+**Example 2.** Simplify $\frac{\sec x}{\csc x}$.
+- $= \frac{1/\cos x}{1/\sin x} = \frac{1}{\cos x} \cdot \frac{\sin x}{1} = \frac{\sin x}{\cos x} = \tan x$
+
+**Example 3.** Simplify $\sin(-x)\csc x + \cos(-x)\sec x$.
+- $= -\sin x \cdot \frac{1}{\sin x} + \cos x \cdot \frac{1}{\cos x} = -1 + 1 = 0$
+
+**Example 4.** Simplify $\cot x \sin x + \tan x \cos x$.
+- $= \frac{\cos x}{\sin x}\sin x + \frac{\sin x}{\cos x}\cos x = \cos x + \sin x$
+
+**Example 5.** Is $f(x) = x\sin x$ even or odd?
+- $f(-x) = (-x)\sin(-x) = (-x)(-\sin x) = x\sin x = f(x)$ → even.
+
+## 5. Common mistakes
+- Cancelling across addition: $\frac{\sin x + 1}{\sin x} \ne 1 + 1$. You can only cancel common **factors**.
+- Writing $\sin(-x) = \sin x$. Sine is **odd**: $\sin(-x) = -\sin x$.
+- Forgetting that these identities fail where a denominator is zero (e.g. $\tan x$ is undefined when $\cos x = 0$).
+
+## 6. Practice
+Q: Simplify $\sin x \cot x$.
+A: $\cos x$.
+
+Q: Simplify $\frac{\csc x}{\cot x}$.
+A: $\frac{1/\sin x}{\cos x/\sin x} = \frac{1}{\cos x} = \sec x$.
+
+Q: $\cos(-x)$ equals?
+A: $\cos x$ (cosine is even).
+
+Q: $\tan(-\pi/4)$?
+A: $-\tan(\pi/4) = -1$.
+
+Q: $\cos\left(\frac{\pi}{2} - x\right)$ equals?
+A: $\sin x$."
+3,TOPIC,Pythagorean identities,"sin² + cos² = 1 and its tan/sec and cot/csc variants, simplifying and finding values",MUST,FALSE,"# Pythagorean identities
+
+## 1. What it covers
+- The main identity $\sin^2 x + \cos^2 x = 1$.
+- Its two variants: $1 + \tan^2 x = \sec^2 x$ and $1 + \cot^2 x = \csc^2 x$.
+- Rearranged forms ($1 - \sin^2 x = \cos^2 x$, etc.) used for simplifying and factoring.
+- Finding all trig values from one.
+
+## 2. Where it is used
+- **Calculus:** the integral $\int \sqrt{1 - x^2}\,dx$ is solved by substituting $x = \sin\theta$, which works because $1 - \sin^2\theta = \cos^2\theta$ (""trig substitution"").
+- **Derivatives:** $\frac{d}{dx}\tan x = \sec^2 x = 1 + \tan^2 x$.
+- **Physics:** energy in simple harmonic motion: kinetic energy $\propto \cos^2$, potential $\propto \sin^2$, and the total is constant because they add up to 1.
+- **Graphics:** checking that a rotation is valid (no stretching): its sin and cos must satisfy $s^2 + c^2 = 1$.
+
+## 3. What it means
+The point $(\cos x, \sin x)$ is on the unit circle, whose equation is $x^2 + y^2 = 1$. So $\cos^2 x + \sin^2 x = 1$. It's just **Pythagoras** for the triangle inside the unit circle with hypotenuse 1.
+
+The other two come from dividing by $\cos^2 x$ or by $\sin^2 x$:
+$$
+\frac{\sin^2 x}{\cos^2 x} + \frac{\cos^2 x}{\cos^2 x} = \frac{1}{\cos^2 x} \;\Rightarrow\; \tan^2 x + 1 = \sec^2 x
+$$
+$$
+\frac{\sin^2 x}{\sin^2 x} + \frac{\cos^2 x}{\sin^2 x} = \frac{1}{\sin^2 x} \;\Rightarrow\; 1 + \cot^2 x = \csc^2 x
+$$
+So you only need to remember **one** identity.
+
+**Analogy:** a pie split between two people. However you split it ($\sin^2$ for one, $\cos^2$ for the other), the two shares always make one whole pie.
+
+## 4. Formula & worked example
+$$
+\sin^2 x + \cos^2 x = 1 \qquad 1 + \tan^2 x = \sec^2 x \qquad 1 + \cot^2 x = \csc^2 x
+$$
+Useful rearrangements: $1 - \cos^2 x = \sin^2 x$, $1 - \sin^2 x = \cos^2 x$, $\sec^2 x - 1 = \tan^2 x$, $\csc^2 x - 1 = \cot^2 x$.
+
+**Example 1.** Simplify $\frac{1 - \cos^2 x}{\sin x}$.
+- $= \frac{\sin^2 x}{\sin x} = \sin x$
+
+**Example 2.** Simplify $(1 - \sin x)(1 + \sin x)$.
+- Difference of squares: $= 1 - \sin^2 x = \cos^2 x$
+
+**Example 3.** Simplify $\frac{\tan^2 x}{\sec x - 1}$.
+- $\tan^2 x = \sec^2 x - 1 = (\sec x - 1)(\sec x + 1)$
+- $\frac{(\sec x - 1)(\sec x + 1)}{\sec x - 1} = \sec x + 1$
+
+**Example 4.** $\sin x = -\frac{2}{3}$ with $x$ in quadrant IV. Find $\cos x$ and $\tan x$.
+- $\cos^2 x = 1 - \frac{4}{9} = \frac{5}{9}$ → $\cos x = \pm\frac{\sqrt{5}}{3}$. In QIV cosine is positive: $\frac{\sqrt{5}}{3}$.
+- $\tan x = \frac{-2/3}{\sqrt{5}/3} = -\frac{2}{\sqrt{5}} = -\frac{2\sqrt{5}}{5}$
+
+**Example 5.** $\tan x = 3$ with $x$ in quadrant III. Find $\sec x$.
+- $\sec^2 x = 1 + 9 = 10$ → $\sec x = \pm\sqrt{10}$. In QIII cosine is negative, so $\sec x = -\sqrt{10}$.
+
+## 5. Common mistakes
+- Writing $\sin^2 x + \cos^2 x = 1$ as $\sin x + \cos x = 1$. The squares matter: at $x = 45^\circ$, $\sin x + \cos x = \sqrt{2}$.
+- Taking the square root and forgetting the $\pm$; then not using the quadrant to choose the sign.
+- Confusing $\sin x^2$ (sine of $x^2$) with $\sin^2 x$ (sine of $x$, squared).
+
+## 6. Practice
+Q: Simplify $\sec^2 x - \tan^2 x$.
+A: $1$.
+
+Q: Simplify $\cos^2 x \tan^2 x$.
+A: $\cos^2 x \cdot \frac{\sin^2 x}{\cos^2 x} = \sin^2 x$.
+
+Q: $\cos x = \frac{1}{4}$, $x$ in QIV. Find $\sin x$.
+A: $-\sqrt{1 - \frac{1}{16}} = -\frac{\sqrt{15}}{4}$.
+
+Q: Simplify $\frac{1 - \sin^2 x}{\cos x}$.
+A: $\cos x$.
+
+Q: Derive $1 + \cot^2 x = \csc^2 x$.
+A: Divide every term of $\sin^2 x + \cos^2 x = 1$ by $\sin^2 x$."
+3,TOPIC,Sum and difference identities,"sin(a ± b), cos(a ± b), tan(a ± b), exact values like sin 15° and 75°",MUST,FALSE,"# Sum and difference identities
+
+## 1. What it covers
+- The formulas for $\sin(a \pm b)$, $\cos(a \pm b)$ and $\tan(a \pm b)$.
+- Using them to get exact values such as $\sin 15^\circ$ and $\cos 75^\circ$.
+- Simplifying and proving with them; the link to **rotation**.
+
+## 2. Where it is used
+- **Computer graphics and robotics:** rotating a point by angle $b$ uses exactly these formulas. The 2D rotation matrix is the sum identity written as a matrix.
+- **Signal processing and radio:** mixing two signals (AM radio, heterodyne receivers) creates sum and difference frequencies.
+- **Physics:** adding two waves gives ""beats"", the wobble you hear when two guitar strings are slightly out of tune.
+- **Calculus:** the derivative of $\sin x$ is derived using $\sin(x + h)$.
+
+## 3. What it means
+A common mistake is to think $\sin(a + b) = \sin a + \sin b$. It isn't: $\sin(30^\circ + 60^\circ) = \sin 90^\circ = 1$, but $\sin 30^\circ + \sin 60^\circ \approx 1.37$. The correct formulas mix sines and cosines.
+
+**Where they come from: rotation.** Rotating the point $(\cos a, \sin a)$ by a further angle $b$ lands on $(\cos(a + b), \sin(a + b))$. Working out that rotation geometrically gives the formulas. In matrix form:
+$$
+\begin{pmatrix}\cos(a+b) \\ \sin(a+b)\end{pmatrix} = \begin{pmatrix}\cos b & -\sin b \\ \sin b & \cos b\end{pmatrix}\begin{pmatrix}\cos a \\ \sin a\end{pmatrix}
+$$
+Multiplying out gives exactly the two formulas below.
+
+**Memory aids:**
+- **Sine** keeps the sign and mixes: ""sin cos, cos sin"".
+- **Cosine** keeps the pairs together (""cos cos, sin sin"") and **flips** the sign.
+
+**Analogy:** turning $30^\circ$ and then another $45^\circ$ is the same as turning $75^\circ$ in one go. These formulas compute the result of the two turns.
+
+## 4. Formula & worked example
+$$
+\sin(a \pm b) = \sin a\cos b \pm \cos a\sin b
+$$
+$$
+\cos(a \pm b) = \cos a\cos b \mp \sin a\sin b
+$$
+$$
+\tan(a \pm b) = \frac{\tan a \pm \tan b}{1 \mp \tan a\tan b}
+$$
+
+**Example 1.** Exact value of $\sin 75^\circ$.
+- $75^\circ = 45^\circ + 30^\circ$
+- $\sin 75^\circ = \sin 45^\circ\cos 30^\circ + \cos 45^\circ\sin 30^\circ = \frac{\sqrt{2}}{2}\cdot\frac{\sqrt{3}}{2} + \frac{\sqrt{2}}{2}\cdot\frac{1}{2} = \frac{\sqrt{6} + \sqrt{2}}{4} \approx 0.966$
+
+**Example 2.** Exact value of $\cos 15^\circ$.
+- $15^\circ = 45^\circ - 30^\circ$
+- $\cos 15^\circ = \cos 45^\circ\cos 30^\circ + \sin 45^\circ\sin 30^\circ = \frac{\sqrt{6} + \sqrt{2}}{4}$ (the same as $\sin 75^\circ$, as the cofunction rule predicts).
+
+**Example 3.** Exact value of $\tan\frac{\pi}{12}$ ($15^\circ$).
+- $\tan(45^\circ - 30^\circ) = \frac{1 - \frac{\sqrt{3}}{3}}{1 + \frac{\sqrt{3}}{3}} = \frac{3 - \sqrt{3}}{3 + \sqrt{3}}$
+- Multiply top and bottom by $3 - \sqrt{3}$: $\frac{(3 - \sqrt{3})^2}{9 - 3} = \frac{12 - 6\sqrt{3}}{6} = 2 - \sqrt{3}$
+
+**Example 4.** Simplify $\sin(x + \pi)$.
+- $= \sin x\cos\pi + \cos x\sin\pi = \sin x(-1) + \cos x(0) = -\sin x$
+
+**Example 5.** $\sin a = \frac{3}{5}$ ($a$ in QI) and $\cos b = -\frac{5}{13}$ ($b$ in QII). Find $\cos(a + b)$.
+- $\cos a = \frac{4}{5}$; $\sin b = \frac{12}{13}$.
+- $\cos(a + b) = \frac{4}{5}\cdot\left(-\frac{5}{13}\right) - \frac{3}{5}\cdot\frac{12}{13} = -\frac{20}{65} - \frac{36}{65} = -\frac{56}{65}$
+
+**Example 6: rotate a point in code.** Rotate $(3, 1)$ by $90^\circ$ around the origin.
+```python
+import math
+def rotate(x, y, deg):
+    t = math.radians(deg)
+    return (x * math.cos(t) - y * math.sin(t),
+            x * math.sin(t) + y * math.cos(t))
+print(rotate(3, 1, 90))   # (-1.0, 3.0) up to rounding
+```
+This is the rotation matrix above. If the point is written as $r(\cos a, \sin a)$, the new x is $r(\cos a\cos t - \sin a\sin t) = r\cos(a + t)$: the cosine sum identity.
+
+## 5. Common mistakes
+- Splitting the function: $\cos(a + b) \ne \cos a + \cos b$.
+- Wrong sign in the cosine formula: for $\cos(a + b)$ the sign in the middle is **minus**.
+- In $\tan(a + b)$, using $+$ in the denominator. It is $1 - \tan a\tan b$ for the **sum**.
+
+## 6. Practice
+Q: Formula for $\sin(a - b)$?
+A: $\sin a\cos b - \cos a\sin b$.
+
+Q: Formula for $\cos(a + b)$?
+A: $\cos a\cos b - \sin a\sin b$.
+
+Q: Exact value of $\sin 15^\circ$?
+A: $\sin(45^\circ - 30^\circ) = \frac{\sqrt{6} - \sqrt{2}}{4}$.
+
+Q: Simplify $\cos\left(x - \frac{\pi}{2}\right)$.
+A: $\cos x \cdot 0 + \sin x \cdot 1 = \sin x$.
+
+Q: Exact value of $\tan 75^\circ$?
+A: $\frac{1 + \frac{\sqrt{3}}{3}}{1 - \frac{\sqrt{3}}{3}} = 2 + \sqrt{3}$."
+3,TOPIC,Double-angle and half-angle identities,"sin 2x, cos 2x (three forms), tan 2x, power reduction, half-angle formulas",MUST,FALSE,"# Double-angle and half-angle identities
+
+## 1. What it covers
+- **Double-angle:** $\sin 2x$, $\cos 2x$ (three forms) and $\tan 2x$, derived from the sum identities.
+- **Power reduction:** writing $\sin^2 x$ and $\cos^2 x$ without squares.
+- **Half-angle:** $\sin\frac{x}{2}$, $\cos\frac{x}{2}$, $\tan\frac{x}{2}$, and choosing the sign.
+
+## 2. Where it is used
+- **Calculus:** $\int \sin^2 x\,dx$ is impossible to do directly; power reduction turns it into $\int \frac{1 - \cos 2x}{2}dx$, which is easy.
+- **Physics:** the range of a projectile launched at speed $v$ and angle $\theta$ is $R = \frac{v^2\sin 2\theta}{g}$. It is largest when $2\theta = 90^\circ$, so the best launch angle is $45^\circ$.
+- **Electrical engineering:** the power in an AC circuit uses $\sin^2(\omega t) = \frac{1 - \cos 2\omega t}{2}$, which is why its average is half the peak.
+- **Computer graphics:** half-angle formulas appear in quaternion rotations (3D games and drones rotate using $\cos\frac{\theta}{2}$ and $\sin\frac{\theta}{2}$).
+
+## 3. What it means
+**Double-angle** formulas are just the sum formulas with $b = a$:
+$$
+\sin(x + x) = \sin x\cos x + \cos x\sin x = 2\sin x\cos x
+$$
+$$
+\cos(x + x) = \cos^2 x - \sin^2 x
+$$
+Using $\sin^2 x + \cos^2 x = 1$, the cosine version can be written in two more ways, one with only cos and one with only sin.
+
+**Power reduction** comes from solving those forms for $\cos^2 x$ or $\sin^2 x$.
+
+**Half-angle** formulas are power reduction with $x$ replaced by $\frac{x}{2}$, then square-rooted. The $\pm$ sign is chosen by the quadrant of $\frac{x}{2}$.
+
+**Analogy:** a recipe for one cake, scaled. Double-angle formulas ""double the recipe""; half-angle formulas ""halve it"". Both are built from the same base recipe (the sum identity).
+
+## 4. Formula & worked example
+$$
+\sin 2x = 2\sin x\cos x \qquad \tan 2x = \frac{2\tan x}{1 - \tan^2 x}
+$$
+$$
+\cos 2x = \cos^2 x - \sin^2 x = 2\cos^2 x - 1 = 1 - 2\sin^2 x
+$$
+$$
+\sin^2 x = \frac{1 - \cos 2x}{2} \qquad \cos^2 x = \frac{1 + \cos 2x}{2}
+$$
+$$
+\sin\frac{x}{2} = \pm\sqrt{\frac{1 - \cos x}{2}} \qquad \cos\frac{x}{2} = \pm\sqrt{\frac{1 + \cos x}{2}} \qquad \tan\frac{x}{2} = \frac{1 - \cos x}{\sin x}
+$$
+
+**Example 1.** $\sin x = \frac{3}{5}$, $x$ in QII. Find $\sin 2x$ and $\cos 2x$.
+- $\cos x = -\frac{4}{5}$
+- $\sin 2x = 2\cdot\frac{3}{5}\cdot\left(-\frac{4}{5}\right) = -\frac{24}{25}$
+- $\cos 2x = 1 - 2\sin^2 x = 1 - \frac{18}{25} = \frac{7}{25}$
+
+**Example 2.** Exact value of $\cos 22.5^\circ$.
+- $22.5^\circ = \frac{45^\circ}{2}$, in QI so positive.
+- $\cos 22.5^\circ = \sqrt{\frac{1 + \cos 45^\circ}{2}} = \sqrt{\frac{1 + \frac{\sqrt{2}}{2}}{2}} = \frac{\sqrt{2 + \sqrt{2}}}{2} \approx 0.924$
+
+**Example 3.** Simplify $\frac{\sin 2x}{1 + \cos 2x}$.
+- $= \frac{2\sin x\cos x}{1 + (2\cos^2 x - 1)} = \frac{2\sin x\cos x}{2\cos^2 x} = \tan x$
+
+**Example 4: power reduction for calculus.**
+- $\int \cos^2 x\,dx = \int \frac{1 + \cos 2x}{2}dx = \frac{x}{2} + \frac{\sin 2x}{4} + C$
+- (You'll learn integration in the Calculus roadmap; the identity is the key step.)
+
+**Example 5: projectile.** A ball is kicked at 20 m/s. Range at $30^\circ$ vs $45^\circ$ ($g = 9.8$)?
+- $30^\circ$: $R = \frac{400\sin 60^\circ}{9.8} \approx 35.3$ m
+- $45^\circ$: $R = \frac{400\sin 90^\circ}{9.8} \approx 40.8$ m (the maximum)
+- $60^\circ$: $\sin 120^\circ = \sin 60^\circ$, so the same 35.3 m as $30^\circ$. Complementary angles give equal range.
+
+## 5. Common mistakes
+- Writing $\sin 2x = 2\sin x$. Check with $x = 90^\circ$: $\sin 180^\circ = 0$, not $2$.
+- Using the wrong $\cos 2x$ form. Pick the form that matches what you know (only $\sin$? use $1 - 2\sin^2 x$).
+- In half-angle formulas, choosing the sign from the quadrant of $x$ instead of $\frac{x}{2}$.
+
+## 6. Practice
+Q: $\sin 2x$ in terms of $\sin x$ and $\cos x$?
+A: $2\sin x\cos x$.
+
+Q: The three forms of $\cos 2x$?
+A: $\cos^2 x - \sin^2 x$, $2\cos^2 x - 1$, $1 - 2\sin^2 x$.
+
+Q: Power-reduction formula for $\sin^2 x$?
+A: $\frac{1 - \cos 2x}{2}$.
+
+Q: Exact value of $\sin 15^\circ$ using the half-angle formula.
+A: $\sqrt{\frac{1 - \cos 30^\circ}{2}} = \frac{\sqrt{2 - \sqrt{3}}}{2}$ (equal to $\frac{\sqrt{6} - \sqrt{2}}{4}$).
+
+Q: $\cos x = \frac{1}{3}$. Find $\cos 2x$.
+A: $2\cdot\frac{1}{9} - 1 = -\frac{7}{9}$."
+3,TOPIC,Product-to-sum and sum-to-product,Converting products of sines and cosines into sums and back; beats,NICE,FALSE,"# Product-to-sum and sum-to-product
+
+## 1. What it covers
+- **Product-to-sum:** rewriting $\sin a\cos b$, $\cos a\cos b$, $\sin a\sin b$ as sums.
+- **Sum-to-product:** rewriting $\sin a + \sin b$ and $\cos a + \cos b$ as products.
+- The physics of **beats**.
+
+## 2. Where it is used
+- **Radio and telecom:** AM modulation multiplies a message by a carrier wave; product-to-sum shows it creates two side frequencies. Every radio receiver relies on this (""mixing"").
+- **Music:** two notes close in pitch produce beats; musicians tune by listening for them to slow down.
+- **Calculus:** $\int \sin 3x\cos 2x\,dx$ becomes easy after product-to-sum.
+- **Fourier analysis:** proving that different sine waves are ""orthogonal"" uses these formulas.
+
+## 3. What it means
+Add the formulas for $\sin(a + b)$ and $\sin(a - b)$:
+$$
+\sin(a + b) + \sin(a - b) = 2\sin a\cos b
+$$
+The $\cos a\sin b$ terms cancel. Divide by 2 and you've turned a **product** into a **sum**. The other formulas come from the same trick with the cosine identities.
+
+**Sum-to-product** is the same formula read backwards (with $a + b$ and $a - b$ renamed).
+
+**Analogy:** two marching bands with slightly different tempos. Sometimes their beats line up (loud), sometimes they clash (quiet). The combined sound is a fast wave whose loudness rises and falls slowly: sum-to-product shows exactly that.
+
+## 4. Formula & worked example
+$$
+\sin a\cos b = \tfrac{1}{2}\left[\sin(a + b) + \sin(a - b)\right]
+$$
+$$
+\cos a\cos b = \tfrac{1}{2}\left[\cos(a - b) + \cos(a + b)\right]
+$$
+$$
+\sin a\sin b = \tfrac{1}{2}\left[\cos(a - b) - \cos(a + b)\right]
+$$
+$$
+\sin a + \sin b = 2\sin\frac{a + b}{2}\cos\frac{a - b}{2} \qquad \cos a + \cos b = 2\cos\frac{a + b}{2}\cos\frac{a - b}{2}
+$$
+
+**Example 1.** Write $\sin 5x\cos 3x$ as a sum.
+- $= \frac{1}{2}\left[\sin 8x + \sin 2x\right]$
+
+**Example 2.** Exact value of $\cos 75^\circ\cos 15^\circ$.
+- $= \frac{1}{2}\left[\cos 60^\circ + \cos 90^\circ\right] = \frac{1}{2}\left[\frac{1}{2} + 0\right] = \frac{1}{4}$
+
+**Example 3.** Write $\sin 7x + \sin 3x$ as a product.
+- $= 2\sin 5x\cos 2x$
+
+**Example 4: beats.** Two tuning forks at 440 Hz and 444 Hz play together: $\sin(2\pi\cdot 440t) + \sin(2\pi\cdot 444t)$.
+- $= 2\sin(2\pi\cdot 442t)\cos(2\pi\cdot 2t)$
+- You hear a 442 Hz tone whose loudness follows $\cos(2\pi \cdot 2t)$. The loudness peaks twice per cycle of that cosine, so **4 beats per second**: the difference of the two frequencies.
+
+## 5. Common mistakes
+- Forgetting the $\frac{1}{2}$ in product-to-sum, or the $2$ in sum-to-product.
+- Getting the order wrong in $\sin a\sin b$: it is $\cos(a - b) - \cos(a + b)$, not the reverse.
+- Trying to memorise all six. Derive them from the sum and difference identities when needed.
+
+## 6. Practice
+Q: Write $\cos 4x\cos x$ as a sum.
+A: $\frac{1}{2}[\cos 3x + \cos 5x]$.
+
+Q: Write $\cos 5x + \cos x$ as a product.
+A: $2\cos 3x\cos 2x$.
+
+Q: Two notes at 256 Hz and 260 Hz. How many beats per second?
+A: 4.
+
+Q: Exact value of $\sin 75^\circ\sin 15^\circ$.
+A: $\frac{1}{2}[\cos 60^\circ - \cos 90^\circ] = \frac{1}{4}$.
+
+Q: Where does product-to-sum come from?
+A: Adding or subtracting two sum/difference identities so that some terms cancel."
+3,TOPIC,Proving identities,"Strategy, worked proofs, and the rules for a valid proof",MUST,FALSE,"# Proving identities
+
+## 1. What it covers
+- What it means to **prove** an identity, and what you may and may not do.
+- A step-by-step strategy with a toolbox of moves.
+- Several fully worked proofs.
+
+## 2. Where it is used
+- **Exams:** ""show that"" and ""prove"" questions are standard.
+- **Calculus and physics:** rewriting an expression into a friendlier form before integrating or solving is the same skill.
+- **Programming:** simplifying a formula before coding it (fewer operations, better numerical accuracy). For example, $1 - \cos x$ loses precision for small $x$, but the equal form $2\sin^2\frac{x}{2}$ doesn't.
+- **Logical thinking:** step-by-step justification is good practice for proofs in algorithms and computer science.
+
+## 3. What it means
+To prove $\text{LHS} = \text{RHS}$, start with **one side** and transform it, step by step, using known identities and algebra, until it becomes **exactly the other side**.
+
+**Do not** treat it as an equation to solve: you can't add, multiply or square both sides, because that assumes what you're trying to prove.
+
+**Analogy:** a road trip from city A to city B. You must drive from one to the other along known roads (identities). You can't start in both cities and ""meet in the middle"" by teleporting.
+
+(Working on both sides separately until they reach the **same** expression is also acceptable, as long as each side is transformed on its own.)
+
+**Strategy toolbox:**
+1. Start with the **more complicated** side.
+2. Convert to **sin and cos**.
+3. **Combine fractions** with a common denominator.
+4. **Factor** (common factors, difference of squares, quadratics in $\sin x$).
+5. Use a **Pythagorean identity** to replace $1 - \sin^2 x$, etc.
+6. **Multiply by a conjugate**, e.g. multiply $\frac{1}{1 - \sin x}$ by $\frac{1 + \sin x}{1 + \sin x}$.
+7. Keep an eye on the target: if the RHS has only $\sec x$, aim for $\frac{1}{\cos x}$.
+
+## 4. Formula & worked example
+**Example 1.** Prove $\sec x - \cos x = \sin x\tan x$.
+- LHS $= \frac{1}{\cos x} - \cos x = \frac{1 - \cos^2 x}{\cos x} = \frac{\sin^2 x}{\cos x} = \sin x \cdot \frac{\sin x}{\cos x} = \sin x\tan x$ = RHS ✓
+
+**Example 2.** Prove $\frac{\cos x}{1 - \sin x} = \frac{1 + \sin x}{\cos x}$.
+- LHS: multiply by the conjugate $\frac{1 + \sin x}{1 + \sin x}$:
+- $= \frac{\cos x(1 + \sin x)}{1 - \sin^2 x} = \frac{\cos x(1 + \sin x)}{\cos^2 x} = \frac{1 + \sin x}{\cos x}$ = RHS ✓
+
+**Example 3.** Prove $\frac{1}{1 + \cos x} + \frac{1}{1 - \cos x} = 2\csc^2 x$.
+- LHS: common denominator $(1 + \cos x)(1 - \cos x) = 1 - \cos^2 x = \sin^2 x$.
+- $= \frac{(1 - \cos x) + (1 + \cos x)}{\sin^2 x} = \frac{2}{\sin^2 x} = 2\csc^2 x$ = RHS ✓
+
+**Example 4.** Prove $\sin^4 x - \cos^4 x = 1 - 2\cos^2 x$.
+- LHS: difference of squares $= (\sin^2 x - \cos^2 x)(\sin^2 x + \cos^2 x) = (\sin^2 x - \cos^2 x)(1)$
+- $= (1 - \cos^2 x) - \cos^2 x = 1 - 2\cos^2 x$ = RHS ✓
+
+**Example 5.** Prove $\frac{\sin 2x}{\sin x} - \frac{\cos 2x}{\cos x} = \sec x$.
+- LHS $= \frac{2\sin x\cos x}{\sin x} - \frac{2\cos^2 x - 1}{\cos x} = 2\cos x - 2\cos x + \frac{1}{\cos x} = \sec x$ = RHS ✓
+
+**Testing before proving:** plug in a value, such as $x = 30^\circ$, into both sides. If they differ, it isn't an identity. (Matching at one value doesn't prove it, though.)
+
+## 5. Common mistakes
+- Cross-multiplying or moving terms across the ""="" sign. That assumes the identity is true.
+- Skipping steps and making a sign error. Write one change per line.
+- Stopping at a form that is ""obviously equal"" but not identical to the target. Finish the job.
+
+## 6. Practice
+Q: Prove $\cos x\tan x = \sin x$.
+A: $\cos x \cdot \frac{\sin x}{\cos x} = \sin x$ ✓
+
+Q: Prove $(1 + \tan^2 x)\cos^2 x = 1$.
+A: $\sec^2 x \cos^2 x = \frac{1}{\cos^2 x}\cos^2 x = 1$ ✓
+
+Q: Prove $\frac{1 - \cos^2 x}{\sin x \cos x} = \tan x$.
+A: $\frac{\sin^2 x}{\sin x\cos x} = \frac{\sin x}{\cos x} = \tan x$ ✓
+
+Q: Why can't you multiply both sides by the same thing when proving an identity?
+A: It assumes the two sides are already equal, which is what you are trying to show.
+
+Q: Prove $(\sin x + \cos x)^2 = 1 + \sin 2x$.
+A: $\sin^2 x + 2\sin x\cos x + \cos^2 x = 1 + 2\sin x\cos x = 1 + \sin 2x$ ✓"
+2,MODULE,Trigonometric equations,"Solving for angles: general solutions, intervals, factoring and identities",MUST,,"Equations ask: **which angles** make this true? Because trig functions repeat, there are usually infinitely many answers, so you either list them all with a formula (general solution) or give the ones inside a given interval."
+3,TOPIC,Solving basic trig equations,"sin x = k, cos x = k, tan x = k; all solutions in an interval and the general solution",MUST,FALSE,"# Solving basic trig equations
+
+## 1. What it covers
+- Solving $\sin x = k$, $\cos x = k$ and $\tan x = k$.
+- Finding **all solutions** in an interval, e.g. $[0, 2\pi)$.
+- Writing the **general solution** with $+ 2k\pi$ or $+ k\pi$.
+- Equations with a multiple angle, such as $\sin 2x = \frac{1}{2}$.
+
+## 2. Where it is used
+- **Engineering:** when does an AC voltage reach a given value? When does a vibrating part pass a position?
+- **Astronomy and navigation:** when is the sun at a given elevation (sunrise and sunset times)?
+- **Modelling:** ""when is the tide 4 m deep?"", ""when is the Ferris wheel car 30 m high?""
+- **Games:** when will an oscillating platform be at the player's height?
+
+## 3. What it means
+$\sin x = \frac{1}{2}$ has **many** solutions: $30^\circ$, $150^\circ$, $390^\circ$, $510^\circ$, and so on. The calculator ($\sin^{-1}$) gives only the first.
+
+**Method:**
+1. **Isolate** the trig function: get it alone, like $\sin x = k$.
+2. Find the **reference angle** from $\lvert k\rvert$.
+3. Use **ASTC** (the sign of $k$) to find which quadrants the solutions are in. There are usually **two** solutions per full turn for sin and cos.
+4. **Add full periods** to get all solutions: $+2k\pi$ for sin and cos, $+k\pi$ for tan.
+5. Keep only those inside the required interval.
+
+**Analogy:** asking ""when is the minute hand pointing at 3?"" The answer isn't one time; it's every hour: 1:15, 2:15, 3:15, ... The general solution is that ""every hour"" rule.
+
+## 4. Formula & worked example
+General solutions ($k$ is any integer):
+$$
+\sin x = s:\ x = \alpha + 2k\pi \ \text{ or } \ x = \pi - \alpha + 2k\pi \qquad (\alpha = \sin^{-1}s)
+$$
+$$
+\cos x = c:\ x = \pm\alpha + 2k\pi \qquad (\alpha = \cos^{-1}c)
+$$
+$$
+\tan x = t:\ x = \alpha + k\pi \qquad (\alpha = \tan^{-1}t)
+$$
+
+**Example 1.** Solve $2\sin x - 1 = 0$ on $[0, 2\pi)$.
+- $\sin x = \frac{1}{2}$; reference $\frac{\pi}{6}$; sine positive in QI and QII.
+- $x = \frac{\pi}{6}, \frac{5\pi}{6}$
+
+**Example 2.** Solve $\sqrt{2}\cos x + 1 = 0$ (general solution).
+- $\cos x = -\frac{\sqrt{2}}{2}$; reference $\frac{\pi}{4}$; cosine negative in QII and QIII.
+- $x = \frac{3\pi}{4} + 2k\pi$ or $x = \frac{5\pi}{4} + 2k\pi$
+
+**Example 3.** Solve $\tan x = -\sqrt{3}$ on $[0, 2\pi)$.
+- Reference $\frac{\pi}{3}$; tangent negative in QII and QIV.
+- $x = \frac{2\pi}{3}, \frac{5\pi}{3}$ (they are $\pi$ apart, as expected for tangent)
+
+**Example 4: multiple angle.** Solve $\sin 2x = \frac{\sqrt{3}}{2}$ on $[0, 2\pi)$.
+- Let $u = 2x$. If $x$ is in $[0, 2\pi)$, then $u$ is in $[0, 4\pi)$: **two** full turns.
+- $u = \frac{\pi}{3}, \frac{2\pi}{3}, \frac{\pi}{3} + 2\pi, \frac{2\pi}{3} + 2\pi = \frac{\pi}{3}, \frac{2\pi}{3}, \frac{7\pi}{3}, \frac{8\pi}{3}$
+- $x = \frac{u}{2} = \frac{\pi}{6}, \frac{\pi}{3}, \frac{7\pi}{6}, \frac{4\pi}{3}$ (four solutions)
+
+**Example 5: non-special value.** Solve $\cos x = 0.3$ on $[0^\circ, 360^\circ)$.
+- $\cos^{-1}(0.3) \approx 72.5^\circ$ (QI). Cosine also positive in QIV: $360^\circ - 72.5^\circ = 287.5^\circ$.
+
+## 5. Common mistakes
+- Giving only the calculator answer and missing the second solution.
+- With $\sin 2x$, solving only on $[0, 2\pi)$ for $u = 2x$ instead of $[0, 4\pi)$, which loses half the solutions.
+- Using $+2k\pi$ for tangent (it repeats every $\pi$, so $+k\pi$ already covers everything).
+- Trying to solve $\sin x = 1.2$. No solution: sine is always between $-1$ and $1$.
+
+## 6. Practice
+Q: Solve $\cos x = \frac{1}{2}$ on $[0, 2\pi)$.
+A: $x = \frac{\pi}{3}, \frac{5\pi}{3}$.
+
+Q: Solve $\sin x = -1$ on $[0, 2\pi)$.
+A: $x = \frac{3\pi}{2}$.
+
+Q: General solution of $\tan x = 1$?
+A: $x = \frac{\pi}{4} + k\pi$.
+
+Q: Solve $2\cos x + \sqrt{3} = 0$ on $[0^\circ, 360^\circ)$.
+A: $\cos x = -\frac{\sqrt{3}}{2}$, so $x = 150^\circ, 210^\circ$.
+
+Q: How many solutions does $\sin 3x = 0.5$ have on $[0, 2\pi)$?
+A: Six (two per turn, and $3x$ makes three turns)."
+3,TOPIC,Solving harder trig equations,"Factoring, quadratic-type equations, using identities, and avoiding lost or extra solutions",MUST,FALSE,"# Solving harder trig equations
+
+## 1. What it covers
+- Equations that **factor**, such as $2\sin x\cos x = \sin x$.
+- **Quadratic-type** equations, such as $2\sin^2 x - \sin x - 1 = 0$.
+- Using identities to get **one function** of **one angle**.
+- Avoiding the two big traps: **dividing by a variable** and **squaring both sides**.
+
+## 2. Where it is used
+- **Physics:** finding the angles at which a projectile hits a target: $R = \frac{v^2\sin 2\theta}{g}$ usually gives two angles, a low and a high one.
+- **Optimisation:** setting a derivative to zero often gives a trig equation, e.g. $\cos x - \sin x = 0$.
+- **Electrical engineering:** finding when two signals are equal.
+- **Robotics:** inverse kinematics equations mix sin and cos of joint angles.
+
+## 3. What it means
+Harder equations become basic ones after some algebra. The **goal** is to reach one or more equations of the form $\sin x = k$ (or cos, tan), each of which you already know how to solve.
+
+**Tactics:**
+1. **Everything to one side**, then **factor**: if $AB = 0$, then $A = 0$ or $B = 0$.
+2. **Quadratic in disguise:** treat $\sin x$ like $y$: $2y^2 - y - 1 = 0$.
+3. **Mixed functions:** use Pythagorean identities to convert ($\cos^2 x = 1 - \sin^2 x$).
+4. **Mixed angles** ($x$ and $2x$): use double-angle identities to bring everything to $x$.
+
+**Never divide both sides by $\sin x$** (or any expression that could be zero): you'll lose the solutions where $\sin x = 0$. Factor it out instead.
+
+**If you square both sides**, check every answer in the original equation, because squaring can create fake (""extraneous"") solutions.
+
+**Analogy:** a locked box inside another box. Each tactic opens one layer, until you reach the simple $\sin x = k$ in the middle.
+
+## 4. Formula & worked example
+**Example 1: factor, don't divide.** Solve $2\sin x\cos x = \sin x$ on $[0, 2\pi)$.
+- $2\sin x\cos x - \sin x = 0$ → $\sin x(2\cos x - 1) = 0$
+- $\sin x = 0$: $x = 0, \pi$
+- $\cos x = \frac{1}{2}$: $x = \frac{\pi}{3}, \frac{5\pi}{3}$
+- All solutions: $0, \frac{\pi}{3}, \pi, \frac{5\pi}{3}$. (Dividing by $\sin x$ would have lost $0$ and $\pi$.)
+
+**Example 2: quadratic type.** Solve $2\sin^2 x - \sin x - 1 = 0$ on $[0, 2\pi)$.
+- Let $y = \sin x$: $2y^2 - y - 1 = (2y + 1)(y - 1) = 0$
+- $\sin x = -\frac{1}{2}$: $x = \frac{7\pi}{6}, \frac{11\pi}{6}$
+- $\sin x = 1$: $x = \frac{\pi}{2}$
+
+**Example 3: use a Pythagorean identity.** Solve $2\cos^2 x + 3\sin x - 3 = 0$ on $[0, 2\pi)$.
+- $2(1 - \sin^2 x) + 3\sin x - 3 = 0$ → $-2\sin^2 x + 3\sin x - 1 = 0$ → $2\sin^2 x - 3\sin x + 1 = 0$
+- $(2\sin x - 1)(\sin x - 1) = 0$
+- $\sin x = \frac{1}{2}$: $\frac{\pi}{6}, \frac{5\pi}{6}$; $\sin x = 1$: $\frac{\pi}{2}$
+
+**Example 4: double angle.** Solve $\cos 2x + \cos x = 0$ on $[0, 2\pi)$.
+- $2\cos^2 x - 1 + \cos x = 0$ → $(2\cos x - 1)(\cos x + 1) = 0$
+- $\cos x = \frac{1}{2}$: $\frac{\pi}{3}, \frac{5\pi}{3}$; $\cos x = -1$: $\pi$
+
+**Example 5: squaring (check!).** Solve $\sin x + \cos x = 1$ on $[0, 2\pi)$.
+- Square: $\sin^2 x + 2\sin x\cos x + \cos^2 x = 1$ → $1 + \sin 2x = 1$ → $\sin 2x = 0$
+- $2x = 0, \pi, 2\pi, 3\pi$ → $x = 0, \frac{\pi}{2}, \pi, \frac{3\pi}{2}$
+- Check in the original: $x = 0$: $0 + 1 = 1$ ✓; $\frac{\pi}{2}$: $1 + 0 = 1$ ✓; $\pi$: $0 - 1 = -1$ ✗; $\frac{3\pi}{2}$: $-1 + 0 = -1$ ✗
+- Solutions: $x = 0, \frac{\pi}{2}$
+
+**Example 6: projectile angles.** A ball kicked at 25 m/s must land 50 m away ($g = 9.8$). At what angles?
+- $50 = \frac{625\sin 2\theta}{9.8}$ → $\sin 2\theta = 0.784$
+- $2\theta \approx 51.6^\circ$ or $128.4^\circ$ → $\theta \approx 25.8^\circ$ or $64.2^\circ$ (a low and a high kick)
+
+## 5. Common mistakes
+- Dividing by $\sin x$ or $\cos x$ and losing solutions.
+- Not checking answers after squaring.
+- Solving $\sin x = 2$ from a factor and listing an answer. Reject impossible factors ($\lvert\sin x\rvert > 1$).
+
+## 6. Practice
+Q: Solve $\sin^2 x = \frac{1}{4}$ on $[0, 2\pi)$.
+A: $\sin x = \pm\frac{1}{2}$, so $x = \frac{\pi}{6}, \frac{5\pi}{6}, \frac{7\pi}{6}, \frac{11\pi}{6}$.
+
+Q: Solve $\tan x\sin x = \sin x$ on $[0, 2\pi)$.
+A: $\sin x(\tan x - 1) = 0$, so $x = 0, \pi$ and $x = \frac{\pi}{4}, \frac{5\pi}{4}$.
+
+Q: Solve $2\cos^2 x - \cos x - 1 = 0$ on $[0, 2\pi)$.
+A: $(2\cos x + 1)(\cos x - 1) = 0$, so $x = 0, \frac{2\pi}{3}, \frac{4\pi}{3}$.
+
+Q: Why should you never divide both sides by $\cos x$?
+A: Any solution where $\cos x = 0$ gets lost. Factor it out instead.
+
+Q: Solve $\sin 2x = \cos x$ on $[0, 2\pi)$.
+A: $\cos x(2\sin x - 1) = 0$, so $x = \frac{\pi}{2}, \frac{3\pi}{2}, \frac{\pi}{6}, \frac{5\pi}{6}$."
+3,TOPIC,Practice & review: Identities and equations,Mixed problem set with worked answers,MUST,FALSE,"# Practice & review: Identities and equations
+
+**How to use this:** 60 minutes, no calculator. For proofs, write one step per line and name the identity you used.
+
+## Problems
+1. Simplify $\frac{\sin x}{1 + \cos x} + \frac{1 + \cos x}{\sin x}$.
+2. Prove $\tan x + \cot x = \sec x\csc x$.
+3. Exact value of $\cos 105^\circ$.
+4. $\cos x = -\frac{12}{13}$, $x$ in QIII. Find $\sin 2x$, $\cos 2x$ and $\tan 2x$.
+5. Prove $\frac{1 - \cos 2x}{\sin 2x} = \tan x$.
+6. Solve $4\sin^2 x - 3 = 0$ on $[0, 2\pi)$.
+7. Solve $\cos 2x = \sin x$ on $[0, 2\pi)$.
+8. Solve $\tan 2x = 1$ on $[0, 2\pi)$.
+9. Solve $\sec^2 x - 2\tan x = 0$ on $[0, 2\pi)$.
+
+## Answers
+1. Common denominator $\sin x(1 + \cos x)$: numerator $\sin^2 x + 1 + 2\cos x + \cos^2 x = 2 + 2\cos x = 2(1 + \cos x)$. Result $\frac{2}{\sin x} = 2\csc x$.
+2. LHS $= \frac{\sin x}{\cos x} + \frac{\cos x}{\sin x} = \frac{\sin^2 x + \cos^2 x}{\sin x\cos x} = \frac{1}{\sin x\cos x} = \sec x\csc x$ ✓
+3. $\cos(60^\circ + 45^\circ) = \frac{1}{2}\cdot\frac{\sqrt{2}}{2} - \frac{\sqrt{3}}{2}\cdot\frac{\sqrt{2}}{2} = \frac{\sqrt{2} - \sqrt{6}}{4}$.
+4. $\sin x = -\frac{5}{13}$. $\sin 2x = 2\cdot\left(-\frac{5}{13}\right)\left(-\frac{12}{13}\right) = \frac{120}{169}$; $\cos 2x = 2\cdot\frac{144}{169} - 1 = \frac{119}{169}$; $\tan 2x = \frac{120}{119}$.
+5. LHS $= \frac{1 - (1 - 2\sin^2 x)}{2\sin x\cos x} = \frac{2\sin^2 x}{2\sin x\cos x} = \frac{\sin x}{\cos x} = \tan x$ ✓
+6. $\sin x = \pm\frac{\sqrt{3}}{2}$: $x = \frac{\pi}{3}, \frac{2\pi}{3}, \frac{4\pi}{3}, \frac{5\pi}{3}$.
+7. $1 - 2\sin^2 x = \sin x$ → $2\sin^2 x + \sin x - 1 = 0$ → $(2\sin x - 1)(\sin x + 1) = 0$ → $x = \frac{\pi}{6}, \frac{5\pi}{6}, \frac{3\pi}{2}$.
+8. $2x = \frac{\pi}{4} + k\pi$ → $x = \frac{\pi}{8} + \frac{k\pi}{2}$: $\frac{\pi}{8}, \frac{5\pi}{8}, \frac{9\pi}{8}, \frac{13\pi}{8}$.
+9. $1 + \tan^2 x - 2\tan x = 0$ → $(\tan x - 1)^2 = 0$ → $x = \frac{\pi}{4}, \frac{5\pi}{4}$.
+
+## Flashcards
+Q: The one Pythagorean identity you need to remember?
+A: $\sin^2 x + \cos^2 x = 1$ (divide by $\cos^2 x$ or $\sin^2 x$ for the others).
+
+Q: $\cos(a - b) = ?$
+A: $\cos a\cos b + \sin a\sin b$.
+
+Q: Golden rule when solving trig equations?
+A: Factor, don't divide by a trig function; check answers if you squared.
+
+Q: General solution of $\cos x = c$?
+A: $x = \pm\cos^{-1}c + 2k\pi$."
+1,MODULE,"Phase 5 — Polar, Parametric and Applied Trigonometry (Applied)","Polar coordinates and curves, parametric equations, simple harmonic motion",SHOULD,,"# Phase 5: Polar, parametric and applied trigonometry
+
+Trigonometry also gives us **new ways to describe position and motion**:
+- **Polar coordinates** describe a point by *distance and direction* instead of x and y.
+- **Parametric equations** describe a path by giving x and y as functions of time.
+- **Harmonic motion** uses sine waves to model anything that vibrates.
+
+These lead directly into calculus, physics, vectors and complex numbers.
+
+**What you need first:** Phases 1–2 (unit circle, graphs) and Phase 4's identities for the polar ⇄ Cartesian conversions."
+2,MODULE,Polar and parametric,"Polar coordinates, polar curves, parametric equations, harmonic motion",SHOULD,,"Each topic here is a different way of using $(\cos\theta, \sin\theta)$."
+3,TOPIC,Polar coordinates,"(r, θ) points, converting between polar and Cartesian coordinates and equations",SHOULD,FALSE,"# Polar coordinates
+
+## 1. What it covers
+- Describing a point as $(r, \theta)$: distance $r$ from the origin and angle $\theta$ from the positive x-axis.
+- Converting points between polar and Cartesian $(x, y)$.
+- Converting equations, e.g. $r = 4\cos\theta$ into a circle equation.
+- Negative $r$ and the many names of a single point.
+
+## 2. Where it is used
+- **Radar and sonar:** a target is detected at a distance and a bearing, which is polar data.
+- **Robotics and lidar:** a self-driving car's lidar returns (angle, distance) pairs; converting them to x/y builds the map.
+- **Games:** aiming systems, radial menus, circular explosion patterns, orbiting objects.
+- **Complex numbers and electronics:** a complex number in polar form $re^{i\theta}$ makes multiplication easy (multiply the lengths, add the angles).
+- **Antenna design:** radiation patterns are drawn in polar plots.
+
+## 3. What it means
+Cartesian coordinates say ""go $x$ right and $y$ up"". Polar coordinates say ""**face** angle $\theta$ and **walk** distance $r$"".
+
+From the unit circle idea: walking distance $r$ at angle $\theta$ puts you at $x = r\cos\theta$, $y = r\sin\theta$. Going the other way, $r$ is the distance (Pythagoras) and $\theta$ is the direction (arctangent, with the quadrant checked).
+
+**One point, many names:** $(2, \frac{\pi}{6})$, $(2, \frac{13\pi}{6})$ and $(-2, \frac{7\pi}{6})$ are the same point. A **negative** $r$ means ""face $\theta$, then walk **backwards**"".
+
+**Analogy:** giving directions in a field: ""the tree is 50 m away, towards 2 o'clock"" (polar) versus ""30 m east and 40 m north"" (Cartesian). Both find the same tree.
+
+## 4. Formula & worked example
+$$
+x = r\cos\theta \qquad y = r\sin\theta \qquad r^2 = x^2 + y^2 \qquad \tan\theta = \frac{y}{x}
+$$
+For $\theta$, use `atan2(y, x)` or find the reference angle and place it in the right quadrant.
+
+**Example 1: polar → Cartesian.** $\left(6, \frac{2\pi}{3}\right)$
+- $x = 6\cos\frac{2\pi}{3} = 6\left(-\frac{1}{2}\right) = -3$
+- $y = 6\sin\frac{2\pi}{3} = 6\cdot\frac{\sqrt{3}}{2} = 3\sqrt{3}$
+- Point: $(-3, 3\sqrt{3})$
+
+**Example 2: Cartesian → polar.** $(-2, -2)$
+- $r = \sqrt{4 + 4} = 2\sqrt{2}$
+- Reference angle $\tan^{-1}(1) = \frac{\pi}{4}$; the point is in QIII, so $\theta = \pi + \frac{\pi}{4} = \frac{5\pi}{4}$.
+- Point: $\left(2\sqrt{2}, \frac{5\pi}{4}\right)$. (Plain $\tan^{-1}\frac{-2}{-2} = \frac{\pi}{4}$ would point the wrong way.)
+
+**Example 3: equation polar → Cartesian.** $r = 4\cos\theta$
+- Multiply by $r$: $r^2 = 4r\cos\theta$ → $x^2 + y^2 = 4x$
+- Complete the square: $(x - 2)^2 + y^2 = 4$, a circle of radius 2 centred at $(2, 0)$.
+
+**Example 4: equation Cartesian → polar.** $y = x$
+- $r\sin\theta = r\cos\theta$ → $\tan\theta = 1$ → $\theta = \frac{\pi}{4}$ (a line through the origin).
+
+**Example 5: lidar in code.** Convert scan readings to map points.
+```python
+import math
+scan = [(0, 2.0), (45, 1.5), (90, 3.0)]          # (angle in degrees, distance in m)
+points = [(d * math.cos(math.radians(a)), d * math.sin(math.radians(a))) for a, d in scan]
+print([(round(x, 2), round(y, 2)) for x, y in points])   # [(2.0, 0.0), (1.06, 1.06), (0.0, 3.0)]
+```
+Each reading is a polar point $(r, \theta)$, converted with $x = r\cos\theta$, $y = r\sin\theta$. This is literally how a robot vacuum turns its laser scan into a floor map.
+
+## 5. Common mistakes
+- Using plain $\tan^{-1}\frac{y}{x}$ without checking the quadrant.
+- Forgetting that $r$ can be negative, or that the same point has infinitely many polar names.
+- Calculator in degree mode when $\theta$ is in radians.
+
+## 6. Practice
+Q: Convert $\left(4, \frac{\pi}{2}\right)$ to Cartesian.
+A: $(0, 4)$.
+
+Q: Convert $(1, -\sqrt{3})$ to polar with $0 \le \theta < 2\pi$.
+A: $r = 2$, $\theta = \frac{5\pi}{3}$.
+
+Q: What curve is $r = 5$?
+A: A circle of radius 5 centred at the origin.
+
+Q: Convert $x^2 + y^2 = 9$ to polar.
+A: $r = 3$.
+
+Q: Give another polar name for $\left(3, \frac{\pi}{4}\right)$ with negative $r$.
+A: $\left(-3, \frac{5\pi}{4}\right)$."
+3,TOPIC,Graphing polar curves,"Circles, roses, cardioids and limaçons, spirals; symmetry and plotting from a table",SHOULD,FALSE,"# Graphing polar curves
+
+## 1. What it covers
+- Plotting $r = f(\theta)$ from a table of values.
+- The standard families: **circles**, **roses** $r = a\cos(n\theta)$, **cardioids and limaçons** $r = a + b\cos\theta$, and **spirals** $r = a\theta$.
+- Recognising a curve from its equation (number of petals, inner loop or not).
+
+## 2. Where it is used
+- **Microphones and antennas:** a ""cardioid microphone"" is named after its heart-shaped polar pickup pattern; it hears the front and rejects the back.
+- **Art and design:** roses and spirals in logos, generative art and spirograph-style animations.
+- **Nature and engineering:** spirals appear in shells, galaxies, springs and the grooves of a vinyl record.
+- **Calculus:** areas of these shapes are found by polar integration.
+
+## 3. What it means
+A polar equation says, **for each direction $\theta$, how far out the curve is**. Sweep $\theta$ from $0$ to $2\pi$ like a lighthouse beam and mark the point at distance $r$ along the beam each time.
+
+**Analogy:** a lighthouse beam with a dimmer that changes as it turns. The pattern of how far the light reaches, traced all the way round, is the polar graph.
+
+**Families:**
+- $r = a$: circle at the origin. $r = 2a\cos\theta$ or $r = 2a\sin\theta$: circle through the origin.
+- **Rose** $r = a\cos(n\theta)$ or $a\sin(n\theta)$: if $n$ is **odd**, there are $n$ petals; if $n$ is **even**, $2n$ petals. Each petal has length $a$.
+- **Limaçon** $r = a + b\cos\theta$: if $a = b$ it is a **cardioid** (heart); if $a < b$ it has an **inner loop**; if $a > b$ it is a dimpled or rounded oval.
+- **Archimedean spiral** $r = a\theta$: the distance grows steadily as it turns.
+
+**Symmetry test:** if replacing $\theta$ by $-\theta$ gives the same equation (true for anything in $\cos\theta$), the curve is symmetric about the x-axis.
+
+## 4. Formula & worked example
+**Example 1: cardioid** $r = 2 + 2\cos\theta$. Make a table:
+| $\theta$ | $0$ | $\frac{\pi}{2}$ | $\pi$ | $\frac{3\pi}{2}$ | $2\pi$ |
+|---|---|---|---|---|---|
+| $r$ | $4$ | $2$ | $0$ | $2$ | $4$ |
+- It reaches furthest (4) to the right, passes through the origin at $\theta = \pi$ (the ""dent"" of the heart), and is symmetric about the x-axis (cosine).
+
+**Example 2: rose** $r = 3\sin(2\theta)$.
+- $n = 2$ is even → $4$ petals of length 3.
+- The petals point along $\theta = \frac{\pi}{4}, \frac{3\pi}{4}, \frac{5\pi}{4}, \frac{7\pi}{4}$ (where $\lvert\sin 2\theta\rvert = 1$).
+
+**Example 3: limaçon with a loop** $r = 1 + 2\cos\theta$.
+- $a = 1 < b = 2$ → inner loop.
+- $r = 0$ when $\cos\theta = -\frac{1}{2}$: $\theta = \frac{2\pi}{3}, \frac{4\pi}{3}$. Between these angles $r$ is negative, which draws the small inner loop.
+
+**Example 4: rose** $r = 4\cos(3\theta)$.
+- $n = 3$ is odd → 3 petals of length 4; one petal points along $\theta = 0$.
+
+**In code:** draw any polar curve by converting to x/y.
+```python
+import math
+pts = []
+for i in range(361):
+    t = math.radians(i)
+    r = 3 * math.sin(2 * t)                          # 4-petal rose
+    pts.append((r * math.cos(t), r * math.sin(t)))   # polar -> Cartesian
+# pass pts to matplotlib's plot() or draw lines on a canvas
+```
+Changing one line (`r = ...`) draws any curve in this topic.
+
+## 5. Common mistakes
+- Petal count for even $n$: $r = \cos 2\theta$ has **4** petals, not 2.
+- Ignoring negative $r$ values; they draw part of the curve (e.g. the inner loop).
+- Plotting only $0$ to $\pi$. Many curves need the full $0$ to $2\pi$ (spirals need more).
+
+## 6. Practice
+Q: How many petals does $r = 5\cos(4\theta)$ have?
+A: 8 ($n = 4$ is even, so $2n$).
+
+Q: How many petals does $r = 2\sin(5\theta)$ have?
+A: 5.
+
+Q: What shape is $r = 3 + 3\sin\theta$?
+A: A cardioid ($a = b$), symmetric about the y-axis.
+
+Q: Does $r = 2 + 5\cos\theta$ have an inner loop?
+A: Yes, because $a = 2 < b = 5$.
+
+Q: What curve is $r = 6\sin\theta$?
+A: A circle of radius 3 through the origin, centred at $(0, 3)$."
+3,TOPIC,Parametric equations,"x = f(t), y = g(t); sketching with direction, eliminating the parameter, circles and projectiles",SHOULD,FALSE,"# Parametric equations
+
+## 1. What it covers
+- Describing a curve with a **parameter** $t$: $x = f(t)$, $y = g(t)$.
+- Plotting with a table and showing the **direction** of motion.
+- **Eliminating the parameter** to get an x-y equation.
+- The two classics: circles and ellipses, and projectile motion.
+
+## 2. Where it is used
+- **Animation and games:** every moving object is parametric: its position at time $t$. Bézier curves in fonts, SVG and CSS easing are parametric.
+- **Physics:** projectile paths, orbits, and the motion of any particle.
+- **CNC machines and 3D printers:** the tool path is given as x(t), y(t), z(t).
+- **Robotics:** planned trajectories for arms and drones.
+
+## 3. What it means
+A normal equation $y = f(x)$ tells you **where** the path is. A parametric pair also tells you **when** you're at each point, and in which **direction** you move.
+
+**Analogy:** a map with a dotted route (the curve) versus a GPS track with timestamps (parametric). The GPS track also shows your speed and direction.
+
+**Circle:** $x = r\cos t$, $y = r\sin t$ traces a circle anticlockwise as $t$ goes from $0$ to $2\pi$, since $x^2 + y^2 = r^2(\cos^2 t + \sin^2 t) = r^2$.
+
+**Eliminating the parameter:**
+- If one equation is easy to solve for $t$, solve it and substitute into the other.
+- If both use sin and cos, isolate $\cos t$ and $\sin t$ and use $\cos^2 t + \sin^2 t = 1$.
+
+## 4. Formula & worked example
+$$
+\text{circle: } x = h + r\cos t,\ y = k + r\sin t \qquad \text{ellipse: } x = a\cos t,\ y = b\sin t
+$$
+$$
+\text{projectile: } x = (v\cos\theta)t,\quad y = (v\sin\theta)t - \tfrac{1}{2}gt^2
+$$
+
+**Example 1: line.** $x = 2t + 1$, $y = t - 3$. Eliminate $t$.
+- From the second: $t = y + 3$. Substitute: $x = 2(y + 3) + 1 = 2y + 7$ → $y = \frac{x - 7}{2}$
+
+**Example 2: ellipse.** $x = 4\cos t$, $y = 3\sin t$.
+- $\cos t = \frac{x}{4}$, $\sin t = \frac{y}{3}$ → $\frac{x^2}{16} + \frac{y^2}{9} = 1$
+- An ellipse 8 wide and 6 tall, traced anticlockwise starting at $(4, 0)$.
+
+**Example 3: direction.** $x = \cos t$, $y = -\sin t$ for $0 \le t \le 2\pi$.
+- $t = 0$: $(1, 0)$; $t = \frac{\pi}{2}$: $(0, -1)$. It goes **clockwise**, unlike the standard circle.
+
+**Example 4: projectile.** A ball is thrown at 20 m/s at $30^\circ$ ($g = 9.8$).
+- $x = 20\cos 30^\circ\, t \approx 17.32t$; $y = 20\sin 30^\circ\, t - 4.9t^2 = 10t - 4.9t^2$
+- Lands when $y = 0$: $t(10 - 4.9t) = 0$ → $t \approx 2.04$ s
+- Range: $x \approx 17.32 \times 2.04 \approx 35.3$ m (matching $\frac{v^2\sin 2\theta}{g}$ from Phase 4 ✓)
+- Highest point at half the flight time, $t \approx 1.02$: $y \approx 10(1.02) - 4.9(1.02)^2 \approx 5.1$ m
+
+**Example 5: game loop.** Move a coin in a circle around $(400, 300)$ once every 3 seconds.
+```python
+import math
+def coin_pos(t):
+    w = 2 * math.pi / 3                    # angular speed: one turn per 3 s
+    return 400 + 50 * math.cos(w * t), 300 + 50 * math.sin(w * t)
+```
+This is the circle parametrisation $x = h + r\cos(\omega t)$, $y = k + r\sin(\omega t)$, with radius 50 and $\omega = \frac{2\pi}{3}$ rad/s.
+
+## 5. Common mistakes
+- Forgetting to show direction arrows on the sketch.
+- Losing the domain restriction: $x = \cos t$ can only be in $[-1, 1]$, even after eliminating $t$.
+- Putting sin on x and cos on y and then expecting the standard start point and direction.
+
+## 6. Practice
+Q: Eliminate $t$: $x = t^2$, $y = t + 1$.
+A: $t = y - 1$, so $x = (y - 1)^2$.
+
+Q: What curve is $x = 2 + 3\cos t$, $y = -1 + 3\sin t$?
+A: A circle of radius 3 centred at $(2, -1)$.
+
+Q: Eliminate $t$: $x = 5\cos t$, $y = 2\sin t$.
+A: $\frac{x^2}{25} + \frac{y^2}{4} = 1$ (an ellipse).
+
+Q: A projectile has $y = 15t - 4.9t^2$. When does it land?
+A: $t = \frac{15}{4.9} \approx 3.06$ s.
+
+Q: Which way does $x = \sin t$, $y = \cos t$ go around the circle?
+A: Clockwise, starting at $(0, 1)$."
+3,TOPIC,Simple harmonic motion,"Springs, pendulums and waves: x = A cos(ωt), frequency, period and damping",SHOULD,FALSE,"# Simple harmonic motion
+
+## 1. What it covers
+- **Simple harmonic motion (SHM):** motion described by $x(t) = A\cos(\omega t)$ or $A\sin(\omega t)$.
+- **Angular frequency** $\omega$, **period** $T$ and **frequency** $f$, and how they connect.
+- Springs and pendulums.
+- **Damped** motion $x = Ae^{-kt}\cos(\omega t)$ (a preview).
+
+## 2. Where it is used
+- **Mechanical engineering:** car suspension, building sway in earthquakes, machine vibration.
+- **Electronics:** LC circuits and quartz crystals in watches and computers oscillate harmonically (a quartz watch crystal vibrates at 32 768 Hz).
+- **Music:** guitar strings, tuning forks and speaker cones.
+- **Game and UI animation:** ""spring"" animations (iOS, Framer Motion, React Spring) are damped harmonic motion.
+- **Seismology:** seismographs measure ground vibration.
+
+## 3. What it means
+Pull a mass on a spring and let go. It moves back and forth around its rest position, and its position over time is a perfect sine wave. The same thing happens to a pendulum (for small swings), a vibrating string and an electrical circuit.
+
+Why sine? Look at a point moving round a circle at a steady speed, **from the side**: its shadow moves back and forth in exactly this way. SHM is ""circular motion viewed edge-on"".
+
+**Analogy:** a child on a swing. They're fastest at the bottom (rest position) and stop for a moment at each end before swinging back. A cosine wave behaves exactly like this.
+
+- $A$: amplitude (the furthest distance from rest).
+- $\omega$: angular frequency (rad/s), i.e. how fast the ""hidden circle"" turns.
+- $T = \frac{2\pi}{\omega}$: the time for one full back-and-forth.
+- $f = \frac{1}{T}$: oscillations per second (Hz).
+
+**Damping:** real springs lose energy, so the amplitude shrinks: multiply by $e^{-kt}$, which decays towards 0.
+
+## 4. Formula & worked example
+$$
+x(t) = A\cos(\omega t) \qquad T = \frac{2\pi}{\omega} \qquad f = \frac{1}{T} = \frac{\omega}{2\pi}
+$$
+$$
+\text{spring: } \omega = \sqrt{\frac{k}{m}} \qquad \text{pendulum (small swings): } T = 2\pi\sqrt{\frac{L}{g}}
+$$
+$$
+\text{damped: } x(t) = Ae^{-ct}\cos(\omega t)
+$$
+
+**Example 1.** A mass on a spring is pulled 5 cm and released. It oscillates 2 times per second. Write its motion.
+- $A = 5$, $f = 2$ Hz → $\omega = 2\pi f = 4\pi$
+- Released from the end (maximum) → cosine: $x(t) = 5\cos(4\pi t)$
+
+**Example 2.** Where is it at $t = 0.1$ s?
+- $x = 5\cos(0.4\pi) \approx 5(0.309) \approx 1.55$ cm
+
+**Example 3: spring constant.** A 0.5 kg mass on a spring with $k = 200$ N/m.
+- $\omega = \sqrt{\frac{200}{0.5}} = 20$ rad/s → $T = \frac{2\pi}{20} \approx 0.314$ s, $f \approx 3.18$ Hz
+
+**Example 4: pendulum clock.** How long must a pendulum be to have a period of 2 s (one tick per second each way)?
+- $2 = 2\pi\sqrt{\frac{L}{9.8}}$ → $\sqrt{\frac{L}{9.8}} = \frac{1}{\pi}$ → $L = \frac{9.8}{\pi^2} \approx 0.993$ m
+
+**Example 5: damped spring animation.**
+```python
+import math
+def spring(t, start=100, damping=3.0, freq=2.0):
+    return start * math.exp(-damping * t) * math.cos(2 * math.pi * freq * t)
+# an element offset by 100 px wobbles back to 0 over ~1.5 seconds
+```
+`math.exp(-damping * t)` shrinks the swing each cycle, and `cos(2*pi*freq*t)` makes it oscillate twice per second. This is the ""springy"" effect used in UI libraries.
+
+## 5. Common mistakes
+- Confusing $f$ (Hz, cycles per second) with $\omega$ (rad/s). $\omega = 2\pi f$.
+- Using sine when the motion starts at the maximum. A release from rest at the end is **cosine**.
+- Using the pendulum formula for large swings. It is accurate only for small angles (under about $15^\circ$).
+
+## 6. Practice
+Q: $x(t) = 3\cos(10t)$. Amplitude, period and frequency?
+A: $A = 3$, $T = \frac{2\pi}{10} \approx 0.628$ s, $f \approx 1.59$ Hz.
+
+Q: Convert 50 Hz to angular frequency.
+A: $\omega = 100\pi \approx 314$ rad/s.
+
+Q: A spring has $k = 100$ N/m and a mass of 1 kg. What is $\omega$?
+A: $\omega = \sqrt{100} = 10$ rad/s.
+
+Q: A pendulum 2.45 m long. Period ($g = 9.8$)?
+A: $2\pi\sqrt{0.25} = \pi \approx 3.14$ s.
+
+Q: Why does SHM follow a sine wave?
+A: It is the side view (shadow) of steady circular motion."
+3,TOPIC,"Practice & review: Polar, parametric and harmonic motion",Mixed problem set with worked answers,SHOULD,FALSE,"# Practice & review: Polar, parametric and harmonic motion
+
+**How to use this:** 40 minutes. Sketch the curves by hand before checking with a graphing tool such as Desmos.
+
+## Problems
+1. Convert $\left(-4, \frac{\pi}{3}\right)$ to Cartesian, and $(-3, 3)$ to polar.
+2. Convert $r = 6\sin\theta$ to Cartesian form and describe the curve.
+3. Identify each curve: (a) $r = 2\cos 3\theta$, (b) $r = 4 - 4\cos\theta$, (c) $r = 3 + \cos\theta$.
+4. Eliminate the parameter: $x = 3\sec t$, $y = 2\tan t$.
+5. A ball is kicked at 18 m/s at $50^\circ$. Write parametric equations and find its flight time and range ($g = 9.8$).
+6. A mass on a spring moves with amplitude 8 cm and period 0.5 s, released from the top. Write $x(t)$ and find its position at $t = 0.125$ s.
+
+## Answers
+1. $x = -4\cos\frac{\pi}{3} = -2$, $y = -4\sin\frac{\pi}{3} = -2\sqrt{3}$ → $(-2, -2\sqrt{3})$. And $(-3, 3)$: $r = 3\sqrt{2}$, $\theta = \frac{3\pi}{4}$.
+2. $r^2 = 6r\sin\theta$ → $x^2 + y^2 = 6y$ → $x^2 + (y - 3)^2 = 9$: a circle of radius 3 centred at $(0, 3)$.
+3. (a) 3-petal rose, petals of length 2. (b) Cardioid pointing left (furthest point $r = 8$ at $\theta = \pi$). (c) Limaçon without a loop ($a > b$); rounded, with no dimple, since $a \ge 2b$.
+4. $\sec t = \frac{x}{3}$, $\tan t = \frac{y}{2}$; with $\sec^2 t - \tan^2 t = 1$: $\frac{x^2}{9} - \frac{y^2}{4} = 1$ (a hyperbola).
+5. $x = 18\cos 50^\circ\, t \approx 11.57t$, $y = 18\sin 50^\circ\, t - 4.9t^2 \approx 13.79t - 4.9t^2$. Flight time $\approx \frac{13.79}{4.9} \approx 2.81$ s; range $\approx 11.57 \times 2.81 \approx 32.5$ m.
+6. $\omega = \frac{2\pi}{0.5} = 4\pi$; $x(t) = 8\cos(4\pi t)$. At $t = 0.125$: $8\cos\frac{\pi}{2} = 0$ (passing through rest position).
+
+## Flashcards
+Q: Polar to Cartesian formulas?
+A: $x = r\cos\theta$, $y = r\sin\theta$.
+
+Q: Number of petals of $r = a\cos(n\theta)$?
+A: $n$ if $n$ is odd, $2n$ if $n$ is even.
+
+Q: Standard parametric circle of radius $r$?
+A: $x = r\cos t$, $y = r\sin t$.
+
+Q: Period of $x = A\cos(\omega t)$?
+A: $T = \frac{2\pi}{\omega}$."
+2,MODULE,Final review,Two cumulative mixed sets covering the whole roadmap,MUST,,"Finish the roadmap by mixing everything. Mixed practice (not grouped by topic) is what makes knowledge stick, because you have to decide which tool to use."
+3,TOPIC,Final review 1: Triangles and the unit circle,Cumulative mixed problems from Phases 1–3 with answers,MUST,FALSE,"# Final review 1: Triangles and the unit circle
+
+**How to use this:** 60 minutes, calculator allowed only where marked (C). Revisit the topic notes for every miss.
+
+## Problems
+1. A 30-60-90 triangle has a long side of 12. Find the other sides exactly.
+2. $\sec\theta = \frac{13}{5}$, $\theta$ in QIV. Find $\sin\theta$ and $\cot\theta$.
+3. Evaluate exactly: $\cos\frac{5\pi}{4} \cdot \sin\frac{7\pi}{4} + \tan\frac{5\pi}{6}\cdot\sqrt{3}$.
+4. (C) A 15 m ladder makes a $68^\circ$ angle with the ground. How high up the wall does it reach?
+5. (C) An arc of length 18 cm subtends $2.4$ rad. Find the radius and the sector area.
+6. Write the equation of a cosine wave with max 9, min 1, period 4 and a maximum at $x = 1$.
+7. Evaluate exactly: $\arccos\left(-\frac{\sqrt{3}}{2}\right)$ and $\sin\left(\arctan\frac{4}{3}\right)$.
+8. (C) $a = 11$, $b = 7$, $C = 38^\circ$. Find $c$ and the area.
+9. (C) $A = 25^\circ$, $a = 6$, $b = 12$. How many triangles exist? Find $B$ for each.
+10. (C) From a 40 m tower, the angles of depression to the near and far banks of a river (in line with the tower) are $52^\circ$ and $28^\circ$. How wide is the river?
+
+## Answers
+1. Short side $\frac{12}{\sqrt{3}} = 4\sqrt{3}$; hypotenuse $8\sqrt{3}$.
+2. $\cos\theta = \frac{5}{13}$, $\sin\theta = -\frac{12}{13}$, $\cot\theta = -\frac{5}{12}$.
+3. $\left(-\frac{\sqrt{2}}{2}\right)\left(-\frac{\sqrt{2}}{2}\right) + \left(-\frac{\sqrt{3}}{3}\right)\sqrt{3} = \frac{1}{2} - 1 = -\frac{1}{2}$.
+4. $15\sin 68^\circ \approx 13.91$ m.
+5. $r = \frac{18}{2.4} = 7.5$ cm; area $= \frac{1}{2}(7.5)^2(2.4) = 67.5$ cm².
+6. $y = 4\cos\left(\frac{\pi}{2}(x - 1)\right) + 5$.
+7. $\frac{5\pi}{6}$; $\frac{4}{5}$.
+8. $c^2 = 121 + 49 - 154\cos 38^\circ \approx 170 - 121.35 = 48.65$ → $c \approx 6.97$; area $= \frac{1}{2}(11)(7)\sin 38^\circ \approx 23.70$.
+9. $h = 12\sin 25^\circ \approx 5.07 < 6 < 12$ → two. $\sin B = \frac{12\sin 25^\circ}{6} \approx 0.8452$ → $B \approx 57.7^\circ$ or $122.3^\circ$.
+10. Near bank $\frac{40}{\tan 52^\circ} \approx 31.25$ m; far bank $\frac{40}{\tan 28^\circ} \approx 75.23$ m; width $\approx 43.98$ m."
+3,TOPIC,"Final review 2: Identities, equations and applications",Cumulative mixed problems from Phases 4–5 with answers,MUST,FALSE,"# Final review 2: Identities, equations and applications
+
+**How to use this:** 60 minutes, no calculator except (C). After this set, you're ready for the Calculus roadmap.
+
+## Problems
+1. Prove $\frac{\cos x}{1 + \sin x} + \frac{1 + \sin x}{\cos x} = 2\sec x$.
+2. Prove $\cos^4 x - \sin^4 x = \cos 2x$.
+3. Exact value of $\sin\frac{5\pi}{12}$ (two ways: sum identity and half-angle).
+4. $\tan x = -\frac{3}{4}$, $x$ in QII. Find $\sin 2x$ and $\cos\frac{x}{2}$.
+5. Solve $2\sin^2 x + 3\cos x = 0$ on $[0, 2\pi)$.
+6. Solve $\sin 2x + \sin x = 0$ on $[0, 2\pi)$.
+7. Solve $\cos 3x = -\frac{1}{2}$ on $[0, \pi]$.
+8. Convert $r = 2\sec\theta$ to Cartesian form.
+9. (C) A pendulum's angle is $\theta(t) = 0.2\cos(3.1t)$ radians. Find its period and its angle at $t = 1$ s.
+
+## Answers
+1. Common denominator $\cos x(1 + \sin x)$: numerator $\cos^2 x + 1 + 2\sin x + \sin^2 x = 2(1 + \sin x)$, so the result is $\frac{2}{\cos x} = 2\sec x$ ✓
+2. $(\cos^2 x - \sin^2 x)(\cos^2 x + \sin^2 x) = \cos^2 x - \sin^2 x = \cos 2x$ ✓
+3. $\sin(45^\circ + 30^\circ) = \frac{\sqrt{6} + \sqrt{2}}{4}$; half-angle: $\sqrt{\frac{1 - \cos 150^\circ}{2}} = \sqrt{\frac{1 + \frac{\sqrt{3}}{2}}{2}} = \frac{\sqrt{2 + \sqrt{3}}}{2}$ (the same number, $\approx 0.966$).
+4. $\sin x = \frac{3}{5}$, $\cos x = -\frac{4}{5}$. $\sin 2x = -\frac{24}{25}$. $x$ in QII → $\frac{x}{2}$ in QI: $\cos\frac{x}{2} = \sqrt{\frac{1 - \frac{4}{5}}{2}} = \sqrt{\frac{1}{10}} = \frac{\sqrt{10}}{10}$.
+5. $2(1 - \cos^2 x) + 3\cos x = 0$ → $2\cos^2 x - 3\cos x - 2 = 0$ → $(2\cos x + 1)(\cos x - 2) = 0$. $\cos x = 2$ is impossible; $\cos x = -\frac{1}{2}$ → $x = \frac{2\pi}{3}, \frac{4\pi}{3}$.
+6. $\sin x(2\cos x + 1) = 0$ → $x = 0, \pi, \frac{2\pi}{3}, \frac{4\pi}{3}$.
+7. $3x$ in $[0, 3\pi]$: $3x = \frac{2\pi}{3}, \frac{4\pi}{3}, \frac{8\pi}{3}$ → $x = \frac{2\pi}{9}, \frac{4\pi}{9}, \frac{8\pi}{9}$.
+8. $r\cos\theta = 2$ → $x = 2$ (a vertical line).
+9. $T = \frac{2\pi}{3.1} \approx 2.03$ s; $\theta(1) = 0.2\cos 3.1 \approx 0.2(-0.9991) \approx -0.200$ rad (almost at the far end of the swing)."

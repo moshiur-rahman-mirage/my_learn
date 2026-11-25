@@ -1,0 +1,215 @@
+{
+  "cases" : [ {
+    "name" : "basic markdown",
+    "format" : "MARKDOWN",
+    "content" : "Q: What is a heap?\nA: A tree where each parent is smaller than its children.",
+    "cards" : [ {
+      "answer" : "A tree where each parent is smaller than its children.",
+      "key" : "2d8375a4319aff772c0cfadf",
+      "question" : "What is a heap?"
+    } ],
+    "wikiKey" : "q: what is a heap? a: a tree where each parent is smaller than its children."
+  }, {
+    "name" : "multi-line question and answer",
+    "format" : "MARKDOWN",
+    "content" : "Intro text\n\nQ: First line\nsecond line of the question\nA: Answer one\nanswer two\n\nAfter the card",
+    "cards" : [ {
+      "answer" : "Answer one\nanswer two",
+      "key" : "5dc35625a2c99030dfd671cf",
+      "question" : "First line\nsecond line of the question"
+    } ],
+    "wikiKey" : "intro text q: first line second line of the question a: answer one answer two after the card"
+  }, {
+    "name" : "markers: lists, numbers, bold, fullwidth colon, lower case",
+    "format" : "MARKDOWN",
+    "content" : "- Q: dash\n  A: one\n\n1. Q: numbered\nA: two\n\n**Q:** bold\n**A:** three\n\n__Q__: underscores\nA: four\n\nQ： fullwidth\nA： five\n\nq: lower\na: six\n\n2) Q: paren\nA: seven",
+    "cards" : [ {
+      "answer" : "one",
+      "key" : "af9d2c92ddc38ca77b3cd29e",
+      "question" : "dash"
+    }, {
+      "answer" : "two",
+      "key" : "2054c3ced7473dba19a27a95",
+      "question" : "numbered"
+    }, {
+      "answer" : "three",
+      "key" : "e0007a5bca8d915862749b39",
+      "question" : "bold"
+    }, {
+      "answer" : "four",
+      "key" : "631b17ac26a963fd05a6a4c2",
+      "question" : "underscores"
+    }, {
+      "answer" : "five",
+      "key" : "39ecd459f143d7522ebfbb82",
+      "question" : "fullwidth"
+    }, {
+      "answer" : "six",
+      "key" : "8c6fb1e9e37a1aea1d308c78",
+      "question" : "lower"
+    }, {
+      "answer" : "seven",
+      "key" : "fa185786758c47a8bb2289a9",
+      "question" : "paren"
+    } ],
+    "wikiKey" : "- q: dash a: one 1. q: numbered a: two **q:** bold **a:** three __q__: underscores a: four q： fullwidth a： five q: lower a: six 2) q: paren a: seven"
+  }, {
+    "name" : "code fence in answer keeps blank lines and ignores markers",
+    "format" : "MARKDOWN",
+    "content" : "Q: Show code\nA: Like this:\n```java\nint x = 1;\n\nQ: not a card\n```\nend\n\nQ: Next\nA: card",
+    "cards" : [ {
+      "answer" : "Like this:\n```java\nint x = 1;\n\nQ: not a card\n```\nend",
+      "key" : "558036a0c4f164991932f768",
+      "question" : "Show code"
+    }, {
+      "answer" : "card",
+      "key" : "c6c1c9a9c8543f1e4cd98006",
+      "question" : "Next"
+    } ],
+    "wikiKey" : "q: show code a: like this: ```java int x = 1; q: not a card ``` end q: next a: card"
+  }, {
+    "name" : "duplicate questions by case and spacing are one card",
+    "format" : "MARKDOWN",
+    "content" : "Q: Same   Question\nA: first\n\nQ: same question\nA: second",
+    "cards" : [ {
+      "answer" : "first",
+      "key" : "edb821aa6de47ac63e172e90",
+      "question" : "Same   Question"
+    } ],
+    "wikiKey" : "q: same question a: first q: same question a: second"
+  }, {
+    "name" : "heading ends a question without answer",
+    "format" : "MARKDOWN",
+    "content" : "Q: Lonely question\n## Heading\nQ: Real\nA: yes\n# Next heading\ntext",
+    "cards" : [ {
+      "answer" : "yes",
+      "key" : "aa33996d60e89311b4d1a920",
+      "question" : "Real"
+    } ],
+    "wikiKey" : "q: lonely question ## heading q: real a: yes # next heading text"
+  }, {
+    "name" : "unicode spaces: NBSP kept, em space stripped, ideographic space",
+    "format" : "MARKDOWN",
+    "content" : "Q: padded question \nA: 　answer　\n\nQ: tab\tinside   and em\nA: x",
+    "cards" : [ {
+      "answer" : "answer",
+      "key" : "0ddf4f8bdd3cdc86b8d6bcc4",
+      "question" : "padded question"
+    }, {
+      "answer" : "x",
+      "key" : "86bf3add58d3983460743af7",
+      "question" : "tab\tinside   and em"
+    } ],
+    "wikiKey" : "q: padded question  a: 　answer　 q: tab inside and em a: x"
+  }, {
+    "name" : "NEL inside a line breaks the marker like Java",
+    "format" : "MARKDOWN",
+    "content" : "Q: hasnel\nA: answer\n\nQ: ok\nA: fine",
+    "cards" : [ {
+      "answer" : "fine",
+      "key" : "2689367b205c16ce32ed4200",
+      "question" : "ok"
+    } ],
+    "wikiKey" : "q: hasnel a: answer q: ok a: fine"
+  }, {
+    "name" : "CRLF and CR line endings",
+    "format" : "MARKDOWN",
+    "content" : "Q: windows\r\nA: crlf\r\n\r\nQ: old mac\rA: cr",
+    "cards" : [ {
+      "answer" : "crlf",
+      "key" : "340d600392818df2413382dc",
+      "question" : "windows"
+    }, {
+      "answer" : "cr",
+      "key" : "8ff194b1e6f3d36d51e0b670",
+      "question" : "old mac"
+    } ],
+    "wikiKey" : "q: windows a: crlf q: old mac a: cr"
+  }, {
+    "name" : "tab indented and leading spaces",
+    "format" : "MARKDOWN",
+    "content" : "\tQ: tabbed\n   A: spaced",
+    "cards" : [ {
+      "answer" : "spaced",
+      "key" : "818c7d220a1bca5f75b32785",
+      "question" : "tabbed"
+    } ],
+    "wikiKey" : "q: tabbed a: spaced"
+  }, {
+    "name" : "unicode case folding",
+    "format" : "MARKDOWN",
+    "content" : "Q: ÄÖÜ Straße İstanbul ΣΑΣ\nA: x",
+    "cards" : [ {
+      "answer" : "x",
+      "key" : "ad6820929d626dcc0fccb3b9",
+      "question" : "ÄÖÜ Straße İstanbul ΣΑΣ"
+    } ],
+    "wikiKey" : "q: äöü straße i̇stanbul σας a: x"
+  }, {
+    "name" : "trailing spaces and answer continuation",
+    "format" : "MARKDOWN",
+    "content" : "Q: trailing   \nA: line one   \n  line two\nline three",
+    "cards" : [ {
+      "answer" : "line one   \n  line two\nline three",
+      "key" : "6d388d29cd7aee3b77fb8646",
+      "question" : "trailing"
+    } ],
+    "wikiKey" : "q: trailing a: line one line two line three"
+  }, {
+    "name" : "A without Q and Q after A",
+    "format" : "MARKDOWN",
+    "content" : "A: orphan answer\nQ: q1\nA: a1\nA: not a second answer\nQ: q2\nA: a2",
+    "cards" : [ {
+      "answer" : "a1\nA: not a second answer",
+      "key" : "c75de8c1b7c3ae5252091267",
+      "question" : "q1"
+    }, {
+      "answer" : "a2",
+      "key" : "bee98bf120e8906382754c6b",
+      "question" : "q2"
+    } ],
+    "wikiKey" : "a: orphan answer q: q1 a: a1 a: not a second answer q: q2 a: a2"
+  }, {
+    "name" : "html note: paragraphs, list items, entities, br",
+    "format" : "HTML",
+    "content" : "<h2>Heaps</h2><p>Q: What&nbsp;is &lt;heap&gt;?</p><p>A: This &amp; that &#x1F600; &#65;&#12a;</p><ul><li><p>Q: inside list</p></li><li><p>A: answer<br>second line</p></li></ul><p>[[Spring  Boot]] and [[Other|label]]</p>",
+    "cards" : [ {
+      "answer" : "This & that 😀 A",
+      "key" : "77d2aa304e3d63ebfb1e7e25",
+      "question" : "What is <heap>?"
+    }, {
+      "answer" : "answer\nsecond line",
+      "key" : "1f16e99eaf151f8b12867222",
+      "question" : "inside list"
+    } ],
+    "lines" : "Heaps\n\nQ: What is <heap>?\n\nA: This & that 😀 A\n\nQ: inside list\n\nA: answer\nsecond line\n\n[[Spring  Boot]] and [[Other|label]]",
+    "plainText" : "Heaps Q: What is <heap>? A: This & that 😀 A Q: inside list A: answer second line [[Spring Boot]] and [[Other|label]]",
+    "wikiKey" : "<h2>heaps</h2><p>q: what&nbsp;is &lt;heap&gt;?</p><p>a: this &amp; that &#x1f600; &#65;&#12a;</p><ul><li><p>q: inside list</p></li><li><p>a: answer<br>second line</p></li></ul><p>[[spring boot]] and [[other|label]]</p>"
+  }, {
+    "name" : "html with uppercase tags and attributes",
+    "format" : "HTML",
+    "content" : "<P CLASS=\"x\">Q: upper</P><DIV>A: div answer</DIV><BR/><pre>code</pre>",
+    "cards" : [ {
+      "answer" : "div answer",
+      "key" : "aee610558292023758a4229d",
+      "question" : "upper"
+    } ],
+    "lines" : "Q: upper\n\nA: div answer\n\ncode",
+    "plainText" : "Q: upper A: div answer code",
+    "wikiKey" : "<p class=\"x\">q: upper</p><div>a: div answer</div><br/><pre>code</pre>"
+  }, {
+    "name" : "html empty-ish",
+    "format" : "HTML",
+    "content" : "<p>&nbsp;</p><p></p>",
+    "cards" : [ ],
+    "lines" : "",
+    "plainText" : "",
+    "wikiKey" : "<p>&nbsp;</p><p></p>"
+  }, {
+    "name" : "wiki key normalization",
+    "format" : "MARKDOWN",
+    "content" : "  Spring \t Boot  Ⅻ ΣΑΣ  ",
+    "cards" : [ ],
+    "wikiKey" : "spring boot  ⅻ σας"
+  } ]
+}

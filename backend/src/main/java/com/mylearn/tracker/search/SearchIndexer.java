@@ -4,8 +4,6 @@ import com.mylearn.tracker.common.HtmlText;
 import com.mylearn.tracker.note.NoteFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.context.event.EventListener;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,7 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * Writes the plain text of notes into the search index (see V3__learning_features.sql for why
  * this isn't a trigger). Saving a note updates its row; {@link #reindexNotes()} rebuilds all of
- * them at start-up and after a restore.
+ * them when NoteIndexes decides a full rebuild is needed (after a restore, a migration or a
+ * parser change).
  */
 @Component
 public class SearchIndexer {
@@ -35,7 +34,6 @@ public class SearchIndexer {
         jdbc.update("UPDATE search_index SET note = ? WHERE rowid = ?", text, itemId);
     }
 
-    @EventListener(ApplicationReadyEvent.class)
     @Transactional
     public void reindexNotes() {
         jdbc.update("UPDATE search_index SET note = '' WHERE note <> ''");

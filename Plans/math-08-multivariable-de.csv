@@ -1,0 +1,2482 @@
+﻿level,type,name,description,priority,completed,content
+1,MODULE,Phase 1 — Functions of Several Variables (Foundation),"Multivariable functions, graphs and contour maps, vector fields, lines, planes and parametric surfaces",SHOULD,,"# Phase 1: Functions of several variables
+
+Real quantities usually depend on **many** inputs: temperature depends on position and time; a loss function in machine learning depends on millions of weights; profit depends on price and advertising. **Multivariable calculus** extends derivatives and integrals to such functions. **Differential equations** (Phase 6) describe how systems change over time.
+
+**What you need first:** the Calculus roadmap (derivatives, integrals, the chain rule) and the Linear Algebra roadmap (vectors, matrices, eigenvalues).
+
+Each topic has six parts: what it covers, where it is used, what it means, formulas with worked examples, common mistakes, and practice flashcards."
+2,MODULE,Multivariable functions and geometry,"Functions of two or three variables, contour maps, vector fields, lines and planes, parametric surfaces",SHOULD,,"Before differentiating, learn to picture functions of several variables."
+3,TOPIC,"Functions of several variables, graphs and contour maps","f(x, y), domains, surfaces z = f(x, y), level curves and level surfaces",SHOULD,FALSE,"# Functions of several variables, graphs and contour maps
+
+## 1. What it covers
+- Functions $f(x, y)$ and $f(x, y, z)$; their domains.
+- Graphs $z = f(x, y)$ as **surfaces** in 3D.
+- **Level curves** (contour lines) $f(x, y) = c$ and **contour maps**.
+- Level surfaces $f(x, y, z) = c$.
+
+## 2. Where it is used
+- **Maps:** topographic maps draw contour lines of equal height; weather maps show isobars (equal pressure) and isotherms.
+- **Machine learning:** loss landscapes are visualised as contour plots of the loss over two parameters.
+- **Economics:** indifference curves and isoquants are level curves of utility and production functions.
+- **Physics:** equipotential surfaces of electric fields.
+
+## 3. What it means
+A function of two variables assigns a number to each point $(x, y)$ in the plane, like the height of terrain at each map position. Its graph $z = f(x, y)$ is a surface (a landscape).
+
+**Contour map:** slice the landscape horizontally at heights $c_1, c_2, \ldots$ and draw the slices on the flat map. Each curve connects points with the same value.
+- Contours **close together** → the surface is **steep**.
+- Contours **far apart** → gentle slope.
+- Closed loops shrinking to a point → a peak or a valley.
+
+For three variables, $f(x, y, z) = c$ gives **level surfaces** (we can't graph a 4D surface, but we can see these).
+
+## 4. Formula & worked example
+**Example 1 (domain).** $f(x, y) = \sqrt{9 - x^2 - y^2}$: need $x^2 + y^2 \le 9$ → the disk of radius 3. The graph is the top half of a sphere.
+
+**Example 2 (level curves).** $f(x, y) = x^2 + y^2$: level curves $x^2 + y^2 = c$ are circles of radius $\sqrt{c}$. The surface is a bowl (paraboloid), and the circles get closer together further out (steeper).
+
+**Example 3 (saddle).** $f(x, y) = x^2 - y^2$: level curves are hyperbolas; the surface is a saddle (like a Pringle).
+
+**Example 4 (economics).** Utility $U(x, y) = xy$: indifference curves $xy = c$ (hyperbolas): combinations of two goods giving equal satisfaction.
+
+**Example 5 (code).**
+```python
+import numpy as np, matplotlib.pyplot as plt
+x, y = np.meshgrid(np.linspace(-3, 3, 200), np.linspace(-3, 3, 200))
+z = x**2 - y**2                      # saddle
+plt.contour(x, y, z, levels=15); plt.colorbar(); plt.gca().set_aspect(""equal""); plt.show()
+```
+`meshgrid` builds a grid of $(x, y)$ points; `contour` draws the level curves of $z$ on it, exactly like a topographic map.
+
+## 5. Common mistakes
+- Reading contour spacing backwards (close lines mean steep).
+- Forgetting domain restrictions (square roots, logs, denominators).
+- Confusing a level curve (in the xy-plane) with the surface itself.
+
+## 6. Practice
+Q: Domain of $f(x, y) = \ln(x - y)$?
+A: All points with $x > y$.
+
+Q: Level curves of $f(x, y) = 2x + y$?
+A: Parallel lines $2x + y = c$.
+
+Q: What do closely spaced contour lines indicate?
+A: A steep slope.
+
+Q: Shape of the surface $z = x^2 + y^2$?
+A: A bowl (paraboloid).
+
+Q: Level surfaces of $f(x, y, z) = x^2 + y^2 + z^2$?
+A: Spheres centred at the origin."
+3,TOPIC,"Lines, planes and parametric surfaces in 3D","Vector and parametric equations of lines, equations of planes from a normal, parametrising surfaces",SHOULD,FALSE,"# Lines, planes and parametric surfaces in 3D
+
+## 1. What it covers
+- Lines in 3D: $\vec{r}(t) = \vec{r}_0 + t\vec{v}$.
+- Planes: $a(x - x_0) + b(y - y_0) + c(z - z_0) = 0$ from a **normal vector** $\langle a, b, c\rangle$.
+- Finding a plane through three points (cross product).
+- **Parametric surfaces** $\vec{r}(u, v)$ (spheres, cylinders, tori).
+
+## 2. Where it is used
+- **3D graphics and games:** rays (lines) and triangles (pieces of planes); ray–plane intersection for picking and collisions.
+- **CAD and 3D printing:** parametric surfaces describe shapes (NURBS in car and aircraft design).
+- **Robotics:** planning straight-line motions.
+- **Computer vision:** fitting planes to point clouds (e.g. detecting floors from lidar).
+
+## 3. What it means
+**Line:** start at a point $\vec{r}_0$ and move along a direction $\vec{v}$; the parameter $t$ says how far.
+
+**Plane:** a plane is determined by a point on it and a **normal vector** $\vec{n}$ perpendicular to it. A point $\vec{r}$ is on the plane exactly when $\vec{r} - \vec{r}_0$ is perpendicular to $\vec{n}$: $\vec{n} \cdot (\vec{r} - \vec{r}_0) = 0$.
+
+**Parametric surface:** two parameters $(u, v)$, like longitude and latitude, map a flat rectangle onto a curved surface.
+
+## 4. Formula & worked example
+$$
+\vec{r}(t) = \vec{r}_0 + t\vec{v} \qquad a(x - x_0) + b(y - y_0) + c(z - z_0) = 0 \qquad \text{sphere: } \vec{r}(\theta, \phi) = \langle R\sin\phi\cos\theta,\ R\sin\phi\sin\theta,\ R\cos\phi\rangle
+$$
+
+**Example 1 (line).** Through $(1, 2, 3)$ and $(4, 0, 5)$: $\vec{v} = \langle 3, -2, 2\rangle$ → $\vec{r}(t) = \langle 1 + 3t, 2 - 2t, 3 + 2t\rangle$.
+
+**Example 2 (plane from 3 points).** $A(1, 0, 0)$, $B(0, 1, 0)$, $C(0, 0, 1)$: $\vec{n} = \vec{AB} \times \vec{AC} = \langle -1, 1, 0\rangle \times \langle -1, 0, 1\rangle = \langle 1, 1, 1\rangle$ → $x + y + z = 1$.
+
+**Example 3 (ray hits plane).** Where does $\vec{r}(t) = \langle t, 2t, 3t\rangle$ meet $x + y + z = 12$? $6t = 12$ → $t = 2$ → $(2, 4, 6)$.
+
+**Example 4 (distance from a point to a plane).** $P(1, 2, 3)$ to $x + y + z = 1$: $\frac{\lvert 1 + 2 + 3 - 1\rvert}{\sqrt{3}} = \frac{5}{\sqrt{3}} \approx 2.89$.
+
+**Example 5 (code: ray–plane intersection).**
+```python
+import numpy as np
+def ray_plane(origin, direction, n, d):          # plane: n . x = d
+    denom = n @ direction
+    if abs(denom) < 1e-9: return None            # ray parallel to the plane
+    t = (d - n @ origin) / denom
+    return origin + t * direction if t >= 0 else None
+print(ray_plane(np.zeros(3), np.array([1., 2, 3]), np.array([1., 1, 1]), 12))   # [2. 4. 6.]
+```
+Substituting the line into the plane equation gives one equation for $t$; this is the core of mouse picking and ray tracing.
+
+## 5. Common mistakes
+- Using a direction vector of the plane instead of its normal in the plane equation.
+- Forgetting that a line in 3D can't be written as a single equation $y = mx + b$.
+- Not checking for parallel rays (division by zero).
+
+## 6. Practice
+Q: Parametric line through $(0, 1, 2)$ with direction $\langle 1, 0, -1\rangle$?
+A: $\langle t, 1, 2 - t\rangle$.
+
+Q: Plane through $(1, 1, 1)$ with normal $\langle 2, -1, 3\rangle$?
+A: $2x - y + 3z = 4$.
+
+Q: Normal vector of $3x - 2y + z = 7$?
+A: $\langle 3, -2, 1\rangle$.
+
+Q: How do you find a plane through three points?
+A: Take the cross product of two edge vectors for the normal, then use one point.
+
+Q: Are the planes $x + y + z = 1$ and $2x + 2y + 2z = 5$ parallel?
+A: Yes (proportional normals)."
+3,TOPIC,Vector fields,"Assigning vectors to points, plotting fields, flow, gravitational and electric fields, gradient fields",SHOULD,FALSE,"# Vector fields
+
+## 1. What it covers
+- A **vector field** $\vec{F}(x, y) = \langle P, Q\rangle$ assigns a vector to every point.
+- Sketching fields; **flow lines** (streamlines).
+- Examples: wind, water flow, gravity, electric fields, **gradient fields**.
+
+## 2. Where it is used
+- **Weather and oceanography:** wind and current maps.
+- **Physics:** gravitational, electric and magnetic fields.
+- **Fluid simulation:** velocity fields in games and CGI (smoke, water).
+- **Machine learning:** the negative gradient of a loss is a vector field that gradient descent follows.
+- **Robotics:** potential-field path planning (attracted to the goal, repelled by obstacles).
+
+## 3. What it means
+At each point, draw an arrow showing a direction and strength: wind speed and direction at each location on a weather map. A particle released in the field follows the arrows; its path is a **flow line**.
+
+**Gradient field:** for a function $f$, the field $\nabla f$ (next phase) points uphill everywhere. Fields that are gradients of some function are called **conservative** (Phase 5).
+
+## 4. Formula & worked example
+$$
+\vec{F}(x, y) = \langle P(x, y), Q(x, y)\rangle \qquad \vec{F}(x, y, z) = \langle P, Q, R\rangle
+$$
+
+**Example 1.** $\vec{F} = \langle x, y\rangle$: arrows point straight away from the origin, longer further out (a source).
+
+**Example 2.** $\vec{F} = \langle -y, x\rangle$: arrows circle anticlockwise around the origin (a rotation, like a whirlpool).
+
+**Example 3 (gravity).** $\vec{F} = -\frac{GMm}{r^3}\langle x, y, z\rangle$: points towards the mass, stronger closer in (inverse square).
+
+**Example 4 (gradient field).** $f(x, y) = x^2 + y^2$ → $\nabla f = \langle 2x, 2y\rangle$: points away from the minimum at the origin; $-\nabla f$ points towards it (the direction gradient descent moves).
+
+**Example 5 (code).**
+```python
+import numpy as np, matplotlib.pyplot as plt
+x, y = np.meshgrid(np.linspace(-2, 2, 15), np.linspace(-2, 2, 15))
+plt.quiver(x, y, -y, x)              # rotational field <-y, x>
+plt.streamplot(x, y, -y, x, color=""gray"")
+plt.gca().set_aspect(""equal""); plt.show()
+```
+`quiver` draws an arrow at each grid point; `streamplot` draws flow lines that follow the arrows (circles for this field).
+
+## 5. Common mistakes
+- Swapping components when sketching (first component is horizontal).
+- Thinking arrow length is irrelevant (it shows the field's strength).
+- Confusing a vector field with a scalar function.
+
+## 6. Practice
+Q: What does a vector field assign to each point?
+A: A vector.
+
+Q: Describe $\vec{F} = \langle 1, 0\rangle$.
+A: A uniform field: equal arrows pointing right everywhere.
+
+Q: Describe $\vec{F} = \langle -x, -y\rangle$.
+A: Arrows point towards the origin (a sink).
+
+Q: What is a flow line?
+A: The path of a particle that follows the field's arrows.
+
+Q: Gradient field of $f = xy$?
+A: $\langle y, x\rangle$."
+3,TOPIC,Practice & review: Functions of several variables,Mixed problem set with worked answers,SHOULD,FALSE,"# Practice & review: Functions of several variables
+
+**How to use this:** 30 minutes; sketch every answer.
+
+## Problems
+1. Find and sketch the domain of $f(x, y) = \frac{\sqrt{y - x^2}}{x - 1}$.
+2. Describe the level curves of $f(x, y) = \frac{y}{x^2}$ for $c = 0, 1, 2$.
+3. Find the parametric equation of the line through $(2, -1, 0)$ parallel to the line $\langle 1 + t, 3t, 2 - t\rangle$.
+4. Find the plane through $(1, 2, 0)$, $(0, 1, 1)$ and $(2, 0, 1)$.
+5. Where does the line $\langle 1 + t, 2 - t, 3t\rangle$ meet the plane $2x + y + z = 10$?
+6. Sketch $\vec{F} = \langle y, -x\rangle$. Which way does it circulate?
+
+## Answers
+1. Need $y \ge x^2$ and $x \ne 1$: the region on or above the parabola, minus the line $x = 1$.
+2. $y = cx^2$ ($x \ne 0$): the x-axis ($c = 0$), the parabola $y = x^2$, the narrower parabola $y = 2x^2$.
+3. Direction $\langle 1, 3, -1\rangle$ → $\langle 2 + t, -1 + 3t, -t\rangle$.
+4. $\vec{AB} = \langle -1, -1, 1\rangle$, $\vec{AC} = \langle 1, -2, 1\rangle$; $\vec{n} = \langle 1, 2, 3\rangle$ → $x + 2y + 3z = 5$.
+5. $2 + 2t + 2 - t + 3t = 10$ → $t = 1.5$ → $(2.5, 0.5, 4.5)$.
+6. Clockwise around the origin.
+
+## Flashcards
+Q: Level curve?
+A: A curve $f(x, y) = c$ connecting points with the same value.
+
+Q: Plane equation from a normal $\langle a, b, c\rangle$ and point?
+A: $a(x - x_0) + b(y - y_0) + c(z - z_0) = 0$.
+
+Q: Vector field?
+A: A function assigning a vector to each point.
+
+Q: Parametric line?
+A: $\vec{r}(t) = \vec{r}_0 + t\vec{v}$."
+1,MODULE,"Phase 2 — Partial Derivatives, Gradients and Jacobians (Core)","Partial derivatives, tangent planes, gradient and directional derivatives, multivariable chain rule, Jacobian matrix",MUST,,"# Phase 2: Partial derivatives, gradients and Jacobians
+
+How does a function of many variables change? Change **one** input at a time (partial derivatives), collect all those rates into a vector (the **gradient**), and you get the direction of steepest increase: the single most important object in machine learning optimisation. The **Jacobian** generalises the derivative to vector-valued functions and is central to robotics, physics simulations and backpropagation."
+2,MODULE,Differentiating multivariable functions,"Partial derivatives, linearisation, gradient, directional derivatives, chain rule, Jacobian",MUST,,"Freeze all variables but one, and it's ordinary calculus again."
+3,TOPIC,Partial derivatives,"∂f/∂x and ∂f/∂y, geometric meaning, higher-order and mixed partials, Clairaut's theorem",MUST,FALSE,"# Partial derivatives
+
+## 1. What it covers
+- **Partial derivatives** $\frac{\partial f}{\partial x}$ and $\frac{\partial f}{\partial y}$ (also $f_x$, $f_y$).
+- Their meaning as slopes in the $x$ and $y$ directions.
+- **Second-order** and **mixed** partials; **Clairaut's theorem** ($f_{xy} = f_{yx}$).
+
+## 2. Where it is used
+- **Machine learning:** the gradient of the loss is the vector of partial derivatives with respect to each weight.
+- **Economics:** marginal products ($\frac{\partial Q}{\partial L}$: extra output per extra worker, holding capital fixed).
+- **Physics and engineering:** partial differential equations (heat, wave, Navier–Stokes) are written with partial derivatives.
+- **Sensitivity analysis:** how much an output changes when one input is nudged.
+
+## 3. What it means
+$\frac{\partial f}{\partial x}$: how fast $f$ changes as $x$ changes, **with $y$ held fixed**. Treat $y$ like a constant and differentiate normally.
+
+Geometrically: slice the surface $z = f(x, y)$ with the plane $y = b$; you get a curve, and $f_x(a, b)$ is its slope at $x = a$. Walking east on a hillside, $f_x$ is how steep it is in that direction.
+
+**Second partials:** $f_{xx}$ (curvature in $x$), $f_{yy}$, and mixed $f_{xy}$, $f_{yx}$. For smooth functions the mixed partials are equal (Clairaut).
+
+## 4. Formula & worked example
+$$
+f_x = \frac{\partial f}{\partial x} = \lim_{h \to 0}\frac{f(x + h, y) - f(x, y)}{h} \qquad f_{xy} = f_{yx}
+$$
+
+**Example 1.** $f(x, y) = x^3y^2 + 4xy - 5y$
+- $f_x = 3x^2y^2 + 4y$; $f_y = 2x^3y + 4x - 5$
+
+**Example 2.** $f(x, y) = e^{xy}$: $f_x = ye^{xy}$, $f_y = xe^{xy}$.
+
+**Example 3.** $f(x, y) = \sin(x^2y)$: $f_x = 2xy\cos(x^2y)$, $f_y = x^2\cos(x^2y)$.
+
+**Example 4 (second order).** For Example 1: $f_{xx} = 6xy^2$, $f_{yy} = 2x^3$, $f_{xy} = 6x^2y + 4 = f_{yx}$ ✓
+
+**Example 5 (economics).** Production $Q = 10L^{0.5}K^{0.5}$ with $L = 100$ workers, $K = 400$ machines.
+- $Q_L = 5L^{-0.5}K^{0.5} = 5 \cdot 0.1 \cdot 20 = 10$ units per extra worker.
+
+**Example 6 (numerical, code).**
+```python
+def partial(f, x, y, var, h=1e-6):
+    if var == ""x"": return (f(x + h, y) - f(x - h, y)) / (2 * h)
+    return (f(x, y + h) - f(x, y - h)) / (2 * h)
+f = lambda x, y: x**3 * y**2 + 4*x*y - 5*y
+print(partial(f, 1, 2, ""x""), partial(f, 1, 2, ""y""))   # 20.0  3.0
+```
+Nudging only one variable approximates a partial derivative: at $(1, 2)$, $f_x = 3(1)(4) + 8 = 20$ and $f_y = 2(1)(2) + 4 - 5 = 3$.
+
+## 5. Common mistakes
+- Differentiating the ""constant"" variable too (in $f_x$, $y$ is fixed: $\frac{\partial}{\partial x}(y^2) = 0$).
+- Forgetting the chain rule inside functions like $e^{xy}$.
+- Mixing up $f_{xy}$ notation order (it rarely matters for smooth functions).
+
+## 6. Practice
+Q: $f = x^2y + y^3$. Find $f_x$ and $f_y$.
+A: $f_x = 2xy$; $f_y = x^2 + 3y^2$.
+
+Q: $f = \ln(x^2 + y^2)$. Find $f_x$.
+A: $\frac{2x}{x^2 + y^2}$.
+
+Q: What does $f_y(a, b)$ measure?
+A: The rate of change of $f$ in the $y$ direction at $(a, b)$, with $x$ fixed.
+
+Q: $f = x^2y^3$. Find $f_{xy}$.
+A: $6xy^2$.
+
+Q: State Clairaut's theorem.
+A: For smooth functions, $f_{xy} = f_{yx}$."
+3,TOPIC,Tangent planes and linear approximation,"Equation of the tangent plane, linearisation, differentials and error estimates",MUST,FALSE,"# Tangent planes and linear approximation
+
+## 1. What it covers
+- The **tangent plane** to $z = f(x, y)$ at a point.
+- **Linearisation** $L(x, y)$ for approximation.
+- **Total differential** $dz = f_x\,dx + f_y\,dy$ for estimating changes and errors.
+
+## 2. Where it is used
+- **Error propagation:** how measurement errors in several inputs affect a computed result.
+- **Engineering:** linearising non-linear systems around an operating point (control design).
+- **Optimisation:** gradient descent relies on the function being approximately linear for small steps.
+- **Graphics:** tangent planes for shading and bump mapping.
+
+## 3. What it means
+Zoom in on a smooth surface and it looks flat: that flat piece is the **tangent plane**. Near the point, the function is well approximated by
+$$
+L(x, y) = f(a, b) + f_x(a, b)(x - a) + f_y(a, b)(y - b)
+$$
+Each partial derivative contributes the slope in its own direction.
+
+**Differentials:** small changes $dx$ and $dy$ cause a change of about $dz = f_x\,dx + f_y\,dy$.
+
+## 4. Formula & worked example
+$$
+z = f(a, b) + f_x(a, b)(x - a) + f_y(a, b)(y - b) \qquad dz = f_x\,dx + f_y\,dy
+$$
+
+**Example 1.** Tangent plane to $f(x, y) = x^2 + y^2$ at $(1, 2)$.
+- $f = 5$, $f_x = 2$, $f_y = 4$ → $z = 5 + 2(x - 1) + 4(y - 2)$
+
+**Example 2 (approximate).** Estimate $\sqrt{3.02^2 + 3.97^2}$ using $f(x, y) = \sqrt{x^2 + y^2}$ at $(3, 4)$.
+- $f = 5$, $f_x = \frac{3}{5}$, $f_y = \frac{4}{5}$ → $5 + 0.6(0.02) + 0.8(-0.03) = 4.988$ (true $4.98806$)
+
+**Example 3 (error).** A cylinder's radius is $r = 5 \pm 0.1$ cm, height $h = 12 \pm 0.2$ cm. Volume error?
+- $V = \pi r^2h$: $dV = 2\pi rh\,dr + \pi r^2\,dh = 2\pi(60)(0.1) + \pi(25)(0.2) = 12\pi + 5\pi = 17\pi \approx 53.4$ cm³ (out of $V = 300\pi \approx 942$, about 5.7%).
+
+**Example 4 (relative error).** For $V = \pi r^2h$: $\frac{dV}{V} = 2\frac{dr}{r} + \frac{dh}{h} = 2(2\%) + 1.67\% \approx 5.7\%$ ✓ (radius errors count double because $r$ is squared).
+
+## 5. Common mistakes
+- Evaluating partials at the new point instead of the base point.
+- Forgetting the $f(a, b)$ term.
+- Using the approximation far from the base point.
+
+## 6. Practice
+Q: Linearisation formula?
+A: $L = f(a, b) + f_x(a, b)(x - a) + f_y(a, b)(y - b)$.
+
+Q: Tangent plane to $z = xy$ at $(2, 3)$?
+A: $z = 6 + 3(x - 2) + 2(y - 3)$.
+
+Q: Total differential of $z = x^2y$?
+A: $dz = 2xy\,dx + x^2\,dy$.
+
+Q: Area $A = lw$ with $l = 10 \pm 0.1$, $w = 5 \pm 0.1$. Approximate error?
+A: $dA = 5(0.1) + 10(0.1) = 1.5$.
+
+Q: Why do squared variables contribute double relative error?
+A: $\frac{d(r^2)}{r^2} = 2\frac{dr}{r}$."
+3,TOPIC,The gradient and directional derivatives,"∇f, direction of steepest ascent, rate of change in any direction, gradient ⊥ level curves",MUST,FALSE,"# The gradient and directional derivatives
+
+## 1. What it covers
+- The **gradient** $\nabla f = \langle f_x, f_y\rangle$ (or with $f_z$).
+- **Directional derivative** $D_{\vec{u}}f = \nabla f \cdot \vec{u}$.
+- The gradient points in the direction of **steepest ascent**; its length is the maximum rate.
+- The gradient is **perpendicular** to level curves.
+
+## 2. Where it is used
+- **Machine learning:** gradient descent updates every weight by moving against the gradient of the loss; backpropagation computes that gradient.
+- **Physics:** forces are negative gradients of potential energy; heat flows against the temperature gradient.
+- **Image processing:** edges are where the brightness gradient is large (Sobel and Canny edge detectors).
+- **Graphics:** normals of implicit surfaces $f(x, y, z) = 0$ are $\nabla f$.
+
+## 3. What it means
+Standing on a hillside, you can walk in any direction. The **directional derivative** tells you how steep the path is in a chosen direction $\vec{u}$ (a unit vector). It equals $\nabla f \cdot \vec{u} = \lVert\nabla f\rVert\cos\theta$, so:
+- it's **largest** when $\vec{u}$ points along $\nabla f$ ($\theta = 0$): the gradient points straight **uphill**, and $\lVert\nabla f\rVert$ is the steepest slope;
+- it's **most negative** opposite the gradient (steepest descent);
+- it's **zero** perpendicular to the gradient: walking along a contour line keeps your height constant.
+
+So the gradient is always perpendicular to the level curves.
+
+## 4. Formula & worked example
+$$
+\nabla f = \langle f_x, f_y, f_z\rangle \qquad D_{\vec{u}}f = \nabla f \cdot \vec{u}\ (\lVert\vec{u}\rVert = 1) \qquad \max D_{\vec{u}}f = \lVert\nabla f\rVert
+$$
+
+**Example 1.** $f(x, y) = x^2y + 3y$ at $(1, 2)$: $\nabla f = \langle 2xy, x^2 + 3\rangle = \langle 4, 4\rangle$.
+- Steepest ascent direction $\frac{1}{\sqrt{2}}\langle 1, 1\rangle$; maximum rate $\lVert\langle 4, 4\rangle\rVert = 4\sqrt{2} \approx 5.66$.
+
+**Example 2 (directional).** Same point, direction $\langle 3, 4\rangle$ (unit $\langle 0.6, 0.8\rangle$): $D_{\vec{u}}f = 4(0.6) + 4(0.8) = 5.6$.
+
+**Example 3 (perpendicular to level curve).** $f = x^2 + y^2$ at $(3, 4)$: $\nabla f = \langle 6, 8\rangle$, pointing straight out from the circle $x^2 + y^2 = 25$ ✓
+
+**Example 4 (heat).** Temperature $T(x, y) = 100 - x^2 - 2y^2$ at $(1, 1)$: $\nabla T = \langle -2, -4\rangle$. Heat flows in the direction $-\nabla T = \langle 2, 4\rangle$ (from hot to cold). A bug wanting to warm up fastest moves along $\nabla T = \langle -2, -4\rangle$, towards the origin, the warmest point.
+
+**Example 5 (image edges, code).**
+```python
+import numpy as np
+img = np.zeros((10, 10)); img[:, 5:] = 1.0      # dark left half, bright right half
+gy, gx = np.gradient(img)                         # partial derivatives along rows and columns
+mag = np.hypot(gx, gy)                            # gradient magnitude
+print(mag[5].round(2))                            # large only at the edge between columns 4 and 5
+```
+The brightness gradient is zero in flat areas and large where brightness jumps, which is exactly how edge detectors find outlines in images.
+
+## 5. Common mistakes
+- Using a non-unit direction vector in the directional derivative.
+- Thinking the gradient points along the level curves (it's perpendicular).
+- Confusing steepest **ascent** ($\nabla f$) with steepest **descent** ($-\nabla f$).
+
+## 6. Practice
+Q: Gradient of $f = 3x^2 - xy + y^2$?
+A: $\langle 6x - y, -x + 2y\rangle$.
+
+Q: Direction of steepest increase?
+A: The direction of $\nabla f$.
+
+Q: Maximum rate of increase at a point?
+A: $\lVert\nabla f\rVert$.
+
+Q: $\nabla f = \langle 2, -1\rangle$. Directional derivative towards $\langle 1, 0\rangle$?
+A: $2$.
+
+Q: How is the gradient related to level curves?
+A: It's perpendicular to them."
+3,TOPIC,The multivariable chain rule,"Dependency (tree) diagrams, dz/dt for z = f(x(t), y(t)), partials through intermediate variables, implicit differentiation",MUST,FALSE,"# The multivariable chain rule
+
+## 1. What it covers
+- $\frac{dz}{dt} = \frac{\partial z}{\partial x}\frac{dx}{dt} + \frac{\partial z}{\partial y}\frac{dy}{dt}$ for $z = f(x(t), y(t))$.
+- Chain rule with several intermediate and independent variables; **tree diagrams**.
+- Implicit differentiation: $\frac{dy}{dx} = -\frac{F_x}{F_y}$.
+
+## 2. Where it is used
+- **Backpropagation:** neural networks are deep compositions; the chain rule (summing over all paths) gives the gradient of the loss with respect to every weight.
+- **Physics:** rate of change of temperature felt by a moving object.
+- **Economics:** how a policy affects profit through several intermediate quantities.
+- **Related rates** with several variables.
+
+## 3. What it means
+If $z$ depends on $x$ and $y$, and both depend on $t$, then changing $t$ affects $z$ through **two paths**: via $x$ and via $y$. Each path contributes (rate of $z$ w.r.t. the intermediate) × (rate of the intermediate w.r.t. $t$), and the contributions **add**.
+
+**Tree diagram:** draw $z$ at the top, branches to $x$ and $y$, then to $t$. Multiply along each path, add over paths.
+
+This is exactly what backpropagation does: each weight affects the loss through many paths in the network, and the gradient sums them.
+
+## 4. Formula & worked example
+$$
+\frac{dz}{dt} = \frac{\partial z}{\partial x}\frac{dx}{dt} + \frac{\partial z}{\partial y}\frac{dy}{dt} \qquad \frac{\partial z}{\partial s} = \frac{\partial z}{\partial x}\frac{\partial x}{\partial s} + \frac{\partial z}{\partial y}\frac{\partial y}{\partial s} \qquad \frac{dy}{dx} = -\frac{F_x}{F_y}
+$$
+
+**Example 1.** $z = x^2y$, $x = \cos t$, $y = \sin t$.
+- $\frac{dz}{dt} = 2xy(-\sin t) + x^2(\cos t) = -2\cos t\sin^2 t + \cos^3 t$
+
+**Example 2 (moving bug).** Temperature $T(x, y) = x^2 + 3y$; a bug moves with $x = 2t$, $y = t^2$. Rate of temperature change at $t = 1$?
+- $T_x = 2x = 4$, $T_y = 3$; $x' = 2$, $y' = 2$ → $\frac{dT}{dt} = 4(2) + 3(2) = 14$
+
+**Example 3 (two parameters).** $z = e^x\sin y$, $x = st$, $y = s + t$: $\frac{\partial z}{\partial s} = e^x\sin y \cdot t + e^x\cos y \cdot 1$.
+
+**Example 4 (implicit).** $x^3 + y^3 = 6xy$: $F = x^3 + y^3 - 6xy$ → $\frac{dy}{dx} = -\frac{3x^2 - 6y}{3y^2 - 6x} = \frac{2y - x^2}{y^2 - 2x}$ (matches the Calculus roadmap).
+
+**Example 5 (tiny backprop, code).**
+```python
+import math
+# loss L = (y - target)^2, y = tanh(w1*x + w2*z)
+x, z, w1, w2, target = 1.0, 2.0, 0.5, -0.3, 0.5
+u = w1*x + w2*z; y = math.tanh(u); L = (y - target)**2
+dL_dy = 2 * (y - target)
+dy_du = 1 - y**2
+dL_dw1 = dL_dy * dy_du * x          # path: L <- y <- u <- w1
+dL_dw2 = dL_dy * dy_du * z          # path: L <- y <- u <- w2
+print(round(dL_dw1, 4), round(dL_dw2, 4))
+```
+Each weight's gradient is a product of local derivatives along its path to the loss. Frameworks like PyTorch build this graph automatically and apply the chain rule backwards.
+
+## 5. Common mistakes
+- Forgetting a path (each intermediate variable contributes a term).
+- Using ordinary $\frac{d}{dt}$ where partials are needed (or vice versa).
+- Sign error in $\frac{dy}{dx} = -\frac{F_x}{F_y}$.
+
+## 6. Practice
+Q: $z = xy$, $x = t^2$, $y = t^3$. $\frac{dz}{dt}$ via the chain rule?
+A: $y(2t) + x(3t^2) = 2t^4 + 3t^4 = 5t^4$.
+
+Q: How many terms does $\frac{dz}{dt}$ have if $z$ depends on 3 intermediate variables of $t$?
+A: $3$.
+
+Q: $\frac{dy}{dx}$ for $x^2 + y^2 = 25$ using $-\frac{F_x}{F_y}$?
+A: $-\frac{x}{y}$.
+
+Q: Which ML algorithm is the multivariable chain rule?
+A: Backpropagation.
+
+Q: $T = xy$, $x = 3$, $y = 4$, $x' = 1$, $y' = -2$. $T'$?
+A: $4(1) + 3(-2) = -2$."
+3,TOPIC,The Jacobian matrix,"Derivative of a vector-valued function as a matrix, linear approximation, chain rule as matrix multiplication",MUST,FALSE,"# The Jacobian matrix
+
+## 1. What it covers
+- The **Jacobian matrix** $J$ of $\vec{F}: \mathbb{R}^n \to \mathbb{R}^m$: all first partial derivatives.
+- The Jacobian as the **best linear approximation** of $\vec{F}$ near a point.
+- The chain rule as **matrix multiplication** of Jacobians.
+- The Jacobian **determinant** (used in Phase 4).
+
+## 2. Where it is used
+- **Robotics:** the Jacobian maps joint velocities to the hand's velocity; inverse kinematics uses its inverse or pseudo-inverse.
+- **Deep learning:** automatic differentiation computes Jacobian–vector products layer by layer.
+- **Newton's method for systems** of non-linear equations.
+- **Change of variables** in integrals (polar, spherical) uses the Jacobian determinant.
+- **Computer vision:** camera calibration and bundle adjustment.
+
+## 3. What it means
+For a function with several inputs and several outputs, the ""derivative"" is a **matrix**: row $i$ holds the partial derivatives of output $i$ with respect to each input. Near a point,
+$$
+\vec{F}(\vec{x} + \Delta\vec{x}) \approx \vec{F}(\vec{x}) + J\Delta\vec{x}
+$$
+so the Jacobian is the **linear transformation** that best approximates $\vec{F}$ locally (zoom in on any smooth map and it looks linear).
+
+For a scalar function, the Jacobian is just the gradient (as a row).
+
+**Chain rule:** composing functions multiplies their Jacobians: $J_{\vec{F} \circ \vec{G}} = J_{\vec{F}} J_{\vec{G}}$.
+
+## 4. Formula & worked example
+$$
+J = \begin{pmatrix} \frac{\partial F_1}{\partial x_1} & \cdots & \frac{\partial F_1}{\partial x_n} \\ \vdots & & \vdots \\ \frac{\partial F_m}{\partial x_1} & \cdots & \frac{\partial F_m}{\partial x_n}\end{pmatrix}
+$$
+
+**Example 1.** $\vec{F}(x, y) = \langle x^2y,\ 5x + \sin y\rangle$: $J = \begin{pmatrix} 2xy & x^2 \\ 5 & \cos y\end{pmatrix}$.
+
+**Example 2 (polar to Cartesian).** $x = r\cos\theta$, $y = r\sin\theta$: $J = \begin{pmatrix} \cos\theta & -r\sin\theta \\ \sin\theta & r\cos\theta\end{pmatrix}$, $\det J = r$ (this $r$ appears in polar integrals).
+
+**Example 3 (robot arm).** Two links of length 1 with angles $\theta_1$, $\theta_2$: hand position $x = \cos\theta_1 + \cos(\theta_1 + \theta_2)$, $y = \sin\theta_1 + \sin(\theta_1 + \theta_2)$.
+- $J = \begin{pmatrix} -\sin\theta_1 - \sin(\theta_1 + \theta_2) & -\sin(\theta_1 + \theta_2) \\ \cos\theta_1 + \cos(\theta_1 + \theta_2) & \cos(\theta_1 + \theta_2)\end{pmatrix}$; hand velocity $= J\langle\dot{\theta}_1, \dot{\theta}_2\rangle$. Where $\det J = 0$ (arm fully stretched), the arm is at a **singularity** and can't move in some directions.
+
+**Example 4 (Newton's method for systems, code).**
+```python
+import numpy as np
+F = lambda v: np.array([v[0]**2 + v[1]**2 - 4, v[0] - v[1]])      # circle meets line y = x
+J = lambda v: np.array([[2*v[0], 2*v[1]], [1, -1]])
+v = np.array([1.0, 0.5])
+for _ in range(6):
+    v = v - np.linalg.solve(J(v), F(v))          # Newton step using the Jacobian
+print(v)                                         # [1.41421356 1.41421356]
+```
+Each step replaces $\vec{F}$ by its linear approximation $\vec{F}(\vec{v}) + J\Delta\vec{v}$, solves for where that's zero, and repeats; it converges to $(\sqrt{2}, \sqrt{2})$ very fast.
+
+## 5. Common mistakes
+- Transposing the Jacobian (rows = outputs, columns = inputs).
+- Multiplying Jacobians in the wrong order in the chain rule.
+- Forgetting the absolute value of the Jacobian determinant in change of variables.
+
+## 6. Practice
+Q: Size of the Jacobian of $\vec{F}: \mathbb{R}^3 \to \mathbb{R}^2$?
+A: $2 \times 3$.
+
+Q: Jacobian of $\vec{F}(x, y) = \langle x + y, xy\rangle$?
+A: $\begin{pmatrix} 1 & 1 \\ y & x\end{pmatrix}$.
+
+Q: Jacobian determinant for polar coordinates?
+A: $r$.
+
+Q: What does the Jacobian represent geometrically?
+A: The best linear approximation of the function near a point.
+
+Q: What happens where a robot arm's Jacobian determinant is 0?
+A: It's at a singularity and loses the ability to move in some direction."
+3,TOPIC,Practice & review: Partial derivatives and gradients,Mixed problem set with worked answers,MUST,FALSE,"# Practice & review: Partial derivatives and gradients
+
+**How to use this:** 45 minutes; check with SymPy (`sp.diff`).
+
+## Problems
+1. Find all first and second partial derivatives of $f(x, y) = x^2e^{3y}$.
+2. Find the tangent plane to $z = \ln(x^2 + y)$ at $(1, 0)$.
+3. Use differentials to estimate the change in $f(x, y) = x^2y$ from $(3, 2)$ to $(3.05, 1.98)$.
+4. $f(x, y, z) = xy + yz^2$. Find $\nabla f$ at $(1, 2, 1)$ and the directional derivative towards $\langle 2, 2, 1\rangle$.
+5. In which direction does $f(x, y) = 4 - x^2 - 2y^2$ decrease fastest at $(1, 1)$? At what rate?
+6. $w = x^2 + y^2 + z^2$ with $x = t$, $y = \cos t$, $z = \sin t$. Find $\frac{dw}{dt}$ (simplify).
+7. Find the Jacobian of $\vec{F}(u, v) = \langle u^2 - v^2, 2uv\rangle$ and its determinant.
+
+## Answers
+1. $f_x = 2xe^{3y}$, $f_y = 3x^2e^{3y}$; $f_{xx} = 2e^{3y}$, $f_{yy} = 9x^2e^{3y}$, $f_{xy} = f_{yx} = 6xe^{3y}$.
+2. $f(1, 0) = 0$; $f_x = \frac{2x}{x^2 + y} = 2$, $f_y = \frac{1}{x^2 + y} = 1$ → $z = 2(x - 1) + y$.
+3. $dz = 2xy\,dx + x^2\,dy = 12(0.05) + 9(-0.02) = 0.42$.
+4. $\nabla f = \langle y, x + z^2, 2yz\rangle = \langle 2, 2, 4\rangle$; unit direction $\frac{1}{3}\langle 2, 2, 1\rangle$ → $\frac{4 + 4 + 4}{3} = 4$.
+5. $\nabla f = \langle -2, -4\rangle$; fastest decrease along $-\nabla f = \langle 2, 4\rangle$, rate $\sqrt{20} = 2\sqrt{5}$.
+6. $w = t^2 + 1$ → $\frac{dw}{dt} = 2t$ (chain rule gives $2t + 2\cos t(-\sin t) + 2\sin t\cos t = 2t$).
+7. $J = \begin{pmatrix} 2u & -2v \\ 2v & 2u\end{pmatrix}$; $\det = 4u^2 + 4v^2$.
+
+## Flashcards
+Q: How do you compute $f_x$?
+A: Differentiate with respect to $x$, treating other variables as constants.
+
+Q: Directional derivative?
+A: $D_{\vec{u}}f = \nabla f \cdot \vec{u}$ with $\vec{u}$ a unit vector.
+
+Q: Direction of steepest descent?
+A: $-\nabla f$.
+
+Q: Jacobian rows and columns?
+A: Rows = output functions; columns = input variables."
+1,MODULE,Phase 3 — Multivariable Optimisation (Core),"Critical points, the Hessian and second derivative test, Lagrange multipliers, gradient descent in several variables",SHOULD,,"# Phase 3: Multivariable optimisation
+
+Finding the best combination of several inputs: the cheapest design, the most profitable prices, the model weights with the lowest error. This phase covers the exact methods (critical points, Hessians, Lagrange multipliers) and the numerical one that powers machine learning (gradient descent)."
+2,MODULE,Optimisation in several variables,"Critical points, Hessian, constrained optimisation, gradient descent",SHOULD,,"At a smooth peak or valley, every slope is zero: the gradient vanishes."
+3,TOPIC,"Critical points, the Hessian and the second derivative test","∇f = 0, local max/min/saddle, Hessian matrix, D = f_xx f_yy − f_xy², eigenvalue view, absolute extrema on regions",SHOULD,FALSE,"# Critical points, the Hessian and the second derivative test
+
+## 1. What it covers
+- **Critical points**: where $\nabla f = \vec{0}$ (or undefined).
+- Local maxima, minima and **saddle points**.
+- The **Hessian matrix** of second derivatives and the **second derivative test** $D = f_{xx}f_{yy} - f_{xy}^2$.
+- The eigenvalue view of the Hessian; absolute extrema on closed regions.
+
+## 2. Where it is used
+- **Machine learning:** loss surfaces of neural networks have huge numbers of saddle points; the Hessian's eigenvalues describe curvature and guide second-order optimisers.
+- **Economics:** profit maximisation with several products.
+- **Engineering design:** minimising material or energy.
+- **Statistics:** maximum likelihood estimates; the Hessian gives standard errors.
+
+## 3. What it means
+At a local max or min of a smooth function, the surface is flat in every direction: $f_x = f_y = 0$. But a flat point might also be a **saddle**: a maximum in one direction and a minimum in another, like the centre of a horse saddle or a mountain pass.
+
+**Hessian:** $H = \begin{pmatrix} f_{xx} & f_{xy} \\ f_{xy} & f_{yy}\end{pmatrix}$ describes the curvature. Its determinant $D$ decides:
+- $D > 0$ and $f_{xx} > 0$ → **local minimum** (curves up in all directions).
+- $D > 0$ and $f_{xx} < 0$ → **local maximum**.
+- $D < 0$ → **saddle point**.
+- $D = 0$ → inconclusive.
+
+**Eigenvalue view:** both eigenvalues of $H$ positive → min; both negative → max; mixed signs → saddle. This extends to any number of variables.
+
+**Absolute extrema on a closed bounded region:** check critical points inside **and** the maximum/minimum on the boundary.
+
+## 4. Formula & worked example
+$$
+H = \begin{pmatrix} f_{xx} & f_{xy} \\ f_{xy} & f_{yy}\end{pmatrix} \qquad D = f_{xx}f_{yy} - f_{xy}^2
+$$
+
+**Example 1.** $f(x, y) = x^2 + xy + y^2 - 3x$.
+- $f_x = 2x + y - 3 = 0$, $f_y = x + 2y = 0$ → $x = 2$, $y = -1$.
+- $f_{xx} = 2$, $f_{yy} = 2$, $f_{xy} = 1$ → $D = 3 > 0$, $f_{xx} > 0$ → local min $f(2, -1) = -3$.
+
+**Example 2 (saddle).** $f(x, y) = x^2 - y^2$: critical point $(0, 0)$; $D = (2)(-2) - 0 = -4 < 0$ → saddle.
+
+**Example 3 (several critical points).** $f(x, y) = x^3 - 3x + y^2$.
+- $f_x = 3x^2 - 3 = 0$ → $x = \pm 1$; $f_y = 2y = 0$ → $y = 0$.
+- $(1, 0)$: $D = 6x \cdot 2 = 12 > 0$, $f_{xx} = 6 > 0$ → local min. $(-1, 0)$: $D = -12 < 0$ → saddle.
+
+**Example 4 (profit).** Selling two products: $P(x, y) = 50x + 60y - x^2 - xy - y^2$.
+- $50 - 2x - y = 0$, $60 - x - 2y = 0$ → $x = \frac{40}{3}$, $y = \frac{70}{3}$; $D = 3 > 0$, $f_{xx} < 0$ → maximum profit.
+
+**Example 5 (code).**
+```python
+import numpy as np
+H = np.array([[2, 1], [1, 2]])          # Hessian from Example 1
+print(np.linalg.eigvalsh(H))            # [1. 3.] both positive -> minimum
+```
+For symmetric Hessians `eigvalsh` returns real eigenvalues; their signs classify the critical point in any dimension.
+
+## 5. Common mistakes
+- Forgetting to solve $f_x = 0$ and $f_y = 0$ **simultaneously**.
+- Concluding ""minimum"" from $f_{xx} > 0$ alone without checking $D$.
+- Ignoring the boundary when looking for absolute extrema on a region.
+
+## 6. Practice
+Q: Condition for a critical point of $f(x, y)$?
+A: $f_x = 0$ and $f_y = 0$ (or a partial is undefined).
+
+Q: $D < 0$ at a critical point means?
+A: A saddle point.
+
+Q: Classify $(0, 0)$ for $f = x^2 + 3y^2$.
+A: $D = 12 > 0$, $f_{xx} > 0$ → local minimum.
+
+Q: Hessian eigenvalues 4 and $-1$. Classification?
+A: Saddle point.
+
+Q: Critical points of $f = xy$?
+A: $(0, 0)$, a saddle ($D = -1$)."
+3,TOPIC,Constrained optimisation and Lagrange multipliers,"Optimising subject to g = c, ∇f = λ∇g, geometric meaning, economics and engineering examples",SHOULD,FALSE,"# Constrained optimisation and Lagrange multipliers
+
+## 1. What it covers
+- Optimising $f(x, y)$ **subject to a constraint** $g(x, y) = c$.
+- The **Lagrange condition** $\nabla f = \lambda\nabla g$.
+- Geometric meaning (tangent level curves) and the meaning of $\lambda$.
+- Examples with budgets, materials and distances.
+
+## 2. Where it is used
+- **Economics:** maximise utility subject to a budget; minimise cost subject to a production target. $\lambda$ is the ""shadow price"".
+- **Engineering:** maximise strength or volume with limited material.
+- **Machine learning:** support vector machines and regularisation are constrained optimisation problems; entropy maximisation gives the softmax.
+- **Physics:** equilibrium under constraints.
+
+## 3. What it means
+Imagine walking along a road (the constraint curve $g = c$) on a hilly landscape ($f$). The highest point along the road is where the road is **tangent** to a contour line of $f$: if it crossed the contour, you could keep going uphill.
+
+Tangent curves have parallel normals, and normals are gradients. So at the optimum, $\nabla f$ is parallel to $\nabla g$:
+$$
+\nabla f = \lambda\nabla g
+$$
+
+**Method:** solve the system $f_x = \lambda g_x$, $f_y = \lambda g_y$, $g(x, y) = c$; evaluate $f$ at each solution and compare.
+
+**Meaning of $\lambda$:** the rate at which the optimal value changes if the constraint is loosened: how much more utility one extra taka of budget buys.
+
+## 4. Formula & worked example
+$$
+\nabla f(x, y) = \lambda\nabla g(x, y), \quad g(x, y) = c
+$$
+
+**Example 1 (fencing).** Maximise the area $A = xy$ of a rectangle with perimeter $2x + 2y = 40$.
+- $\langle y, x\rangle = \lambda\langle 2, 2\rangle$ → $x = y$ → $x = y = 10$, $A = 100$ (a square, as expected).
+
+**Example 2 (budget).** Utility $U = x^{0.5}y^{0.5}$; prices 10 and 20 taka; budget 400: $10x + 20y = 400$.
+- $\frac{0.5y^{0.5}}{x^{0.5}} = 10\lambda$, $\frac{0.5x^{0.5}}{y^{0.5}} = 20\lambda$ → dividing: $\frac{y}{x} = \frac{1}{2}$ → $x = 2y$
+- $20y + 20y = 400$ → $y = 10$, $x = 20$. Spend half the budget on each good.
+
+**Example 3 (closest point).** Closest point on $x + 2y = 5$ to the origin: minimise $x^2 + y^2$.
+- $\langle 2x, 2y\rangle = \lambda\langle 1, 2\rangle$ → $y = 2x$ → $5x = 5$ → $(1, 2)$, distance $\sqrt{5}$.
+
+**Example 4 (box).** Maximise the volume $xyz$ of a box with surface area $2(xy + yz + xz) = 24$. By symmetry of the Lagrange equations, $x = y = z = 2$: a cube of volume 8.
+
+**Example 5 (code).**
+```python
+from scipy.optimize import minimize
+obj = lambda v: -(v[0]**0.5 * v[1]**0.5)                       # maximise utility = minimise -U
+cons = {""type"": ""eq"", ""fun"": lambda v: 10*v[0] + 20*v[1] - 400}
+res = minimize(obj, x0=[10, 10], constraints=[cons], bounds=[(0, None)]*2)
+print(res.x.round(3))                                          # [20. 10.]
+```
+`scipy.optimize.minimize` handles constraints numerically (internally using Lagrange-multiplier ideas), useful when the equations can't be solved by hand.
+
+## 5. Common mistakes
+- Forgetting to include the constraint equation itself in the system.
+- Dividing by a variable that could be zero (losing solutions).
+- Not comparing $f$ at all candidate points.
+
+## 6. Practice
+Q: Lagrange condition?
+A: $\nabla f = \lambda\nabla g$ together with $g = c$.
+
+Q: Geometric meaning at the optimum?
+A: The level curve of $f$ is tangent to the constraint curve.
+
+Q: Maximise $xy$ subject to $x + y = 10$.
+A: $x = y = 5$, max 25.
+
+Q: What does $\lambda$ represent in economics?
+A: The shadow price: the change in the optimal value per unit relaxation of the constraint.
+
+Q: Minimise $x^2 + y^2$ subject to $x + y = 4$.
+A: $(2, 2)$, minimum 8."
+3,TOPIC,Gradient descent in several variables,"Update rule, learning rate, contours and zig-zagging, momentum, stochastic gradient descent, code",SHOULD,FALSE,"# Gradient descent in several variables
+
+## 1. What it covers
+- The update $\vec{x}_{k+1} = \vec{x}_k - \eta\nabla f(\vec{x}_k)$ in many dimensions.
+- Learning rate, convergence, and zig-zagging in narrow valleys.
+- **Momentum** and the idea behind Adam.
+- **Stochastic** (mini-batch) gradient descent.
+- Plotting the descent path on a contour map.
+
+## 2. Where it is used
+- **Training neural networks:** every modern model (image classifiers, language models) is trained by stochastic gradient descent variants.
+- **Linear and logistic regression** on big data.
+- **Recommender systems, matrix factorisation.**
+- **Engineering optimisation** when only gradients are available.
+
+## 3. What it means
+At each step, compute the gradient (the uphill direction) and take a small step **downhill**. Repeat until the gradient is nearly zero.
+
+**Learning rate $\eta$:** too small → slow; too large → overshoot and diverge.
+
+**Narrow valleys:** if the function is much steeper in one direction than another (elongated contours), the gradient points mostly across the valley, so plain gradient descent **zig-zags** slowly. Two fixes:
+- **Momentum:** keep a running ""velocity"" that averages recent gradients, so oscillations cancel and progress along the valley accumulates, like a ball rolling downhill.
+- **Adaptive methods** (Adam, RMSProp): scale each coordinate's step by its recent gradient size.
+
+**Stochastic gradient descent (SGD):** with millions of training examples, estimate the gradient from a small random **mini-batch** each step. Noisier, but each step is far cheaper.
+
+## 4. Formula & worked example
+$$
+\vec{x}_{k+1} = \vec{x}_k - \eta\nabla f(\vec{x}_k) \qquad \text{momentum: } \vec{v}_{k+1} = \beta\vec{v}_k + \nabla f(\vec{x}_k),\ \ \vec{x}_{k+1} = \vec{x}_k - \eta\vec{v}_{k+1}
+$$
+
+**Example 1 (by hand).** $f(x, y) = x^2 + 4y^2$, start $(4, 1)$, $\eta = 0.1$. $\nabla f = \langle 2x, 8y\rangle$.
+- Step 1: $\nabla f = \langle 8, 8\rangle$ → $(4 - 0.8, 1 - 0.8) = (3.2, 0.2)$
+- Step 2: $\nabla f = \langle 6.4, 1.6\rangle$ → $(2.56, 0.04)$ ... → $(0, 0)$. The $y$ coordinate (steep direction) shrinks much faster than $x$.
+
+**Example 2 (code: plain vs momentum on a narrow valley).**
+```python
+import numpy as np
+grad = lambda p: np.array([2 * p[0], 50 * p[1]])     # f = x^2 + 25 y^2 (narrow valley)
+
+def gd(lr, steps=30, beta=0.0):
+    p, v = np.array([10.0, 1.0]), np.zeros(2)
+    for _ in range(steps):
+        v = beta * v + grad(p)
+        p = p - lr * v
+    return p
+print(gd(0.035))              # plain:    [1.13 0.0002]  x still far from 0 after 30 steps
+print(gd(0.035, beta=0.5))    # momentum: [0.04 0.0000]  about 28x closer
+```
+With a learning rate small enough to be stable in the steep $y$ direction, plain gradient descent creeps along the shallow $x$ direction. Momentum accumulates speed along the valley floor and reaches the minimum much faster.
+
+**Example 3 (linear regression with mini-batch SGD).**
+```python
+rng = np.random.default_rng(0)
+X = np.column_stack([np.ones(10_000), rng.normal(size=10_000)])
+y = X @ np.array([2.0, -3.0]) + rng.normal(0, 0.5, 10_000)
+w = np.zeros(2)
+for step in range(2000):
+    idx = rng.integers(0, len(y), 64)                     # random mini-batch of 64 rows
+    g = 2 / 64 * X[idx].T @ (X[idx] @ w - y[idx])
+    w -= 0.05 * g
+print(w.round(2))                                         # ≈ [ 2. -3.]
+```
+Each step uses only 64 of the 10 000 rows, yet the weights converge to the true values: the same principle trains large neural networks on huge datasets.
+
+## 5. Common mistakes
+- Learning rate too large (divergence) or too small (no progress).
+- Forgetting to scale features, which creates narrow valleys and slow convergence.
+- Expecting gradient descent to find the global minimum of a non-convex function.
+
+## 6. Practice
+Q: Gradient descent update rule?
+A: $\vec{x} \leftarrow \vec{x} - \eta\nabla f(\vec{x})$.
+
+Q: Why does gradient descent zig-zag in narrow valleys?
+A: The gradient points mostly across the valley rather than along it.
+
+Q: What does momentum do?
+A: Averages recent gradients so oscillations cancel and progress along consistent directions builds up.
+
+Q: What is a mini-batch?
+A: A small random subset of the training data used to estimate the gradient at each step.
+
+Q: Why scale features before gradient descent?
+A: To make the loss contours rounder, so convergence is faster."
+3,TOPIC,Practice & review: Multivariable optimisation,Mixed problem set with worked answers,SHOULD,FALSE,"# Practice & review: Multivariable optimisation
+
+**How to use this:** 40 minutes; check with SciPy.
+
+## Problems
+1. Find and classify the critical points of $f(x, y) = x^2 + y^3 - 3y$.
+2. Find and classify the critical points of $f(x, y) = xy - x^2 - y^2 + 3x$.
+3. A rectangular box without a lid must hold 32 m³. Find the dimensions that minimise the surface area (use the constraint to eliminate a variable, then critical points).
+4. Use Lagrange multipliers to maximise $f(x, y) = x + 2y$ on the circle $x^2 + y^2 = 5$.
+5. Minimise the cost $C = 4x + 9y$ subject to producing $xy = 100$ units.
+6. Do two gradient descent steps on $f(x, y) = (x - 1)^2 + 2(y + 2)^2$ from $(0, 0)$ with $\eta = 0.2$.
+
+## Answers
+1. $f_x = 2x = 0$, $f_y = 3y^2 - 3 = 0$ → $(0, 1)$, $(0, -1)$. $D = 2 \cdot 6y$: at $(0, 1)$ $D = 12 > 0$, $f_{xx} > 0$ → min; at $(0, -1)$ $D < 0$ → saddle.
+2. $y - 2x + 3 = 0$, $x - 2y = 0$ → $x = 2$, $y = 1$; $D = (-2)(-2) - 1 = 3 > 0$, $f_{xx} < 0$ → local max $f = 3$.
+3. $S = xy + \frac{64}{y} + \frac{64}{x}$ (with $z = \frac{32}{xy}$); $S_x = y - \frac{64}{x^2} = 0$, $S_y = x - \frac{64}{y^2} = 0$ → $x = y = 4$, $z = 2$.
+4. $\langle 1, 2\rangle = \lambda\langle 2x, 2y\rangle$ → $y = 2x$ → $5x^2 = 5$ → max at $(1, 2)$, value 5.
+5. $\langle 4, 9\rangle = \lambda\langle y, x\rangle$ → $4x = 9y$ → $\frac{9}{4}y^2 = 100$ → $y = \frac{20}{3}$, $x = 15$, $C = 120$.
+6. $\nabla f = \langle 2(x - 1), 4(y + 2)\rangle$. Step 1: $\langle -2, 8\rangle$ → $(0.4, -1.6)$. Step 2: $\langle -1.2, 1.6\rangle$ → $(0.64, -1.92)$.
+
+## Flashcards
+Q: Second derivative test discriminant?
+A: $D = f_{xx}f_{yy} - f_{xy}^2$.
+
+Q: Lagrange multiplier condition?
+A: $\nabla f = \lambda\nabla g$.
+
+Q: Saddle point?
+A: A critical point that is a max in one direction and a min in another ($D < 0$).
+
+Q: Why use momentum in gradient descent?
+A: To speed up progress and reduce zig-zagging in narrow valleys."
+1,MODULE,Phase 4 — Multiple Integrals (Core),"Double and triple integrals, changing order, polar, cylindrical and spherical coordinates, change of variables, applications",SHOULD,,"# Phase 4: Multiple integrals
+
+Single integrals add up thin strips under a curve. **Double integrals** add up tiny columns under a surface (volume, mass of a plate, total rainfall over a region, probability for two random variables). **Triple integrals** add up tiny boxes inside a solid. Choosing good coordinates (polar, cylindrical, spherical) often turns a hard integral into an easy one."
+2,MODULE,Integrating over regions,"Double integrals, iterated integrals, polar coordinates, triple integrals, curvilinear coordinates, Jacobians, applications",SHOULD,,"Slice, integrate the slice, then add the slices: an integral inside an integral."
+3,TOPIC,Double integrals over rectangles,"Volume under a surface, Riemann sums, iterated integrals, Fubini's theorem, average value",SHOULD,FALSE,"# Double integrals over rectangles
+
+## 1. What it covers
+- The double integral $\iint_R f(x, y)\,dA$ as volume under a surface.
+- Double Riemann sums.
+- **Iterated integrals** and **Fubini's theorem** (integrate in either order).
+- Average value over a region.
+
+## 2. Where it is used
+- **Environmental science:** total rainfall over a region from a rainfall-density map.
+- **Physics:** mass of a thin plate with varying density; total charge.
+- **Probability:** $P(a \le X \le b, c \le Y \le d) = \iint f(x, y)\,dA$ for a joint density.
+- **Image processing:** total brightness of a region (integrating pixel intensity).
+
+## 3. What it means
+Split the rectangle into tiny squares of area $\Delta A$. Over each, the surface height is roughly constant, giving a thin column of volume $f(x, y)\Delta A$. Add up all the columns and let them shrink: that's $\iint_R f\,dA$.
+
+**Iterated integral:** integrate one variable at a time, treating the other as constant. First slice the solid (e.g. for fixed $x$, integrate over $y$ to get the slice's area), then add up the slices over $x$. **Fubini:** for nice functions on a rectangle, the order doesn't matter.
+
+## 4. Formula & worked example
+$$
+\iint_R f(x, y)\,dA = \int_a^b\!\!\int_c^d f(x, y)\,dy\,dx = \int_c^d\!\!\int_a^b f(x, y)\,dx\,dy \qquad f_{\text{avg}} = \frac{1}{\text{Area}(R)}\iint_R f\,dA
+$$
+
+**Example 1.** $\int_0^2\int_0^3 (x + 2y)\,dy\,dx$
+- Inner: $\int_0^3(x + 2y)\,dy = [xy + y^2]_0^3 = 3x + 9$
+- Outer: $\int_0^2(3x + 9)\,dx = [1.5x^2 + 9x]_0^2 = 6 + 18 = 24$
+
+**Example 2 (other order).** $\int_0^3\int_0^2(x + 2y)\,dx\,dy = \int_0^3(2 + 4y)\,dy = 6 + 18 = 24$ ✓
+
+**Example 3 (product).** $\int_0^1\int_0^{\pi}y\sin x\,dx\,dy = \left(\int_0^\pi\sin x\,dx\right)\left(\int_0^1 y\,dy\right) = 2 \times \frac{1}{2} = 1$
+
+**Example 4 (average temperature).** $T(x, y) = 20 + x + y$ over $[0, 4] \times [0, 2]$: $\iint T = \int_0^4\int_0^2(20 + x + y)\,dy\,dx = \int_0^4(42 + 2x)\,dx = 184$; average $= \frac{184}{8} = 23$°C.
+
+**Example 5 (code).**
+```python
+from scipy.integrate import dblquad
+val, err = dblquad(lambda y, x: x + 2*y, 0, 2, 0, 3)   # x from 0 to 2, y from 0 to 3
+print(val)                                               # 24.0
+```
+`dblquad` takes the integrand with the **inner** variable first (`y, x`), then the outer limits, then the inner limits. Mixing up this order is a common bug.
+
+## 5. Common mistakes
+- Integrating the inner integral with respect to the wrong variable.
+- Using the outer variable's limits for the inner integral.
+- Forgetting to divide by the area for the average value.
+
+## 6. Practice
+Q: $\int_0^1\int_0^2 xy\,dy\,dx$?
+A: $\int_0^1 2x\,dx = 1$.
+
+Q: $\int_0^2\int_0^1 (x^2 + y)\,dx\,dy$?
+A: $\int_0^2\left(\frac{1}{3} + y\right)dy = \frac{2}{3} + 2 = \frac{8}{3}$.
+
+Q: What does $\iint_R 1\,dA$ give?
+A: The area of $R$.
+
+Q: State Fubini's theorem (informally).
+A: On a rectangle, a nice function can be integrated in either order with the same result.
+
+Q: Average of $f = xy$ over $[0, 2] \times [0, 2]$?
+A: $\frac{4}{4} = 1$."
+3,TOPIC,Double integrals over general regions and changing the order,"Type I and Type II regions, setting limits, reversing the order of integration",SHOULD,FALSE,"# Double integrals over general regions and changing the order
+
+## 1. What it covers
+- Regions bounded by curves: **Type I** ($y$ between two functions of $x$) and **Type II** ($x$ between two functions of $y$).
+- Setting up the limits from a sketch.
+- **Reversing the order** of integration (sometimes necessary to make an integral solvable).
+- Area and volume over curved regions.
+
+## 2. Where it is used
+- **Engineering:** mass, centroid and moment of inertia of irregular plates (beam cross-sections).
+- **Probability:** $P(X < Y)$ for a joint density integrates over a triangular region.
+- **Environmental modelling:** quantities over irregular land areas.
+
+## 3. What it means
+The inner integral's limits can be **functions** of the outer variable. For a region between $y = g_1(x)$ (bottom) and $y = g_2(x)$ (top) for $a \le x \le b$: for each fixed $x$, $y$ runs from the bottom curve to the top curve.
+
+**Always sketch the region.** Draw a typical vertical line (for $dy\,dx$) or horizontal line (for $dx\,dy$) through it and read off where it enters and leaves.
+
+**Reversing order:** describe the same region the other way. This can turn an impossible inner integral (like $\int e^{x^2}dx$) into an easy one.
+
+## 4. Formula & worked example
+$$
+\iint_D f\,dA = \int_a^b\!\!\int_{g_1(x)}^{g_2(x)} f(x, y)\,dy\,dx = \int_c^d\!\!\int_{h_1(y)}^{h_2(y)} f(x, y)\,dx\,dy
+$$
+
+**Example 1.** Region between $y = x^2$ and $y = x$ for $0 \le x \le 1$; integrate $f = xy$.
+- $\int_0^1\int_{x^2}^{x}xy\,dy\,dx = \int_0^1\frac{x(x^2 - x^4)}{2}dx = \frac{1}{2}\left(\frac{1}{4} - \frac{1}{6}\right) = \frac{1}{24}$
+
+**Example 2 (area).** Area between $y = x^2$ and $y = 2x$: $\int_0^2\int_{x^2}^{2x}1\,dy\,dx = \int_0^2(2x - x^2)\,dx = \frac{4}{3}$.
+
+**Example 3 (reverse the order).** $\int_0^1\int_y^1 e^{x^2}\,dx\,dy$ can't be done as written ($e^{x^2}$ has no elementary antiderivative).
+- Region: $0 \le y \le x \le 1$. Reverse: $\int_0^1\int_0^x e^{x^2}\,dy\,dx = \int_0^1 xe^{x^2}\,dx = \frac{e - 1}{2}$.
+
+**Example 4 (probability).** $X$, $Y$ independent and uniform on $[0, 1]$. $P(Y < X^2)$?
+- $\int_0^1\int_0^{x^2}1\,dy\,dx = \frac{1}{3}$
+
+## 5. Common mistakes
+- Putting variables in the outer limits (outer limits must be constants).
+- Not redrawing the region when reversing the order.
+- Swapping the top and bottom curves.
+
+## 6. Practice
+Q: Set up the area of the region under $y = \sqrt{x}$ for $0 \le x \le 4$ as a double integral.
+A: $\int_0^4\int_0^{\sqrt{x}}1\,dy\,dx$.
+
+Q: Reverse $\int_0^2\int_0^{x}f\,dy\,dx$.
+A: $\int_0^2\int_y^2 f\,dx\,dy$.
+
+Q: $\int_0^1\int_0^x 2\,dy\,dx$?
+A: $1$.
+
+Q: Why reverse the order of integration?
+A: To make the inner integral solvable or simpler.
+
+Q: What must be true of the outer limits?
+A: They must be constants."
+3,TOPIC,Double integrals in polar coordinates,"dA = r dr dθ, disks, rings and sectors, the Gaussian integral",SHOULD,FALSE,"# Double integrals in polar coordinates
+
+## 1. What it covers
+- Converting $\iint f\,dA$ to polar: $dA = r\,dr\,d\theta$.
+- Regions that are disks, rings (annuli), sectors and polar curves.
+- The famous **Gaussian integral** $\int_{-\infty}^{\infty}e^{-x^2}dx = \sqrt{\pi}$.
+
+## 2. Where it is used
+- **Statistics:** proving the normal distribution's total probability is 1 (the Gaussian integral).
+- **Physics and engineering:** circular plates, pipes, antennas, radially symmetric fields.
+- **Image processing:** circular filters and apertures (camera lenses, telescopes).
+
+## 3. What it means
+For circular regions, rectangles fit badly. Polar coordinates fit naturally: $x = r\cos\theta$, $y = r\sin\theta$.
+
+The tiny area element is **not** $dr\,d\theta$: a small polar ""rectangle"" has sides $dr$ and $r\,d\theta$ (an arc), so $dA = r\,dr\,d\theta$. The extra $r$ (the Jacobian determinant from Phase 2) accounts for the pieces getting bigger as you move outward, like slices of a pizza being wider at the crust.
+
+## 4. Formula & worked example
+$$
+\iint_D f(x, y)\,dA = \int_\alpha^\beta\!\!\int_{r_1}^{r_2} f(r\cos\theta, r\sin\theta)\,r\,dr\,d\theta
+$$
+
+**Example 1 (area of a disk).** $\int_0^{2\pi}\int_0^R r\,dr\,d\theta = 2\pi \cdot \frac{R^2}{2} = \pi R^2$ ✓
+
+**Example 2.** $\iint_D (x^2 + y^2)\,dA$ over the disk of radius 2: $\int_0^{2\pi}\int_0^2 r^2 \cdot r\,dr\,d\theta = 2\pi \cdot 4 = 8\pi$.
+
+**Example 3 (ring).** $\iint e^{-(x^2 + y^2)}\,dA$ over $1 \le r \le 2$: $2\pi\int_1^2 re^{-r^2}dr = \pi(e^{-1} - e^{-4}) \approx 1.10$.
+
+**Example 4 (Gaussian integral).** Let $I = \int_{-\infty}^\infty e^{-x^2}dx$. Then
+$$
+I^2 = \iint_{\mathbb{R}^2}e^{-(x^2 + y^2)}\,dA = \int_0^{2\pi}\!\!\int_0^\infty e^{-r^2}r\,dr\,d\theta = 2\pi \cdot \frac{1}{2} = \pi
+$$
+so $I = \sqrt{\pi}$. This is why the normal density has the factor $\frac{1}{\sqrt{2\pi}}$.
+
+**Example 5 (volume of a sphere).** Twice the volume under $z = \sqrt{R^2 - r^2}$: $2\int_0^{2\pi}\int_0^R\sqrt{R^2 - r^2}\,r\,dr\,d\theta = \frac{4}{3}\pi R^3$ ✓
+
+## 5. Common mistakes
+- Forgetting the extra factor $r$.
+- Wrong $\theta$ limits (a half-disk above the x-axis is $0 \le \theta \le \pi$).
+- Converting $f$ incorrectly ($x^2 + y^2 = r^2$, not $r$).
+
+## 6. Practice
+Q: Polar area element?
+A: $dA = r\,dr\,d\theta$.
+
+Q: $\iint_D 1\,dA$ over the disk of radius 3 in polar?
+A: $\int_0^{2\pi}\int_0^3 r\,dr\,d\theta = 9\pi$.
+
+Q: Limits for the quarter disk of radius 1 in the first quadrant?
+A: $0 \le r \le 1$, $0 \le \theta \le \frac{\pi}{2}$.
+
+Q: Value of $\int_{-\infty}^{\infty}e^{-x^2}dx$?
+A: $\sqrt{\pi}$.
+
+Q: $\iint\sqrt{x^2 + y^2}\,dA$ over the unit disk?
+A: $\int_0^{2\pi}\int_0^1 r^2\,dr\,d\theta = \frac{2\pi}{3}$."
+3,TOPIC,Triple integrals,"Volume, mass and density in 3D, setting up limits over solid regions",SHOULD,FALSE,"# Triple integrals
+
+## 1. What it covers
+- $\iiint_E f(x, y, z)\,dV$ over a solid region.
+- Iterated triple integrals and setting up limits.
+- Volume ($f = 1$), mass ($f$ = density), average value.
+
+## 2. Where it is used
+- **Engineering:** mass, centre of mass and moments of inertia of 3D parts (CAD software computes these).
+- **Physics:** total charge in a volume, gravitational potential of a solid.
+- **Medical imaging:** total tracer amount in an organ from 3D scan data.
+- **Probability:** three random variables (joint density in 3D).
+
+## 3. What it means
+Exactly like double integrals, one dimension higher: fill the solid with tiny boxes of volume $dV$, weight each by $f$ (e.g. density), and add up.
+
+**Setting up:** usually integrate $z$ first between a bottom surface and a top surface, then handle the remaining 2D region (the ""shadow"" of the solid on the xy-plane) as a double integral.
+
+## 4. Formula & worked example
+$$
+\iiint_E f\,dV = \iint_D\left[\int_{u_1(x, y)}^{u_2(x, y)} f(x, y, z)\,dz\right]dA
+$$
+
+**Example 1 (box).** $\int_0^1\int_0^2\int_0^3 xyz\,dz\,dy\,dx = \frac{1}{2} \cdot 2 \cdot \frac{9}{2} = 4.5$
+
+**Example 2 (tetrahedron volume).** Region under $x + y + z = 1$ in the first octant:
+- $\int_0^1\int_0^{1-x}\int_0^{1-x-y}1\,dz\,dy\,dx = \int_0^1\int_0^{1-x}(1 - x - y)\,dy\,dx = \int_0^1\frac{(1 - x)^2}{2}dx = \frac{1}{6}$
+
+**Example 3 (mass).** A cube $[0, 1]^3$ with density $\rho = x + y + z$: mass $= \iiint(x + y + z)\,dV = \frac{3}{2}$.
+
+**Example 4 (code: Monte Carlo volume).**
+```python
+import numpy as np
+rng = np.random.default_rng(0)
+p = rng.random((1_000_000, 3))                 # random points in the unit cube
+inside = (p.sum(axis=1) <= 1).mean()           # fraction under x + y + z = 1
+print(inside)                                   # ≈ 0.1667 = 1/6
+```
+For complicated 3D shapes, Monte Carlo integration (random points) is often easier than setting up limits, and it scales to high dimensions where grid methods fail.
+
+## 5. Common mistakes
+- Inner limits that depend on the wrong variables.
+- Losing track of the order $dz\,dy\,dx$.
+- Forgetting the density when computing mass.
+
+## 6. Practice
+Q: $\iiint_E 1\,dV$ gives?
+A: The volume of $E$.
+
+Q: $\int_0^2\int_0^2\int_0^2 1\,dz\,dy\,dx$?
+A: $8$.
+
+Q: Volume of the tetrahedron under $x + y + z = 2$ in the first octant?
+A: $\frac{2^3}{6} = \frac{4}{3}$.
+
+Q: How do you compute mass from density?
+A: Integrate the density over the volume.
+
+Q: Why is Monte Carlo useful for high-dimensional integrals?
+A: Its error doesn't grow with the number of dimensions like grid methods' does."
+3,TOPIC,Cylindrical and spherical coordinates,"Conversions, volume elements r dz dr dθ and ρ² sin φ dρ dφ dθ, integrating over cylinders, cones and spheres",SHOULD,FALSE,"# Cylindrical and spherical coordinates
+
+## 1. What it covers
+- **Cylindrical** $(r, \theta, z)$: polar in the plane plus height; $dV = r\,dz\,dr\,d\theta$.
+- **Spherical** $(\rho, \theta, \phi)$: distance from origin, angle around, angle down from the z-axis; $dV = \rho^2\sin\phi\,d\rho\,d\phi\,d\theta$.
+- Choosing the right system and setting up integrals.
+
+## 2. Where it is used
+- **Engineering:** pipes, tanks and shafts (cylindrical).
+- **Physics:** gravity and electric fields of spheres, atoms (spherical).
+- **Geography and GPS:** latitude and longitude are spherical coordinates.
+- **3D graphics:** orbit cameras use spherical coordinates (distance, yaw, pitch).
+
+## 3. What it means
+- **Cylindrical:** use polar coordinates for $(x, y)$ and keep $z$. Natural for anything with an axis of symmetry (cylinders, cones, paraboloids).
+- **Spherical:** describe a point by its distance $\rho$ from the origin, its compass angle $\theta$ (as in polar), and its angle $\phi$ from the north pole ($0 \le \phi \le \pi$). Natural for spheres and cones from the origin.
+
+The volume elements include stretch factors (Jacobians): $r$ for cylindrical, $\rho^2\sin\phi$ for spherical. A small spherical ""box"" has sides $d\rho$, $\rho\,d\phi$ and $\rho\sin\phi\,d\theta$.
+
+## 4. Formula & worked example
+$$
+x = r\cos\theta,\ y = r\sin\theta,\ z = z;\ dV = r\,dz\,dr\,d\theta \qquad x = \rho\sin\phi\cos\theta,\ y = \rho\sin\phi\sin\theta,\ z = \rho\cos\phi;\ dV = \rho^2\sin\phi\,d\rho\,d\phi\,d\theta
+$$
+
+**Example 1 (cylinder volume).** $\int_0^{2\pi}\int_0^R\int_0^h r\,dz\,dr\,d\theta = \pi R^2h$ ✓
+
+**Example 2 (sphere volume).** $\int_0^{2\pi}\int_0^{\pi}\int_0^R\rho^2\sin\phi\,d\rho\,d\phi\,d\theta = \frac{R^3}{3} \cdot 2 \cdot 2\pi = \frac{4}{3}\pi R^3$ ✓
+
+**Example 3 (paraboloid).** Volume under $z = 4 - x^2 - y^2$ above $z = 0$: $\int_0^{2\pi}\int_0^2(4 - r^2)r\,dr\,d\theta = 2\pi(8 - 4) = 8\pi$.
+
+**Example 4 (ice-cream cone).** Region inside the sphere $\rho = 1$ and the cone $\phi = \frac{\pi}{4}$: volume $= \int_0^{2\pi}\int_0^{\pi/4}\int_0^1\rho^2\sin\phi\,d\rho\,d\phi\,d\theta = \frac{2\pi}{3}\left(1 - \frac{\sqrt{2}}{2}\right) \approx 0.613$.
+
+**Example 5 (orbit camera, code).**
+```python
+import numpy as np
+def camera_pos(dist, yaw_deg, pitch_deg):          # pitch measured from the horizon
+    th, ph = np.radians(yaw_deg), np.radians(90 - pitch_deg)   # phi from the vertical axis
+    return dist * np.array([np.sin(ph)*np.cos(th), np.sin(ph)*np.sin(th), np.cos(ph)])
+print(camera_pos(10, 45, 30).round(2))   # [6.12 6.12 5.  ]
+```
+3D viewers let you orbit around an object by changing yaw and pitch at a fixed distance: that's moving on a sphere in spherical coordinates and converting to $(x, y, z)$.
+
+## 5. Common mistakes
+- Forgetting the Jacobian factor ($r$ or $\rho^2\sin\phi$).
+- Using $0$ to $2\pi$ for $\phi$ (it runs from $0$ to $\pi$).
+- Mixing up conventions (physics books swap $\theta$ and $\phi$).
+
+## 6. Practice
+Q: Cylindrical volume element?
+A: $r\,dz\,dr\,d\theta$.
+
+Q: Spherical volume element?
+A: $\rho^2\sin\phi\,d\rho\,d\phi\,d\theta$.
+
+Q: Range of $\phi$ in spherical coordinates?
+A: $0$ to $\pi$.
+
+Q: Convert $x^2 + y^2 + z^2 = 9$ to spherical.
+A: $\rho = 3$.
+
+Q: Which system suits a pipe?
+A: Cylindrical."
+3,TOPIC,Change of variables and the Jacobian determinant,"General substitutions in double/triple integrals, area scaling by the absolute Jacobian determinant, linear maps and ellipses",SHOULD,FALSE,"# Change of variables and the Jacobian determinant
+
+## 1. What it covers
+- General substitutions $x = x(u, v)$, $y = y(u, v)$ in double integrals.
+- $dA = \lvert\det J\rvert\,du\,dv$ (the area scale factor).
+- Linear substitutions (parallelograms, ellipses); polar and spherical as special cases.
+- The probability version (densities of transformed random variables).
+
+## 2. Where it is used
+- **Probability and ML:** transforming random variables; **normalising flows** (a type of generative model) rely on the Jacobian determinant of invertible transformations.
+- **Physics:** integrating in coordinates adapted to the problem.
+- **Computer graphics:** texture mapping and area distortion.
+- **Engineering:** integrating over skewed or curved regions by mapping them to rectangles.
+
+## 3. What it means
+A substitution maps a simple region in the $uv$-plane (often a rectangle) onto the real region in the $xy$-plane. Tiny squares in $uv$ become tiny parallelograms in $xy$, scaled in area by $\lvert\det J\rvert$ (Phase 2 / Linear Algebra: the determinant is the area scale factor). So
+$$
+\iint_D f(x, y)\,dx\,dy = \iint_S f(x(u, v), y(u, v))\,\lvert\det J\rvert\,du\,dv
+$$
+This is the multivariable version of $dx = g'(u)\,du$ in u-substitution.
+
+## 4. Formula & worked example
+$$
+J = \begin{pmatrix} x_u & x_v \\ y_u & y_v\end{pmatrix} \qquad dA = \lvert\det J\rvert\,du\,dv
+$$
+
+**Example 1 (polar check).** $x = r\cos\theta$, $y = r\sin\theta$: $\det J = r$ → $dA = r\,dr\,d\theta$ ✓
+
+**Example 2 (ellipse area).** $\frac{x^2}{a^2} + \frac{y^2}{b^2} \le 1$ with $x = au$, $y = bv$: the region becomes the unit disk; $\det J = ab$ → area $= ab \cdot \pi$.
+
+**Example 3 (parallelogram).** Region bounded by $x + y = 0$, $x + y = 2$, $x - y = 0$, $x - y = 1$; integrate $(x + y)^2$.
+- $u = x + y$, $v = x - y$ → $x = \frac{u + v}{2}$, $y = \frac{u - v}{2}$, $\det J = -\frac{1}{2}$ → $\lvert\det J\rvert = \frac{1}{2}$
+- $\int_0^1\int_0^2 u^2 \cdot \frac{1}{2}\,du\,dv = \frac{1}{2} \cdot \frac{8}{3} = \frac{4}{3}$
+
+**Example 4 (probability).** If $X$ has density $f_X$ and $Y = g(X)$ is invertible, $f_Y(y) = f_X(g^{-1}(y))\left\lvert\frac{d}{dy}g^{-1}(y)\right\rvert$. In several dimensions, the derivative becomes the Jacobian determinant.
+
+## 5. Common mistakes
+- Forgetting the absolute value of the determinant.
+- Using the Jacobian of the inverse map by mistake (or inverting it when needed: $\det J_{uv \to xy} = \frac{1}{\det J_{xy \to uv}}$).
+- Not transforming the region's boundaries.
+
+## 6. Practice
+Q: Area element under a change of variables?
+A: $dA = \lvert\det J\rvert\,du\,dv$.
+
+Q: Jacobian determinant of $x = 2u$, $y = 3v$?
+A: $6$.
+
+Q: Area of the ellipse $\frac{x^2}{9} + \frac{y^2}{4} \le 1$?
+A: $6\pi$.
+
+Q: Why does the Jacobian determinant appear?
+A: It's the local area (or volume) scale factor of the transformation.
+
+Q: Name an ML model that uses Jacobian determinants.
+A: Normalising flows."
+3,TOPIC,"Applications: mass, centre of mass and joint probability","Density, mass, centroids, moments of inertia, joint densities and expected values",SHOULD,FALSE,"# Applications: mass, centre of mass and joint probability
+
+## 1. What it covers
+- **Mass** from density: $m = \iint\rho\,dA$ (or $\iiint\rho\,dV$).
+- **Centre of mass** $(\bar{x}, \bar{y})$ and centroids.
+- **Moment of inertia** (resistance to rotation).
+- **Joint probability densities**: probabilities and expected values as double integrals.
+
+## 2. Where it is used
+- **Mechanical and civil engineering:** centroids of beam cross-sections; balancing rotating parts; vehicle stability.
+- **Robotics and drones:** centre of mass for balance and control.
+- **Game physics:** rigid bodies need mass, centre of mass and inertia.
+- **Statistics and ML:** joint distributions, covariance, expected values of functions of several variables.
+
+## 3. What it means
+- **Mass:** add up density × tiny area.
+- **Centre of mass:** the balance point: the density-weighted average position. For uniform density it's the **centroid** (geometric centre).
+- **Moment of inertia** $I = \iint r^2\rho\,dA$: mass far from the axis counts more (squared distance). That's why a figure skater spins faster when pulling their arms in.
+- **Joint density** $f(x, y)$: probabilities are volumes under it; total volume 1; $E[g(X, Y)] = \iint g\,f\,dA$.
+
+## 4. Formula & worked example
+$$
+m = \iint_D\rho\,dA \qquad \bar{x} = \frac{1}{m}\iint_D x\rho\,dA \qquad \bar{y} = \frac{1}{m}\iint_D y\rho\,dA \qquad I_z = \iint_D(x^2 + y^2)\rho\,dA
+$$
+
+**Example 1 (centroid of a triangle).** Uniform triangle with vertices $(0, 0)$, $(1, 0)$, $(0, 1)$: area $\frac{1}{2}$; $\bar{x} = 2\int_0^1\int_0^{1-x}x\,dy\,dx = 2 \cdot \frac{1}{6} = \frac{1}{3}$; similarly $\bar{y} = \frac{1}{3}$ (the average of the vertices, as in the Geometry roadmap).
+
+**Example 2 (non-uniform plate).** Square $[0, 1]^2$ with density $\rho = x$: $m = \frac{1}{2}$; $\bar{x} = 2\int_0^1\int_0^1 x^2\,dy\,dx = \frac{2}{3}$; $\bar{y} = \frac{1}{2}$ (shifted towards the heavier side).
+
+**Example 3 (moment of inertia).** Uniform disk of radius $R$, mass $M$ (density $\frac{M}{\pi R^2}$): $I = \frac{M}{\pi R^2}\int_0^{2\pi}\int_0^R r^3\,dr\,d\theta = \frac{1}{2}MR^2$.
+
+**Example 4 (joint probability).** $f(x, y) = x + y$ on $[0, 1]^2$ (valid: total 1).
+- $P(X + Y \le 1) = \int_0^1\int_0^{1-x}(x + y)\,dy\,dx = \frac{1}{3}$
+- $E[XY] = \int_0^1\int_0^1 xy(x + y)\,dy\,dx = \frac{1}{3}$
+
+## 5. Common mistakes
+- Forgetting to divide by the mass for the centre of mass.
+- Using distance instead of squared distance for the moment of inertia.
+- Using a joint ""density"" that doesn't integrate to 1.
+
+## 6. Practice
+Q: Formula for mass of a plate with density $\rho$?
+A: $\iint\rho\,dA$.
+
+Q: Centroid of the rectangle $[0, 4] \times [0, 2]$?
+A: $(2, 1)$.
+
+Q: Why does mass far from the axis increase the moment of inertia more?
+A: It's weighted by the squared distance.
+
+Q: Is $f(x, y) = 4xy$ on $[0, 1]^2$ a valid joint density?
+A: Yes, it integrates to 1.
+
+Q: Moment of inertia of a uniform disk about its centre?
+A: $\frac{1}{2}MR^2$."
+3,TOPIC,Practice & review: Multiple integrals,Mixed problem set with worked answers,SHOULD,FALSE,"# Practice & review: Multiple integrals
+
+**How to use this:** 50 minutes; sketch every region; check with SciPy.
+
+## Problems
+1. $\int_1^2\int_0^1(2x + 3y^2)\,dy\,dx$.
+2. Integrate $f = x$ over the region between $y = x^2$ and $y = 4$.
+3. Reverse the order and evaluate $\int_0^2\int_{y/2}^{1}e^{x^2}\,dx\,dy$.
+4. Use polar coordinates: $\iint\frac{1}{1 + x^2 + y^2}\,dA$ over the disk of radius 2.
+5. Volume of the solid under $z = 6 - x - 2y$ in the first octant.
+6. Use spherical coordinates for the volume between spheres of radius 1 and 2.
+7. Centroid of the semicircular region $x^2 + y^2 \le 4$, $y \ge 0$.
+
+## Answers
+1. Inner: $2x + 1$ → $\int_1^2(2x + 1)\,dx = 3 + 1 = 4$.
+2. $\int_{-2}^{2}\int_{x^2}^{4}x\,dy\,dx = \int_{-2}^{2}x(4 - x^2)\,dx = 0$ (odd function, symmetric region).
+3. Region $0 \le y \le 2x$, $0 \le x \le 1$ → $\int_0^1\int_0^{2x}e^{x^2}dy\,dx = \int_0^1 2xe^{x^2}dx = e - 1$.
+4. $2\pi\int_0^2\frac{r}{1 + r^2}dr = \pi\ln 5 \approx 5.06$.
+5. $\int_0^6\int_0^{(6-x)/2}(6 - x - 2y)\,dy\,dx = \int_0^6\frac{(6 - x)^2}{4}dx = 18$.
+6. $\frac{4}{3}\pi(8 - 1) = \frac{28\pi}{3}$.
+7. By symmetry $\bar{x} = 0$; $\bar{y} = \frac{1}{2\pi}\int_0^\pi\int_0^2 r\sin\theta\cdot r\,dr\,d\theta = \frac{1}{2\pi}\cdot\frac{8}{3}\cdot 2 = \frac{8}{3\pi} \approx 0.85$.
+
+## Flashcards
+Q: Polar area element?
+A: $r\,dr\,d\theta$.
+
+Q: Spherical volume element?
+A: $\rho^2\sin\phi\,d\rho\,d\phi\,d\theta$.
+
+Q: Change of variables area factor?
+A: $\lvert\det J\rvert$.
+
+Q: Centre of mass x-coordinate?
+A: $\bar{x} = \frac{1}{m}\iint x\rho\,dA$."
+1,MODULE,Phase 5 — Vector Calculus (Advanced),"Line integrals, conservative fields, Green's theorem, curl and divergence, surface integrals, Stokes' and divergence theorems",NICE,,"# Phase 5: Vector calculus
+
+Vector calculus integrates **along curves** and **over surfaces** in vector fields: the work done moving through a force field, the circulation of a fluid, the flux of water or electricity through a surface. Its big theorems (Green, Stokes, divergence) all say the same thing in different dimensions: **what happens inside a region is determined by what happens on its boundary**. They are the mathematical language of electromagnetism (Maxwell's equations) and fluid dynamics."
+2,MODULE,Line and surface integrals and the big theorems,"Line integrals, conservative fields, Green's theorem, curl, divergence, flux, Stokes, divergence theorem",NICE,,Every theorem here generalises the fundamental theorem of calculus: integrate a derivative inside = evaluate on the boundary.
+3,TOPIC,Line integrals of scalar fields,"Integrating along a curve, arc length element ds, mass of a wire",NICE,FALSE,"# Line integrals of scalar fields
+
+## 1. What it covers
+- $\int_C f\,ds$: integrating a function along a curve.
+- Parametrising the curve and using $ds = \lVert\vec{r}'(t)\rVert\,dt$.
+- Applications: mass of a wire, average value along a path.
+
+## 2. Where it is used
+- **Engineering:** mass and centre of mass of cables, wires and curved beams.
+- **Geography and logistics:** total cost or exposure along a route (e.g. pollution encountered along a path).
+- **Graphics:** length-parametrised curves for animation.
+
+## 3. What it means
+Walk along a curve $C$; at each point there's a value $f$ (like the density of a wire, or the height of a fence). Add up $f$ times tiny lengths $ds$. If $f = 1$, you get the curve's length. Think of the area of a curtain hanging from the curve, with height $f$ at each point.
+
+**Method:** parametrise $C$ by $\vec{r}(t)$, $a \le t \le b$; replace $ds$ by the speed times $dt$.
+
+## 4. Formula & worked example
+$$
+\int_C f\,ds = \int_a^b f(\vec{r}(t))\,\lVert\vec{r}'(t)\rVert\,dt
+$$
+
+**Example 1 (length).** Circle of radius 3: $\vec{r} = \langle 3\cos t, 3\sin t\rangle$, $\lVert\vec{r}'\rVert = 3$ → $\int_0^{2\pi}3\,dt = 6\pi$ ✓
+
+**Example 2.** $\int_C (x + y)\,ds$ along the segment from $(0, 0)$ to $(3, 4)$: $\vec{r} = \langle 3t, 4t\rangle$, $\lVert\vec{r}'\rVert = 5$ → $\int_0^1 7t \cdot 5\,dt = 17.5$.
+
+**Example 3 (mass of a wire).** A semicircular wire $x^2 + y^2 = 1$, $y \ge 0$, with density $\rho = y$: $\int_0^\pi\sin t \cdot 1\,dt = 2$.
+
+## 5. Common mistakes
+- Forgetting the speed factor $\lVert\vec{r}'(t)\rVert$.
+- Using a parametrisation that traces the curve more than once.
+- Mixing up $ds$ (length) with $dx$.
+
+## 6. Practice
+Q: What does $\int_C 1\,ds$ give?
+A: The length of $C$.
+
+Q: $ds$ in terms of a parametrisation?
+A: $\lVert\vec{r}'(t)\rVert\,dt$.
+
+Q: $\int_C x\,ds$ along the segment from $(0, 0)$ to $(1, 0)$?
+A: $\frac{1}{2}$.
+
+Q: Mass of a wire with constant density 2 along a circle of radius 1?
+A: $4\pi$.
+
+Q: Does reversing the direction of $C$ change $\int_C f\,ds$?
+A: No."
+3,TOPIC,Line integrals of vector fields: work and circulation,"∫F·dr, work done by a force, dependence on path and direction",NICE,FALSE,"# Line integrals of vector fields: work and circulation
+
+## 1. What it covers
+- $\int_C\vec{F} \cdot d\vec{r}$: the **work** done by a force field along a path.
+- Computing with a parametrisation: $\int_a^b\vec{F}(\vec{r}(t)) \cdot \vec{r}'(t)\,dt$.
+- **Circulation** around a closed curve: $\oint_C\vec{F} \cdot d\vec{r}$.
+- Direction matters (reversing the path flips the sign).
+
+## 2. Where it is used
+- **Physics:** work done by gravity, electric fields, friction.
+- **Electrical engineering:** voltage is a line integral of the electric field; Ampère's law uses circulation of the magnetic field.
+- **Fluid dynamics:** circulation measures swirling (lift on aircraft wings is linked to circulation).
+
+## 3. What it means
+As you move along a path through a force field, at each step only the part of the force **along** your direction does work: $\vec{F} \cdot d\vec{r}$. Add these up along the path.
+- Walking with the wind at your back: positive work (the wind helps).
+- Against the wind: negative work.
+- Across the wind: zero.
+
+**Circulation:** for a closed loop, the total tendency of the field to push you around the loop.
+
+## 4. Formula & worked example
+$$
+\int_C\vec{F} \cdot d\vec{r} = \int_a^b\vec{F}(\vec{r}(t)) \cdot \vec{r}'(t)\,dt = \int_C P\,dx + Q\,dy
+$$
+
+**Example 1.** $\vec{F} = \langle y, x\rangle$ along $\vec{r} = \langle t, t^2\rangle$, $0 \le t \le 1$.
+- $\vec{F}(\vec{r}) = \langle t^2, t\rangle$, $\vec{r}' = \langle 1, 2t\rangle$ → $\int_0^1(t^2 + 2t^2)\,dt = 1$
+
+**Example 2 (circulation).** $\vec{F} = \langle -y, x\rangle$ around the unit circle (anticlockwise): $\vec{F} \cdot \vec{r}' = \sin^2 t + \cos^2 t = 1$ → circulation $2\pi$ (the field swirls the same way you go).
+
+**Example 3 (gravity).** Lifting a 2 kg mass straight up 5 m: gravity $\langle 0, -19.6\rangle$ N does $-98$ J of work (you do $+98$ J).
+
+**Example 4 (path dependence).** $\vec{F} = \langle -y, x\rangle$ from $(1, 0)$ to $(-1, 0)$: along the upper semicircle the work is $\pi$; along the straight segment through the origin it's $0$. Different paths, different work: this field is **not** conservative.
+
+## 5. Common mistakes
+- Forgetting to substitute the parametrisation into $\vec{F}$.
+- Using $\lVert\vec{r}'\rVert$ (that's for scalar line integrals) instead of $\vec{r}'$.
+- Ignoring the direction of travel.
+
+## 6. Practice
+Q: Formula for work along a path?
+A: $\int_C\vec{F} \cdot d\vec{r} = \int\vec{F}(\vec{r}(t)) \cdot \vec{r}'(t)\,dt$.
+
+Q: What happens to the work if you reverse the path?
+A: It changes sign.
+
+Q: Work done by $\vec{F} = \langle 2, 0\rangle$ along the segment from $(0, 0)$ to $(3, 4)$?
+A: $\int_0^1\langle 2, 0\rangle \cdot \langle 3, 4\rangle\,dt = 6$.
+
+Q: Work done by a force always perpendicular to the motion?
+A: Zero.
+
+Q: What is circulation?
+A: The line integral of a field around a closed curve."
+3,TOPIC,Conservative fields and potential functions,"Path independence, F = ∇f, the fundamental theorem for line integrals, testing for conservativeness",NICE,FALSE,"# Conservative fields and potential functions
+
+## 1. What it covers
+- **Conservative** fields: $\vec{F} = \nabla f$ for some **potential** $f$.
+- The **fundamental theorem for line integrals**: $\int_C\nabla f \cdot d\vec{r} = f(B) - f(A)$.
+- Path independence; zero circulation around closed loops.
+- Testing: $P_y = Q_x$ (in 2D, simply connected regions); finding $f$.
+
+## 2. Where it is used
+- **Physics:** gravity and electrostatic forces are conservative, so they have potential energy; work depends only on start and end height or voltage (energy conservation).
+- **Engineering:** voltage as a potential in circuits.
+- **Optimisation and ML:** gradient fields are conservative by construction; following $-\nabla f$ decreases $f$ steadily.
+- **Thermodynamics:** state functions are potentials.
+
+## 3. What it means
+For a conservative field, the work from $A$ to $B$ is the same along **every** path; only the endpoints matter, like the change in height when hiking: however winding the trail, the elevation gain is the end height minus the start height. Consequently, the work around any closed loop is 0.
+
+**Test (2D):** $\vec{F} = \langle P, Q\rangle$ is conservative (on a region without holes) if $\frac{\partial P}{\partial y} = \frac{\partial Q}{\partial x}$.
+
+**Finding the potential:** integrate $P$ with respect to $x$ (adding a function of $y$), then match the $y$-derivative to $Q$.
+
+## 4. Formula & worked example
+$$
+\vec{F} = \nabla f \Rightarrow \int_C\vec{F} \cdot d\vec{r} = f(B) - f(A) \qquad \text{test: } P_y = Q_x
+$$
+
+**Example 1 (test).** $\vec{F} = \langle 2xy, x^2 + 3y^2\rangle$: $P_y = 2x = Q_x$ → conservative.
+- $f = \int 2xy\,dx = x^2y + g(y)$; $f_y = x^2 + g'(y) = x^2 + 3y^2$ → $g = y^3$ → $f = x^2y + y^3$.
+
+**Example 2 (use the potential).** Work from $(0, 0)$ to $(1, 2)$: $f(1, 2) - f(0, 0) = 2 + 8 = 10$, along any path.
+
+**Example 3 (not conservative).** $\vec{F} = \langle -y, x\rangle$: $P_y = -1 \ne Q_x = 1$ → not conservative (matches the path-dependence example).
+
+**Example 4 (gravity).** Near the Earth, $\vec{F} = \langle 0, 0, -mg\rangle = \nabla(-mgz)$: work by gravity $= mg(z_A - z_B)$, depending only on the height change.
+
+## 5. Common mistakes
+- Applying the potential shortcut to non-conservative fields.
+- Forgetting the ""function of $y$"" constant when integrating with respect to $x$.
+- Using the 2D test on regions with holes without care (e.g. around the origin for $\frac{\langle -y, x\rangle}{x^2 + y^2}$).
+
+## 6. Practice
+Q: Define a conservative field.
+A: A field that is the gradient of a potential function.
+
+Q: Work done by a conservative field around a closed loop?
+A: Zero.
+
+Q: Is $\langle y, x\rangle$ conservative? Potential?
+A: Yes; $f = xy$.
+
+Q: Is $\langle x^2, xy\rangle$ conservative?
+A: $P_y = 0$, $Q_x = y$ → no.
+
+Q: State the fundamental theorem for line integrals.
+A: $\int_C\nabla f \cdot d\vec{r} = f(\text{end}) - f(\text{start})$."
+3,TOPIC,Green's theorem,Circulation around a closed curve = double integral of Q_x − P_y; area by line integrals,NICE,FALSE,"# Green's theorem
+
+## 1. What it covers
+- **Green's theorem**: $\oint_C P\,dx + Q\,dy = \iint_D(Q_x - P_y)\,dA$.
+- Orientation (anticlockwise, region on the left).
+- Using it to compute circulation or area.
+- The planimeter and the shoelace formula connection.
+
+## 2. Where it is used
+- **Surveying:** the planimeter (a mechanical device that measures area by tracing a boundary) works by Green's theorem.
+- **Computational geometry:** the shoelace formula for polygon area is Green's theorem.
+- **Fluid dynamics:** relating circulation around a wing to the vorticity inside.
+- **Physics:** 2D versions of Stokes' theorem in electromagnetism.
+
+## 3. What it means
+$Q_x - P_y$ measures the tiny **rotation** (curl) of the field at each point. Green's theorem says: add up all the tiny rotations inside a region, and you get the total circulation around its boundary. Interior swirls cancel between neighbours (like gears turning against each other), leaving only the edge.
+
+**Area from the boundary:** choosing $P = -\frac{y}{2}$, $Q = \frac{x}{2}$ gives $Q_x - P_y = 1$, so area $= \frac{1}{2}\oint(x\,dy - y\,dx)$. Applied to a polygon's edges, this **is** the shoelace formula.
+
+## 4. Formula & worked example
+$$
+\oint_C P\,dx + Q\,dy = \iint_D\left(\frac{\partial Q}{\partial x} - \frac{\partial P}{\partial y}\right)dA \qquad \text{Area} = \frac{1}{2}\oint_C(x\,dy - y\,dx)
+$$
+
+**Example 1.** $\oint_C(-y\,dx + x\,dy)$ around the unit circle: $Q_x - P_y = 2$ → $2 \times \pi = 2\pi$ (matches the direct calculation earlier).
+
+**Example 2.** $\oint_C(x^2y\,dx + xy^2\,dy)$ around the square $[0, 1]^2$: $\iint(y^2 - x^2)\,dA = \frac{1}{3} - \frac{1}{3} = 0$.
+
+**Example 3 (area of an ellipse).** $x = a\cos t$, $y = b\sin t$: $\frac{1}{2}\int_0^{2\pi}(ab\cos^2 t + ab\sin^2 t)\,dt = \pi ab$ ✓
+
+**Example 4 (shoelace link).** For a polygon, the area integral over each straight edge from $(x_i, y_i)$ to $(x_{i+1}, y_{i+1})$ gives $\frac{1}{2}(x_iy_{i+1} - x_{i+1}y_i)$; summing gives the shoelace formula from the Geometry roadmap.
+
+## 5. Common mistakes
+- Wrong orientation (clockwise gives a sign flip).
+- Computing $P_y - Q_x$ instead of $Q_x - P_y$.
+- Applying it to curves that aren't closed.
+
+## 6. Practice
+Q: State Green's theorem.
+A: $\oint_C P\,dx + Q\,dy = \iint_D(Q_x - P_y)\,dA$.
+
+Q: Required orientation of $C$?
+A: Anticlockwise (region on the left).
+
+Q: Area formula from Green's theorem?
+A: $\frac{1}{2}\oint(x\,dy - y\,dx)$.
+
+Q: Circulation of a conservative field around any closed curve, via Green?
+A: $0$, since $Q_x - P_y = 0$.
+
+Q: Which polygon-area formula comes from Green's theorem?
+A: The shoelace formula."
+3,TOPIC,Curl and divergence,"∇·F as spreading out (sources/sinks), ∇×F as rotation, physical meaning, identities",NICE,FALSE,"# Curl and divergence
+
+## 1. What it covers
+- **Divergence** $\nabla \cdot \vec{F}$: how much a field spreads out from a point (sources and sinks).
+- **Curl** $\nabla \times \vec{F}$: how much it rotates around a point.
+- Computing both; key identities ($\nabla \times \nabla f = \vec{0}$, $\nabla \cdot (\nabla \times \vec{F}) = 0$).
+- The Laplacian $\nabla^2 f = \nabla \cdot \nabla f$.
+
+## 2. Where it is used
+- **Electromagnetism:** Maxwell's equations are written with divergence and curl.
+- **Fluid simulation (games, CGI, weather):** incompressible fluids have zero divergence; vorticity is the curl of velocity.
+- **Image processing:** the Laplacian detects edges and blobs.
+- **Heat and diffusion:** the heat equation $u_t = k\nabla^2 u$.
+
+## 3. What it means
+- **Divergence:** put a tiny box at a point. If more fluid flows out than in, the point is a **source** (positive divergence); if more flows in, a **sink** (negative). Zero divergence means ""incompressible"": what comes in goes out.
+- **Curl:** put a tiny paddle wheel at the point. If the field makes it spin, the curl is non-zero; its direction is the wheel's axis (right-hand rule), its size the spin rate.
+
+A gradient field never has curl (no swirl in ""always uphill""), and a curl field never has divergence.
+
+## 4. Formula & worked example
+$$
+\nabla \cdot \vec{F} = P_x + Q_y + R_z \qquad \nabla \times \vec{F} = \langle R_y - Q_z,\ P_z - R_x,\ Q_x - P_y\rangle \qquad \nabla^2 f = f_{xx} + f_{yy} + f_{zz}
+$$
+
+**Example 1.** $\vec{F} = \langle x, y, z\rangle$: divergence 3 (spreading out from everywhere), curl $\vec{0}$.
+
+**Example 2.** $\vec{F} = \langle -y, x, 0\rangle$: divergence 0; curl $\langle 0, 0, 2\rangle$ (rotation about the z-axis).
+
+**Example 3.** $\vec{F} = \langle x^2y, yz, xz^2\rangle$: $\nabla \cdot \vec{F} = 2xy + z + 2xz$; $\nabla \times \vec{F} = \langle 0 - y,\ 0 - z^2,\ 0 - x^2\rangle = \langle -y, -z^2, -x^2\rangle$.
+
+**Example 4 (identity check).** $f = x^2y$: $\nabla f = \langle 2xy, x^2, 0\rangle$; curl $= \langle 0, 0, 2x - 2x\rangle = \vec{0}$ ✓
+
+**Example 5 (Laplacian edges, code).**
+```python
+import numpy as np
+from scipy.ndimage import laplace
+img = np.zeros((7, 7)); img[2:5, 2:5] = 1.0     # a bright square
+print(laplace(img))                              # non-zero only around the square's border
+```
+The discrete Laplacian sums second differences in x and y; it's zero in flat regions and large at edges, which is used in edge detection and image sharpening.
+
+## 5. Common mistakes
+- Treating divergence as a vector (it's a scalar) or curl as a scalar (in 3D it's a vector).
+- Sign errors in the curl components (use the determinant pattern carefully).
+- Confusing the Laplacian with the gradient.
+
+## 6. Practice
+Q: Divergence of $\langle 3x, -y, 2z\rangle$?
+A: $3 - 1 + 2 = 4$.
+
+Q: What does zero divergence mean physically?
+A: The flow is incompressible (no net sources or sinks).
+
+Q: Curl of $\langle y, -x, 0\rangle$?
+A: $\langle 0, 0, -2\rangle$.
+
+Q: Curl of any gradient field?
+A: $\vec{0}$.
+
+Q: Laplacian of $f = x^2 + y^2 + z^2$?
+A: $6$."
+3,TOPIC,Surface integrals and flux,"Parametrised surfaces, surface area, flux ∬F·n dS through a surface",NICE,FALSE,"# Surface integrals and flux
+
+## 1. What it covers
+- Surface area of parametrised surfaces: $\iint\lVert\vec{r}_u \times \vec{r}_v\rVert\,du\,dv$.
+- Scalar surface integrals $\iint_S f\,dS$.
+- **Flux** $\iint_S\vec{F} \cdot \vec{n}\,dS$: how much of a field flows through a surface.
+- Orientation (choosing the normal direction).
+
+## 2. Where it is used
+- **Physics:** electric flux (Gauss's law), magnetic flux, heat flux through walls.
+- **Fluid dynamics:** flow rate of water through a pipe cross-section or a net.
+- **Engineering:** total pressure force on a dam or ship hull.
+- **Graphics:** surface area of meshes; light flux in rendering (radiometry).
+
+## 3. What it means
+**Surface area:** a parametrised surface $\vec{r}(u, v)$ maps tiny rectangles in $(u, v)$ onto tiny parallelograms on the surface, with sides $\vec{r}_u\,du$ and $\vec{r}_v\,dv$. Their area is $\lVert\vec{r}_u \times \vec{r}_v\rVert\,du\,dv$ (the cross product from Linear Algebra).
+
+**Flux:** imagine a net in a river. Only the part of the current **perpendicular** to the net passes through it: $\vec{F} \cdot \vec{n}$. Flux adds this up over the whole net. Turning the net edge-on to the flow makes the flux zero.
+
+## 4. Formula & worked example
+$$
+dS = \lVert\vec{r}_u \times \vec{r}_v\rVert\,du\,dv \qquad \iint_S\vec{F} \cdot d\vec{S} = \iint_D\vec{F}(\vec{r}(u, v)) \cdot (\vec{r}_u \times \vec{r}_v)\,du\,dv
+$$
+
+**Example 1 (sphere area).** $\vec{r}(\phi, \theta)$ for radius $R$: $\lVert\vec{r}_\phi \times \vec{r}_\theta\rVert = R^2\sin\phi$ → $\int_0^{2\pi}\int_0^\pi R^2\sin\phi\,d\phi\,d\theta = 4\pi R^2$ ✓
+
+**Example 2 (flux through a square).** $\vec{F} = \langle 0, 0, 3\rangle$ through the unit square in the plane $z = 1$, normal $\langle 0, 0, 1\rangle$: flux $= 3 \times 1 = 3$.
+
+**Example 3 (flux out of a sphere).** $\vec{F} = \langle x, y, z\rangle$ through the sphere of radius $R$ (outward normal $\frac{\vec{r}}{R}$): $\vec{F} \cdot \vec{n} = R$ → flux $= R \cdot 4\pi R^2 = 4\pi R^3$.
+
+**Example 4 (graph surface).** For $z = g(x, y)$ with upward normal: $d\vec{S} = \langle -g_x, -g_y, 1\rangle\,dA$.
+
+## 5. Common mistakes
+- Forgetting the $\lVert\vec{r}_u \times \vec{r}_v\rVert$ factor.
+- Using an inward normal when outward is required (sign flip).
+- Confusing flux (field through a surface) with surface area.
+
+## 6. Practice
+Q: Surface area element for a parametrised surface?
+A: $\lVert\vec{r}_u \times \vec{r}_v\rVert\,du\,dv$.
+
+Q: What does flux measure?
+A: How much of a vector field passes through a surface.
+
+Q: Flux of a field parallel to a flat surface?
+A: Zero.
+
+Q: Flux of $\langle 0, 0, 5\rangle$ through a disk of radius 2 in the xy-plane (upward)?
+A: $5 \times 4\pi = 20\pi$.
+
+Q: Surface area of a sphere of radius 3?
+A: $36\pi$."
+3,TOPIC,Stokes' theorem and the divergence theorem,Circulation = flux of curl; outward flux = integral of divergence; Maxwell's equations,NICE,FALSE,"# Stokes' theorem and the divergence theorem
+
+## 1. What it covers
+- **Stokes' theorem**: $\oint_C\vec{F} \cdot d\vec{r} = \iint_S(\nabla \times \vec{F}) \cdot d\vec{S}$.
+- **Divergence (Gauss's) theorem**: $\oiint_S\vec{F} \cdot d\vec{S} = \iiint_E\nabla \cdot \vec{F}\,dV$.
+- Using them to simplify calculations.
+- The big picture: all are forms of the fundamental theorem of calculus.
+
+## 2. Where it is used
+- **Electromagnetism:** Gauss's law (flux of the electric field = enclosed charge) and Faraday's and Ampère's laws are these theorems applied to Maxwell's equations; they explain how motors, generators and antennas work.
+- **Fluid dynamics:** conservation of mass (what flows out of a region equals what's produced inside).
+- **Heat transfer:** total heat flowing out of a body.
+- **Numerical simulation:** finite-volume methods (used in weather, aerospace and game fluids) are built on the divergence theorem.
+
+## 3. What it means
+**Divergence theorem:** the total amount of fluid flowing **out** through a closed surface equals the total amount **produced** inside (the sum of all the little sources and sinks). Like a crowded room: the net number of people leaving through all the doors equals the net number created inside (which is zero unless people appear from nowhere).
+
+**Stokes' theorem:** the circulation around a loop equals the total swirl (curl) through **any** surface bounded by that loop. Green's theorem is the flat special case.
+
+**The pattern:**
+| Theorem | Inside | Boundary |
+|---|---|---|
+| FTC | $\int_a^b f'\,dx$ | $f(b) - f(a)$ |
+| Line integrals | $\int_C\nabla f \cdot d\vec{r}$ | $f(B) - f(A)$ |
+| Green / Stokes | $\iint\text{curl}$ | $\oint$ circulation |
+| Divergence | $\iiint\text{div}$ | $\oiint$ flux |
+
+## 4. Formula & worked example
+$$
+\oint_C\vec{F} \cdot d\vec{r} = \iint_S(\nabla \times \vec{F}) \cdot d\vec{S} \qquad \oiint_S\vec{F} \cdot d\vec{S} = \iiint_E\nabla \cdot \vec{F}\,dV
+$$
+
+**Example 1 (divergence theorem check).** $\vec{F} = \langle x, y, z\rangle$, sphere of radius $R$: $\nabla \cdot \vec{F} = 3$ → $\iiint 3\,dV = 3 \cdot \frac{4}{3}\pi R^3 = 4\pi R^3$ ✓ (matches the direct flux calculation).
+
+**Example 2 (cube).** $\vec{F} = \langle x^2, y^2, z^2\rangle$ out of the cube $[0, 1]^3$: $\nabla \cdot \vec{F} = 2x + 2y + 2z$ → $\iiint = 3$ (much easier than six face integrals).
+
+**Example 3 (Stokes).** $\vec{F} = \langle -y, x, 0\rangle$ around the unit circle in the xy-plane: curl $= \langle 0, 0, 2\rangle$; flux through the unit disk $= 2\pi$ ✓ (same as the line integral).
+
+**Example 4 (Gauss's law).** A point charge $q$ at the centre of any closed surface: the electric flux through it is $\frac{q}{\varepsilon_0}$, whatever the surface's shape, because the field's divergence is zero everywhere except at the charge.
+
+## 5. Common mistakes
+- Using the divergence theorem on a surface that isn't closed.
+- Wrong orientation (outward normal for the divergence theorem; right-hand rule linking $C$ and $S$ for Stokes).
+- Forgetting that Stokes' surface can be any surface with the given boundary (choose the easiest).
+
+## 6. Practice
+Q: State the divergence theorem.
+A: Outward flux through a closed surface = triple integral of the divergence inside.
+
+Q: State Stokes' theorem.
+A: Circulation around a loop = flux of the curl through a surface bounded by the loop.
+
+Q: Flux of a divergence-free field out of any closed surface?
+A: Zero.
+
+Q: Which theorem is the 2D version of Stokes'?
+A: Green's theorem.
+
+Q: Common idea behind all these theorems?
+A: The integral of a derivative over a region equals a boundary integral (generalised FTC)."
+3,TOPIC,Practice & review: Vector calculus,Mixed problem set with worked answers,NICE,FALSE,"# Practice & review: Vector calculus
+
+**How to use this:** 50 minutes. Draw each curve or surface and its orientation.
+
+## Problems
+1. $\int_C xy\,ds$ along the quarter circle $x = 2\cos t$, $y = 2\sin t$, $0 \le t \le \frac{\pi}{2}$.
+2. Work done by $\vec{F} = \langle x, -y\rangle$ along $\vec{r} = \langle t, t^3\rangle$, $0 \le t \le 1$.
+3. Show $\vec{F} = \langle e^y, xe^y + 2y\rangle$ is conservative, find a potential and the work from $(0, 0)$ to $(2, 1)$.
+4. Use Green's theorem: $\oint_C(y^2\,dx + 3xy\,dy)$ around the boundary of $[0, 2] \times [0, 1]$ (anticlockwise).
+5. Compute the divergence and curl of $\vec{F} = \langle yz, xz, xy\rangle$. Is it conservative?
+6. Use the divergence theorem for the outward flux of $\vec{F} = \langle x^3, y^3, z^3\rangle$ through the unit sphere.
+
+## Answers
+1. $\int_0^{\pi/2}4\cos t\sin t \cdot 2\,dt = 4$.
+2. $\int_0^1(t \cdot 1 - t^3 \cdot 3t^2)\,dt = \frac{1}{2} - \frac{1}{2} = 0$.
+3. $P_y = e^y = Q_x$ ✓; $f = xe^y + y^2$; work $= f(2, 1) - f(0, 0) = 2e + 1 \approx 6.44$.
+4. $Q_x - P_y = 3y - 2y = y$ → $\int_0^2\int_0^1 y\,dy\,dx = 1$.
+5. Divergence $0$; curl $\langle x - x, y - y, z - z\rangle = \vec{0}$ → conservative ($f = xyz$).
+6. $\nabla \cdot \vec{F} = 3(x^2 + y^2 + z^2) = 3\rho^2$ → $\int_0^{2\pi}\int_0^\pi\int_0^1 3\rho^4\sin\phi\,d\rho\,d\phi\,d\theta = \frac{3}{5} \cdot 2 \cdot 2\pi = \frac{12\pi}{5}$.
+
+## Flashcards
+Q: Fundamental theorem for line integrals?
+A: $\int_C\nabla f \cdot d\vec{r} = f(B) - f(A)$.
+
+Q: Green's theorem?
+A: $\oint P\,dx + Q\,dy = \iint(Q_x - P_y)\,dA$.
+
+Q: Divergence vs curl?
+A: Divergence measures spreading (sources/sinks); curl measures rotation.
+
+Q: Divergence theorem?
+A: $\oiint\vec{F} \cdot d\vec{S} = \iiint\nabla \cdot \vec{F}\,dV$."
+1,MODULE,Phase 6 — Differential Equations (Advanced),"Classification, linear and exact first-order equations, modelling and numerical methods, second-order linear equations, vibrations, systems, Laplace transforms",SHOULD,,"# Phase 6: Differential equations
+
+A **differential equation** (DE) describes a system by how it **changes**: the rate of cooling depends on the temperature difference; a spring's acceleration depends on its stretch; current in a circuit depends on voltage and charge. Solving the DE predicts the system's future.
+
+**Before starting:** the Calculus roadmap's DE introduction (slope fields, Euler's method, separable equations, exponential and logistic models) and the Linear Algebra roadmap's eigenvalues."
+2,MODULE,First-order equations,"Classification, linear equations with integrating factors, exact equations, modelling and numerical methods",SHOULD,,"First-order equations involve only the first derivative: one rate, one rule."
+3,TOPIC,Classifying DEs and first-order linear equations,"Order, linearity, ODE vs PDE, initial value problems, integrating factors for y′ + p(x)y = q(x)",SHOULD,FALSE,"# Classifying DEs and first-order linear equations
+
+## 1. What it covers
+- Classification: **order**, **linear vs non-linear**, **ODE vs PDE**, homogeneous vs non-homogeneous.
+- **Initial value problems** (IVPs).
+- Solving **first-order linear** equations $y' + p(x)y = q(x)$ with an **integrating factor**.
+
+## 2. Where it is used
+- **Electrical circuits:** an RC or RL circuit is a first-order linear DE.
+- **Mixing problems:** salt concentration in a tank with inflow and outflow.
+- **Pharmacology:** drug level with continuous infusion and elimination.
+- **Finance:** a balance with interest and continuous deposits/withdrawals.
+
+## 3. What it means
+**Classification:**
+- **Order:** the highest derivative. $y'' + y = 0$ is second order.
+- **Linear:** $y$ and its derivatives appear only to the first power, not multiplied together or inside functions. $y' + xy = \sin x$ is linear; $y' = y^2$ is not.
+- **ODE:** one independent variable; **PDE:** several (partial derivatives), like the heat equation.
+
+**Integrating factor:** for $y' + p(x)y = q(x)$, multiply both sides by $\mu(x) = e^{\int p\,dx}$. This makes the left side the derivative of a product, $(\mu y)'$, by the product rule. Then just integrate both sides.
+
+## 4. Formula & worked example
+$$
+y' + p(x)y = q(x) \qquad \mu(x) = e^{\int p(x)\,dx} \qquad (\mu y)' = \mu q \Rightarrow y = \frac{1}{\mu}\left(\int\mu q\,dx + C\right)
+$$
+
+**Example 1 (classify).** $y''' + 2y' = e^x$: third order, linear, non-homogeneous ODE. $y' = \sin y$: first order, non-linear.
+
+**Example 2.** $y' + 2y = 4$, $y(0) = 0$.
+- $\mu = e^{2x}$ → $(e^{2x}y)' = 4e^{2x}$ → $e^{2x}y = 2e^{2x} + C$ → $y = 2 + Ce^{-2x}$; $y(0) = 0$ → $C = -2$ → $y = 2 - 2e^{-2x}$ (rises to 2).
+
+**Example 3.** $y' + \frac{1}{x}y = x$ ($x > 0$): $\mu = x$ → $(xy)' = x^2$ → $xy = \frac{x^3}{3} + C$ → $y = \frac{x^2}{3} + \frac{C}{x}$.
+
+**Example 4 (mixing tank).** A 100 L tank of pure water; brine with 0.5 kg salt/L flows in at 4 L/min; mixed solution flows out at 4 L/min. Salt $S(t)$?
+- $S' = 4(0.5) - 4\frac{S}{100} = 2 - 0.04S$ → $S' + 0.04S = 2$ → $S = 50(1 - e^{-0.04t})$ → approaches 50 kg.
+
+**Example 5 (RC circuit).** $RC\,V' + V = V_s$ (charging capacitor): $V(t) = V_s(1 - e^{-t/RC})$; the time constant $RC$ is the time to reach about 63%.
+
+## 5. Common mistakes
+- Forgetting to put the equation in standard form (coefficient of $y'$ must be 1) before finding $\mu$.
+- Forgetting $+C$ before dividing by $\mu$.
+- Calling $y' = xy^2$ linear.
+
+## 6. Practice
+Q: Order and linearity of $x^2y'' + xy' + y = 0$?
+A: Second order, linear.
+
+Q: Integrating factor for $y' + 3y = e^x$?
+A: $e^{3x}$.
+
+Q: Solve $y' + y = 1$, $y(0) = 0$.
+A: $y = 1 - e^{-x}$.
+
+Q: Is $y' = \cos y$ linear?
+A: No.
+
+Q: Why does the integrating factor work?
+A: It turns the left side into the derivative of $\mu y$ (product rule)."
+3,TOPIC,Exact equations,"M dx + N dy = 0, the exactness test M_y = N_x, finding the potential function, link to conservative fields",SHOULD,FALSE,"# Exact equations
+
+## 1. What it covers
+- Equations of the form $M(x, y)\,dx + N(x, y)\,dy = 0$.
+- The **exactness test** $M_y = N_x$.
+- Finding a potential $\psi(x, y)$ with $\psi = C$ as the solution.
+- The link with conservative vector fields.
+
+## 2. Where it is used
+- **Thermodynamics:** exact differentials represent state functions (energy, entropy).
+- **Physics:** conservative force fields and potentials.
+- **Solving non-linear first-order equations** that aren't separable or linear.
+
+## 3. What it means
+If $M\,dx + N\,dy$ is the total differential of some function $\psi$ (that is, $\psi_x = M$ and $\psi_y = N$), then the equation says $d\psi = 0$, so $\psi(x, y) = C$: the solutions are the **level curves** of $\psi$.
+
+This is exactly the conservative-field test from Phase 5: $\langle M, N\rangle$ is a gradient field iff $M_y = N_x$.
+
+**Finding $\psi$:** integrate $M$ with respect to $x$ (adding $h(y)$), then choose $h$ so that $\psi_y = N$.
+
+## 4. Formula & worked example
+$$
+M\,dx + N\,dy = 0 \text{ is exact} \iff M_y = N_x \qquad \psi_x = M,\ \psi_y = N,\ \psi(x, y) = C
+$$
+
+**Example 1.** $(2xy + 3)\,dx + (x^2 + 4y)\,dy = 0$.
+- $M_y = 2x = N_x$ ✓ exact.
+- $\psi = \int(2xy + 3)\,dx = x^2y + 3x + h(y)$; $\psi_y = x^2 + h'(y) = x^2 + 4y$ → $h = 2y^2$.
+- Solution: $x^2y + 3x + 2y^2 = C$.
+
+**Example 2.** $(y\cos x + 2x)\,dx + (\sin x - 1)\,dy = 0$, $y(0) = 3$.
+- $M_y = \cos x = N_x$ ✓; $\psi = y\sin x + x^2 - y$ → $y\sin x + x^2 - y = C$; at $(0, 3)$: $C = -3$.
+
+**Example 3 (not exact).** $y\,dx - x\,dy = 0$: $M_y = 1$, $N_x = -1$ → not exact (it can be made exact with an integrating factor, e.g. $\frac{1}{y^2}$, giving $\frac{x}{y} = C$).
+
+## 5. Common mistakes
+- Testing $M_x = N_y$ instead of $M_y = N_x$.
+- Forgetting the function $h(y)$ when integrating with respect to $x$.
+- Writing the answer as $\psi$ instead of $\psi = C$.
+
+## 6. Practice
+Q: Exactness test?
+A: $M_y = N_x$.
+
+Q: Is $2x\,dx + 2y\,dy = 0$ exact? Solution?
+A: Yes; $x^2 + y^2 = C$ (circles).
+
+Q: Is $(x + y)\,dx + (x - y)\,dy = 0$ exact?
+A: Yes ($M_y = 1 = N_x$); $\frac{x^2}{2} + xy - \frac{y^2}{2} = C$.
+
+Q: What are the solution curves of an exact equation?
+A: Level curves $\psi(x, y) = C$ of the potential.
+
+Q: How are exact equations related to vector calculus?
+A: $\langle M, N\rangle$ is a conservative field with potential $\psi$."
+3,TOPIC,Modelling with first-order DEs and numerical solvers,"Cooling, mixing, circuits, populations; Runge–Kutta and scipy's solve_ivp",SHOULD,FALSE,"# Modelling with first-order DEs and numerical solvers
+
+## 1. What it covers
+- Building DE models from words (rate in − rate out; proportional rates).
+- Classic models: cooling, mixing, circuits, drug infusion, populations with harvesting.
+- **Numerical solution**: why Euler's method is improved by **Runge–Kutta (RK4)**; using `scipy.integrate.solve_ivp`.
+
+## 2. Where it is used
+- **Engineering simulation:** most real DEs have no formula solution and are solved numerically.
+- **Epidemiology:** SIR models of disease spread.
+- **Games and physics engines:** integrating motion every frame.
+- **Pharmacology, ecology, economics:** compartment models.
+
+## 3. What it means
+**Modelling recipe:**
+1. Identify the quantity that changes, $y(t)$.
+2. Write its rate of change as (rate in) − (rate out), or as proportional to something.
+3. Add the initial condition.
+4. Solve exactly if possible; otherwise numerically.
+
+**Numerical methods:** Euler's method follows the slope at the start of each step, which drifts off curving solutions. **RK4** samples the slope four times per step (start, two midpoints, end) and averages them cleverly, giving far better accuracy for the same step size. Library solvers like `solve_ivp` also adapt the step size automatically.
+
+## 4. Formula & worked example
+$$
+\text{RK4: } y_{n+1} = y_n + \frac{h}{6}(k_1 + 2k_2 + 2k_3 + k_4)
+$$
+with $k_1 = f(t_n, y_n)$, $k_2 = f(t_n + \frac{h}{2}, y_n + \frac{h}{2}k_1)$, $k_3 = f(t_n + \frac{h}{2}, y_n + \frac{h}{2}k_2)$, $k_4 = f(t_n + h, y_n + hk_3)$.
+
+**Example 1 (harvesting).** Fish grow logistically with harvesting: $P' = 0.5P\left(1 - \frac{P}{1000}\right) - 100$. Equilibria where $P' = 0$: $0.5P - 0.0005P^2 = 100$ → $P \approx 276$ (unstable) and $P \approx 724$ (stable). Below 276 the population collapses: a real fishery-management insight.
+
+**Example 2 (drug infusion).** IV drip at 10 mg/h, elimination rate 0.2 per hour: $A' = 10 - 0.2A$ → $A(t) = 50(1 - e^{-0.2t})$; steady level 50 mg.
+
+**Example 3 (Euler vs RK4 vs solve_ivp, code).**
+```python
+import numpy as np
+from scipy.integrate import solve_ivp
+f = lambda t, y: y                       # y' = y, y(0) = 1, exact y(1) = e
+def euler(h):
+    y = 1.0
+    for _ in range(int(1 / h)): y += h * f(0, y)
+    return y
+def rk4(h):
+    y, t = 1.0, 0.0
+    for _ in range(int(1 / h)):
+        k1 = f(t, y); k2 = f(t + h/2, y + h/2*k1); k3 = f(t + h/2, y + h/2*k2); k4 = f(t + h, y + h*k3)
+        y += h / 6 * (k1 + 2*k2 + 2*k3 + k4); t += h
+    return y
+print(abs(euler(0.1) - np.e), abs(rk4(0.1) - np.e))    # ~0.12 vs ~2e-6
+sol = solve_ivp(f, (0, 1), [1.0], rtol=1e-9)
+print(sol.y[0, -1])                                     # 2.718281828...
+```
+With the same 10 steps, RK4 is about 50 000 times more accurate than Euler. `solve_ivp` (default RK45) chooses step sizes automatically to meet the requested tolerance.
+
+**Example 4 (SIR epidemic, code).**
+```python
+def sir(t, u, beta=0.3, gamma=0.1):
+    S, I, R = u
+    return [-beta*S*I, beta*S*I - gamma*I, gamma*I]
+sol = solve_ivp(sir, (0, 160), [0.99, 0.01, 0.0], dense_output=True)
+t = np.linspace(0, 160, 161); S, I, R = sol.sol(t)
+print(t[I.argmax()], I.max().round(3))                  # peak day and peak infected fraction
+```
+Susceptible people become infected at rate $\beta SI$ and recover at rate $\gamma I$. This three-equation system has no simple formula, but a numerical solver gives the epidemic curve, its peak and the final size.
+
+## 5. Common mistakes
+- Mixing units (per hour vs per minute) in rates.
+- Forgetting outflow terms in mixing problems.
+- Trusting a numerical solution without checking step size or tolerance.
+
+## 6. Practice
+Q: Basic modelling principle for compartments?
+A: Rate of change = rate in − rate out.
+
+Q: $A' = 6 - 0.3A$. Long-run value of $A$?
+A: $20$.
+
+Q: Why is RK4 more accurate than Euler?
+A: It averages several slope samples within each step.
+
+Q: Which scipy function solves IVPs numerically?
+A: `scipy.integrate.solve_ivp`.
+
+Q: What do the three equations of the SIR model track?
+A: Susceptible, infected and recovered fractions of the population."
+2,MODULE,Second-order linear equations and systems,"Constant-coefficient homogeneous equations, vibrations, undetermined coefficients, variation of parameters, systems via eigenvalues",NICE,,"Second-order equations describe anything with inertia: springs, pendulums, circuits with inductors."
+3,TOPIC,Homogeneous second-order equations with constant coefficients,"ay″ + by′ + cy = 0, characteristic equation, distinct real, repeated and complex roots",NICE,FALSE,"# Homogeneous second-order equations with constant coefficients
+
+## 1. What it covers
+- Equations $ay'' + by' + cy = 0$.
+- The **characteristic equation** $ar^2 + br + c = 0$.
+- Three cases: **distinct real roots**, **repeated root**, **complex roots**.
+- Using initial conditions $y(0)$, $y'(0)$.
+
+## 2. Where it is used
+- **Mechanical vibrations:** springs, car suspensions, building sway.
+- **Electrical circuits:** RLC circuits (radios, filters).
+- **Control systems:** the response of a system to a disturbance (overshoot, settling).
+- **Acoustics:** vibrating strings and membranes (after separating variables).
+
+## 3. What it means
+Guess $y = e^{rx}$ (exponentials keep their shape when differentiated). Substituting gives $e^{rx}(ar^2 + br + c) = 0$, so $r$ must solve the **characteristic equation**. Its roots decide the behaviour:
+- **Two real roots** $r_1 \ne r_2$: $y = C_1e^{r_1x} + C_2e^{r_2x}$ (growth/decay, no oscillation).
+- **Repeated root** $r$: $y = (C_1 + C_2x)e^{rx}$ (the extra $x$ is needed for a second independent solution).
+- **Complex roots** $\alpha \pm \beta i$: $y = e^{\alpha x}(C_1\cos\beta x + C_2\sin\beta x)$: **oscillation** with frequency $\beta$, growing or decaying by $e^{\alpha x}$ (Euler's formula turns complex exponentials into sines and cosines).
+
+Two initial conditions fix the two constants.
+
+## 4. Formula & worked example
+$$
+ay'' + by' + cy = 0 \Rightarrow ar^2 + br + c = 0
+$$
+
+**Example 1 (distinct real).** $y'' - 5y' + 6y = 0$: $r^2 - 5r + 6 = 0$ → $r = 2, 3$ → $y = C_1e^{2x} + C_2e^{3x}$.
+
+**Example 2 (with ICs).** $y'' - y = 0$, $y(0) = 2$, $y'(0) = 0$: $r = \pm 1$ → $y = C_1e^x + C_2e^{-x}$; $C_1 + C_2 = 2$, $C_1 - C_2 = 0$ → $y = e^x + e^{-x} = 2\cosh x$.
+
+**Example 3 (repeated).** $y'' + 4y' + 4y = 0$: $(r + 2)^2 = 0$ → $y = (C_1 + C_2x)e^{-2x}$.
+
+**Example 4 (complex).** $y'' + 2y' + 5y = 0$: $r = -1 \pm 2i$ → $y = e^{-x}(C_1\cos 2x + C_2\sin 2x)$: a decaying oscillation.
+
+**Example 5 (pure oscillation).** $y'' + 9y = 0$, $y(0) = 1$, $y'(0) = 0$: $r = \pm 3i$ → $y = \cos 3x$.
+
+## 5. Common mistakes
+- Forgetting the extra $x$ for a repeated root.
+- Writing $e^{\beta x}$ instead of $e^{\alpha x}$ in the complex case (the real part gives the exponential).
+- Using one initial condition to find both constants.
+
+## 6. Practice
+Q: Characteristic equation of $y'' + 3y' - 4y = 0$ and solution?
+A: $r^2 + 3r - 4 = 0$ → $r = 1, -4$ → $C_1e^x + C_2e^{-4x}$.
+
+Q: Solution of $y'' - 6y' + 9y = 0$?
+A: $(C_1 + C_2x)e^{3x}$.
+
+Q: Solution of $y'' + 16y = 0$?
+A: $C_1\cos 4x + C_2\sin 4x$.
+
+Q: What kind of roots produce oscillation?
+A: Complex roots.
+
+Q: Solve $y'' + y = 0$, $y(0) = 0$, $y'(0) = 2$.
+A: $y = 2\sin x$."
+3,TOPIC,"Mechanical vibrations: springs, damping and resonance","m x″ + c x′ + k x = F(t), undamped, under-, critically and over-damped motion, resonance",NICE,FALSE,"# Mechanical vibrations: springs, damping and resonance
+
+## 1. What it covers
+- The spring–mass–damper equation $mx'' + cx' + kx = F(t)$.
+- **Natural frequency** $\omega_0 = \sqrt{k/m}$.
+- **Underdamped**, **critically damped** and **overdamped** motion.
+- **Forced** vibrations and **resonance**.
+
+## 2. Where it is used
+- **Automotive engineering:** shock absorbers are tuned near critical damping for a smooth ride.
+- **Civil engineering:** buildings and bridges must avoid resonance with wind and earthquakes (the Tacoma Narrows bridge collapse, 1940, and London's wobbly Millennium Bridge, 2000).
+- **Electronics:** RLC circuits obey the same equation ($L$, $R$, $\frac{1}{C}$ play the roles of $m$, $c$, $k$); radios tune by resonance.
+- **Consumer tech:** phone vibration motors, hard-drive and camera stabilisation; UI spring animations.
+
+## 3. What it means
+- $m$: mass (inertia), $c$: damping (friction, shock absorber), $k$: spring stiffness, $F(t)$: external force.
+- **No damping, no force:** endless oscillation at the natural frequency $\omega_0 = \sqrt{k/m}$.
+- **With damping**, compare $c^2$ with $4mk$ (the discriminant of the characteristic equation):
+  - $c^2 < 4mk$: **underdamped**: oscillates while decaying (a bouncy car).
+  - $c^2 = 4mk$: **critically damped**: returns to rest fastest without oscillating (ideal door closer or shock absorber).
+  - $c^2 > 4mk$: **overdamped**: returns slowly without oscillating (moving through honey).
+- **Resonance:** pushing a system at its natural frequency makes the amplitude grow (unboundedly without damping, very large with light damping), like pushing a child on a swing at just the right moments.
+
+## 4. Formula & worked example
+$$
+mx'' + cx' + kx = F(t) \qquad \omega_0 = \sqrt{\frac{k}{m}} \qquad \text{critical damping: } c = 2\sqrt{mk}
+$$
+
+**Example 1 (undamped).** $m = 1$ kg, $k = 16$ N/m, pulled 0.1 m and released: $x'' + 16x = 0$ → $x = 0.1\cos 4t$; period $\frac{2\pi}{4} \approx 1.57$ s.
+
+**Example 2 (damping types).** $m = 1$, $k = 16$: critical damping $c = 8$.
+- $c = 2$: $r^2 + 2r + 16 = 0$ → $r = -1 \pm i\sqrt{15}$ → underdamped (decaying oscillation).
+- $c = 8$: $r = -4$ (repeated) → critically damped.
+- $c = 10$: $r = -2, -8$ → overdamped.
+
+**Example 3 (resonance).** $x'' + 16x = \cos(\omega t)$. For $\omega \ne 4$, the response has amplitude $\frac{1}{\lvert 16 - \omega^2\rvert}$, which blows up as $\omega \to 4$. At $\omega = 4$: $x_p = \frac{t}{8}\sin 4t$, growing without bound.
+
+**Example 4 (code: damping comparison).**
+```python
+import numpy as np
+from scipy.integrate import solve_ivp
+def spring(t, u, c):                  # x'' + c x' + 16 x = 0 as a first-order system
+    x, v = u
+    return [v, -c*v - 16*x]
+for c in (2, 8, 10):
+    sol = solve_ivp(spring, (0, 3), [0.1, 0], args=(c,), dense_output=True)
+    print(c, sol.sol(np.array([0.5, 1.0, 2.0]))[0].round(4))
+# c=2 oscillates (sign changes), c=8 returns fastest, c=10 returns slowly
+```
+A second-order equation is solved numerically by rewriting it as two first-order equations (position and velocity), the standard trick in every physics engine.
+
+## 5. Common mistakes
+- Mixing up which inequality means underdamped (oscillation needs **small** damping, $c^2 < 4mk$).
+- Forgetting that frequency in rad/s ($\omega$) differs from Hz ($f = \frac{\omega}{2\pi}$).
+- Ignoring units ($k$ in N/m, $m$ in kg).
+
+## 6. Practice
+Q: Natural frequency of $m = 4$ kg, $k = 100$ N/m?
+A: $\omega_0 = 5$ rad/s.
+
+Q: Critical damping coefficient for $m = 2$, $k = 50$?
+A: $c = 2\sqrt{100} = 20$.
+
+Q: Characteristic roots $-1 \pm 3i$. Damping type?
+A: Underdamped.
+
+Q: What is resonance?
+A: Large amplitude growth when a system is forced at its natural frequency.
+
+Q: How is a second-order ODE solved numerically?
+A: Rewrite it as a system of two first-order equations (position and velocity)."
+3,TOPIC,Non-homogeneous equations: undetermined coefficients and variation of parameters,"General = homogeneous + particular, guessing particular solutions, the variation of parameters formula",NICE,FALSE,"# Non-homogeneous equations: undetermined coefficients and variation of parameters
+
+## 1. What it covers
+- Structure: **general solution = homogeneous solution + one particular solution**.
+- **Undetermined coefficients**: guess the form of $y_p$ for polynomial, exponential, sine/cosine forcing.
+- The modification rule when the guess duplicates a homogeneous solution.
+- **Variation of parameters**: a general formula for any forcing.
+
+## 2. Where it is used
+- **Forced vibrations:** a motor shaking a structure, road bumps on a car.
+- **AC circuits:** response of an RLC circuit to a sinusoidal voltage (steady-state + transient).
+- **Control engineering:** system response to step and ramp inputs.
+
+## 3. What it means
+For $ay'' + by' + cy = g(x)$:
+- The **homogeneous** part $y_h$ (from the characteristic equation) describes the system's natural behaviour; it often decays (the transient).
+- A **particular** solution $y_p$ responds to the forcing $g(x)$; for periodic forcing it's the steady state.
+- Every solution is $y = y_h + y_p$.
+
+**Undetermined coefficients:** the forcing's ""shape"" survives differentiation, so guess the same shape with unknown coefficients:
+| $g(x)$ | Guess for $y_p$ |
+|---|---|
+| polynomial of degree $n$ | general polynomial of degree $n$ |
+| $e^{kx}$ | $Ae^{kx}$ |
+| $\sin\omega x$ or $\cos\omega x$ | $A\cos\omega x + B\sin\omega x$ |
+If the guess solves the homogeneous equation, multiply it by $x$ (or $x^2$).
+
+**Variation of parameters:** works for any $g(x)$ (like $\tan x$ or $\frac{1}{x}$), using the homogeneous solutions $y_1$, $y_2$ and their Wronskian.
+
+## 4. Formula & worked example
+$$
+y = y_h + y_p \qquad \text{VoP: } y_p = -y_1\int\frac{y_2g}{aW}\,dx + y_2\int\frac{y_1g}{aW}\,dx,\quad W = y_1y_2' - y_1'y_2
+$$
+
+**Example 1 (polynomial).** $y'' - 3y' + 2y = 4x$.
+- $y_h = C_1e^x + C_2e^{2x}$. Guess $y_p = Ax + B$: $-3A + 2Ax + 2B = 4x$ → $A = 2$, $B = 3$.
+- $y = C_1e^x + C_2e^{2x} + 2x + 3$.
+
+**Example 2 (exponential).** $y'' + y = 3e^{2x}$: guess $Ae^{2x}$ → $5A = 3$ → $y_p = \frac{3}{5}e^{2x}$; $y = C_1\cos x + C_2\sin x + \frac{3}{5}e^{2x}$.
+
+**Example 3 (sinusoidal, steady state).** $y'' + 2y' + 5y = 10\cos x$: guess $A\cos x + B\sin x$:
+- $(-A + 2B + 5A)\cos x + (-B - 2A + 5B)\sin x = 10\cos x$ → $4A + 2B = 10$, $4B - 2A = 0$ → $A = 2$, $B = 1$.
+- Steady state $y_p = 2\cos x + \sin x$; the homogeneous part $e^{-x}(\ldots)$ dies out.
+
+**Example 4 (modification rule).** $y'' - y = e^x$: $e^x$ solves the homogeneous equation, so guess $Axe^x$ → $2Ae^x = e^x$ → $y_p = \frac{1}{2}xe^x$.
+
+**Example 5 (variation of parameters).** $y'' + y = \sec x$: $y_1 = \cos x$, $y_2 = \sin x$, $W = 1$ → $y_p = -\cos x\int\sin x\sec x\,dx + \sin x\int\cos x\sec x\,dx = \cos x\ln\lvert\cos x\rvert + x\sin x$.
+
+## 5. Common mistakes
+- Guessing only $A\cos\omega x$ for cosine forcing (you need both sine and cosine).
+- Forgetting the modification rule when the guess overlaps $y_h$.
+- Applying initial conditions to $y_h$ alone instead of to $y_h + y_p$.
+
+## 6. Practice
+Q: Structure of the general solution of a linear non-homogeneous DE?
+A: $y = y_h + y_p$.
+
+Q: Guess for $y_p$ when $g(x) = 5e^{3x}$ (and 3 is not a characteristic root)?
+A: $Ae^{3x}$.
+
+Q: Guess for $g(x) = \sin 2x$?
+A: $A\cos 2x + B\sin 2x$.
+
+Q: $y'' - 4y = 8$. Particular solution?
+A: $y_p = -2$.
+
+Q: When do you use variation of parameters?
+A: When the forcing isn't a polynomial, exponential or sine/cosine (or combinations)."
+3,TOPIC,Systems of linear differential equations and eigenvalues,"x′ = Ax, solutions from eigenvalues and eigenvectors, phase portraits, stability",NICE,FALSE,"# Systems of linear differential equations and eigenvalues
+
+## 1. What it covers
+- Systems $\vec{x}' = A\vec{x}$.
+- Solutions $\vec{x} = c_1e^{\lambda_1t}\vec{v}_1 + c_2e^{\lambda_2t}\vec{v}_2$ from eigenvalues and eigenvectors.
+- **Phase portraits**: nodes, saddles, spirals, centres.
+- **Stability** from the signs of the eigenvalues' real parts.
+
+## 2. Where it is used
+- **Ecology:** predator–prey and competing species (near equilibria).
+- **Engineering:** coupled oscillators, multi-loop circuits, control-system stability.
+- **Economics:** interacting markets.
+- **Pharmacokinetics:** drug moving between blood and tissue compartments.
+- **Converting higher-order ODEs:** any $n$th-order linear ODE becomes an $n \times n$ system.
+
+## 3. What it means
+Several quantities change together, each rate depending linearly on all of them. Guess $\vec{x} = e^{\lambda t}\vec{v}$: substituting gives $A\vec{v} = \lambda\vec{v}$, an **eigenvalue problem** (Linear Algebra Phase 5). Along each eigenvector direction, the system just grows or decays exponentially at rate $\lambda$; the general solution combines them.
+
+**Stability of the equilibrium $\vec{0}$:**
+- All eigenvalues with **negative** real parts → **stable** (everything decays to 0).
+- Any eigenvalue with a **positive** real part → **unstable**.
+- Real eigenvalues of opposite signs → **saddle** (unstable).
+- Complex eigenvalues → **spirals** (decaying if the real part is negative); purely imaginary → **centre** (closed orbits).
+
+## 4. Formula & worked example
+$$
+\vec{x}' = A\vec{x} \Rightarrow \vec{x}(t) = c_1e^{\lambda_1 t}\vec{v}_1 + c_2e^{\lambda_2 t}\vec{v}_2
+$$
+
+**Example 1.** $A = \begin{pmatrix} 4 & 1 \\ 2 & 3\end{pmatrix}$ (eigenvalues 5 and 2 with eigenvectors $\langle 1, 1\rangle$ and $\langle 1, -2\rangle$ from Linear Algebra):
+- $\vec{x} = c_1e^{5t}\langle 1, 1\rangle + c_2e^{2t}\langle 1, -2\rangle$; both positive → unstable node.
+
+**Example 2 (saddle).** $A = \begin{pmatrix} 1 & 0 \\ 0 & -2\end{pmatrix}$: $\lambda = 1, -2$ → saddle: trajectories approach along the y-axis, then escape along the x-axis.
+
+**Example 3 (spiral).** $A = \begin{pmatrix} -1 & -2 \\ 2 & -1\end{pmatrix}$: $\lambda = -1 \pm 2i$ → stable spiral (decaying rotation).
+
+**Example 4 (spring as a system).** $x'' + 16x = 0$ with $v = x'$: $\begin{pmatrix} x \\ v\end{pmatrix}' = \begin{pmatrix} 0 & 1 \\ -16 & 0\end{pmatrix}\begin{pmatrix} x \\ v\end{pmatrix}$, eigenvalues $\pm 4i$ → a centre (endless oscillation), matching the earlier topic.
+
+**Example 5 (code: matrix exponential).**
+```python
+import numpy as np
+from scipy.linalg import expm
+A = np.array([[-1, -2], [2, -1.]])
+x0 = np.array([1.0, 0.0])
+for t in (0, 1, 2, 4):
+    print(t, (expm(A * t) @ x0).round(4))    # spirals in towards the origin
+print(np.linalg.eigvals(A))                   # [-1.+2.j -1.-2.j]
+```
+The exact solution is $\vec{x}(t) = e^{At}\vec{x}_0$, using the **matrix exponential** (computed by `expm`). The eigenvalues $-1 \pm 2i$ predict the decaying spiral the numbers show.
+
+## 5. Common mistakes
+- Forgetting that each eigenvalue needs its own eigenvector in the solution.
+- Judging stability by the eigenvalues' size instead of the sign of their real parts.
+- Treating complex eigenvalues as ""no solution"" (they give oscillations).
+
+## 6. Practice
+Q: Solution form of $\vec{x}' = A\vec{x}$ with distinct real eigenvalues?
+A: $c_1e^{\lambda_1t}\vec{v}_1 + c_2e^{\lambda_2t}\vec{v}_2$.
+
+Q: Eigenvalues $-3$ and $-1$. Stability?
+A: Stable node.
+
+Q: Eigenvalues $2$ and $-5$. Type?
+A: Saddle (unstable).
+
+Q: Eigenvalues $\pm 3i$. Phase portrait?
+A: A centre (closed orbits).
+
+Q: Convert $y'' + 3y' + 2y = 0$ into a system.
+A: With $v = y'$: $y' = v$, $v' = -2y - 3v$."
+2,MODULE,The Laplace transform,"Definition and table, properties and inverse transforms, solving IVPs, step functions and impulses",NICE,,The Laplace transform turns differential equations into algebra.
+3,TOPIC,"The Laplace transform: definition, table and properties","L{f} = ∫ e^(−st) f(t) dt, common transforms, linearity, derivatives, shifting",NICE,FALSE,"# The Laplace transform: definition, table and properties
+
+## 1. What it covers
+- The definition $\mathcal{L}\{f(t)\} = F(s) = \int_0^\infty e^{-st}f(t)\,dt$.
+- A table of common transforms.
+- Properties: **linearity**, transforms of **derivatives**, **shifting** ($e^{at}f(t)$).
+
+## 2. Where it is used
+- **Control engineering:** transfer functions $H(s)$ describe systems (cruise control, autopilots, robot arms, audio filters); stability is read from the poles of $H(s)$.
+- **Electrical engineering:** circuit analysis in the ""s-domain"".
+- **Signal processing:** closely related to the Fourier and Z-transforms used in digital filters.
+- **Solving linear ODEs** with discontinuous or impulsive forcing.
+
+## 3. What it means
+The Laplace transform converts a function of time $t$ into a function of a new variable $s$. Its magic property: **differentiation in $t$ becomes multiplication by $s$** (plus initial values). So a linear differential equation becomes an **algebraic** equation in $s$, which is solved by ordinary algebra, then transformed back.
+
+Think of it like logarithms, which turn multiplication into addition: transform, do the easy operation, transform back.
+
+## 4. Formula & worked example
+| $f(t)$ | $F(s)$ |
+|---|---|
+| $1$ | $\frac{1}{s}$ |
+| $t^n$ | $\frac{n!}{s^{n+1}}$ |
+| $e^{at}$ | $\frac{1}{s - a}$ |
+| $\sin bt$ | $\frac{b}{s^2 + b^2}$ |
+| $\cos bt$ | $\frac{s}{s^2 + b^2}$ |
+| $e^{at}f(t)$ | $F(s - a)$ |
+
+$$
+\mathcal{L}\{y'\} = sY(s) - y(0) \qquad \mathcal{L}\{y''\} = s^2Y(s) - sy(0) - y'(0)
+$$
+
+**Example 1 (from the definition).** $\mathcal{L}\{e^{at}\} = \int_0^\infty e^{-(s - a)t}dt = \frac{1}{s - a}$ for $s > a$.
+
+**Example 2 (linearity).** $\mathcal{L}\{3 + 2t - 5e^{-t}\} = \frac{3}{s} + \frac{2}{s^2} - \frac{5}{s + 1}$.
+
+**Example 3 (trig).** $\mathcal{L}\{4\sin 3t\} = \frac{12}{s^2 + 9}$.
+
+**Example 4 (shifting).** $\mathcal{L}\{e^{2t}\cos t\} = \frac{s - 2}{(s - 2)^2 + 1}$.
+
+**Example 5 (code).**
+```python
+import sympy as sp
+t, s = sp.symbols(""t s"", positive=True)
+print(sp.laplace_transform(sp.exp(2*t) * sp.cos(t), t, s, noconds=True))   # (s - 2)/((s - 2)**2 + 1)
+```
+SymPy computes Laplace transforms symbolically, a good way to check table work.
+
+## 5. Common mistakes
+- Mixing up the sine and cosine transforms ($\sin$ has $b$ on top; $\cos$ has $s$).
+- Forgetting the initial-value terms in the derivative formulas.
+- Using $F(s + a)$ instead of $F(s - a)$ for $e^{at}f(t)$.
+
+## 6. Practice
+Q: $\mathcal{L}\{t^2\}$?
+A: $\frac{2}{s^3}$.
+
+Q: $\mathcal{L}\{e^{-3t}\}$?
+A: $\frac{1}{s + 3}$.
+
+Q: $\mathcal{L}\{\cos 5t\}$?
+A: $\frac{s}{s^2 + 25}$.
+
+Q: $\mathcal{L}\{y'\}$?
+A: $sY(s) - y(0)$.
+
+Q: $\mathcal{L}\{te^{t}\}$?
+A: $\frac{1}{(s - 1)^2}$."
+3,TOPIC,Inverse Laplace transforms and solving initial value problems,"Partial fractions, completing the square, transform–solve–invert method",NICE,FALSE,"# Inverse Laplace transforms and solving initial value problems
+
+## 1. What it covers
+- Finding $f(t)$ from $F(s)$ using the table, **partial fractions** and **completing the square**.
+- The full method: **transform the ODE → solve for $Y(s)$ → invert**.
+- Initial conditions are built in automatically.
+
+## 2. Where it is used
+- **Control and circuit design:** step responses, impulse responses, transient analysis.
+- **Mechanical systems:** response of suspensions and structures to loads.
+- **Any linear ODE with initial conditions**, especially with piecewise forcing (next topic).
+
+## 3. What it means
+**Inverse transform:** break $F(s)$ into simple pieces that appear in the table. Partial fractions (Algebra and Calculus roadmaps) do most of the work; completing the square handles quadratic denominators (giving shifted sines and cosines).
+
+**Solving an IVP:**
+1. Take $\mathcal{L}$ of both sides, using the derivative rules (initial values enter here).
+2. Solve the algebraic equation for $Y(s)$.
+3. Invert to get $y(t)$.
+
+## 4. Formula & worked example
+**Example 1 (inverse).** $F(s) = \frac{5}{s^2 + 3s - 4} = \frac{5}{(s - 1)(s + 4)} = \frac{1}{s - 1} - \frac{1}{s + 4}$ → $f(t) = e^t - e^{-4t}$.
+
+**Example 2 (complete the square).** $F(s) = \frac{s + 1}{s^2 + 2s + 5} = \frac{s + 1}{(s + 1)^2 + 4}$ → $f(t) = e^{-t}\cos 2t$.
+
+**Example 3 (first order).** $y' + 2y = 4$, $y(0) = 1$.
+- $sY - 1 + 2Y = \frac{4}{s}$ → $Y = \frac{1}{s + 2} + \frac{4}{s(s + 2)} = \frac{1}{s + 2} + \frac{2}{s} - \frac{2}{s + 2}$ → $y = 2 - e^{-2t}$.
+
+**Example 4 (second order).** $y'' + 4y = 0$, $y(0) = 3$, $y'(0) = 2$.
+- $s^2Y - 3s - 2 + 4Y = 0$ → $Y = \frac{3s + 2}{s^2 + 4} = 3\frac{s}{s^2 + 4} + \frac{2}{s^2 + 4}$ → $y = 3\cos 2t + \sin 2t$.
+
+**Example 5 (forced).** $y'' - y = e^{2t}$, $y(0) = 0$, $y'(0) = 0$.
+- $(s^2 - 1)Y = \frac{1}{s - 2}$ → $Y = \frac{1}{(s - 2)(s - 1)(s + 1)} = \frac{1/3}{s - 2} - \frac{1/2}{s - 1} + \frac{1/6}{s + 1}$
+- $y = \frac{1}{3}e^{2t} - \frac{1}{2}e^t + \frac{1}{6}e^{-t}$.
+
+**Code (check).**
+```python
+import sympy as sp
+t, s = sp.symbols(""t s"", positive=True)
+print(sp.inverse_laplace_transform(1 / ((s - 2)*(s - 1)*(s + 1)), s, t))
+```
+
+## 5. Common mistakes
+- Partial fraction errors (check by recombining).
+- Forgetting initial conditions when transforming derivatives.
+- Missing the shift when inverting expressions like $\frac{s + 1}{(s + 1)^2 + 4}$.
+
+## 6. Practice
+Q: $\mathcal{L}^{-1}\left\{\frac{1}{s - 4}\right\}$?
+A: $e^{4t}$.
+
+Q: $\mathcal{L}^{-1}\left\{\frac{6}{s^4}\right\}$?
+A: $t^3$.
+
+Q: $\mathcal{L}^{-1}\left\{\frac{3}{s^2 + 9}\right\}$?
+A: $\sin 3t$.
+
+Q: Three steps of the Laplace method for IVPs?
+A: Transform, solve for $Y(s)$, invert.
+
+Q: Solve $y' - 3y = 0$, $y(0) = 2$ with Laplace.
+A: $Y = \frac{2}{s - 3}$ → $y = 2e^{3t}$."
+3,TOPIC,"Step functions, impulses and transfer functions","Unit step u(t − a), second shifting theorem, Dirac delta, transfer functions and poles",NICE,FALSE,"# Step functions, impulses and transfer functions
+
+## 1. What it covers
+- The **unit step** $u(t - a)$ for switching forces on and off.
+- The **second shifting theorem**: $\mathcal{L}\{u(t - a)f(t - a)\} = e^{-as}F(s)$.
+- The **Dirac delta** $\delta(t - a)$ for sudden impulses; $\mathcal{L}\{\delta(t - a)\} = e^{-as}$.
+- **Transfer functions** $H(s)$ and stability from their **poles**.
+
+## 2. Where it is used
+- **Control engineering:** step responses (how a cruise control reacts when you set a new speed), impulse responses, stability analysis.
+- **Electrical engineering:** switching a circuit on at $t = a$; voltage spikes.
+- **Mechanical engineering:** hammer blows, collisions, sudden loads.
+- **Signal processing:** a system's impulse response fully characterises it (used in audio reverb effects).
+
+## 3. What it means
+- **Unit step $u(t - a)$:** 0 before time $a$, 1 after: a switch turned on at $t = a$. Delays in time become factors $e^{-as}$ in the s-domain.
+- **Dirac delta $\delta(t - a)$:** an idealised, instantaneous kick at $t = a$ with total ""area"" 1 (like a hammer strike).
+- **Transfer function:** for a system starting at rest, $H(s) = \frac{Y(s)}{X(s)}$ (output over input in the s-domain). For $ay'' + by' + cy = x(t)$: $H(s) = \frac{1}{as^2 + bs + c}$. Its **poles** (roots of the denominator) are the characteristic roots: all poles with negative real parts → the system is stable.
+
+## 4. Formula & worked example
+$$
+\mathcal{L}\{u(t - a)\} = \frac{e^{-as}}{s} \qquad \mathcal{L}\{u(t - a)f(t - a)\} = e^{-as}F(s) \qquad \mathcal{L}\{\delta(t - a)\} = e^{-as}
+$$
+
+**Example 1 (switched force).** A force of 5 turned on at $t = 2$: $5u(t - 2)$ → $\frac{5e^{-2s}}{s}$.
+
+**Example 2 (step response).** $y' + y = u(t - 1)$, $y(0) = 0$.
+- $(s + 1)Y = \frac{e^{-s}}{s}$ → $Y = e^{-s}\left(\frac{1}{s} - \frac{1}{s + 1}\right)$ → $y = u(t - 1)\left(1 - e^{-(t - 1)}\right)$: nothing happens until $t = 1$, then it rises towards 1.
+
+**Example 3 (impulse).** A spring at rest is struck at $t = 0$: $y'' + 4y = \delta(t)$ → $(s^2 + 4)Y = 1$ → $y = \frac{1}{2}\sin 2t$ (the impulse response).
+
+**Example 4 (transfer function and stability).** $y'' + 3y' + 2y = x(t)$: $H(s) = \frac{1}{s^2 + 3s + 2} = \frac{1}{(s + 1)(s + 2)}$; poles $-1$, $-2$ → stable.
+
+**Example 5 (code: step response).**
+```python
+from scipy import signal
+import numpy as np
+sys = signal.TransferFunction([1], [1, 3, 2])      # H(s) = 1/(s^2 + 3s + 2)
+t, y = signal.step(sys, T=np.linspace(0, 6, 7))
+print(y.round(3))                                   # rises smoothly to 0.5 (= H(0))
+print(np.roots([1, 3, 2]))                          # poles [-2, -1]: stable
+```
+`scipy.signal` works directly with transfer functions, as control engineers do; the step response settles at $H(0) = 0.5$.
+
+## 5. Common mistakes
+- Forgetting to shift the function itself: $\mathcal{L}\{u(t - a)f(t)\}$ needs $f$ written in terms of $t - a$ first.
+- Treating $\delta$ like an ordinary function (it only makes sense inside integrals).
+- Ignoring initial conditions when computing transfer functions (they assume the system starts at rest).
+
+## 6. Practice
+Q: Laplace transform of $u(t - 3)$?
+A: $\frac{e^{-3s}}{s}$.
+
+Q: Laplace transform of $\delta(t - 2)$?
+A: $e^{-2s}$.
+
+Q: What does the second shifting theorem say?
+A: A time delay $a$ multiplies the transform by $e^{-as}$.
+
+Q: Transfer function of $y'' + 5y' + 6y = x(t)$? Stable?
+A: $\frac{1}{s^2 + 5s + 6}$; poles $-2$, $-3$ → stable.
+
+Q: What is an impulse response?
+A: The system's output when the input is a delta function; it characterises the system."
+3,TOPIC,Practice & review: Differential equations,Mixed problem set with worked answers,SHOULD,FALSE,"# Practice & review: Differential equations
+
+**How to use this:** 60 minutes; check with SymPy (`dsolve`) or `solve_ivp`.
+
+## Problems
+1. Solve $y' + \frac{2}{x}y = x^2$, $y(1) = 1$.
+2. Is $(3x^2 + y)\,dx + (x + 2y)\,dy = 0$ exact? Solve it.
+3. A 200 L tank holds 10 kg of salt. Fresh water enters at 5 L/min and the mixture leaves at 5 L/min. When is 5 kg left?
+4. Solve $y'' - 2y' - 3y = 0$, $y(0) = 0$, $y'(0) = 4$.
+5. A mass of 2 kg on a spring with $k = 18$ N/m and damping $c = 8$ N·s/m. Classify the motion.
+6. Find a particular solution of $y'' + 4y = 3\sin x$.
+7. For $\vec{x}' = \begin{pmatrix} -2 & 1 \\ 1 & -2\end{pmatrix}\vec{x}$, find the eigenvalues and classify the equilibrium.
+8. Solve $y'' + y = 0$, $y(0) = 1$, $y'(0) = 1$ with the Laplace transform.
+
+## Answers
+1. $\mu = x^2$: $(x^2y)' = x^4$ → $x^2y = \frac{x^5}{5} + C$; $C = \frac{4}{5}$ → $y = \frac{x^3}{5} + \frac{4}{5x^2}$.
+2. $M_y = 1 = N_x$ ✓; $\psi = x^3 + xy + y^2$ → $x^3 + xy + y^2 = C$.
+3. $S' = -\frac{5}{200}S$ → $S = 10e^{-t/40}$; $5 = 10e^{-t/40}$ → $t = 40\ln 2 \approx 27.7$ min.
+4. $r = 3, -1$: $y = C_1e^{3t} + C_2e^{-t}$; $C_1 + C_2 = 0$, $3C_1 - C_2 = 4$ → $C_1 = 1$, $C_2 = -1$ → $y = e^{3t} - e^{-t}$.
+5. $c^2 = 64 < 4mk = 144$ → underdamped (roots $-2 \pm i\sqrt{5}$).
+6. Guess $A\sin x + B\cos x$: $3A\sin x + 3B\cos x = 3\sin x$ → $y_p = \sin x$.
+7. $\lambda = -1, -3$ → stable node.
+8. $(s^2 + 1)Y = s + 1$ → $Y = \frac{s}{s^2 + 1} + \frac{1}{s^2 + 1}$ → $y = \cos t + \sin t$.
+
+## Flashcards
+Q: Integrating factor for $y' + p(x)y = q(x)$?
+A: $\mu = e^{\int p\,dx}$.
+
+Q: Characteristic equation of $ay'' + by' + cy = 0$?
+A: $ar^2 + br + c = 0$.
+
+Q: Condition for critical damping?
+A: $c^2 = 4mk$.
+
+Q: $\mathcal{L}\{y''\}$?
+A: $s^2Y - sy(0) - y'(0)$.
+
+Q: Stability of $\vec{x}' = A\vec{x}$?
+A: Stable if all eigenvalues have negative real parts."
+2,MODULE,Final review,Two cumulative mixed sets covering the whole roadmap,MUST,,"Mix everything. This completes the math roadmaps: from here, apply the tools in physics, machine learning, engineering or data science projects."
+3,TOPIC,Final review 1: Multivariable calculus,Cumulative mixed problems from Phases 1–5 with answers,MUST,FALSE,"# Final review 1: Multivariable calculus
+
+**How to use this:** 75 minutes; check with SymPy and SciPy.
+
+## Problems
+1. Find the plane tangent to $z = x^2 + 3xy - y^2$ at $(1, 1)$.
+2. $f(x, y) = x^2y - y^3$. Find $\nabla f$ at $(2, 1)$, the maximum rate of increase, and the directional derivative towards $\langle -1, 1\rangle$.
+3. Find and classify the critical points of $f(x, y) = 2x^3 + 6xy + 3y^2$.
+4. Use Lagrange multipliers to find the extreme values of $f(x, y) = xy$ on the ellipse $x^2 + 4y^2 = 8$.
+5. $\int_0^1\int_x^1 \sin(y^2)\,dy\,dx$ (reverse the order).
+6. Use polar coordinates: volume under $z = e^{-(x^2 + y^2)}$ above the disk of radius 1.
+7. Compute the work done by $\vec{F} = \langle 2xy, x^2\rangle$ from $(0, 0)$ to $(3, 2)$ along any path.
+8. Use Green's theorem for $\oint_C(-y^3\,dx + x^3\,dy)$ around the unit circle.
+
+## Answers
+1. $f(1, 1) = 3$; $f_x = 2x + 3y = 5$, $f_y = 3x - 2y = 1$ → $z = 3 + 5(x - 1) + (y - 1)$.
+2. $\nabla f = \langle 2xy, x^2 - 3y^2\rangle = \langle 4, 1\rangle$; max rate $\sqrt{17}$; $\frac{1}{\sqrt{2}}(-4 + 1) = -\frac{3}{\sqrt{2}} \approx -2.12$.
+3. $f_x = 6x^2 + 6y = 0$, $f_y = 6x + 6y = 0$ → $y = -x$, $6x^2 - 6x = 0$ → $(0, 0)$, $(1, -1)$. $D = 12x \cdot 6 - 36$: at $(0, 0)$ $D = -36$ → saddle; at $(1, -1)$ $D = 36 > 0$, $f_{xx} = 12 > 0$ → local min ($f = -1$).
+4. $\langle y, x\rangle = \lambda\langle 2x, 8y\rangle$ → $x^2 = 4y^2$ → $8y^2 = 8$ → $y = \pm 1$, $x = \pm 2$; max $2$ at $(2, 1)$, $(-2, -1)$; min $-2$ at $(2, -1)$, $(-2, 1)$.
+5. $\int_0^1\int_0^y\sin(y^2)\,dx\,dy = \int_0^1 y\sin(y^2)\,dy = \frac{1 - \cos 1}{2} \approx 0.230$.
+6. $2\pi\int_0^1 re^{-r^2}dr = \pi(1 - e^{-1}) \approx 1.986$.
+7. Conservative with $f = x^2y$ → work $= 18$.
+8. $Q_x - P_y = 3x^2 + 3y^2$ → $\int_0^{2\pi}\int_0^1 3r^3\,dr\,d\theta = \frac{3\pi}{2}$."
+3,TOPIC,Final review 2: Differential equations,Cumulative mixed problems from Phase 6 with answers,MUST,FALSE,"# Final review 2: Differential equations
+
+**How to use this:** 60 minutes; verify with `sympy.dsolve` or `solve_ivp`.
+
+## Problems
+1. Classify each: (a) $y' = xy^2$; (b) $y'' + \sin(x)y = 0$; (c) $u_t = u_{xx}$.
+2. Solve $y' - y = e^{2x}$, $y(0) = 3$.
+3. Newton's law of cooling: an object at 90°C in a 20°C room cools to 60°C in 10 min. Write and solve the DE; find the temperature at 30 min.
+4. Solve $y'' + 6y' + 9y = 0$, $y(0) = 2$, $y'(0) = -4$.
+5. Solve $y'' + 4y = 8x$.
+6. An RLC circuit obeys $q'' + 4q' + 13q = 0$. Describe the charge's behaviour.
+7. Solve $\vec{x}' = \begin{pmatrix} 1 & 2 \\ 2 & 1\end{pmatrix}\vec{x}$ and classify the equilibrium.
+8. Use Laplace transforms: $y'' + 3y' + 2y = 0$, $y(0) = 1$, $y'(0) = 0$.
+
+## Answers
+1. (a) first-order non-linear ODE (separable); (b) second-order linear homogeneous ODE; (c) PDE (heat equation).
+2. $\mu = e^{-x}$: $(e^{-x}y)' = e^x$ → $y = e^{2x} + Ce^x$; $C = 2$ → $y = e^{2x} + 2e^x$.
+3. $T' = -k(T - 20)$ → $T = 20 + 70e^{-kt}$; $40 = 70e^{-10k}$ → $k = \frac{\ln(7/4)}{10} \approx 0.056$; $T(30) = 20 + 70\left(\frac{4}{7}\right)^3 \approx 33.1$°C.
+4. $r = -3$ (repeated): $y = (C_1 + C_2t)e^{-3t}$; $C_1 = 2$; $y' = (C_2 - 3C_1 - 3C_2t)e^{-3t}$ → $C_2 - 6 = -4$ → $C_2 = 2$ → $y = (2 + 2t)e^{-3t}$.
+5. $y_h = C_1\cos 2x + C_2\sin 2x$; $y_p = 2x$ → $y = C_1\cos 2x + C_2\sin 2x + 2x$.
+6. $r = -2 \pm 3i$ → $q = e^{-2t}(C_1\cos 3t + C_2\sin 3t)$: an underdamped, decaying oscillation.
+7. $\lambda = 3$ ($\langle 1, 1\rangle$), $\lambda = -1$ ($\langle 1, -1\rangle$) → $\vec{x} = c_1e^{3t}\langle 1, 1\rangle + c_2e^{-t}\langle 1, -1\rangle$; saddle (unstable).
+8. $s^2Y - s + 3(sY - 1) + 2Y = 0$ → $Y = \frac{s + 3}{(s + 1)(s + 2)} = \frac{2}{s + 1} - \frac{1}{s + 2}$ → $y = 2e^{-t} - e^{-2t}$."

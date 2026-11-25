@@ -1,0 +1,65 @@
+{
+  "expo": {
+    "name": "Learning Tracker",
+    "slug": "learning-tracker",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "automatic",
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundColor": "#1C8EFC"
+      },
+      "predictiveBackGestureEnabled": false,
+      "package": "com.mylearn.tracker"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-sqlite",
+        {
+          "enableFTS": true
+        }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "usesCleartextTraffic": true
+          }
+        }
+      ],
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow Learning Tracker to use the camera to scan the pairing code shown on your computer.",
+          "microphonePermission": false,
+          "recordAudioAndroid": false
+        }
+      ],
+      "expo-asset",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash-icon.png",
+          "imageWidth": 160,
+          "resizeMode": "contain",
+          "backgroundColor": "#f8fafc",
+          "dark": {
+            "image": "./assets/splash-icon.png",
+            "backgroundColor": "#020617"
+          }
+        }
+      ],
+      "expo-font"
+    ],
+    "scheme": "learningtracker",
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}

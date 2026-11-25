@@ -3,16 +3,13 @@ package com.mylearn.tracker.note;
 import com.mylearn.tracker.flashcard.FlashcardService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.context.event.EventListener;
-import org.springframework.core.annotation.Order;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Re-derives flashcards and [[link]] references from every note: at start-up (so notes written
- * before these features, or restored from an old backup, are covered) and after a restore.
+ * Re-derives flashcards and [[link]] references from every note. Run through {@link NoteIndexes},
+ * which decides when a full rebuild is needed (after a restore, a migration or a parser change).
  * Card schedules are kept, because cards are matched by their question.
  */
 @Component
@@ -30,8 +27,6 @@ public class NoteDerivedIndexer {
         this.links = links;
     }
 
-    @EventListener(ApplicationReadyEvent.class)
-    @Order(10)
     @Transactional
     public void rebuild() {
         jdbc.update("DELETE FROM flashcard WHERE item_id NOT IN (SELECT item_id FROM item_note)");

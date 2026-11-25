@@ -1,13 +1,17 @@
 # Native install on Windows: runs the Learning Tracker at log-on (no window), via Task Scheduler.
 #
-#   powershell -ExecutionPolicy Bypass -File deploy\windows\install-autostart.ps1 [-Port 8080] [-Jar path]
+#   powershell -ExecutionPolicy Bypass -File deploy\windows\install-autostart.ps1 [-Port 8080] [-Jar path] [-AllowPhoneSync]
+#
+# -AllowPhoneSync listens on the local network too, so the phone app can sync over Wi-Fi. Other
+# devices can still only reach the token-protected sync endpoints (RemoteAccessFilter).
 #
 # Installs to %LOCALAPPDATA%\LearningTracker\app, stores data in %LOCALAPPDATA%\LearningTracker\data.
 # Re-run to update (data is kept; a copy of the database is made first).
 # Remove with: Unregister-ScheduledTask -TaskName LearningTracker -Confirm:$false
 param(
     [int]$Port = 8080,
-    [string]$Jar = (Join-Path $PSScriptRoot '..\..\backend\target\learning-tracker.jar')
+    [string]$Jar = (Join-Path $PSScriptRoot '..\..\backend\target\learning-tracker.jar'),
+    [switch]$AllowPhoneSync
 )
 $ErrorActionPreference = 'Stop'
 
@@ -37,7 +41,8 @@ if (Test-Path $db) {
 }
 Copy-Item $Jar (Join-Path $appDir 'learning-tracker.jar') -Force
 
-$javaArgs = "-Xmx256m -jar `"$appDir\learning-tracker.jar`" --server.port=$Port --server.address=127.0.0.1 --app.data-dir=`"$dataDir`""
+$address = if ($AllowPhoneSync) { '0.0.0.0' } else { '127.0.0.1' }
+$javaArgs = "-Xmx256m -jar `"$appDir\learning-tracker.jar`" --server.port=$Port --server.address=$address --app.data-dir=`"$dataDir`""
 $action = New-ScheduledTaskAction -Execute $javaw -Argument $javaArgs -WorkingDirectory $appDir
 $trigger = New-ScheduledTaskTrigger -AtLogOn -User $env:USERNAME
 $settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries `

@@ -1,0 +1,72 @@
+server:
+  port: 8080
+  # behind an ALB / CloudFront: trust X-Forwarded-For / -Proto (Phase 3)
+  forward-headers-strategy: native
+
+spring:
+  application:
+    name: cloudmart-api
+  datasource:
+    url: jdbc:h2:file:./data/cloudmart;AUTO_SERVER=TRUE
+    username: sa
+    password: ""
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+  h2:
+    console:
+      enabled: true          # http://localhost:8080/h2-console  (JDBC URL above, user sa)
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
+# ---------------------------------------------------------------------------
+# CloudMart adapter switches. Each phase of the study plan flips ONE of these.
+#   storage : local | s3          (Phase 4  - S3StorageService)
+#   cache   : local | redis       (Phase 5  - ElastiCache)
+#   cart    : local | dynamodb    (Phase 5  - DynamoDB carts with TTL)
+#   events  : local | sqs         (Phase 7  - SQS order queue)
+#   notifier: local | sns         (Phase 7  - SNS email)
+#   tracking: local | firehose    (Phase 7  - Data Firehose clickstream)
+# Env-var form for servers: CLOUDMART_STORAGE=s3, CLOUDMART_CART=dynamodb, ...
+# ---------------------------------------------------------------------------
+cloudmart:
+  storage: local
+  cache: local
+  cart: local
+  events: local
+  notifier: local
+  tracking: local
+  worker: false               # Phase 7: true = in-app SQS poller (before the Lambda worker)
+  bucket: ""                  # Phase 4: cloudmart-images-<account-id>
+  ordersQueueUrl: ""          # Phase 7
+  notificationsTopicArn: ""   # Phase 7
+  clicksStream: ""            # Phase 7
+  readUrl: ""                 # Phase 5: read-replica JDBC URL (optional)
+  local:
+    image-dir: data/images
+  cors:
+    # origins allowed to call the API from a browser (S3 website, CloudFront, Vite dev)
+    allowed-origins: http://localhost:5173
+
+---
+# Activated on servers / docker-compose with SPRING_PROFILES_ACTIVE=aws
+spring:
+  config:
+    activate:
+      on-profile: aws
+  datasource:
+    url: ${DB_URL}
+    # username/password come from SPRING_DATASOURCE_USERNAME / SPRING_DATASOURCE_PASSWORD env vars
+    # (Phase 9 replaces them with Secrets Manager)
+  h2:
+    console:
+      enabled: false

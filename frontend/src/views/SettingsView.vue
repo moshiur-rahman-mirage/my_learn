@@ -25,6 +25,7 @@ import { useTheme, type ThemeMode } from '../composables/useTheme'
 import { useToast } from '../composables/useToast'
 import { useConfirm } from '../composables/useConfirm'
 import FolderPickerDialog from '../components/FolderPickerDialog.vue'
+import PhoneSyncSettings from '../components/PhoneSyncSettings.vue'
 
 const { mode } = useTheme()
 const toast = useToast()
@@ -276,6 +277,8 @@ onMounted(() => {
         </button>
       </div>
     </section>
+
+    <PhoneSyncSettings />
 
     <!-- backup location -->
     <section class="card space-y-3 p-4">

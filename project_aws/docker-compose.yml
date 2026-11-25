@@ -1,0 +1,26 @@
+# Runs the API with the "aws" profile against PostgreSQL - a rehearsal for RDS (Phase 5).
+#   docker compose up --build      ->  http://localhost:8080/api/lab/whoami
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: cloudmart
+      POSTGRES_USER: cm
+      POSTGRES_PASSWORD: cm
+    ports: ["5432:5432"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U cm -d cloudmart"]
+      interval: 5s
+      retries: 10
+
+  api:
+    build: ./backend
+    environment:
+      SPRING_PROFILES_ACTIVE: aws
+      DB_URL: jdbc:postgresql://db:5432/cloudmart
+      SPRING_DATASOURCE_USERNAME: cm
+      SPRING_DATASOURCE_PASSWORD: cm
+    ports: ["8080:8080"]
+    depends_on:
+      db:
+        condition: service_healthy

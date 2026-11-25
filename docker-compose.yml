@@ -17,6 +17,9 @@ services:
     restart: unless-stopped
     environment:
       APP_DATA_DIR: /data
+      # Requests arrive from the nginx container, not from 127.0.0.1; nginx's port binding decides
+      # who can connect (see RemoteAccessFilter).
+      APP_REMOTE_ACCESS: all
     volumes:
       - ./data:/data
     # Not published: only reachable through the frontend's /api proxy.

@@ -2,8 +2,7 @@ package com.mylearn.tracker.admin;
 
 import com.mylearn.tracker.admin.BackupService.BackupFile;
 import com.mylearn.tracker.common.exception.BusinessRuleException;
-import com.mylearn.tracker.note.NoteDerivedIndexer;
-import com.mylearn.tracker.search.SearchIndexer;
+import com.mylearn.tracker.note.NoteIndexes;
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.MigrationInfo;
 import org.flywaydb.core.api.MigrationVersion;
@@ -54,13 +53,11 @@ public class RestoreService {
     private final Flyway flyway;
     private final JdbcTemplate jdbc;
     private final Path dataDir;
-    private final SearchIndexer searchIndex;
-    private final NoteDerivedIndexer noteIndex;
+    private final NoteIndexes noteIndexes;
 
     public RestoreService(DataSource dataSource, BackupService backups, Flyway flyway, JdbcTemplate jdbc,
-                          SearchIndexer searchIndex, NoteDerivedIndexer noteIndex, @Value("${app.data-dir}") String dataDir) {
-        this.searchIndex = searchIndex;
-        this.noteIndex = noteIndex;
+                          NoteIndexes noteIndexes, @Value("${app.data-dir}") String dataDir) {
+        this.noteIndexes = noteIndexes;
         this.dataSource = dataSource;
         this.backups = backups;
         this.flyway = flyway;
@@ -114,8 +111,10 @@ public class RestoreService {
             throw new IllegalStateException("Restore failed; your data is unchanged. Safety backup: " + safety.fileName(), e);
         }
         flyway.migrate();
-        searchIndex.reindexNotes();
-        noteIndex.rebuild();
+        // The restored database carries the sync history it had when it was backed up; a new epoch
+        // tells paired phones that history was replaced, so they rebuild (docs/SYNC_PROTOCOL.md §1.2).
+        jdbc.update("INSERT OR REPLACE INTO app_meta (key, value) VALUES ('sync_epoch', lower(hex(randomblob(16))))");
+        noteIndexes.rebuildAll();
 
         Integer plans = jdbc.queryForObject("SELECT COUNT(*) FROM learning_plan", Integer.class);
         Integer items = jdbc.queryForObject("SELECT COUNT(*) FROM learning_item", Integer.class);

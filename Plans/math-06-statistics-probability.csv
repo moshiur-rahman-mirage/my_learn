@@ -1,0 +1,3619 @@
+﻿level,type,name,description,priority,completed,content
+1,MODULE,Phase 1 — Describing Data (Foundation),"Data types, charts, centre, spread, box plots, standard deviation, comparing distributions, transformations, z-scores",MUST,,"# Phase 1: Describing data
+
+**Statistics** is the science of learning from data in the presence of variability. **Probability** is the mathematics of uncertainty. Together they power data science, machine learning, A/B testing, medicine, polling, quality control, finance and every dashboard you've ever seen.
+
+This roadmap goes from describing a data set, to probability, to drawing conclusions about a whole population from a sample (inference). Examples use Python (pandas, NumPy, SciPy) where it helps.
+
+**What you need first:** the Numbers & Arithmetic roadmap (fractions, percentages) and basic algebra. Calculus is helpful for continuous distributions but not required.
+
+Each topic has six parts: what it covers, where it is used, what it means, formulas with worked examples, common mistakes, and practice flashcards."
+2,MODULE,"Data, displays and summaries","Variables, categorical data, plots, centre, spread, box plots, standard deviation",MUST,,"Before any analysis: look at the data and summarise its centre, spread and shape."
+3,TOPIC,"Data, variables and statistical questions","Individuals and variables, categorical vs quantitative, discrete vs continuous, statistical questions and variability",SHOULD,FALSE,"# Data, variables and statistical questions
+
+## 1. What it covers
+- **Individuals** (rows) and **variables** (columns).
+- **Categorical** vs **quantitative** variables; **discrete** vs **continuous**.
+- What makes a question **statistical** (it expects variability).
+- Population vs sample.
+
+## 2. Where it is used
+- **Databases and pandas:** each column has a type; choosing the right analysis depends on it (a mean of postal codes is meaningless).
+- **Machine learning:** categorical features need encoding (one-hot); quantitative ones may need scaling.
+- **Surveys and analytics:** designing questions and dashboards.
+- **Data quality:** checking that values match their variable type.
+
+## 3. What it means
+A data set is a table: each **row** is an individual (a person, transaction, day), each **column** is a variable.
+- **Categorical** variables place individuals into groups: blood type, city, payment method. Numbers can be categorical too (postal code, phone number), if arithmetic on them makes no sense.
+- **Quantitative** variables are measured numbers where arithmetic makes sense: income, height, response time.
+  - **Discrete:** countable values (number of children, number of clicks).
+  - **Continuous:** any value in a range (weight, time).
+
+A **statistical question** expects answers that vary: ""How many hours do students in my class sleep?"" is statistical; ""How many hours did I sleep last night?"" is not.
+
+**Population:** everyone you want to know about. **Sample:** the part you actually measure.
+
+## 4. Formula & worked example
+**Example 1.** Classify the variables in an e-commerce orders table: `order_id`, `city`, `items`, `total_taka`, `payment_method`, `delivery_minutes`.
+- `order_id`: identifier (not analysed); `city`, `payment_method`: categorical; `items`: quantitative discrete; `total_taka`, `delivery_minutes`: quantitative continuous.
+
+**Example 2.** Statistical or not? ""What is the average delivery time in Dhaka this month?"" → statistical. ""When did order #1234 arrive?"" → not.
+
+**Example 3 (population vs sample).** A company surveys 500 of its 80 000 customers. Population: all 80 000 customers; sample: the 500.
+
+**Example 4 (pandas).**
+```python
+import pandas as pd
+df = pd.DataFrame({""city"": [""Dhaka"", ""Khulna"", ""Dhaka""], ""total"": [1200.0, 850.5, 430.0]})
+print(df.dtypes)          # city: object (categorical text), total: float64 (quantitative)
+print(df[""city""].value_counts())
+```
+`dtypes` shows how pandas stores each column. `value_counts()` is the natural summary for a categorical variable (counts per group), while numeric columns get means and standard deviations.
+
+## 5. Common mistakes
+- Treating numeric codes (postal codes, IDs) as quantitative.
+- Confusing the sample with the population.
+- Asking non-statistical questions in a survey.
+
+## 6. Practice
+Q: Is ""number of siblings"" categorical or quantitative? Discrete or continuous?
+A: Quantitative, discrete.
+
+Q: Is ""favourite programming language"" categorical?
+A: Yes.
+
+Q: Is ""Do people in Dhaka prefer tea or coffee?"" a statistical question?
+A: Yes, the answers vary.
+
+Q: A poll asks 1200 voters. What is the population?
+A: All eligible voters (the group the poll wants to describe).
+
+Q: Why shouldn't you average postal codes?
+A: They are labels (categorical), not measured quantities."
+3,TOPIC,"Categorical data: bar charts, two-way tables and association","Frequency and relative frequency, bar and pie charts, joint, marginal and conditional distributions",SHOULD,FALSE,"# Categorical data: bar charts, two-way tables and association
+
+## 1. What it covers
+- Frequency and **relative frequency** tables; bar and pie charts.
+- **Two-way (contingency) tables**: joint, marginal and **conditional** distributions.
+- Detecting **association** between two categorical variables.
+
+## 2. Where it is used
+- **Product analytics:** conversion rate by device (mobile vs desktop).
+- **Medicine:** treatment vs outcome tables in clinical trials.
+- **Marketing:** customer segment vs product preference.
+- **pandas:** `pd.crosstab` builds two-way tables; chi-square tests (Phase 6) test association.
+
+## 3. What it means
+**Relative frequency** = count ÷ total, so groups of different sizes can be compared.
+
+A **two-way table** counts individuals by two categorical variables at once.
+- **Joint** distribution: each cell ÷ grand total.
+- **Marginal** distribution: row or column totals ÷ grand total (one variable alone).
+- **Conditional** distribution: each cell ÷ its **row (or column) total**, the distribution of one variable **within** a group of the other.
+
+**Association:** if the conditional distributions differ between groups, the variables are associated. Compare **percentages**, never raw counts, when groups have different sizes.
+
+## 4. Formula & worked example
+A website test: 1000 visitors, by device and whether they bought.
+| | Bought | Didn't | Total |
+|---|---|---|---|
+| Mobile | 36 | 564 | 600 |
+| Desktop | 40 | 360 | 400 |
+| Total | 76 | 924 | 1000 |
+
+**Example 1 (marginal).** Overall purchase rate $= \frac{76}{1000} = 7.6\%$; mobile share of visitors $= 60\%$.
+
+**Example 2 (conditional).** Purchase rate given mobile $= \frac{36}{600} = 6\%$; given desktop $= \frac{40}{400} = 10\%$.
+
+**Example 3 (association).** 6% vs 10% → device and buying are associated (desktop users convert better). Raw counts (36 vs 40) would hide how big the difference is.
+
+**Example 4 (joint).** $P(\text{mobile and bought}) = \frac{36}{1000} = 3.6\%$.
+
+**Example 5 (code).**
+```python
+import pandas as pd
+df = pd.DataFrame({""device"": [""mobile""]*600 + [""desktop""]*400,
+                   ""bought"": [1]*36 + [0]*564 + [1]*40 + [0]*360})
+print(pd.crosstab(df.device, df.bought, normalize=""index""))   # conditional % by row
+```
+`normalize=""index""` divides each row by its row total, giving the conditional distribution within each device.
+
+## 5. Common mistakes
+- Comparing counts instead of percentages across groups of different sizes.
+- Dividing by the grand total when a conditional distribution (row total) is needed.
+- Using a pie chart with many tiny slices (a bar chart is clearer).
+
+## 6. Practice
+Q: Relative frequency formula?
+A: Category count ÷ total count.
+
+Q: In the table, what is $P(\text{bought} \mid \text{desktop})$?
+A: $10\%$.
+
+Q: What is a marginal distribution?
+A: The distribution of one variable alone, from the table's totals.
+
+Q: How do you check for association in a two-way table?
+A: Compare conditional distributions (percentages) across groups.
+
+Q: What fraction of buyers used mobile?
+A: $\frac{36}{76} \approx 47\%$."
+3,TOPIC,"Displaying quantitative data: dot plots, stem plots and histograms","Building plots, choosing bins, describing shape (symmetric, skewed, modes), outliers",SHOULD,FALSE,"# Displaying quantitative data: dot plots, stem plots and histograms
+
+## 1. What it covers
+- **Dot plots**, **stem-and-leaf plots** and **histograms**.
+- Choosing bin widths.
+- Describing a distribution: **shape, centre, spread, unusual values** (SOCS).
+- Shapes: symmetric, **right-skewed**, left-skewed, uniform, bimodal.
+
+## 2. Where it is used
+- **Exploratory data analysis:** the first step in any data project (`df.hist()`).
+- **Performance engineering:** latency histograms show long tails (a few very slow requests) that averages hide.
+- **Finance:** return distributions; income distributions are right-skewed.
+- **Quality control:** spotting two production processes mixed together (bimodal).
+
+## 3. What it means
+- **Dot plot:** one dot per value along a number line. Good for small data sets.
+- **Stem-and-leaf:** split each number into a stem (leading digits) and a leaf (last digit). Shows the shape and keeps the actual values.
+- **Histogram:** group values into equal-width **bins** and draw bars for the count in each bin. Good for large data sets.
+
+**Shape:**
+- **Symmetric:** both sides roughly mirror images (heights).
+- **Right-skewed:** a long tail to the right (incomes, house prices, response times). Most values are small; a few are very large.
+- **Left-skewed:** a long tail to the left (exam scores on an easy test).
+- **Bimodal:** two peaks, often meaning two different groups mixed together.
+
+Bin width matters: too wide hides detail, too narrow looks noisy.
+
+## 4. Formula & worked example
+**Example 1 (stem plot).** Test scores: 52, 61, 64, 68, 70, 71, 73, 75, 75, 78, 82, 85, 91.
+```text
+5 | 2
+6 | 1 4 8
+7 | 0 1 3 5 5 8
+8 | 2 5
+9 | 1
+```
+Stems are the tens digit and leaves the ones digit. The shape is roughly symmetric, centred in the 70s.
+
+**Example 2 (histogram bins).** API response times (ms) with bins 0–100, 100–200, ...: counts 520, 300, 90, 40, 20, 10, 5, ... → strongly right-skewed (a long tail of slow requests).
+
+**Example 3 (bimodal).** Heights of a mixed group of adults show peaks near 155 cm and 170 cm → probably two groups (e.g. by sex); analyse them separately.
+
+**Example 4 (code).**
+```python
+import numpy as np
+import matplotlib.pyplot as plt
+times = np.random.lognormal(mean=4.5, sigma=0.6, size=5000)   # right-skewed, like latencies
+plt.hist(times, bins=50)
+plt.xlabel(""response time (ms)""); plt.ylabel(""count""); plt.show()
+```
+A log-normal sample mimics real latency data: most requests are fast, with a long right tail. `bins=50` sets how many bars the histogram uses.
+
+## 5. Common mistakes
+- Leaving gaps between histogram bars for continuous data (or using a bar chart for quantitative data).
+- Choosing bins so wide that the shape disappears.
+- Describing skew by the side where the data piles up (skew is named after the **tail**).
+
+## 6. Practice
+Q: A long tail to the right is called?
+A: Right-skewed (positively skewed).
+
+Q: What might a bimodal histogram indicate?
+A: Two different groups mixed in one data set.
+
+Q: Which plot keeps the actual data values?
+A: Stem-and-leaf plot (and dot plot).
+
+Q: What four things describe a distribution?
+A: Shape, centre, spread and unusual values (outliers).
+
+Q: Typical shape of income data?
+A: Right-skewed."
+3,TOPIC,"Measures of centre: mean, median and mode","Computing each, mean as balance point, effect of outliers and skew, choosing the right measure",MUST,FALSE,"# Measures of centre: mean, median and mode
+
+## 1. What it covers
+- **Mean** (average), **median** (middle value), **mode** (most frequent).
+- The mean as a **fair share** and a **balance point**.
+- How skew and outliers affect mean vs median.
+- Choosing the right measure; weighted means.
+
+## 2. Where it is used
+- **Economics:** median income is reported because the mean is pulled up by a few billionaires.
+- **Performance engineering:** median (p50) response time, alongside p95/p99.
+- **Real estate:** median house price.
+- **Grades:** weighted averages (GPA, CGPA).
+- **Machine learning:** the mean minimises squared error; the median minimises absolute error.
+
+## 3. What it means
+- **Mean** $\bar{x}$: add all values and divide by how many. It's the ""fair share"" if the total were split equally, and the **balance point** of the data on a number line.
+- **Median:** the middle value when sorted (the average of the two middle values if $n$ is even). Half the data is below, half above.
+- **Mode:** the most common value (useful for categories too).
+
+**Outliers:** one huge value drags the mean a lot but barely moves the median. The median is **resistant**; the mean is not.
+
+**Skew:** in right-skewed data, mean > median (the tail pulls the mean right). In left-skewed data, mean < median. Symmetric: mean ≈ median.
+
+## 4. Formula & worked example
+$$
+\bar{x} = \frac{1}{n}\sum_{i=1}^{n} x_i \qquad \text{weighted mean} = \frac{\sum w_ix_i}{\sum w_i}
+$$
+
+**Example 1.** Data: 4, 8, 6, 5, 3, 8, 9. Sorted: 3, 4, 5, 6, 8, 8, 9.
+- Mean $= \frac{43}{7} \approx 6.14$; median $= 6$; mode $= 8$.
+
+**Example 2 (even n).** 12, 15, 18, 20, 25, 30 → median $= \frac{18 + 20}{2} = 19$.
+
+**Example 3 (outlier).** Salaries (thousand taka): 30, 32, 35, 38, 40, 400.
+- Mean $\approx 95.8$; median $= 36.5$. The median describes a typical employee far better.
+
+**Example 4 (weighted GPA).** Grades 4.0 (3 credits), 3.5 (4 credits), 3.0 (2 credits).
+- $\frac{12 + 14 + 6}{9} = \frac{32}{9} \approx 3.56$
+
+**Example 5 (code).**
+```python
+import numpy as np
+from statistics import mode
+x = np.array([30, 32, 35, 38, 40, 400])
+print(x.mean(), np.median(x), mode([1, 2, 2, 3]))   # 95.83 36.5 2
+```
+
+## 5. Common mistakes
+- Forgetting to sort before finding the median.
+- Using the mean for strongly skewed data or data with outliers.
+- Averaging averages from groups of different sizes without weighting.
+
+## 6. Practice
+Q: Median of 7, 2, 9, 4, 5?
+A: Sorted 2, 4, 5, 7, 9 → $5$.
+
+Q: Which is resistant to outliers: mean or median?
+A: The median.
+
+Q: In right-skewed data, how do mean and median compare?
+A: Mean > median.
+
+Q: Mean of 10, 20, 30, 40?
+A: $25$.
+
+Q: Class A (20 students) averages 70; class B (30 students) averages 80. Combined mean?
+A: $\frac{1400 + 2400}{50} = 76$."
+3,TOPIC,"Measures of spread: range, quartiles, IQR, box plots and outliers","Five-number summary, interquartile range, box plots, the 1.5×IQR rule, mean absolute deviation",MUST,FALSE,"# Measures of spread: range, quartiles, IQR, box plots and outliers
+
+## 1. What it covers
+- **Range** and its weakness.
+- **Quartiles** $Q_1$, $Q_3$ and the **interquartile range** (IQR).
+- The **five-number summary** and **box plots**.
+- The **1.5 × IQR rule** for outliers.
+- **Mean absolute deviation** (MAD).
+
+## 2. Where it is used
+- **Data cleaning:** flagging outliers before training a model (e.g. sensor glitches, data-entry errors).
+- **Performance monitoring:** spread of response times; box plots per server.
+- **Finance:** spread of returns as a measure of risk.
+- **Comparing groups:** side-by-side box plots in reports (`df.boxplot()`).
+
+## 3. What it means
+Two data sets can have the same centre but very different spread: a class where everyone scores 70 vs one with scores from 30 to 100.
+
+- **Range** = max − min. Simple, but one outlier changes it completely.
+- **Quartiles** split sorted data into four equal parts: $Q_1$ (25th percentile), median, $Q_3$ (75th percentile).
+- **IQR** $= Q_3 - Q_1$: the spread of the **middle half**. Resistant to outliers.
+- **Five-number summary:** min, $Q_1$, median, $Q_3$, max. A **box plot** draws it: a box from $Q_1$ to $Q_3$ with a line at the median, and whiskers out to the data.
+- **Outlier rule:** below $Q_1 - 1.5 \times \text{IQR}$ or above $Q_3 + 1.5 \times \text{IQR}$.
+- **MAD:** the average distance of values from the mean.
+
+## 4. Formula & worked example
+$$
+\text{IQR} = Q_3 - Q_1 \qquad \text{fences: } Q_1 - 1.5\,\text{IQR},\ Q_3 + 1.5\,\text{IQR} \qquad \text{MAD} = \frac{1}{n}\sum\lvert x_i - \bar{x}\rvert
+$$
+
+**Example 1.** Data (sorted): 2, 4, 5, 7, 8, 9, 11, 12, 14, 30.
+- Median $= \frac{8 + 9}{2} = 8.5$; $Q_1$ = median of the lower half (2, 4, 5, 7, 8) $= 5$; $Q_3$ = median of the upper half (9, 11, 12, 14, 30) $= 12$.
+- IQR $= 7$; fences: $5 - 10.5 = -5.5$ and $12 + 10.5 = 22.5$ → **30 is an outlier**.
+- Five-number summary: 2, 5, 8.5, 12, 30.
+
+**Example 2 (MAD).** 2, 4, 6, 8: mean 5; distances 3, 1, 1, 3 → MAD $= 2$.
+
+**Example 3 (comparing).** Two delivery services both have median 30 min; A has IQR 5 min, B has IQR 20 min → A is more consistent.
+
+**Example 4 (code).**
+```python
+import numpy as np
+x = np.array([2, 4, 5, 7, 8, 9, 11, 12, 14, 30])
+q1, q3 = np.percentile(x, [25, 75])
+iqr = q3 - q1
+print(q1, q3, x[(x < q1 - 1.5*iqr) | (x > q3 + 1.5*iqr)])   # 5.5 11.75 [30]
+```
+NumPy uses a slightly different quartile method (interpolation), so it gives $Q_1 = 5.5$, $Q_3 = 11.75$ instead of 5 and 12. Different software can differ a little; the conclusion (30 is an outlier) is the same.
+
+## 5. Common mistakes
+- Using the range as the main measure of spread.
+- Including the median in both halves when computing quartiles (methods vary; be consistent).
+- Deleting outliers automatically; first find out **why** they're there (an error, or a real extreme?).
+
+## 6. Practice
+Q: IQR of a data set with $Q_1 = 20$ and $Q_3 = 35$?
+A: $15$.
+
+Q: Upper outlier fence for $Q_1 = 20$, $Q_3 = 35$?
+A: $35 + 22.5 = 57.5$.
+
+Q: What does a box plot show?
+A: The five-number summary (min, $Q_1$, median, $Q_3$, max) and outliers.
+
+Q: Why is the IQR better than the range for skewed data?
+A: It ignores the extreme quarters, so outliers don't affect it.
+
+Q: MAD of 10, 10, 10, 10?
+A: $0$."
+3,TOPIC,Variance and standard deviation,"Deviations from the mean, population vs sample formulas (n vs n − 1), interpretation, code",MUST,FALSE,"# Variance and standard deviation
+
+## 1. What it covers
+- **Variance** and **standard deviation** (SD): the standard measures of spread.
+- Population ($\sigma$, divide by $N$) vs sample ($s$, divide by $n - 1$).
+- Computing by hand and with code; interpreting the SD.
+
+## 2. Where it is used
+- **Finance:** volatility (risk) of an investment is the SD of its returns.
+- **Manufacturing:** Six Sigma quality control aims for processes with tiny SD.
+- **Machine learning:** feature standardisation divides by the SD; the loss MSE is a variance-like quantity.
+- **Science:** error bars and measurement uncertainty.
+- **Inference:** confidence intervals and tests all use the SD.
+
+## 3. What it means
+**Deviation** = how far a value is from the mean: $x_i - \bar{x}$. We want the ""typical deviation"", but deviations add up to zero (positives and negatives cancel). So square them first:
+- **Variance** = average squared deviation.
+- **Standard deviation** = square root of the variance, which brings the units back (cm, not cm²).
+
+Roughly: **the SD is the typical distance of a value from the mean.** A small SD means data are clustered; a large SD means spread out.
+
+**Why $n - 1$ for a sample?** A sample's values are slightly closer to their own mean than to the true population mean, so dividing by $n$ underestimates the spread. Dividing by $n - 1$ corrects this (Bessel's correction).
+
+## 4. Formula & worked example
+$$
+\sigma^2 = \frac{1}{N}\sum(x_i - \mu)^2 \qquad s^2 = \frac{1}{n - 1}\sum(x_i - \bar{x})^2 \qquad s = \sqrt{s^2}
+$$
+
+**Example 1 (by hand).** Sample: 4, 6, 8, 10, 12. Mean 8.
+- Deviations: $-4, -2, 0, 2, 4$; squares: 16, 4, 0, 4, 16; sum 40
+- $s^2 = \frac{40}{4} = 10$, $s = \sqrt{10} \approx 3.16$
+- (As a population: $\sigma^2 = 8$, $\sigma \approx 2.83$.)
+
+**Example 2 (compare).** Two investments with average return 8%: A's SD 2%, B's SD 15% → B is much riskier.
+
+**Example 3 (shortcut).** $\sum(x - \bar{x})^2 = \sum x^2 - n\bar{x}^2$. For the data above: $\sum x^2 = 360$, $n\bar{x}^2 = 320$ → 40 ✓
+
+**Example 4 (code).**
+```python
+import numpy as np
+x = np.array([4, 6, 8, 10, 12])
+print(x.std(), x.std(ddof=1))      # 2.828 (population)  3.162 (sample)
+import pandas as pd
+print(pd.Series(x).std())          # 3.162  (pandas defaults to the sample SD)
+```
+NumPy's `std` divides by $n$ unless you pass `ddof=1`; pandas divides by $n - 1$ by default. This difference is a common source of small discrepancies between tools.
+
+## 5. Common mistakes
+- Forgetting to square the deviations (they sum to 0).
+- Reporting the variance when the SD is wanted (wrong units).
+- Mixing up $n$ and $n - 1$ (and NumPy vs pandas defaults).
+
+## 6. Practice
+Q: SD of 5, 5, 5, 5?
+A: $0$.
+
+Q: Sample variance of 1, 2, 3?
+A: Mean 2; squares 1, 0, 1 → $\frac{2}{2} = 1$.
+
+Q: Why take the square root of the variance?
+A: To return to the original units.
+
+Q: Why divide by $n - 1$ for a sample?
+A: To correct the underestimate of spread from using the sample's own mean.
+
+Q: Which numpy argument gives the sample SD?
+A: `ddof=1`."
+3,TOPIC,Comparing distributions,"Comparing centre, spread, shape and outliers across groups; side-by-side box plots and dot plots",SHOULD,FALSE,"# Comparing distributions
+
+## 1. What it covers
+- Comparing two or more groups by **shape, centre, spread and outliers**.
+- Side-by-side box plots, back-to-back stem plots, overlaid histograms.
+- Measuring the size of a difference relative to the spread.
+
+## 2. Where it is used
+- **A/B testing:** comparing a metric between control and variant.
+- **Education:** scores of two classes or two teaching methods.
+- **Operations:** delivery times across warehouses or couriers.
+- **Healthcare:** outcomes in treatment vs control groups.
+
+## 3. What it means
+A good comparison mentions **all four** features, **in context**, with numbers:
+- **Centre:** which group is typically higher (use medians for skewed data, means for symmetric).
+- **Spread:** which is more variable (IQR or SD).
+- **Shape:** skewed or symmetric?
+- **Outliers:** any unusual values?
+
+**Is the difference big?** A difference in centres matters more when the spreads are small. A rough measure: difference in means ÷ typical SD (an ""effect size""). If the boxes barely overlap, the difference is large relative to the variability.
+
+## 4. Formula & worked example
+$$
+\text{effect size (Cohen's } d) \approx \frac{\bar{x}_1 - \bar{x}_2}{s}
+$$
+
+**Example 1.** Delivery times (minutes):
+| | Median | IQR | Shape | Outliers |
+|---|---|---|---|---|
+| Courier A | 32 | 8 | roughly symmetric | none |
+| Courier B | 28 | 18 | right-skewed | two over 90 |
+- ""B is faster typically (median 28 vs 32 min), but much less consistent (IQR 18 vs 8), with a right skew and two very late deliveries over 90 min. A is more predictable.""
+
+**Example 2 (effect size).** Variant page time-on-site: mean 5.2 min vs control 4.8 min; SD about 2 min → $d = 0.2$: a small effect relative to the variation.
+
+**Example 3 (code).**
+```python
+import pandas as pd
+df = pd.DataFrame({""courier"": [""A""]*5 + [""B""]*5,
+                   ""minutes"": [30, 32, 33, 35, 31, 22, 25, 28, 40, 95]})
+print(df.groupby(""courier"")[""minutes""].describe())
+df.boxplot(column=""minutes"", by=""courier"")
+```
+`groupby(...).describe()` gives count, mean, SD and quartiles per group in one table; the box plot shows the same comparison visually.
+
+## 5. Common mistakes
+- Comparing only centres and ignoring spread.
+- Not writing the comparison in context (units and meaning).
+- Using means when one group has extreme outliers.
+
+## 6. Practice
+Q: Four features to compare between distributions?
+A: Shape, centre, spread and outliers.
+
+Q: Group A median 50 (IQR 5), group B median 55 (IQR 30). Which difference is clearer: centre or spread?
+A: Spread (B is far more variable; the centre difference is small relative to B's spread).
+
+Q: Which centre measure for strongly skewed groups?
+A: Median.
+
+Q: What does it mean if two box plots don't overlap at all?
+A: The difference between groups is large relative to their spread.
+
+Q: Means 72 and 68, SD 8. Effect size?
+A: $0.5$ (a medium effect)."
+3,TOPIC,Effects of transformations on summary statistics,"Adding a constant, multiplying by a constant, unit conversions and their effect on centre and spread",MUST,FALSE,"# Effects of transformations on summary statistics
+
+## 1. What it covers
+- What happens to the mean, median, SD and IQR when you **add** a constant to every value.
+- What happens when you **multiply** every value by a constant.
+- Unit conversions (°C → °F, taka → USD) and **standardisation**.
+
+## 2. Where it is used
+- **Unit conversions** in reports and pipelines.
+- **Feature scaling in ML:** standardising ($\frac{x - \mu}{\sigma}$) and min-max scaling.
+- **Payroll:** a flat raise vs a percentage raise affects the spread differently.
+- **Grading:** curving scores.
+
+## 3. What it means
+- **Adding** $c$ to every value shifts the whole distribution: centre measures (mean, median) shift by $c$; spread measures (SD, IQR, range) **don't change**, because everything moves together.
+- **Multiplying** by $k$ stretches it: centres **and** spreads are multiplied by $\lvert k\rvert$ (variance by $k^2$).
+- **Shape** doesn't change under these linear transformations.
+
+For $y = a + bx$: $\bar{y} = a + b\bar{x}$ and $s_y = \lvert b\rvert s_x$.
+
+## 4. Formula & worked example
+$$
+y = a + bx:\quad \bar{y} = a + b\bar{x},\quad \text{median}_y = a + b\,\text{median}_x,\quad s_y = \lvert b\rvert s_x,\quad s_y^2 = b^2s_x^2
+$$
+
+**Example 1 (flat raise).** Salaries: mean 40 000, SD 6000. Everyone gets +3000.
+- New mean 43 000; SD still 6000.
+
+**Example 2 (percentage raise).** Same salaries, everyone gets +10% (×1.1).
+- New mean 44 000; new SD 6600 (spread grows).
+
+**Example 3 (temperature).** Daily highs: mean 30°C, SD 4°C. In °F ($F = 32 + 1.8C$):
+- Mean $= 32 + 54 = 86$°F; SD $= 1.8 \times 4 = 7.2$°F.
+
+**Example 4 (standardise).** Scores with mean 60 and SD 12; $z = \frac{x - 60}{12}$ → the z-scores have mean 0 and SD 1.
+
+## 5. Common mistakes
+- Adding the constant to the SD.
+- Multiplying the variance by $k$ instead of $k^2$.
+- Thinking the shape changes under a linear transformation.
+
+## 6. Practice
+Q: Add 5 to every value. What happens to the IQR?
+A: Unchanged.
+
+Q: Multiply every value by 3. What happens to the SD?
+A: It triples.
+
+Q: Mean 20 cm, SD 2 cm. Convert to mm. New mean and SD?
+A: 200 mm and 20 mm.
+
+Q: Variance 9, every value doubled. New variance?
+A: $36$.
+
+Q: Mean and SD of standardised scores?
+A: 0 and 1."
+3,TOPIC,Percentiles and z-scores,"Percentile rank, standardising values, comparing across different scales",MUST,FALSE,"# Percentiles and z-scores
+
+## 1. What it covers
+- **Percentiles**: the value below which a given percent of data falls.
+- **Percentile rank** of a value.
+- **z-scores**: how many SDs a value is from the mean.
+- Comparing values from different distributions.
+
+## 2. Where it is used
+- **Admissions and exams:** percentile ranks on standardised tests.
+- **Child growth charts:** height and weight percentiles.
+- **Performance monitoring:** p95 and p99 latency (the time under which 95% or 99% of requests complete).
+- **Anomaly detection:** flagging values with $\lvert z\rvert > 3$.
+- **ML preprocessing:** standardising features to z-scores.
+
+## 3. What it means
+- The **$p$th percentile** is the value with $p\%$ of the data at or below it. The median is the 50th percentile; $Q_1$ the 25th; $Q_3$ the 75th.
+- A **z-score** standardises a value: $z = \frac{x - \text{mean}}{\text{SD}}$. $z = 2$ means 2 SDs above the mean; $z = -1$ means 1 SD below.
+
+z-scores let you compare apples and oranges: a score of 80 on a hard test may be more impressive than 90 on an easy one.
+
+## 4. Formula & worked example
+$$
+z = \frac{x - \mu}{\sigma} \qquad x = \mu + z\sigma
+$$
+
+**Example 1.** Maths test: mean 65, SD 10; you scored 85 → $z = 2$. English test: mean 78, SD 5; you scored 88 → $z = 2$. Equally impressive relative to classmates.
+
+**Example 2.** Physics: mean 50, SD 8, score 66 → $z = 2$; Chemistry: mean 70, SD 4, score 76 → $z = 1.5$. Physics was relatively better.
+
+**Example 3 (back to a value).** Heights: mean 165 cm, SD 7 cm. What height has $z = -1.5$? → $165 - 10.5 = 154.5$ cm.
+
+**Example 4 (latency percentiles, code).**
+```python
+import numpy as np
+lat = np.random.lognormal(4.5, 0.6, 100_000)
+p50, p95, p99 = np.percentile(lat, [50, 95, 99])
+print(round(p50), round(p95), round(p99))   # e.g. 90 241 365 (ms)
+```
+For skewed latency data, p95 and p99 are far above the median: 1 in 100 users waits about 4 times longer than the typical user, which the mean alone wouldn't reveal.
+
+**Example 5 (anomaly).** Daily sales: mean 500, SD 40. A day with 650 sales has $z = 3.75$ → investigate.
+
+## 5. Common mistakes
+- Confusing a percentile (a value) with a percentage (a proportion).
+- Subtracting in the wrong order ($\mu - x$).
+- Using z-scores for strongly skewed data and expecting normal-table percentages to apply.
+
+## 6. Practice
+Q: Mean 100, SD 15, value 130. z-score?
+A: $2$.
+
+Q: z-score of a value equal to the mean?
+A: $0$.
+
+Q: What does p99 latency of 800 ms mean?
+A: 99% of requests complete in 800 ms or less.
+
+Q: Mean 40, SD 5. Value with $z = -2$?
+A: $30$.
+
+Q: Score 75 (mean 70, SD 2.5) vs score 80 (mean 72, SD 8). Which is relatively better?
+A: The first ($z = 2$ vs $z = 1$)."
+3,TOPIC,Practice & review: Describing data,Mixed problem set with worked answers,MUST,FALSE,"# Practice & review: Describing data
+
+**How to use this:** 45 minutes; calculator allowed.
+
+## Problems
+1. Classify: (a) blood group, (b) number of app logins per day, (c) battery life in hours.
+2. In a survey, 120 of 300 students and 90 of 200 teachers prefer online classes. Compare conditional percentages.
+3. Data: 3, 7, 7, 8, 10, 12, 13, 15, 40. Find the mean, median, mode, $Q_1$, $Q_3$, IQR, and check for outliers.
+4. Sample: 2, 4, 4, 5, 7, 8. Find the sample SD.
+5. A histogram of house prices has a long right tail. Which is larger, mean or median? Which should a news report use?
+6. Test scores: mean 72, SD 9. Each score is curved by $\times 1.1 + 2$. New mean and SD?
+7. Ali scored 82 (mean 74, SD 4) and Bina scored 88 (mean 80, SD 6) on different tests. Who did relatively better?
+8. Two gyms' membership fees: Gym A median 2000, IQR 300; Gym B median 1800, IQR 900 with one outlier at 6000. Write a comparison.
+
+## Answers
+1. (a) categorical; (b) quantitative discrete; (c) quantitative continuous.
+2. Students 40%, teachers 45% → teachers slightly more likely to prefer online.
+3. Mean $\frac{115}{9} \approx 12.8$; median 10; mode 7; $Q_1 = 7$ (median of 3, 7, 7, 8), $Q_3 = 14$ (median of 12, 13, 15, 40); IQR 7; upper fence $24.5$ → 40 is an outlier.
+4. Mean 5; squared deviations 9, 1, 1, 0, 4, 9 → 24; $s^2 = 4.8$; $s \approx 2.19$.
+5. Mean > median; report the median.
+6. Mean $= 72 \times 1.1 + 2 = 81.2$; SD $= 9.9$.
+7. Ali $z = 2$, Bina $z = 1.33$ → Ali.
+8. Gym B is cheaper typically (median 1800 vs 2000) but far more variable (IQR 900 vs 300) and has an extreme outlier at 6000; Gym A's fees are more consistent.
+
+## Flashcards
+Q: Which centre and spread measures are resistant to outliers?
+A: Median and IQR.
+
+Q: 1.5 × IQR rule?
+A: Values below $Q_1 - 1.5\,\text{IQR}$ or above $Q_3 + 1.5\,\text{IQR}$ are outliers.
+
+Q: Sample SD formula?
+A: $s = \sqrt{\frac{\sum(x - \bar{x})^2}{n - 1}}$.
+
+Q: z-score formula?
+A: $z = \frac{x - \mu}{\sigma}$."
+1,MODULE,Phase 2 — Normal Distribution and Bivariate Data (Core),"Density curves, the normal model, scatterplots, correlation, least-squares regression, residuals, influential points, transformations",MUST,,"# Phase 2: Normal distribution and bivariate data
+
+The **normal distribution** (the bell curve) describes heights, measurement errors, test scores and, thanks to the central limit theorem, averages of almost anything. **Bivariate data** asks how two quantitative variables relate: does study time predict marks, does price predict sales? The tools here, correlation and regression, are the foundation of machine learning."
+2,MODULE,The normal distribution,"Density curves, empirical rule, normal probability calculations",MUST,,Many natural measurements pile up in a bell shape around the mean.
+3,TOPIC,Density curves,"Smooth models of distributions, area as proportion, mean and median of a density curve",MUST,FALSE,"# Density curves
+
+## 1. What it covers
+- A **density curve** as an idealised smooth histogram.
+- **Area under the curve = proportion** of values.
+- Total area = 1; probabilities are areas, not heights.
+- Mean (balance point) vs median (equal-areas point) of a density curve; the uniform distribution.
+
+## 2. Where it is used
+- **Probability models** for continuous variables (heights, times, errors).
+- **Machine learning:** probability density functions (PDFs) in generative models and anomaly detection.
+- **Simulation:** generating random numbers from a chosen distribution.
+- **Quality control:** what fraction of products fall within tolerance.
+
+## 3. What it means
+Draw a histogram of a huge data set with very thin bins and scale it so the bars' total area is 1: it becomes a smooth curve. That's a **density curve**.
+
+- The **area** between two values is the **proportion** of observations in that range.
+- The height is **not** a probability (it can exceed 1); only areas are.
+- The **median** splits the area in half; the **mean** is the balance point. For right-skewed curves the mean is to the right of the median.
+
+**Uniform distribution:** a flat rectangle, e.g. a random number generator `random()` producing values equally likely anywhere in $[0, 1]$.
+
+## 4. Formula & worked example
+$$
+P(a \le X \le b) = \text{area under the curve from } a \text{ to } b \qquad \text{total area} = 1
+$$
+
+**Example 1 (uniform).** A bus arrives uniformly at random within a 20-minute window. Probability you wait between 5 and 12 minutes?
+- Height $\frac{1}{20}$; area $= 7 \times \frac{1}{20} = 0.35$
+
+**Example 2 (triangle).** A density is a triangle from 0 to 2 with its peak at 0. Height at 0 must be 1 (area $\frac{1}{2} \cdot 2 \cdot h = 1$). $P(X < 1)$? The remaining triangle from 1 to 2 has area $\frac{1}{2} \cdot 1 \cdot 0.5 = 0.25$ → $P(X < 1) = 0.75$.
+
+**Example 3.** Is $f(x) = 2$ on $[0, 1]$ a valid density? Area $= 2 \ne 1$ → no.
+
+**Example 4 (code).**
+```python
+import numpy as np
+x = np.random.uniform(0, 20, 1_000_000)
+print(((x > 5) & (x < 12)).mean())   # ≈ 0.35
+```
+Simulating a million uniform waiting times and counting the fraction between 5 and 12 confirms the area calculation.
+
+## 5. Common mistakes
+- Reading the curve's height as a probability.
+- Forgetting the total area must be 1.
+- Thinking $P(X = a) > 0$ for a continuous variable (a single point has zero area).
+
+## 6. Practice
+Q: Total area under any density curve?
+A: $1$.
+
+Q: Uniform on $[0, 10]$. $P(2 \le X \le 5)$?
+A: $0.3$.
+
+Q: For a continuous variable, $P(X = 3)$?
+A: $0$.
+
+Q: In a right-skewed density curve, which is larger: mean or median?
+A: Mean.
+
+Q: What does the area between two values represent?
+A: The proportion of observations in that range."
+3,TOPIC,The normal distribution and the empirical rule,"Bell curve, parameters μ and σ, 68–95–99.7 rule, standard normal",MUST,FALSE,"# The normal distribution and the empirical rule
+
+## 1. What it covers
+- The **normal distribution** $N(\mu, \sigma)$: symmetric, bell-shaped.
+- The **empirical (68–95–99.7) rule**.
+- The **standard normal** $Z \sim N(0, 1)$.
+- Checking whether data are approximately normal.
+
+## 2. Where it is used
+- **Natural measurements:** heights, blood pressure, measurement errors.
+- **Quality control:** Six Sigma: defects beyond $\pm 6\sigma$ are extremely rare.
+- **Finance:** (approximate) daily returns; risk models (with caution: real returns have fatter tails).
+- **Inference:** sample means are approximately normal (central limit theorem), which is why normal tables appear everywhere.
+- **ML:** weight initialisation, Gaussian noise, Gaussian Naive Bayes.
+
+## 3. What it means
+The normal curve is a symmetric bell centred at the mean $\mu$; the SD $\sigma$ controls its width. Mean = median = mode.
+
+**Empirical rule:**
+- About **68%** of values lie within $1\sigma$ of the mean.
+- About **95%** within $2\sigma$.
+- About **99.7%** within $3\sigma$.
+
+So a value more than 3 SDs from the mean is very rare (3 in 1000).
+
+**Checking normality:** a roughly symmetric, single-peaked histogram; or a **normal probability (Q–Q) plot** where points fall near a straight line.
+
+## 4. Formula & worked example
+$$
+f(x) = \frac{1}{\sigma\sqrt{2\pi}}\,e^{-\frac{(x - \mu)^2}{2\sigma^2}} \qquad Z = \frac{X - \mu}{\sigma} \sim N(0, 1)
+$$
+
+**Example 1.** Adult heights $\sim N(165, 7)$ cm.
+- 68% between 158 and 172; 95% between 151 and 179; 99.7% between 144 and 186.
+
+**Example 2.** What percent of heights are above 179 cm (= $\mu + 2\sigma$)?
+- 95% within → 5% outside → split equally: **2.5%** above.
+
+**Example 3.** What percent are between 158 and 179 ($-1\sigma$ to $+2\sigma$)?
+- $34\% + 47.5\% = 81.5\%$
+
+**Example 4 (manufacturing).** Bolt lengths $\sim N(50, 0.1)$ mm; tolerance 49.8–50.2 mm ($\pm 2\sigma$) → about 5% are rejected.
+
+**Example 5 (code).**
+```python
+from scipy.stats import norm
+print(norm.cdf(1) - norm.cdf(-1))   # 0.6827
+print(norm.cdf(2) - norm.cdf(-2))   # 0.9545
+print(norm.cdf(3) - norm.cdf(-3))   # 0.9973
+```
+`norm.cdf(z)` is the area to the left of $z$ under the standard normal curve, so subtracting gives the area between, confirming the 68–95–99.7 rule.
+
+## 5. Common mistakes
+- Applying the empirical rule to skewed data.
+- Forgetting to split the outside area between both tails.
+- Assuming every data set is normal.
+
+## 6. Practice
+Q: Percent of a normal distribution within 2 SDs of the mean?
+A: About 95%.
+
+Q: $N(100, 15)$: percent above 130?
+A: About 2.5%.
+
+Q: $N(100, 15)$: percent between 85 and 115?
+A: About 68%.
+
+Q: Mean, median and mode of a normal distribution?
+A: All equal.
+
+Q: What plot checks for normality?
+A: A normal probability (Q–Q) plot."
+3,TOPIC,Normal probability calculations,"Using z-tables and software for areas, finding cut-off values (inverse normal)",MUST,FALSE,"# Normal probability calculations
+
+## 1. What it covers
+- Finding proportions/probabilities: $P(X < a)$, $P(X > a)$, $P(a < X < b)$.
+- Standardising to $z$ and using a **z-table** or software.
+- **Inverse** problems: finding the value for a given percentile.
+
+## 2. Where it is used
+- **Admissions:** the score needed for the top 10%.
+- **Manufacturing:** defect rates and setting tolerances.
+- **Service levels:** the time within which 95% of deliveries arrive.
+- **Inference:** p-values and critical values (Phase 6).
+
+## 3. What it means
+**Steps for ""what proportion?"":**
+1. Draw the bell curve and shade the region.
+2. Standardise: $z = \frac{x - \mu}{\sigma}$.
+3. Look up the area to the **left** of $z$ (table or `norm.cdf`).
+4. For ""greater than"", use $1 -$ left area; for ""between"", subtract two left areas.
+
+**Steps for ""what value?"" (inverse):**
+1. Find the $z$ with the required area to its left (`norm.ppf`).
+2. Convert back: $x = \mu + z\sigma$.
+
+Key $z$-values: $z = 1.645$ (95th percentile), $1.96$ (97.5th), $2.326$ (99th).
+
+## 4. Formula & worked example
+$$
+P(X < a) = \Phi\!\left(\frac{a - \mu}{\sigma}\right) \qquad x_p = \mu + z_p\sigma
+$$
+($\Phi$ = standard normal CDF.)
+
+**Example 1.** Exam scores $\sim N(70, 8)$. Proportion scoring below 82?
+- $z = 1.5$ → $\Phi(1.5) \approx 0.9332$ → 93.3%
+
+**Example 2.** Proportion above 60? $z = -1.25$ → $1 - 0.1056 = 0.8944$ → 89.4%
+
+**Example 3.** Between 66 and 78? $z = -0.5$ and $1$ → $0.8413 - 0.3085 = 0.5328$ → 53.3%
+
+**Example 4 (inverse).** Score needed for the top 10%? → 90th percentile, $z = 1.2816$ → $70 + 1.2816 \times 8 \approx 80.3$
+
+**Example 5 (service level).** Delivery times $\sim N(35, 6)$ min. Promise a time that 95% of deliveries meet?
+- $35 + 1.645 \times 6 \approx 44.9$ → promise 45 minutes.
+
+**Example 6 (code).**
+```python
+from scipy.stats import norm
+print(norm.cdf(82, loc=70, scale=8))   # 0.9332  P(X < 82)
+print(norm.sf(60, loc=70, scale=8))    # 0.8944  P(X > 60)  (sf = 1 - cdf)
+print(norm.ppf(0.90, loc=70, scale=8)) # 80.25   90th percentile
+```
+`cdf` gives a left-tail area, `sf` a right-tail area, and `ppf` (percent point function) goes backwards from an area to a value.
+
+## 5. Common mistakes
+- Using the table's left area when the question asks for ""greater than"".
+- Using $\sigma^2$ instead of $\sigma$ in the z formula.
+- Mixing up `cdf` (value → area) and `ppf` (area → value).
+
+## 6. Practice
+Q: $N(50, 10)$: $P(X < 65)$?
+A: $\Phi(1.5) \approx 0.933$.
+
+Q: $N(50, 10)$: $P(X > 40)$?
+A: $1 - \Phi(-1) \approx 0.841$.
+
+Q: $z$ for the 95th percentile?
+A: $1.645$.
+
+Q: $N(200, 25)$: value at the 2.5th percentile?
+A: $200 - 1.96 \times 25 = 151$.
+
+Q: Which scipy function finds a value from a percentile?
+A: `norm.ppf`."
+2,MODULE,Bivariate data: correlation and regression,"Scatterplots, correlation, least-squares lines, residuals, influential points, transformations",MUST,,How does one quantitative variable relate to another?
+3,TOPIC,Scatterplots and association,"Explanatory and response variables, direction, form, strength, outliers; correlation is not causation",MUST,FALSE,"# Scatterplots and association
+
+## 1. What it covers
+- **Explanatory** (x) and **response** (y) variables.
+- Describing a scatterplot: **direction, form, strength, unusual points**.
+- Positive, negative and no association; linear vs nonlinear.
+- **Correlation is not causation**; lurking variables.
+
+## 2. Where it is used
+- **Exploratory data analysis:** scatterplot matrices (`pd.plotting.scatter_matrix`, seaborn `pairplot`) to spot relationships before modelling.
+- **Business:** ad spend vs sales; price vs demand.
+- **Science:** dose vs response.
+- **ML feature selection:** finding which inputs relate to the target.
+
+## 3. What it means
+Plot each individual as a point $(x, y)$.
+- **Direction:** positive (up to the right), negative (down), or none.
+- **Form:** linear (a straight band), curved, clusters.
+- **Strength:** how tightly the points follow the form.
+- **Unusual points:** outliers far from the pattern.
+
+**Correlation ≠ causation:** ice-cream sales and drownings rise together, but both are driven by hot weather (a **lurking variable**). Only a randomised experiment can establish cause and effect.
+
+## 4. Formula & worked example
+**Example 1.** Study hours vs exam score for 30 students: points rise from lower-left to upper-right in a fairly tight straight band → ""a strong, positive, linear association; one student who studied 2 hours but scored 90 is an outlier.""
+
+**Example 2.** Car speed vs fuel efficiency: efficiency rises up to about 60–80 km/h then falls → a curved (nonlinear) association.
+
+**Example 3 (lurking variable).** Cities with more hospitals have more deaths. Why? Population size drives both.
+
+**Example 4 (code).**
+```python
+import numpy as np, matplotlib.pyplot as plt
+hours = np.random.uniform(0, 10, 50)
+score = 40 + 5 * hours + np.random.normal(0, 6, 50)
+plt.scatter(hours, score); plt.xlabel(""study hours""); plt.ylabel(""score""); plt.show()
+```
+The simulated data have a true linear relationship (40 + 5 × hours) plus random noise, which appears as a positive, linear, moderately strong scatter.
+
+## 5. Common mistakes
+- Concluding causation from an observational scatterplot.
+- Calling a strong curved relationship ""weak"" because it isn't linear.
+- Swapping explanatory and response variables.
+
+## 6. Practice
+Q: Four features to describe in a scatterplot?
+A: Direction, form, strength, unusual points.
+
+Q: Explanatory variable in ""fertiliser amount vs crop yield""?
+A: Fertiliser amount.
+
+Q: What is a lurking variable?
+A: A variable not studied that affects both variables, creating an apparent association.
+
+Q: Can a scatterplot alone prove causation?
+A: No.
+
+Q: Describe points falling from upper left to lower right in a tight curve.
+A: Strong, negative, nonlinear association."
+3,TOPIC,The correlation coefficient r,"Computing and interpreting r, properties, what r does not measure",MUST,FALSE,"# The correlation coefficient r
+
+## 1. What it covers
+- The **correlation coefficient** $r$: strength and direction of a **linear** relationship.
+- Its range $-1 \le r \le 1$ and properties.
+- How to compute it, and what it doesn't capture.
+
+## 2. Where it is used
+- **Data science:** correlation matrices (`df.corr()`) and heatmaps to find related features (and redundant ones).
+- **Finance:** correlation between assets for diversification.
+- **Science:** quantifying relationships.
+- **Recommendation systems:** Pearson correlation between users' ratings.
+
+## 3. What it means
+$r$ measures how close the points are to a **straight line**:
+- $r = 1$: perfect positive line; $r = -1$: perfect negative line; $r = 0$: no **linear** relationship.
+- Rough guide: $\lvert r\rvert > 0.8$ strong, $0.5$–$0.8$ moderate, $< 0.5$ weak.
+
+**How it works:** standardise both variables to z-scores and average their products. Points in the upper-right and lower-left quadrants (both z's same sign) push $r$ up; the other quadrants push it down.
+
+**Properties:** no units; unchanged by changing units; same if you swap $x$ and $y$; very sensitive to outliers.
+
+**$r = 0$ doesn't mean no relationship:** $y = x^2$ on symmetric data has $r = 0$ despite a perfect curve.
+
+## 4. Formula & worked example
+$$
+r = \frac{1}{n - 1}\sum\left(\frac{x_i - \bar{x}}{s_x}\right)\left(\frac{y_i - \bar{y}}{s_y}\right)
+$$
+
+**Example 1 (small data).** $x$: 1, 2, 3, 4, 5; $y$: 2, 4, 5, 4, 5.
+- $\bar{x} = 3$, $\bar{y} = 4$; deviations $x$: $-2, -1, 0, 1, 2$; $y$: $-2, 0, 1, 0, 1$
+- $\sum(x - \bar{x})(y - \bar{y}) = 4 + 0 + 0 + 0 + 2 = 6$; $\sum(x - \bar{x})^2 = 10$; $\sum(y - \bar{y})^2 = 6$
+- $r = \frac{6}{\sqrt{10 \cdot 6}} \approx 0.775$ (moderately strong positive)
+
+**Example 2 (curve).** $x$: $-2, -1, 0, 1, 2$; $y = x^2$: 4, 1, 0, 1, 4 → $r = 0$, yet $y$ is completely determined by $x$.
+
+**Example 3 (outlier).** Adding one far-off point can turn $r = 0.1$ into $r = 0.8$; always look at the scatterplot.
+
+**Example 4 (code).**
+```python
+import numpy as np, pandas as pd
+x = [1, 2, 3, 4, 5]; y = [2, 4, 5, 4, 5]
+print(np.corrcoef(x, y)[0, 1])            # 0.7746
+df = pd.DataFrame({""x"": x, ""y"": y, ""z"": [5, 3, 4, 2, 1]})
+print(df.corr().round(2))                  # correlation matrix of all columns
+```
+`np.corrcoef` returns a 2×2 matrix; the off-diagonal entry is $r$. `df.corr()` computes $r$ for every pair of columns, the usual first step in feature analysis.
+
+## 5. Common mistakes
+- Using $r$ for curved relationships.
+- Thinking $r = 0.6$ means ""60% related"" ($r^2$ has a percentage meaning; $r$ doesn't).
+- Concluding causation from a high $r$.
+
+## 6. Practice
+Q: Range of $r$?
+A: $-1$ to $1$.
+
+Q: Does changing units from cm to m change $r$?
+A: No.
+
+Q: $r = -0.9$ means?
+A: A strong negative linear relationship.
+
+Q: Can $r = 0$ when there's a strong relationship?
+A: Yes, if the relationship is nonlinear.
+
+Q: Is $r$ resistant to outliers?
+A: No, it's very sensitive."
+3,TOPIC,Least-squares regression line,"ŷ = a + bx, slope b = r·s_y/s_x, prediction, interpreting slope and intercept, extrapolation",MUST,FALSE,"# Least-squares regression line
+
+## 1. What it covers
+- The **least-squares regression line** $\hat{y} = a + bx$.
+- Formulas: $b = r\frac{s_y}{s_x}$, $a = \bar{y} - b\bar{x}$.
+- Predicting with the line; **interpreting** slope and intercept in context.
+- The danger of **extrapolation**.
+
+## 2. Where it is used
+- **Machine learning:** linear regression is the most basic supervised model (`sklearn.linear_model.LinearRegression`).
+- **Business forecasting:** sales vs advertising; cost vs volume.
+- **Science:** calibration curves (instrument reading → true concentration).
+- **Economics:** estimating trends and elasticities.
+
+## 3. What it means
+Many lines could pass through a scatterplot. The **least-squares** line is the one that makes the sum of **squared vertical distances** (residuals) from the points to the line as small as possible.
+
+- **Slope $b$:** for each 1-unit increase in $x$, the **predicted** $y$ changes by $b$ (on average).
+- **Intercept $a$:** the predicted $y$ when $x = 0$ (only meaningful if $x = 0$ makes sense and is near the data).
+- The line always passes through $(\bar{x}, \bar{y})$.
+
+**Extrapolation:** predicting far outside the range of the data is risky, because the relationship may change.
+
+## 4. Formula & worked example
+$$
+\hat{y} = a + bx \qquad b = r\,\frac{s_y}{s_x} = \frac{\sum(x - \bar{x})(y - \bar{y})}{\sum(x - \bar{x})^2} \qquad a = \bar{y} - b\bar{x}
+$$
+
+**Example 1 (from the previous topic's data).** $\sum(x - \bar{x})(y - \bar{y}) = 6$, $\sum(x - \bar{x})^2 = 10$ → $b = 0.6$; $a = 4 - 0.6(3) = 2.2$ → $\hat{y} = 2.2 + 0.6x$.
+
+**Example 2 (from summaries).** Study hours: $\bar{x} = 5$, $s_x = 2$; scores: $\bar{y} = 65$, $s_y = 12$; $r = 0.8$.
+- $b = 0.8 \times \frac{12}{2} = 4.8$; $a = 65 - 4.8(5) = 41$ → $\hat{y} = 41 + 4.8x$
+- Interpretation: each extra hour of study is associated with 4.8 more points, on average. Predicted score for 7 hours: $41 + 33.6 = 74.6$.
+
+**Example 3 (extrapolation).** Predicting the score for 30 hours gives 185 → impossible (max 100): the line doesn't hold outside the data range (0–10 hours).
+
+**Example 4 (code).**
+```python
+import numpy as np
+from sklearn.linear_model import LinearRegression
+x = np.array([1, 2, 3, 4, 5]).reshape(-1, 1)   # sklearn wants a 2D array of features
+y = np.array([2, 4, 5, 4, 5])
+model = LinearRegression().fit(x, y)
+print(model.intercept_, model.coef_[0])        # 2.2 0.6
+print(model.predict([[6]]))                    # [5.8]
+```
+`fit` computes the least-squares slope and intercept exactly as the formulas do. `reshape(-1, 1)` turns the list into one column, because sklearn models expect a table of features (one row per individual).
+
+## 5. Common mistakes
+- Interpreting the slope as a guaranteed change (""will increase"") instead of a predicted average change.
+- Interpreting the intercept when $x = 0$ is meaningless.
+- Swapping $x$ and $y$: the regression of $y$ on $x$ is different from $x$ on $y$.
+
+## 6. Practice
+Q: Formula for the slope from $r$?
+A: $b = r\frac{s_y}{s_x}$.
+
+Q: Which point does the regression line always pass through?
+A: $(\bar{x}, \bar{y})$.
+
+Q: $\hat{y} = 12 + 3.5x$. Predict $y$ at $x = 4$.
+A: $26$.
+
+Q: Interpret slope $-2.1$ in ""price (taka) vs units sold"".
+A: Each 1 taka increase in price is associated with 2.1 fewer units sold, on average.
+
+Q: Why is extrapolation risky?
+A: The relationship may not hold outside the observed range."
+3,TOPIC,"Residuals, residual plots and r²","Residual = y − ŷ, residual plots for checking linearity, coefficient of determination, standard error",MUST,FALSE,"# Residuals, residual plots and r²
+
+## 1. What it covers
+- **Residuals** $e = y - \hat{y}$.
+- **Residual plots** for checking whether a linear model fits.
+- The **coefficient of determination** $r^2$.
+- The standard deviation of the residuals $s$ (typical prediction error).
+
+## 2. Where it is used
+- **ML model evaluation:** $R^2$ score and RMSE (`sklearn.metrics.r2_score`, `mean_squared_error`).
+- **Diagnosing models:** residual patterns reveal missing curvature, missing variables or changing spread.
+- **Forecasting:** reporting typical error (""predictions are usually within ± 5 units"").
+- **Science:** checking calibration curves.
+
+## 3. What it means
+**Residual** = actual − predicted: how far the point is above (positive) or below (negative) the line.
+
+**Residual plot:** residuals vs $x$ (or vs $\hat{y}$).
+- Random scatter around 0 with no pattern → the linear model is appropriate.
+- A **curve** → the relationship is nonlinear.
+- A **fan shape** (spread growing) → the variability changes with $x$; predictions are less reliable for large $x$.
+
+**$r^2$:** the fraction of the variation in $y$ that is **explained** by the linear relationship with $x$. $r^2 = 0.64$ means 64% of the variation in scores is explained by study hours; the other 36% is due to other factors.
+
+**$s$ (residual SD):** the typical size of a prediction error, in $y$'s units.
+
+## 4. Formula & worked example
+$$
+e_i = y_i - \hat{y}_i \qquad r^2 = 1 - \frac{\sum e_i^2}{\sum(y_i - \bar{y})^2} \qquad s = \sqrt{\frac{\sum e_i^2}{n - 2}}
+$$
+
+**Example 1.** $\hat{y} = 2.2 + 0.6x$ and data $(1,2), (2,4), (3,5), (4,4), (5,5)$.
+- Predictions: 2.8, 3.4, 4.0, 4.6, 5.2; residuals: $-0.8, 0.6, 1.0, -0.6, -0.2$ (sum 0 ✓)
+- $\sum e^2 = 0.64 + 0.36 + 1 + 0.36 + 0.04 = 2.4$; $\sum(y - \bar{y})^2 = 6$
+- $r^2 = 1 - \frac{2.4}{6} = 0.6$ (and $r = 0.775$, $r^2 = 0.6$ ✓); $s = \sqrt{2.4/3} \approx 0.89$
+
+**Example 2 (interpretation).** A model of house price on area has $r^2 = 0.72$ and $s = 8$ lakh: ""72% of the variation in price is explained by area; predictions are typically off by about 8 lakh taka.""
+
+**Example 3 (residual pattern).** Fitting a line to $y = x^2$-shaped data gives residuals positive at both ends and negative in the middle (a U shape) → use a curved model.
+
+**Example 4 (code).**
+```python
+from sklearn.metrics import r2_score, mean_squared_error
+y = [2, 4, 5, 4, 5]
+pred = [2.8, 3.4, 4.0, 4.6, 5.2]
+print(r2_score(y, pred), mean_squared_error(y, pred) ** 0.5)   # 0.6 0.693
+```
+`r2_score` computes $1 - \frac{\sum e^2}{\sum(y - \bar{y})^2}$. The RMSE divides by $n$ rather than $n - 2$, so it's a little smaller than $s$.
+
+## 5. Common mistakes
+- Computing residuals as predicted − actual (the sign convention is actual − predicted).
+- Thinking a high $r^2$ proves the model is right (always check the residual plot).
+- Interpreting $r^2$ as ""the percent of points on the line"".
+
+## 6. Practice
+Q: Residual formula?
+A: $y - \hat{y}$.
+
+Q: Actual 50, predicted 46. Residual?
+A: $4$ (the point is above the line).
+
+Q: $r = -0.7$. What is $r^2$, and what does it mean?
+A: $0.49$: 49% of the variation in $y$ is explained by the linear relationship with $x$.
+
+Q: A residual plot shows a clear curve. Conclusion?
+A: A linear model is not appropriate.
+
+Q: What does a fan-shaped residual plot indicate?
+A: The spread of $y$ changes with $x$ (non-constant variance)."
+3,TOPIC,"Outliers, influential points and transformations","Leverage, influential points, log and power transformations to straighten curved data",SHOULD,FALSE,"# Outliers, influential points and transformations
+
+## 1. What it covers
+- **Outliers** in regression (large residuals), **high-leverage** points (extreme $x$), **influential** points (change the line a lot).
+- **Transformations** to straighten curved relationships: log, square root, power.
+- Interpreting models fitted to transformed data.
+
+## 2. Where it is used
+- **Data cleaning:** one bad sensor reading can wreck a fitted model.
+- **Economics and biology:** log-transforming income, population or prices.
+- **Science:** power laws (metabolism vs body mass) become straight lines on log–log axes.
+- **ML:** log-transforming skewed targets (house prices) often improves linear models.
+
+## 3. What it means
+- **Outlier:** a point with a large residual (far above or below the line).
+- **High leverage:** a point with an $x$-value far from the others; like a long lever, it can pull the line towards itself.
+- **Influential:** removing it changes the slope or intercept noticeably. High-leverage points are often influential.
+
+Always fit the model with and without suspicious points and report both.
+
+**Transformations:**
+- **Exponential** growth $y = ab^x$: plot $\log y$ vs $x$ → straight line.
+- **Power** law $y = ax^p$: plot $\log y$ vs $\log x$ → straight line with slope $p$.
+- Then fit a line to the transformed data and transform back to predict.
+
+## 4. Formula & worked example
+$$
+y = ab^x \Rightarrow \log y = \log a + x\log b \qquad y = ax^p \Rightarrow \log y = \log a + p\log x
+$$
+
+**Example 1 (influence).** Five points near $\hat{y} = 2 + x$ for $x$ from 1 to 5, plus one point at $(20, 5)$. Fitting with it, the slope drops from 1 to about 0.04: the point at $x = 20$ is high-leverage and influential.
+
+**Example 2 (exponential).** Bacteria counts: $t$ = 0, 1, 2, 3, 4; $N$ = 100, 210, 390, 820, 1600. $\ln N$: 4.61, 5.35, 5.97, 6.71, 7.38 → nearly linear with slope ≈ 0.70 → $N \approx 100e^{0.70t}$ (doubling about every hour).
+
+**Example 3 (power law).** Animal mass $M$ vs metabolic rate $B$: log–log plot has slope ≈ 0.75 → $B \propto M^{0.75}$ (Kleiber's law).
+
+**Example 4 (code).**
+```python
+import numpy as np
+t = np.array([0, 1, 2, 3, 4]); N = np.array([100, 210, 390, 820, 1600])
+slope, intercept = np.polyfit(t, np.log(N), 1)
+print(round(slope, 3), round(np.exp(intercept), 1))   # 0.691 (close to ln 2 = 0.693), 101.5
+```
+Fitting a straight line to $(t, \ln N)$ gives the growth rate (slope) and $\ln a$ (intercept); exponentiating the intercept recovers $a$.
+
+## 5. Common mistakes
+- Deleting outliers without justification.
+- Forgetting to transform predictions back to the original scale.
+- Interpreting slopes of log models as ordinary unit changes (a slope in $\ln y$ is roughly a **percentage** change in $y$).
+
+## 6. Practice
+Q: What makes a point high-leverage?
+A: Its $x$-value is far from the other $x$-values.
+
+Q: What is an influential point?
+A: One whose removal noticeably changes the regression line.
+
+Q: Which transformation straightens exponential data?
+A: Take the log of $y$.
+
+Q: A log–log plot is a straight line with slope 2. Model?
+A: $y = ax^2$ (a power law).
+
+Q: In $\ln y = 1.2 + 0.05x$, what does 0.05 roughly mean?
+A: Each unit increase in $x$ multiplies $y$ by about $e^{0.05} \approx 1.05$ (≈5% increase)."
+3,TOPIC,Practice & review: Normal distribution and regression,Mixed problem set with worked answers,MUST,FALSE,"# Practice & review: Normal distribution and regression
+
+**How to use this:** 50 minutes; calculator or Python allowed.
+
+## Problems
+1. IQ scores $\sim N(100, 15)$. Use the empirical rule for the percent between 70 and 115.
+2. Same distribution: proportion above 120? IQ at the 99th percentile?
+3. A uniform density on $[2, 12]$: $P(4 < X < 7)$?
+4. Describe: points rise steeply then level off, tightly clustered, no outliers.
+5. Data: $x$ = 2, 4, 6, 8; $y$ = 3, 7, 8, 12. Find $r$, the regression line and $r^2$.
+6. Interpret: $\widehat{\text{rent}} = 4000 + 650 \times \text{rooms}$ (taka), $r^2 = 0.58$.
+7. A residual plot shows a fan shape. What does it mean?
+8. Population: 1000, 1500, 2250, 3375 at years 0–3. Which transformation makes it linear? Model?
+
+## Answers
+1. 70 is $-2\sigma$, 115 is $+1\sigma$ → $47.5\% + 34\% = 81.5\%$.
+2. $z = 1.33$ → $1 - 0.9088 \approx 0.091$; 99th percentile $= 100 + 2.326 \times 15 \approx 134.9$.
+3. $\frac{3}{10} = 0.3$.
+4. Strong, positive, nonlinear (curved) association with diminishing increases.
+5. $\bar{x} = 5$, $\bar{y} = 7.5$; $S_{xy} = (-3)(-4.5) + (-1)(-0.5) + (1)(0.5) + (3)(4.5) = 28$; $S_{xx} = 20$; $S_{yy} = 41$. $r = \frac{28}{\sqrt{820}} \approx 0.978$; $b = 1.4$, $a = 0.5$ → $\hat{y} = 0.5 + 1.4x$; $r^2 \approx 0.956$.
+6. Each extra room is associated with 650 taka more rent on average; 58% of the variation in rent is explained by the number of rooms. (The 4000 for 0 rooms isn't meaningful.)
+7. The variability of $y$ grows with $x$; predictions are less precise for larger $x$.
+8. Ratios are all 1.5 → log $y$ vs year is linear; $P = 1000(1.5)^t$.
+
+## Flashcards
+Q: Empirical rule?
+A: 68%, 95% and 99.7% within 1, 2 and 3 SDs.
+
+Q: Regression slope from $r$?
+A: $b = r\frac{s_y}{s_x}$.
+
+Q: What does $r^2$ measure?
+A: The fraction of variation in $y$ explained by the linear model.
+
+Q: What should a good residual plot look like?
+A: Random scatter around zero with no pattern."
+1,MODULE,Phase 3 — Collecting Data: Sampling and Experiments (Core),"Sampling methods, bias, observational studies vs experiments, confounding, experimental design and A/B tests",SHOULD,,"# Phase 3: Collecting data: sampling and experiments
+
+No amount of clever analysis can rescue badly collected data (""garbage in, garbage out""). This phase covers how to choose a sample that represents a population, how bias creeps in, and how to design experiments that can actually show cause and effect, including the A/B tests run by every major website."
+2,MODULE,Sampling and study design,"Sampling methods, bias, observational studies, experiments",SHOULD,,How the data were collected decides what conclusions are allowed.
+3,TOPIC,Sampling methods,"Simple random, stratified, cluster, systematic and convenience samples",SHOULD,FALSE,"# Sampling methods
+
+## 1. What it covers
+- Why we sample instead of measuring everyone (a census).
+- **Simple random sampling (SRS)**, **stratified**, **cluster**, **systematic** sampling.
+- **Convenience** and **voluntary response** samples (and why they're bad).
+- Random sampling in code.
+
+## 2. Where it is used
+- **Polling and market research:** surveying 1000 people to estimate national opinion.
+- **Quality control:** testing a sample of items from a production line.
+- **Data science:** sampling huge tables (`df.sample()`), stratified train/test splits (`train_test_split(stratify=y)`).
+- **Auditing:** checking a random sample of transactions.
+
+## 3. What it means
+Measuring a whole population is often impossible or too expensive, so we measure a **sample**. To trust it, the sample must represent the population, and **randomness** is the best tool for that.
+- **SRS:** every group of $n$ individuals is equally likely to be chosen (names from a hat).
+- **Stratified:** split the population into groups (strata) that differ in an important way (e.g. urban/rural), then take an SRS from **each**. Guarantees every group is represented and often gives more precise estimates.
+- **Cluster:** split into groups that are each like a mini-population (e.g. city blocks), randomly pick **whole clusters**. Cheaper, less precise.
+- **Systematic:** pick every $k$th individual from a list after a random start.
+- **Convenience** (whoever is easy to reach) and **voluntary response** (people choose to respond, like online polls) are usually **biased**.
+
+Think of tasting soup: stir it well (randomise) and one spoonful tells you about the whole pot. A spoonful from the unstirred top doesn't.
+
+## 4. Formula & worked example
+**Example 1.** A university with 60% science and 40% arts students wants a sample of 200, guaranteeing both faculties are represented proportionally.
+- Stratified: random 120 science + 80 arts students.
+
+**Example 2.** An NGO surveys households in 500 villages. It randomly picks 25 villages and interviews every household in them → cluster sampling.
+
+**Example 3.** A factory tests every 50th item after a random start between 1 and 50 → systematic sampling.
+
+**Example 4.** A news website asks readers to vote on a policy → voluntary response; the results reflect only people motivated to respond.
+
+**Example 5 (code).**
+```python
+import pandas as pd
+from sklearn.model_selection import train_test_split
+df = pd.DataFrame({""faculty"": [""sci""]*600 + [""arts""]*400, ""score"": range(1000)})
+srs = df.sample(n=200, random_state=1)                         # simple random sample
+strat = df.groupby(""faculty"", group_keys=False).sample(frac=0.2, random_state=1)
+print(srs.faculty.value_counts(), strat.faculty.value_counts())
+train, test = train_test_split(df, test_size=0.2, stratify=df.faculty, random_state=1)
+```
+`df.sample` draws an SRS; sampling 20% within each faculty gives a stratified sample (exactly 120 and 80). `stratify=` in `train_test_split` keeps class proportions equal in the training and test sets, which matters for imbalanced data.
+
+## 5. Common mistakes
+- Confusing stratified (sample **within** every group) with cluster (sample **whole** groups).
+- Thinking a large sample fixes a biased method (a biased sample of 1 million is still biased).
+- Using convenience samples for conclusions about a population.
+
+## 6. Practice
+Q: Difference between stratified and cluster sampling?
+A: Stratified samples individuals from every group; cluster samples entire randomly chosen groups.
+
+Q: Why is a voluntary online poll unreliable?
+A: People who choose to respond often have strong opinions (voluntary response bias).
+
+Q: Every 10th customer through the door is surveyed. Method?
+A: Systematic sampling (random if the start is random).
+
+Q: Does a bigger sample fix sampling bias?
+A: No.
+
+Q: Which sklearn option keeps class proportions in a split?
+A: `stratify=`."
+3,TOPIC,Bias in sampling and surveys,"Undercoverage, nonresponse, response bias, question wording, selection and survivorship bias",SHOULD,FALSE,"# Bias in sampling and surveys
+
+## 1. What it covers
+- **Bias**: systematic error in one direction.
+- **Undercoverage**, **nonresponse**, **response bias**, **question wording** bias.
+- **Selection** and **survivorship** bias in data analysis.
+
+## 2. Where it is used
+- **Polling:** famous failures (the 1936 Literary Digest poll predicted the wrong US president from a sample of 2.4 million biased responses).
+- **Machine learning:** biased training data produces biased models (e.g. face recognition trained mostly on one group).
+- **Product analytics:** surveying only active users misses why others left.
+- **Investing:** ""average fund returns"" ignore funds that closed (survivorship bias).
+
+## 3. What it means
+**Bias** means the method tends to give answers that are wrong in the same direction every time, unlike random error, which averages out.
+- **Undercoverage:** some groups can't be selected (a phone survey misses people without phones).
+- **Nonresponse:** chosen people don't respond, and non-responders differ from responders.
+- **Response bias:** people answer untruthfully (about income, voting, health habits) or to please the interviewer.
+- **Wording:** ""Don't you agree that ...?"" leads respondents.
+- **Survivorship bias:** analysing only the ""survivors"". In WWII, planes returning with bullet holes in the wings led some to suggest armouring the wings; the statistician Abraham Wald pointed out that planes hit elsewhere (engines) didn't return, so those areas needed armour.
+
+## 4. Formula & worked example
+**Example 1.** A survey about internet use is done online → undercoverage of people without internet; it overestimates usage.
+
+**Example 2.** ""Do you support the reckless plan to raise taxes?"" → loaded wording. Neutral: ""Do you support or oppose the plan to raise taxes?""
+
+**Example 3.** Only 15% of mailed surveys come back → nonresponse bias likely (busy or uninterested people are missing).
+
+**Example 4 (survivorship).** ""Successful startup founders dropped out of university, so dropping out leads to success"" → ignores the many dropouts whose startups failed.
+
+**Example 5 (ML).** A loan-approval model is trained only on past **approved** applicants (we never observed whether rejected ones would have repaid) → selection bias in the training data.
+
+## 5. Common mistakes
+- Treating bias like random error that a bigger sample will cancel.
+- Ignoring who didn't respond.
+- Drawing conclusions from only the cases that ""made it"".
+
+## 6. Practice
+Q: What is bias in statistics?
+A: Systematic error that pushes results consistently in one direction.
+
+Q: A landline phone poll misses younger people. Type of bias?
+A: Undercoverage.
+
+Q: People under-report how much junk food they eat. Type of bias?
+A: Response bias.
+
+Q: Give an example of survivorship bias.
+A: Judging investment funds by the returns of funds still operating, ignoring closed ones.
+
+Q: Does a larger sample remove bias?
+A: No; it only reduces random variation."
+3,TOPIC,Observational studies vs experiments,"Imposing treatments, confounding variables, why only experiments show causation",SHOULD,FALSE,"# Observational studies vs experiments
+
+## 1. What it covers
+- **Observational studies** (observe without intervening) vs **experiments** (impose a treatment).
+- **Confounding variables**.
+- Why randomised experiments can show **causation** and observational studies usually can't.
+
+## 2. Where it is used
+- **Medicine:** randomised controlled trials (RCTs) decide which drugs are approved.
+- **Tech companies:** A/B tests decide which features ship.
+- **Economics and public policy:** natural experiments and observational data (with caution).
+- **Reading the news critically:** ""Coffee drinkers live longer"" is usually from observational data.
+
+## 3. What it means
+- **Observational study:** researchers measure what already happens (people who choose to drink coffee vs those who don't).
+- **Experiment:** researchers **assign** treatments (randomly decide who drinks coffee).
+
+**Confounding:** in observational studies, the groups may differ in other ways. Coffee drinkers might also be wealthier or exercise more; any of these could explain the difference. Such variables are **confounders**: their effects are mixed up with the treatment's.
+
+**Random assignment** solves this: with randomisation, other factors are spread roughly evenly across groups, so the only systematic difference is the treatment. That's why well-designed experiments can establish cause and effect.
+
+## 4. Formula & worked example
+**Example 1.** A study finds people who use a fitness app lose more weight. Observational or experiment? → Observational (people chose the app). Possible confounder: motivation.
+
+**Example 2.** Researchers randomly assign 200 volunteers to use the app or not for 3 months → experiment; a difference in weight loss can be attributed to the app.
+
+**Example 3.** Students who sit at the front get better grades. Can you conclude sitting at the front causes better grades? No: more motivated students may choose the front seats.
+
+**Example 4 (ethics).** You can't randomly assign people to smoke, so the smoking–cancer link was established through many careful observational studies plus biological evidence.
+
+## 5. Common mistakes
+- Concluding causation from observational data.
+- Calling a study an experiment because it collected data carefully (the key is **assigning** treatments).
+- Ignoring possible confounders.
+
+## 6. Practice
+Q: What makes a study an experiment?
+A: Researchers deliberately assign treatments to subjects.
+
+Q: Define a confounding variable.
+A: A variable associated with both the treatment and the outcome, so their effects can't be separated.
+
+Q: Why does random assignment allow causal conclusions?
+A: It balances other variables across groups, so the treatment is the only systematic difference.
+
+Q: ""Children who eat breakfast score higher."" Study type?
+A: Observational.
+
+Q: When must observational studies be used?
+A: When an experiment would be unethical or impossible."
+3,TOPIC,Designing experiments and A/B tests,"Control groups, randomisation, replication, blinding, placebos, blocking, matched pairs, A/B testing",SHOULD,FALSE,"# Designing experiments and A/B tests
+
+## 1. What it covers
+- Principles: **control**, **randomisation**, **replication**.
+- Control groups, **placebos**, **blinding** (single and double).
+- **Blocking** and **matched-pairs** designs.
+- **A/B testing** in software products.
+
+## 2. Where it is used
+- **Tech:** A/B testing button colours, prices, recommendation algorithms, email subject lines.
+- **Medicine:** double-blind randomised controlled trials.
+- **Agriculture:** comparing fertilisers on blocks of similar soil.
+- **Manufacturing:** testing process changes.
+
+## 3. What it means
+**Three principles:**
+- **Control:** keep other variables the same and include a **control group** (no treatment or the current version) for comparison.
+- **Randomisation:** assign subjects to groups by chance.
+- **Replication:** use enough subjects so that chance differences average out.
+
+**Placebo:** a fake treatment, because people often improve just from believing they're treated. **Blinding:** subjects (single-blind) and also evaluators (double-blind) don't know who got what.
+
+**Blocking:** group similar subjects first (e.g. by age, or by mobile vs desktop users), then randomise **within** each block. This removes known variation and makes the comparison more precise.
+
+**Matched pairs:** each subject gets both treatments in random order (or pairs of similar subjects are split).
+
+**A/B testing:** randomly show users version A (control) or B (variant), measure a metric (conversion rate), and use a hypothesis test (Phase 6) to decide whether the difference is real.
+
+## 4. Formula & worked example
+**Example 1 (design).** Test whether a new checkout page increases purchases.
+- Randomly assign each visitor to the old (A) or new (B) page; same time period; measure the purchase rate in each group; decide in advance how many visitors to collect (sample size).
+
+**Example 2 (blocking).** Mobile and desktop users behave differently. Block by device and randomise within each block, then compare A vs B within devices.
+
+**Example 3 (double-blind).** A headache drug trial: neither patients nor doctors know who gets the drug or the placebo; a third party holds the code.
+
+**Example 4 (matched pairs).** Comparing two keyboards' typing speed: each person types on both, in random order; analyse the differences.
+
+**Example 5 (code: random assignment).**
+```python
+import hashlib
+def bucket(user_id: str, experiment: str = ""checkout_v2"") -> str:
+    h = int(hashlib.md5(f""{experiment}:{user_id}"".encode()).hexdigest(), 16)
+    return ""B"" if h % 2 else ""A""          # stable 50/50 split
+print([bucket(u) for u in [""u1"", ""u2"", ""u3"", ""u4""]])
+```
+Hashing the user ID gives each user a random-looking but **consistent** assignment: the same user always sees the same version, which real A/B testing systems need.
+
+## 5. Common mistakes
+- No control group (you can't tell whether the change or something else caused the effect).
+- Letting users choose their version (self-selection bias).
+- Stopping an A/B test as soon as it ""looks significant"" (inflates false positives; see p-hacking in Phase 6).
+
+## 6. Practice
+Q: Three principles of experimental design?
+A: Control, randomisation, replication.
+
+Q: What is a double-blind experiment?
+A: Neither the subjects nor those measuring outcomes know who received which treatment.
+
+Q: Why block by device type in an A/B test?
+A: To remove variation due to device and compare versions more precisely.
+
+Q: What is a placebo for?
+A: To separate the treatment's real effect from the effect of believing you're treated.
+
+Q: Why use hashing for A/B assignment?
+A: It gives a random but consistent split, so each user always sees the same version."
+3,TOPIC,Practice & review: Sampling and experiments,Mixed problem set with worked answers,SHOULD,FALSE,"# Practice & review: Sampling and experiments
+
+**How to use this:** 30 minutes. Write full sentences.
+
+## Problems
+1. A city council wants residents' opinions on a new bus route. Describe a stratified sample and say why it may be better than an SRS.
+2. Identify the sampling method: (a) choose 5 random schools and survey all their teachers; (b) survey shoppers at a mall entrance.
+3. A survey asks ""Wouldn't you agree that the excellent new park is a good use of money?"" Identify the problem and rewrite it.
+4. An article says ""People who own dogs have lower blood pressure."" Is this from an experiment? Name a possible confounder.
+5. Design an experiment to test whether a new study app improves exam scores.
+6. Why might a company's survey of current customers overestimate satisfaction?
+
+## Answers
+1. Divide residents into strata (e.g. by neighbourhood along/away from the route, or by age group) and take an SRS within each; it guarantees each group's view is represented and can give more precise estimates.
+2. (a) Cluster sampling; (b) convenience sampling (likely biased).
+3. Leading/loaded wording. ""Do you support or oppose spending on the new park?""
+4. Likely observational; confounder: dog owners may walk more (exercise) or have different lifestyles.
+5. Recruit students, randomly assign half to use the app and half to the usual method (control) for a fixed period, keep other conditions similar, possibly block by prior grades, then compare mean exam scores.
+6. Dissatisfied customers have already left (survivorship bias), so current customers are the satisfied ones.
+
+## Flashcards
+Q: Stratified sampling?
+A: Divide into similar groups (strata) and take an SRS from each.
+
+Q: Confounding?
+A: When another variable's effect is mixed up with the treatment's effect.
+
+Q: Only design that can show causation?
+A: A randomised controlled experiment.
+
+Q: Survivorship bias?
+A: Drawing conclusions only from cases that ""survived"" a selection process."
+1,MODULE,Phase 4 — Probability (Core),"Probability rules, counting, conditional probability, independence, Bayes' theorem, simulation",MUST,,"# Phase 4: Probability
+
+Probability measures uncertainty with a number from 0 (impossible) to 1 (certain). It underlies statistics, games, insurance, finance, machine learning (classifiers output probabilities; Naive Bayes, language models), cryptography and reliability engineering."
+2,MODULE,Probability rules and counting,"Basic rules, complement and addition, counting principle, permutations, combinations",MUST,,Most probability questions reduce to counting outcomes or combining simple rules.
+3,TOPIC,"Probability basics: sample spaces, theoretical and experimental probability","Outcomes, events, equally likely outcomes, relative frequency, law of large numbers",MUST,FALSE,"# Probability basics: sample spaces, theoretical and experimental probability
+
+## 1. What it covers
+- **Sample space** $S$, **outcomes** and **events**.
+- **Theoretical** probability for equally likely outcomes.
+- **Experimental** probability (relative frequency).
+- The **law of large numbers**.
+
+## 2. Where it is used
+- **Games and gambling:** dice, cards, lotteries (and why the house always wins in the long run).
+- **Insurance:** premiums are based on long-run frequencies of claims.
+- **Weather forecasting:** ""70% chance of rain"".
+- **Software:** randomised algorithms, load balancing, simulations.
+
+## 3. What it means
+- **Sample space:** the list of all possible outcomes. Rolling a die: $\{1, 2, 3, 4, 5, 6\}$.
+- **Event:** a set of outcomes, e.g. ""even"" $= \{2, 4, 6\}$.
+- **Theoretical probability** (equally likely outcomes): $P(A) = \frac{\text{favourable outcomes}}{\text{total outcomes}}$.
+- **Experimental probability:** $\frac{\text{times A happened}}{\text{number of trials}}$.
+
+**Law of large numbers:** as the number of trials grows, the experimental probability gets closer to the true probability. Flip a coin 10 times and you might get 7 heads; flip it 10 000 times and you'll get very close to 50%. It says nothing about short runs: after 5 heads in a row, tails is **not** ""due"" (the **gambler's fallacy**).
+
+## 4. Formula & worked example
+$$
+P(A) = \frac{\lvert A\rvert}{\lvert S\rvert} \ (\text{equally likely}) \qquad 0 \le P(A) \le 1 \qquad P(S) = 1
+$$
+
+**Example 1.** Probability of rolling a number greater than 4: $\frac{2}{6} = \frac{1}{3}$.
+
+**Example 2 (two dice).** Sample space has 36 outcomes. $P(\text{sum} = 7)$: (1,6), (2,5), (3,4), (4,3), (5,2), (6,1) → $\frac{6}{36} = \frac{1}{6}$.
+
+**Example 3.** A card from a 52-card deck: $P(\text{heart}) = \frac{13}{52} = \frac{1}{4}$; $P(\text{king}) = \frac{4}{52} = \frac{1}{13}$.
+
+**Example 4 (experimental).** A machine produced 12 defective parts out of 800 → estimated defect probability $0.015$.
+
+**Example 5 (code: law of large numbers).**
+```python
+import random
+for n in (10, 100, 10_000, 1_000_000):
+    heads = sum(random.random() < 0.5 for _ in range(n))
+    print(n, heads / n)
+# e.g. 10 0.7 / 100 0.46 / 10000 0.4987 / 1000000 0.50021
+```
+Each `random.random() < 0.5` is a simulated fair coin flip. The proportion of heads wanders for small $n$ and settles near 0.5 as $n$ grows.
+
+## 5. Common mistakes
+- Assuming outcomes are equally likely when they aren't (sums of two dice: 7 is more likely than 2).
+- The gambler's fallacy (""tails is due"").
+- Probabilities above 1 or below 0 (a sign of an error).
+
+## 6. Practice
+Q: $P(\text{rolling a prime on a die})$?
+A: $\{2, 3, 5\}$ → $\frac{1}{2}$.
+
+Q: Two coins: $P(\text{at least one head})$?
+A: $\frac{3}{4}$.
+
+Q: Two dice: $P(\text{sum} = 2)$?
+A: $\frac{1}{36}$.
+
+Q: State the law of large numbers.
+A: As trials increase, the relative frequency approaches the true probability.
+
+Q: A coin landed heads 6 times in a row. Probability of heads next?
+A: $\frac{1}{2}$ (independent flips)."
+3,TOPIC,Complement and addition rules,"P(not A) = 1 − P(A), mutually exclusive events, P(A or B) = P(A) + P(B) − P(A and B), Venn diagrams",MUST,FALSE,"# Complement and addition rules
+
+## 1. What it covers
+- The **complement rule**: $P(A^c) = 1 - P(A)$.
+- **Mutually exclusive** (disjoint) events.
+- The **general addition rule** for $P(A \text{ or } B)$.
+- **Venn diagrams**.
+
+## 2. Where it is used
+- **Reliability:** $P(\text{at least one failure}) = 1 - P(\text{no failures})$.
+- **Security:** probability a password is cracked by at least one of several attacks.
+- **Marketing:** customers who use product A or B (avoid double counting).
+- **Databases:** `COUNT` of rows matching A OR B uses inclusion–exclusion.
+
+## 3. What it means
+- **Complement:** ""not A"" happens exactly when A doesn't. Often it's easier to compute the complement, especially for ""at least one"" questions.
+- **Mutually exclusive:** A and B can't both happen (rolling a 2 and a 5 on one die). Then $P(A \text{ or } B) = P(A) + P(B)$.
+- **General addition rule:** if they can overlap, adding counts the overlap twice, so subtract it once. A Venn diagram shows why.
+
+## 4. Formula & worked example
+$$
+P(A^c) = 1 - P(A) \qquad P(A \cup B) = P(A) + P(B) - P(A \cap B)
+$$
+
+**Example 1.** $P(\text{rain}) = 0.3$ → $P(\text{no rain}) = 0.7$.
+
+**Example 2 (at least one).** Three independent servers each fail with probability 0.1 per day. $P(\text{at least one fails})$?
+- $1 - 0.9^3 = 1 - 0.729 = 0.271$
+
+**Example 3 (overlap).** In a class, 60% study maths, 45% study physics, 25% study both. $P(\text{maths or physics})$?
+- $0.60 + 0.45 - 0.25 = 0.80$
+
+**Example 4 (cards).** $P(\text{heart or king}) = \frac{13}{52} + \frac{4}{52} - \frac{1}{52} = \frac{16}{52} = \frac{4}{13}$
+
+**Example 5 (birthday problem).** In a room of 23 people, $P(\text{at least two share a birthday})$?
+- $1 - \frac{365}{365}\cdot\frac{364}{365}\cdots\frac{343}{365} \approx 1 - 0.493 = 0.507$ (surprisingly over 50%; the same maths explains hash collisions in computing).
+
+## 5. Common mistakes
+- Adding probabilities of overlapping events without subtracting the overlap.
+- Computing ""at least one"" directly instead of using the complement.
+- Confusing mutually exclusive with independent (they're different ideas).
+
+## 6. Practice
+Q: $P(A) = 0.35$. $P(\text{not } A)$?
+A: $0.65$.
+
+Q: $P(A) = 0.5$, $P(B) = 0.4$, $P(A \cap B) = 0.2$. $P(A \cup B)$?
+A: $0.7$.
+
+Q: Are ""roll a 1"" and ""roll an even number"" mutually exclusive?
+A: Yes.
+
+Q: $P(\text{at least one six in 4 rolls})$?
+A: $1 - \left(\frac{5}{6}\right)^4 \approx 0.518$.
+
+Q: Why subtract $P(A \cap B)$ in the addition rule?
+A: The overlap is counted twice when adding $P(A)$ and $P(B)$."
+3,TOPIC,Counting principle and permutations,"Multiplication rule, factorials, arrangements, permutations nPr",MUST,FALSE,"# Counting principle and permutations
+
+## 1. What it covers
+- The **multiplication (counting) principle**.
+- **Factorials** $n!$.
+- **Permutations**: ordered arrangements, $_nP_r = \frac{n!}{(n - r)!}$.
+- Arrangements with repetition and with identical items.
+
+## 2. Where it is used
+- **Security:** number of possible passwords or PINs (and how long brute force takes).
+- **Scheduling and logistics:** orderings of tasks or delivery routes (the travelling salesman problem has $n!$ routes).
+- **Computer science:** permutations in algorithms, testing all orderings.
+- **Probability:** counting outcomes for equally likely events.
+
+## 3. What it means
+**Multiplication principle:** if one choice can be made in $a$ ways and a second in $b$ ways, together there are $a \times b$ ways. 3 shirts and 4 trousers give $3 \times 4 = 12$ outfits.
+
+**Permutations** count **ordered** arrangements (order matters: ABC ≠ BAC).
+- All $n$ items: $n!$ ($5! = 120$).
+- Choose $r$ of $n$ in order: $n \times (n - 1) \times \cdots$ ($r$ factors) $= \frac{n!}{(n - r)!}$.
+- With identical items: divide by the factorials of the repeats (arrangements of ""BANANA"" $= \frac{6!}{3!\,2!}$).
+
+Factorials grow incredibly fast: $20! \approx 2.4 \times 10^{18}$, which is why brute-forcing all orderings is hopeless for large $n$.
+
+## 4. Formula & worked example
+$$
+n! = n(n - 1)\cdots 1,\ 0! = 1 \qquad {}_nP_r = \frac{n!}{(n - r)!}
+$$
+
+**Example 1 (PIN).** 4-digit PIN (digits can repeat): $10^4 = 10\,000$. No repeats: $10 \times 9 \times 8 \times 7 = 5040$.
+
+**Example 2 (password).** 8 characters from 62 (a–z, A–Z, 0–9): $62^8 \approx 2.2 \times 10^{14}$. At $10^{10}$ guesses per second: about 6 hours. With 12 characters: $62^{12} \approx 3.2 \times 10^{21}$ → about 10 000 years.
+
+**Example 3.** 10 runners: number of ways to award gold, silver and bronze? → $_{10}P_3 = 720$.
+
+**Example 4.** Arrangements of the letters of ""LEVEL""? → $\frac{5!}{2!\,2!} = 30$ (two L's, two E's).
+
+**Example 5 (routes).** A delivery to 8 stops can be ordered in $8! = 40\,320$ ways; 15 stops in $1.3 \times 10^{12}$ ways (so route optimisers use heuristics).
+
+**Example 6 (code).**
+```python
+import math, itertools
+print(math.perm(10, 3), math.factorial(8))            # 720 40320
+print(list(itertools.permutations(""ABC"")))           # all 6 orderings
+```
+`math.perm(n, r)` computes $_nP_r$; `itertools.permutations` lists the actual arrangements (only feasible for small inputs).
+
+## 5. Common mistakes
+- Using permutations when order doesn't matter (use combinations; next topic).
+- Forgetting that $0! = 1$.
+- Allowing repeats when the problem doesn't (or vice versa).
+
+## 6. Practice
+Q: $5!$?
+A: $120$.
+
+Q: $_7P_2$?
+A: $42$.
+
+Q: Number of 3-letter codes from 26 letters with repetition?
+A: $26^3 = 17\,576$.
+
+Q: Ways to seat 6 people in a row?
+A: $720$.
+
+Q: Arrangements of ""MISSISSIPPI""?
+A: $\frac{11!}{4!\,4!\,2!} = 34\,650$."
+3,TOPIC,Combinations and probability with counting,"nCr, choosing without order, committees, card hands, lotteries",MUST,FALSE,"# Combinations and probability with counting
+
+## 1. What it covers
+- **Combinations**: unordered selections, $\binom{n}{r} = \frac{n!}{r!(n - r)!}$.
+- Permutations vs combinations: does order matter?
+- Probability = favourable selections ÷ total selections (card hands, committees, lotteries, defective items).
+
+## 2. Where it is used
+- **Lotteries:** odds of winning.
+- **Quality control:** probability a sample of items contains defects (hypergeometric).
+- **Machine learning:** number of feature subsets ($2^n$) or pairs ($\binom{n}{2}$); cross-validation splits.
+- **Networks:** number of possible connections between $n$ nodes: $\binom{n}{2}$.
+
+## 3. What it means
+A **combination** counts selections where **order doesn't matter**: choosing a committee of 3 from 10 people. Every group of 3 can be ordered in $3! = 6$ ways, and the permutation count lists each group 6 times, so divide:
+$$
+\binom{10}{3} = \frac{_{10}P_3}{3!} = \frac{720}{6} = 120
+$$
+
+**Order matters?** Race positions, passwords, seating → permutations. Teams, committees, card hands, lottery numbers → combinations.
+
+**Counting probability:** $P = \frac{\text{number of favourable selections}}{\text{number of possible selections}}$, often using combinations for both.
+
+## 4. Formula & worked example
+$$
+\binom{n}{r} = \frac{n!}{r!\,(n - r)!} \qquad \binom{n}{r} = \binom{n}{n - r}
+$$
+
+**Example 1.** Choose 4 books from 9: $\binom{9}{4} = 126$.
+
+**Example 2 (lottery).** Pick 6 numbers from 49: $\binom{49}{6} = 13\,983\,816$ → $P(\text{jackpot}) \approx 7.2 \times 10^{-8}$.
+
+**Example 3 (committee).** A committee of 3 from 6 women and 4 men. $P(\text{exactly 2 women})$?
+- $\frac{\binom{6}{2}\binom{4}{1}}{\binom{10}{3}} = \frac{15 \times 4}{120} = 0.5$
+
+**Example 4 (cards).** $P(\text{a 5-card hand has all hearts})$: $\frac{\binom{13}{5}}{\binom{52}{5}} = \frac{1287}{2\,598\,960} \approx 0.000495$.
+
+**Example 5 (defects).** A box of 20 chips has 3 defective. You test 4 at random. $P(\text{none defective})$?
+- $\frac{\binom{17}{4}}{\binom{20}{4}} = \frac{2380}{4845} \approx 0.491$
+
+**Example 6 (network).** Possible direct links between 50 servers: $\binom{50}{2} = 1225$.
+
+## 5. Common mistakes
+- Using combinations when order matters (or the reverse).
+- Forgetting to multiply when choosing from several groups (Example 3).
+- Arithmetic errors with big factorials; cancel before multiplying.
+
+## 6. Practice
+Q: $\binom{8}{2}$?
+A: $28$.
+
+Q: Ways to choose a team of 5 from 12 players?
+A: $\binom{12}{5} = 792$.
+
+Q: Order matters or not: choosing a president and a secretary?
+A: Order matters (permutation).
+
+Q: $P(\text{two random cards are both aces})$?
+A: $\frac{\binom{4}{2}}{\binom{52}{2}} = \frac{6}{1326} \approx 0.0045$.
+
+Q: Why does $\binom{n}{r} = \binom{n}{n - r}$?
+A: Choosing $r$ items to include is the same as choosing $n - r$ to leave out."
+2,MODULE,"Conditional probability, independence and Bayes","Conditional probability, trees, independence, multiplication rule, Bayes' theorem, simulation",MUST,,How should the probability of an event change when you learn new information?
+3,TOPIC,Conditional probability and tree diagrams,"P(A given B) = P(A and B)/P(B), two-way tables, probability trees",MUST,FALSE,"# Conditional probability and tree diagrams
+
+## 1. What it covers
+- **Conditional probability** $P(A \mid B)$: the probability of A **given** that B happened.
+- Computing it from two-way tables and from the formula.
+- **Tree diagrams** for multi-stage processes.
+- The general multiplication rule $P(A \cap B) = P(A)P(B \mid A)$.
+
+## 2. Where it is used
+- **Medicine:** probability of disease given a positive test.
+- **Spam filters and classifiers:** $P(\text{spam} \mid \text{words in the email})$.
+- **Product analytics:** conversion rate **given** the user came from an ad.
+- **Reliability:** probability a system fails given a component has failed.
+- **Insurance:** risk given age, region, history.
+
+## 3. What it means
+$P(A \mid B)$ restricts attention to the cases where B happened: B becomes the new ""whole"". Of those, what fraction also have A?
+$$
+P(A \mid B) = \frac{P(A \cap B)}{P(B)}
+$$
+
+**Order matters:** $P(A \mid B) \ne P(B \mid A)$ in general. $P(\text{has a fever} \mid \text{has flu})$ is high, but $P(\text{has flu} \mid \text{has a fever})$ may be much lower (many things cause fevers).
+
+**Tree diagrams:** each branch shows a conditional probability. Multiply along a path to get the probability of that path; add paths for an event that can happen in several ways.
+
+## 4. Formula & worked example
+$$
+P(A \mid B) = \frac{P(A \cap B)}{P(B)} \qquad P(A \cap B) = P(A)\,P(B \mid A)
+$$
+
+**Example 1 (table).** Using the device table from Phase 1: $P(\text{bought} \mid \text{desktop}) = \frac{40}{400} = 0.10$, but $P(\text{desktop} \mid \text{bought}) = \frac{40}{76} \approx 0.53$.
+
+**Example 2 (cards, without replacement).** Two cards drawn. $P(\text{both aces}) = \frac{4}{52} \times \frac{3}{51} = \frac{1}{221}$.
+
+**Example 3 (tree).** 60% of a shop's laptops come from supplier X (2% defective) and 40% from Y (5% defective). $P(\text{defective})$?
+- Path X-defective: $0.6 \times 0.02 = 0.012$; path Y-defective: $0.4 \times 0.05 = 0.020$ → total $0.032$.
+
+**Example 4 (reverse).** Given a laptop is defective, $P(\text{from Y})$? → $\frac{0.020}{0.032} = 0.625$ (that's Bayes' theorem, next-but-one topic).
+
+**Example 5.** $P(A) = 0.5$, $P(B) = 0.4$, $P(A \cap B) = 0.1$ → $P(A \mid B) = 0.25$, $P(B \mid A) = 0.2$.
+
+## 5. Common mistakes
+- Confusing $P(A \mid B)$ with $P(B \mid A)$ (the ""prosecutor's fallacy"").
+- Dividing by the wrong total in a two-way table.
+- Forgetting that drawing **without replacement** changes the second probability.
+
+## 6. Practice
+Q: $P(A \cap B) = 0.12$, $P(B) = 0.3$. $P(A \mid B)$?
+A: $0.4$.
+
+Q: Two cards without replacement: $P(\text{both hearts})$?
+A: $\frac{13}{52} \times \frac{12}{51} = \frac{1}{17}$.
+
+Q: In a tree diagram, how do you get the probability of a path?
+A: Multiply the probabilities along its branches.
+
+Q: Is $P(\text{rain} \mid \text{clouds})$ the same as $P(\text{clouds} \mid \text{rain})$?
+A: No.
+
+Q: A bag has 3 red and 2 blue balls; draw two without replacement. $P(\text{red then blue})$?
+A: $\frac{3}{5} \times \frac{2}{4} = \frac{3}{10}$."
+3,TOPIC,Independence and the multiplication rule,"Independent events, P(A and B) = P(A)P(B), testing independence, independent vs mutually exclusive",MUST,FALSE,"# Independence and the multiplication rule
+
+## 1. What it covers
+- **Independent** events: knowing one doesn't change the probability of the other.
+- The multiplication rule $P(A \cap B) = P(A)P(B)$ for independent events.
+- **Testing** independence from data.
+- Independent vs mutually exclusive.
+
+## 2. Where it is used
+- **Reliability engineering:** systems with redundant parts (RAID, backup servers) assume independent failures.
+- **Security:** combining independent factors (two-factor authentication).
+- **Machine learning:** Naive Bayes assumes features are independent given the class.
+- **Risk:** the 2008 financial crisis was partly caused by wrongly assuming mortgage defaults were independent.
+
+## 3. What it means
+A and B are **independent** if $P(A \mid B) = P(A)$: learning B happened gives no information about A. Coin flips, separate dice and (ideally) separate machines are independent.
+
+Then $P(A \text{ and } B) = P(A) \times P(B)$.
+
+**Testing:** check whether $P(A \cap B) = P(A)P(B)$ (or whether $P(A \mid B) = P(A)$) in the data.
+
+**Independent ≠ mutually exclusive.** Mutually exclusive events (with positive probabilities) are actually **dependent**: if one happens, the other **can't**, which is very informative.
+
+**Series and parallel systems:**
+- **Series** (all parts must work): $P(\text{works}) = p_1p_2\cdots$.
+- **Parallel** (at least one must work): $P(\text{works}) = 1 - (1 - p_1)(1 - p_2)\cdots$.
+
+## 4. Formula & worked example
+$$
+A, B \text{ independent} \iff P(A \cap B) = P(A)\,P(B) \iff P(A \mid B) = P(A)
+$$
+
+**Example 1.** Two dice: $P(\text{both sixes}) = \frac{1}{6} \times \frac{1}{6} = \frac{1}{36}$.
+
+**Example 2 (test).** $P(A) = 0.4$, $P(B) = 0.5$, $P(A \cap B) = 0.2$ → $0.4 \times 0.5 = 0.2$ → independent.
+
+**Example 3 (test with data).** Of 1000 users, 300 use dark mode, 400 are on mobile, and 150 do both. $P(\text{dark}) \times P(\text{mobile}) = 0.3 \times 0.4 = 0.12 \ne 0.15$ → not independent (mobile users favour dark mode slightly more).
+
+**Example 4 (series vs parallel).** Each server is up 99% of the time, independently.
+- Two in series: $0.99^2 = 0.9801$ (98.01%).
+- Two in parallel (redundant): $1 - 0.01^2 = 0.9999$ (99.99%).
+
+**Example 5 (correlated failures).** If both servers share one power supply, failures aren't independent and the 99.99% figure is wrong. Real systems spread replicas across separate zones for this reason.
+
+## 5. Common mistakes
+- Multiplying probabilities of dependent events as if they were independent.
+- Thinking mutually exclusive events are independent.
+- Assuming independence in real systems without checking (shared causes).
+
+## 6. Practice
+Q: $P(A) = 0.3$, $P(B) = 0.6$, independent. $P(A \cap B)$?
+A: $0.18$.
+
+Q: $P(A) = 0.2$, $P(B) = 0.5$, $P(A \cap B) = 0.15$. Independent?
+A: No ($0.1 \ne 0.15$).
+
+Q: Three components in series, each 95% reliable. System reliability?
+A: $0.95^3 \approx 0.857$.
+
+Q: Two backups in parallel, each 90% reliable. System reliability?
+A: $1 - 0.1^2 = 0.99$.
+
+Q: Can two events with positive probability be both mutually exclusive and independent?
+A: No."
+3,TOPIC,Bayes' theorem,"Updating probabilities with evidence, base rates, false positives, spam filtering",MUST,FALSE,"# Bayes' theorem
+
+## 1. What it covers
+- **Bayes' theorem**: reversing a conditional probability.
+- **Prior**, **likelihood**, **posterior**.
+- The **base rate fallacy** and false positives in medical tests.
+- Naive Bayes spam filtering.
+
+## 2. Where it is used
+- **Medicine:** interpreting test results (most positives for a rare disease can be false).
+- **Spam filters:** classic email filters used Naive Bayes.
+- **Machine learning:** Bayesian inference, Naive Bayes classifiers, probabilistic models.
+- **Fraud detection and security alerts:** most alerts for rare events are false alarms.
+- **Search and rescue, A/B testing (Bayesian methods), self-driving perception.**
+
+## 3. What it means
+You often know $P(\text{evidence} \mid \text{cause})$ (a test's accuracy) but want $P(\text{cause} \mid \text{evidence})$ (do I have the disease, given a positive test?). Bayes' theorem converts one into the other:
+$$
+P(H \mid E) = \frac{P(E \mid H)\,P(H)}{P(E)}
+$$
+- **Prior** $P(H)$: belief before the evidence (the base rate).
+- **Likelihood** $P(E \mid H)$: how probable the evidence is if $H$ is true.
+- **Posterior** $P(H \mid E)$: updated belief.
+
+**The base rate matters enormously.** If a disease is rare, even an accurate test produces mostly false positives, because there are so many more healthy people to produce false alarms. Imagine 10 000 people to make it concrete.
+
+## 4. Formula & worked example
+$$
+P(H \mid E) = \frac{P(E \mid H)P(H)}{P(E \mid H)P(H) + P(E \mid H^c)P(H^c)}
+$$
+
+**Example 1 (medical test).** A disease affects 1% of people. The test detects 99% of cases (sensitivity) and has a 5% false positive rate. You test positive. $P(\text{disease})$?
+- $P(D \mid +) = \frac{0.99 \times 0.01}{0.99 \times 0.01 + 0.05 \times 0.99} = \frac{0.0099}{0.0099 + 0.0495} \approx 0.167$
+- Only about **17%**! In 10 000 people: 100 sick → 99 test positive; 9900 healthy → 495 false positives. Of 594 positives, only 99 are sick.
+
+**Example 2 (second test).** If you test positive again (independent test), use 0.167 as the new prior:
+- $\frac{0.99 \times 0.167}{0.99 \times 0.167 + 0.05 \times 0.833} \approx 0.80$
+
+**Example 3 (laptop suppliers from the previous topic).** $P(Y \mid \text{defective}) = \frac{0.05 \times 0.4}{0.032} = 0.625$.
+
+**Example 4 (spam).** 40% of email is spam. The word ""free"" appears in 30% of spam and 2% of normal email. $P(\text{spam} \mid \text{""free""})$?
+- $\frac{0.3 \times 0.4}{0.3 \times 0.4 + 0.02 \times 0.6} = \frac{0.12}{0.132} \approx 0.91$
+
+**Example 5 (code).**
+```python
+def bayes(prior, sensitivity, false_pos):
+    evidence = sensitivity * prior + false_pos * (1 - prior)
+    return sensitivity * prior / evidence
+p = bayes(0.01, 0.99, 0.05); print(round(p, 3))   # 0.167
+print(round(bayes(p, 0.99, 0.05), 3))             # 0.798  after a second positive test
+```
+The posterior from the first test becomes the prior for the second: that's how Bayesian updating works.
+
+## 5. Common mistakes
+- Ignoring the base rate (assuming a positive test means 99% chance of disease).
+- Confusing $P(E \mid H)$ with $P(H \mid E)$.
+- Forgetting the false-positive term in the denominator.
+
+## 6. Practice
+Q: State Bayes' theorem.
+A: $P(H \mid E) = \frac{P(E \mid H)P(H)}{P(E)}$.
+
+Q: What is the prior?
+A: The probability of the hypothesis before seeing the evidence.
+
+Q: Disease rate 2%, sensitivity 90%, false positive rate 10%. $P(\text{disease} \mid +)$?
+A: $\frac{0.018}{0.018 + 0.098} \approx 0.155$.
+
+Q: Why do rare-event alarms produce many false positives?
+A: Far more negatives exist, so even a small false-positive rate creates many false alarms.
+
+Q: In Naive Bayes, what does ""naive"" refer to?
+A: Assuming the features are independent given the class."
+3,TOPIC,Simulation and Monte Carlo methods,"Random number generation, estimating probabilities and π by simulation, expected values",MUST,FALSE,"# Simulation and Monte Carlo methods
+
+## 1. What it covers
+- Using random numbers to **simulate** chance processes.
+- Estimating probabilities by repeating a simulation many times.
+- **Monte Carlo** estimation (e.g. of $\pi$ or of an area).
+- How accuracy grows with the number of simulations.
+
+## 2. Where it is used
+- **Finance:** pricing options and estimating portfolio risk (Value at Risk).
+- **Engineering:** reliability of complex systems; tolerance analysis.
+- **Games and AI:** Monte Carlo tree search (used in AlphaGo).
+- **Physics and graphics:** path tracing for photorealistic rendering, particle simulations.
+- **Project management:** probability of finishing by a deadline.
+
+## 3. What it means
+When a probability is hard to calculate exactly, **simulate the process many times** and count how often the event happens. By the law of large numbers, the relative frequency approaches the true probability.
+
+**Estimating $\pi$:** throw random points into a 1 × 1 square. The fraction that lands inside the quarter circle of radius 1 approximates its area $\frac{\pi}{4}$.
+
+**Accuracy:** the error shrinks like $\frac{1}{\sqrt{n}}$: 100 times more simulations for one extra digit of accuracy.
+
+## 4. Formula & worked example
+$$
+\hat{p} = \frac{\text{number of simulated successes}}{n} \qquad \text{typical error} \approx \sqrt{\frac{p(1 - p)}{n}}
+$$
+
+**Example 1 (π).**
+```python
+import random
+n = 1_000_000
+inside = sum(random.random()**2 + random.random()**2 <= 1 for _ in range(n))
+print(4 * inside / n)      # ≈ 3.141...
+```
+Each point $(x, y)$ with $x^2 + y^2 \le 1$ lies inside the quarter circle; multiplying the fraction by 4 estimates $\pi$. With a million points the error is about 0.002.
+
+**Example 2 (birthday problem).**
+```python
+import random
+def shared(k):
+    days = [random.randrange(365) for _ in range(k)]
+    return len(set(days)) < k            # a repeat means two people share a birthday
+print(sum(shared(23) for _ in range(100_000)) / 100_000)   # ≈ 0.507
+```
+The simulation agrees with the exact calculation from the addition-rule topic.
+
+**Example 3 (project deadline).** Three tasks take uniformly 2–5, 3–6 and 1–4 days. $P(\text{total} \le 12)$?
+```python
+import random
+n = 100_000
+ok = sum(random.uniform(2,5) + random.uniform(3,6) + random.uniform(1,4) <= 12 for _ in range(n))
+print(ok / n)              # ≈ 0.83
+```
+Summing random task times and counting how often the total fits the deadline answers a question that's awkward to solve with formulas.
+
+## 5. Common mistakes
+- Too few simulations (results vary wildly).
+- Not setting a random seed when results must be reproducible (`random.seed(42)`).
+- Modelling the process wrongly (e.g. sampling with replacement when it should be without).
+
+## 6. Practice
+Q: What principle makes Monte Carlo estimates work?
+A: The law of large numbers.
+
+Q: How does the error of a Monte Carlo estimate shrink with $n$?
+A: Proportional to $\frac{1}{\sqrt{n}}$.
+
+Q: How do you estimate $\pi$ with random points?
+A: The fraction in a quarter circle ≈ $\frac{\pi}{4}$; multiply by 4.
+
+Q: Why set a random seed?
+A: To make the simulation reproducible.
+
+Q: To gain one more decimal digit of accuracy, how many more simulations?
+A: About 100 times more."
+3,TOPIC,Practice & review: Probability,Mixed problem set with worked answers,MUST,FALSE,"# Practice & review: Probability
+
+**How to use this:** 50 minutes; calculator allowed.
+
+## Problems
+1. Two dice: $P(\text{sum} \ge 10)$.
+2. $P(A) = 0.45$, $P(B) = 0.35$, $P(A \cup B) = 0.6$. Find $P(A \cap B)$ and $P(A \mid B)$. Independent?
+3. How many 6-character passwords using lowercase letters and digits (repeats allowed)? Without repeats?
+4. A committee of 4 is chosen from 7 engineers and 5 designers. $P(\text{2 of each})$?
+5. A box has 5 red, 3 green and 2 blue balls; draw 2 without replacement. $P(\text{same colour})$?
+6. A component works with probability 0.9. How many in parallel are needed for at least 99.9% reliability?
+7. 3% of transactions are fraudulent. A detector flags 95% of fraud and 4% of legitimate transactions. $P(\text{fraud} \mid \text{flagged})$?
+8. Explain how you would estimate by simulation the probability of getting at least 3 heads in a row in 10 coin flips.
+
+## Answers
+1. (4,6), (5,5), (6,4), (5,6), (6,5), (6,6) → $\frac{6}{36} = \frac{1}{6}$.
+2. $P(A \cap B) = 0.45 + 0.35 - 0.6 = 0.2$; $P(A \mid B) = \frac{0.2}{0.35} \approx 0.571$; $P(A)P(B) = 0.1575 \ne 0.2$ → not independent.
+3. $36^6 = 2\,176\,782\,336$; without repeats $_{36}P_6 = 1\,402\,410\,240$.
+4. $\frac{\binom{7}{2}\binom{5}{2}}{\binom{12}{4}} = \frac{21 \times 10}{495} \approx 0.424$.
+5. $\frac{\binom{5}{2} + \binom{3}{2} + \binom{2}{2}}{\binom{10}{2}} = \frac{10 + 3 + 1}{45} = \frac{14}{45} \approx 0.311$.
+6. $1 - 0.1^n \ge 0.999$ → $0.1^n \le 0.001$ → $n = 3$.
+7. $\frac{0.95 \times 0.03}{0.95 \times 0.03 + 0.04 \times 0.97} = \frac{0.0285}{0.0673} \approx 0.42$.
+8. Simulate 10 random flips, check for a run of 3 heads, repeat 100 000 times, and report the fraction of runs with such a streak (≈ 0.508).
+
+## Flashcards
+Q: General addition rule?
+A: $P(A \cup B) = P(A) + P(B) - P(A \cap B)$.
+
+Q: Conditional probability formula?
+A: $P(A \mid B) = \frac{P(A \cap B)}{P(B)}$.
+
+Q: Permutations vs combinations?
+A: Permutations: order matters; combinations: order doesn't.
+
+Q: Why can a positive result for a rare disease be unreliable?
+A: The base rate is low, so false positives outnumber true positives."
+1,MODULE,Phase 5 — Random Variables and Sampling Distributions (Core),"Discrete random variables, expected value, variance, combining variables, binomial, geometric and Poisson, continuous variables, sampling distributions, central limit theorem",MUST,,"# Phase 5: Random variables and sampling distributions
+
+A **random variable** puts a number on a chance outcome: the number of defective items, the waiting time for a bus, tomorrow's sales. Its **distribution** says which values are likely. The key bridge to inference is the **sampling distribution**: how a statistic like the sample mean varies from sample to sample. The **central limit theorem** says this is approximately normal, which is why normal-based methods work almost everywhere."
+2,MODULE,Random variables and distributions,"Discrete and continuous random variables, expected value, variance, binomial, geometric, Poisson",MUST,,A random variable turns uncertainty into numbers you can calculate with.
+3,TOPIC,Discrete random variables and probability distributions,"Definition, probability tables, valid distributions, cumulative probabilities",MUST,FALSE,"# Discrete random variables and probability distributions
+
+## 1. What it covers
+- **Random variables** $X$: numerical outcomes of a chance process.
+- **Discrete** vs **continuous** random variables.
+- **Probability distributions** as tables or formulas; validity rules.
+- Cumulative probabilities $P(X \le x)$.
+
+## 2. Where it is used
+- **Operations:** number of customers per hour, number of defects per batch.
+- **Software reliability:** number of failures per day; number of retries until success.
+- **Insurance:** number of claims per policy.
+- **Games:** outcomes and payouts.
+
+## 3. What it means
+A random variable assigns a number to each outcome. ""Number of heads in 3 flips"" can be 0, 1, 2 or 3.
+- **Discrete:** countable values (counts).
+- **Continuous:** any value in an interval (times, weights); handled with density curves (later topic).
+
+A **probability distribution** lists each value with its probability. It's valid if every probability is between 0 and 1 and they **add up to 1**.
+
+## 4. Formula & worked example
+$$
+0 \le P(X = x) \le 1 \qquad \sum_x P(X = x) = 1 \qquad P(X \le a) = \sum_{x \le a} P(X = x)
+$$
+
+**Example 1.** $X$ = number of heads in 3 fair flips (8 equally likely outcomes):
+| $x$ | 0 | 1 | 2 | 3 |
+|---|---|---|---|---|
+| $P(X = x)$ | $\frac{1}{8}$ | $\frac{3}{8}$ | $\frac{3}{8}$ | $\frac{1}{8}$ |
+
+**Example 2.** From the table: $P(X \ge 2) = \frac{3}{8} + \frac{1}{8} = \frac{1}{2}$.
+
+**Example 3 (valid?).** $P(0) = 0.2$, $P(1) = 0.5$, $P(2) = 0.4$ → sums to 1.1 → not valid.
+
+**Example 4 (missing value).** Customers per hour: $P(0) = 0.1$, $P(1) = 0.3$, $P(2) = 0.35$, $P(3) = k$ → $k = 0.25$.
+
+**Example 5 (simulation, code).**
+```python
+import numpy as np
+flips = np.random.randint(0, 2, size=(100_000, 3))   # 100k trials of 3 flips
+heads = flips.sum(axis=1)
+print(np.bincount(heads) / len(heads))                # ≈ [0.125 0.375 0.375 0.125]
+```
+Each row is one trial of 3 flips; summing the row counts the heads. The observed frequencies match the theoretical distribution.
+
+## 5. Common mistakes
+- Probabilities that don't sum to 1.
+- Confusing $P(X < 2)$ with $P(X \le 2)$ for discrete variables (they differ!).
+- Treating a continuous variable like a discrete one.
+
+## 6. Practice
+Q: Is ""time to load a web page"" discrete or continuous?
+A: Continuous.
+
+Q: $P(X = 1) = 0.2$, $P(X = 2) = 0.5$, $P(X = 3) = ?$ (only these values)
+A: $0.3$.
+
+Q: Using Example 1, $P(X \le 1)$?
+A: $\frac{1}{2}$.
+
+Q: Two conditions for a valid discrete distribution?
+A: Each probability is between 0 and 1, and they sum to 1.
+
+Q: For a discrete $X$, are $P(X < 3)$ and $P(X \le 3)$ equal?
+A: Not in general; the second includes $P(X = 3)$."
+3,TOPIC,Expected value,"Mean of a random variable, long-run average, games and insurance, linearity of expectation",MUST,FALSE,"# Expected value
+
+## 1. What it covers
+- **Expected value** $E(X) = \mu_X$: the long-run average of a random variable.
+- Computing it from a distribution.
+- Fair games, insurance premiums and decision making.
+- **Linearity:** $E(aX + b) = aE(X) + b$ and $E(X + Y) = E(X) + E(Y)$.
+
+## 2. Where it is used
+- **Insurance and finance:** premiums are set above expected payouts; expected return of investments.
+- **Business decisions:** expected profit of launching a product.
+- **Gambling:** casinos rely on negative expected value for players.
+- **Machine learning:** the loss being minimised is an expected value; reinforcement learning maximises expected reward.
+- **Algorithms:** average-case running time (e.g. quicksort's expected $O(n\log n)$).
+
+## 3. What it means
+$E(X)$ weights each value by its probability. It's the average you'd get if you repeated the process **many** times: the balance point of the distribution. It doesn't have to be a possible value (the expected number of children per family can be 2.3).
+
+**Linearity** is powerful: the expected value of a sum is the sum of the expected values, **even if the variables are dependent**.
+
+## 4. Formula & worked example
+$$
+E(X) = \sum x\,P(X = x) \qquad E(aX + b) = aE(X) + b \qquad E(X + Y) = E(X) + E(Y)
+$$
+
+**Example 1 (die).** $E(X) = \frac{1 + 2 + 3 + 4 + 5 + 6}{6} = 3.5$
+
+**Example 2 (game).** Pay 100 taka to play. Win 500 with probability 0.1, win 100 with probability 0.3, otherwise nothing. Expected net gain?
+- $E(\text{winnings}) = 50 + 30 = 80$ → net $= 80 - 100 = -20$ taka per play (a losing game).
+
+**Example 3 (insurance).** A phone costs 60 000; the chance of loss this year is 2%. Expected loss $= 1200$ taka. An insurer charging 2000 expects 800 profit per policy (to cover costs and risk).
+
+**Example 4 (product decision).** Launching costs 5 lakh; 30% chance of 20 lakh profit, 50% chance of 5 lakh, 20% chance of nothing. $E = 6 + 2.5 + 0 - 5 = 3.5$ lakh → launch (if you can afford the risk).
+
+**Example 5 (linearity).** Expected number of heads in 100 flips $= 100 \times 0.5 = 50$.
+
+## 5. Common mistakes
+- Forgetting to subtract the cost of playing.
+- Thinking $E(X)$ is the most likely value (that's the mode).
+- Assuming $E(XY) = E(X)E(Y)$ without independence.
+
+## 6. Practice
+Q: $X$ takes 0, 1, 2 with probabilities 0.5, 0.3, 0.2. $E(X)$?
+A: $0.7$.
+
+Q: $E(X) = 10$. $E(3X - 4)$?
+A: $26$.
+
+Q: What does $E(X)$ represent?
+A: The long-run average value over many repetitions.
+
+Q: A raffle: 1000 tickets at 50 taka, one prize of 20 000. Expected net value per ticket?
+A: $20 - 50 = -30$ taka.
+
+Q: Expected sum of two dice?
+A: $7$."
+3,TOPIC,Variance of random variables and combining random variables,"Var(X), SD, rules for aX + b, sums and differences of independent variables",MUST,FALSE,"# Variance of random variables and combining random variables
+
+## 1. What it covers
+- **Variance** $\text{Var}(X) = E[(X - \mu)^2]$ and SD of a random variable.
+- Rules: $\text{Var}(aX + b) = a^2\text{Var}(X)$.
+- For **independent** $X$ and $Y$: $\text{Var}(X \pm Y) = \text{Var}(X) + \text{Var}(Y)$.
+- Why variances add even for differences.
+
+## 2. Where it is used
+- **Finance:** portfolio risk: combining assets (diversification reduces risk when they aren't perfectly correlated).
+- **Manufacturing:** tolerance stacking: the total length of assembled parts.
+- **Project management:** uncertainty in total project time.
+- **Statistics:** the standard error of a mean or a difference (Phase 6) comes from these rules.
+
+## 3. What it means
+**Variance** measures how spread out a random variable is around its mean: the expected squared distance from $\mu$.
+
+**Linear transformations:** adding a constant shifts values but doesn't change spread; multiplying by $a$ multiplies the SD by $\lvert a\rvert$ and the variance by $a^2$.
+
+**Sums and differences of independent variables:** uncertainties **add up** in variance, for differences too. If two independent measurements each have some error, their difference is **more** uncertain, not less: errors don't cancel on average.
+
+**Add variances, not SDs:** $\sigma_{X + Y} = \sqrt{\sigma_X^2 + \sigma_Y^2}$ (like Pythagoras).
+
+## 4. Formula & worked example
+$$
+\text{Var}(X) = \sum(x - \mu)^2P(x) = E(X^2) - \mu^2 \qquad \text{Var}(aX + b) = a^2\text{Var}(X) \qquad \text{Var}(X \pm Y) = \text{Var}(X) + \text{Var}(Y)\ (\text{indep.})
+$$
+
+**Example 1.** $X$: 0, 1, 2 with probabilities 0.5, 0.3, 0.2. $\mu = 0.7$; $E(X^2) = 0.3 + 0.8 = 1.1$ → $\text{Var} = 1.1 - 0.49 = 0.61$, SD $\approx 0.78$.
+
+**Example 2 (transform).** Daily sales $X$ have mean 200 units, SD 30. Revenue $= 50X - 1000$ → mean $9000$, SD $1500$.
+
+**Example 3 (assembly).** Part A length: mean 40 mm, SD 0.3; part B: mean 25 mm, SD 0.4; independent. Total length: mean 65 mm, SD $= \sqrt{0.09 + 0.16} = 0.5$ mm.
+
+**Example 4 (difference).** Same parts: difference $A - B$ has mean 15 mm and SD 0.5 mm (variances still add).
+
+**Example 5 (diversification).** Two independent investments, each SD 20%. Put half in each: SD of the average $= \sqrt{0.25(400) + 0.25(400)} = \sqrt{200} \approx 14.1\%$, less risk with the same expected return.
+
+## 5. Common mistakes
+- Adding SDs instead of variances.
+- Subtracting variances for a difference.
+- Using the addition rule for dependent variables (then a covariance term is needed).
+
+## 6. Practice
+Q: $\text{Var}(X) = 4$. $\text{Var}(3X + 7)$?
+A: $36$.
+
+Q: Independent $X$ (SD 6) and $Y$ (SD 8). SD of $X + Y$?
+A: $10$.
+
+Q: SD of $X - Y$ for the same variables?
+A: $10$.
+
+Q: Why does adding a constant not change variance?
+A: It shifts all values equally; distances from the mean stay the same.
+
+Q: Shortcut formula for variance?
+A: $E(X^2) - [E(X)]^2$."
+3,TOPIC,The binomial distribution,"n independent trials with success probability p; formula, mean np, SD √(np(1 − p)), conditions",MUST,FALSE,"# The binomial distribution
+
+## 1. What it covers
+- The **binomial setting** (BINS): Binary outcomes, Independent trials, fixed Number $n$, Same probability $p$.
+- The formula $P(X = k) = \binom{n}{k}p^k(1 - p)^{n-k}$.
+- Mean $np$ and SD $\sqrt{np(1 - p)}$.
+- Cumulative probabilities with software.
+
+## 2. Where it is used
+- **Quality control:** number of defective items in a batch.
+- **A/B testing:** number of conversions out of $n$ visitors.
+- **Medicine:** number of patients who respond to a treatment.
+- **Networking:** number of lost packets out of $n$ sent.
+- **Elections and polls:** number of supporters in a sample.
+
+## 3. What it means
+Repeat the same yes/no trial $n$ times independently, each with success probability $p$. $X$ counts the successes.
+
+**Why the formula:** any particular sequence with $k$ successes has probability $p^k(1 - p)^{n-k}$, and there are $\binom{n}{k}$ ways to choose which trials are the successes.
+
+**Mean** $np$: 100 visitors with a 5% conversion rate → expect 5 conversions. **SD** $\sqrt{np(1 - p)}$ tells you how much that count typically varies.
+
+## 4. Formula & worked example
+$$
+P(X = k) = \binom{n}{k}p^k(1 - p)^{n - k} \qquad \mu = np \qquad \sigma = \sqrt{np(1 - p)}
+$$
+
+**Example 1.** A fair coin flipped 5 times. $P(\text{exactly 3 heads}) = \binom{5}{3}(0.5)^5 = \frac{10}{32} = 0.3125$.
+
+**Example 2 (defects).** 4% of chips are defective; a batch of 20. $P(\text{no defects}) = 0.96^{20} \approx 0.442$; $P(\text{at least one}) \approx 0.558$.
+
+**Example 3.** $P(\text{exactly 2 defective})$ in that batch: $\binom{20}{2}(0.04)^2(0.96)^{18} = 190 \times 0.0016 \times 0.4796 \approx 0.146$.
+
+**Example 4 (mean and SD).** 400 website visitors, conversion rate 5%: $\mu = 20$, $\sigma = \sqrt{400 \times 0.05 \times 0.95} \approx 4.36$. So 20 ± about 9 conversions (two SDs) is normal variation; 35 would be surprising.
+
+**Example 5 (code).**
+```python
+from scipy.stats import binom
+print(binom.pmf(3, 5, 0.5))         # 0.3125   P(X = 3)
+print(binom.cdf(2, 20, 0.04))       # 0.9561   P(X <= 2)
+print(binom.sf(29, 400, 0.05))      # P(X >= 30) ≈ 0.019
+```
+`pmf` gives $P(X = k)$, `cdf` gives $P(X \le k)$, and `sf(k)` gives $P(X > k)$, so $P(X \ge 30)$ is `sf(29)`.
+
+## 5. Common mistakes
+- Using the binomial when trials aren't independent or $p$ changes (e.g. sampling without replacement from a small population).
+- Forgetting the $\binom{n}{k}$ factor.
+- Off-by-one errors with ""at least"" and ""more than"".
+
+## 6. Practice
+Q: What does BINS stand for?
+A: Binary, Independent, Number fixed, Same probability.
+
+Q: $n = 10$, $p = 0.3$. Mean and SD?
+A: $3$ and $\sqrt{2.1} \approx 1.45$.
+
+Q: $P(\text{exactly 2 sixes in 4 rolls})$?
+A: $\binom{4}{2}\left(\frac{1}{6}\right)^2\left(\frac{5}{6}\right)^2 \approx 0.116$.
+
+Q: Is ""number of aces in 5 cards dealt from a deck"" binomial?
+A: Not exactly: draws are without replacement, so $p$ changes.
+
+Q: How do you get $P(X \ge 5)$ with scipy?
+A: `binom.sf(4, n, p)`."
+3,TOPIC,Geometric and Poisson distributions,Waiting for the first success; counts of rare events in an interval,SHOULD,FALSE,"# Geometric and Poisson distributions
+
+## 1. What it covers
+- The **geometric** distribution: number of trials until the **first** success.
+- Its mean $\frac{1}{p}$.
+- The **Poisson** distribution: number of events in a fixed interval when events happen independently at a constant average rate $\lambda$.
+- Its mean and variance both equal $\lambda$.
+
+## 2. Where it is used
+- **Geometric:** number of login attempts until success; number of sales calls until the first sale; retries until a packet gets through.
+- **Poisson:** customers arriving per hour, server requests per second, typos per page, website errors per day, calls to a help desk. It's the basis of **queueing theory** used to size servers and staff call centres.
+
+## 3. What it means
+**Geometric:** repeat independent trials with success probability $p$; $X$ is the trial on which the first success occurs. $P(X = k) = (1 - p)^{k-1}p$: $k - 1$ failures then a success. On average you wait $\frac{1}{p}$ trials (a 1-in-6 chance → 6 rolls on average to get a six).
+
+**Poisson:** counts rare, independent events over time or space, with average rate $\lambda$ per interval. It's what the binomial becomes when $n$ is large and $p$ is small ($\lambda = np$).
+
+## 4. Formula & worked example
+$$
+\text{Geometric: } P(X = k) = (1 - p)^{k - 1}p,\ E(X) = \frac{1}{p} \qquad \text{Poisson: } P(X = k) = \frac{e^{-\lambda}\lambda^k}{k!},\ E(X) = \text{Var}(X) = \lambda
+$$
+
+**Example 1 (geometric).** A salesperson closes 20% of calls. $P(\text{first sale on the 3rd call}) = 0.8^2 \times 0.2 = 0.128$. Expected calls until the first sale: 5.
+
+**Example 2 (geometric, at most).** $P(\text{first sale within 5 calls}) = 1 - 0.8^5 \approx 0.672$.
+
+**Example 3 (Poisson).** A help desk gets 4 calls per hour on average. $P(\text{exactly 2 calls in an hour}) = \frac{e^{-4}4^2}{2!} \approx 0.147$.
+
+**Example 4 (Poisson, capacity).** A server gets 3 errors per day on average. $P(\text{more than 6 errors in a day})$?
+- $1 - P(X \le 6) \approx 1 - 0.966 = 0.034$ → about once a month; use it to set alert thresholds.
+
+**Example 5 (code).**
+```python
+from scipy.stats import geom, poisson
+print(geom.pmf(3, 0.2))          # 0.128
+print(poisson.pmf(2, 4))         # 0.1465
+print(poisson.sf(6, 3))          # 0.0335  P(X > 6)
+```
+scipy's `geom` counts the trial number of the first success (starting at 1), matching the definition here.
+
+## 5. Common mistakes
+- Using the binomial (fixed $n$) when the number of trials isn't fixed (that's geometric).
+- Using a Poisson model when events cluster or the rate changes over time (e.g. traffic at lunch vs night).
+- Using the wrong interval for $\lambda$ (3 per day → 0.125 per hour).
+
+## 6. Practice
+Q: Mean of a geometric distribution with $p = 0.25$?
+A: $4$.
+
+Q: $P(\text{first head on the 4th flip})$?
+A: $0.5^4 = 0.0625$.
+
+Q: Poisson with $\lambda = 2$. $P(X = 0)$?
+A: $e^{-2} \approx 0.135$.
+
+Q: Mean and variance of a Poisson($\lambda$) distribution?
+A: Both $\lambda$.
+
+Q: 6 requests per minute on average. $\lambda$ for a 10-second window?
+A: $1$."
+3,TOPIC,Continuous random variables,"Density functions, uniform, exponential and normal as random variables, P(a < X < b) as area",SHOULD,FALSE,"# Continuous random variables
+
+## 1. What it covers
+- Continuous random variables and their **probability density functions** (PDFs).
+- $P(a < X < b)$ as the area under the PDF (an integral).
+- Mean $E(X) = \int x f(x)\,dx$.
+- Key models: **uniform**, **exponential**, **normal**.
+
+## 2. Where it is used
+- **Reliability:** the time until a component fails (exponential, Weibull).
+- **Queueing:** time between arrivals is exponential when arrivals are Poisson.
+- **Measurement and natural variation:** normal.
+- **Simulation:** generating random times and quantities.
+- **ML:** probabilistic models with continuous outputs.
+
+## 3. What it means
+For continuous variables, single values have probability 0; only **intervals** have positive probability, given by the **area** under the density curve. (Phase 2 introduced density curves; here they're treated as random variables, with calculus where helpful.)
+
+- **Uniform** $[a, b]$: every value equally likely; mean $\frac{a + b}{2}$.
+- **Exponential** with rate $\lambda$: waiting time until the next event in a Poisson process; mean $\frac{1}{\lambda}$. It's **memoryless**: having waited 10 minutes doesn't change the distribution of the remaining wait.
+- **Normal** $N(\mu, \sigma)$.
+
+## 4. Formula & worked example
+$$
+P(a < X < b) = \int_a^b f(x)\,dx \qquad \text{Exponential: } f(x) = \lambda e^{-\lambda x},\ P(X > t) = e^{-\lambda t},\ E(X) = \frac{1}{\lambda}
+$$
+
+**Example 1 (uniform).** A delivery arrives uniformly between 2 pm and 5 pm. $P(\text{before 3 pm}) = \frac{1}{3}$; expected time 3:30 pm.
+
+**Example 2 (exponential).** Customers arrive at 12 per hour (Poisson). Time between arrivals is exponential with $\lambda = 12$ per hour (mean 5 minutes). $P(\text{gap more than 10 min}) = e^{-12 \times (1/6)} = e^{-2} \approx 0.135$.
+
+**Example 3 (reliability).** A hard drive's lifetime is exponential with mean 5 years. $P(\text{lasts more than 8 years}) = e^{-8/5} \approx 0.202$.
+
+**Example 4 (memoryless).** Given the drive has lasted 3 years, $P(\text{lasts 8 more})$ is still $0.202$.
+
+**Example 5 (code).**
+```python
+from scipy.stats import expon, uniform
+print(expon.sf(10, scale=5))           # 0.1353  P(gap > 10 min), mean 5 min
+print(uniform.cdf(3, loc=2, scale=3))  # 0.3333  P(arrival before 3) on [2, 5]
+```
+scipy parametrises the exponential by its mean (`scale = 1/λ`) and the uniform by its start (`loc`) and width (`scale`).
+
+## 5. Common mistakes
+- Giving positive probability to a single value of a continuous variable.
+- Confusing the rate $\lambda$ with the mean $\frac{1}{\lambda}$ (especially in scipy's `scale`).
+- Using an exponential model for things that wear out (old components fail more often, so they aren't memoryless).
+
+## 6. Practice
+Q: Uniform on $[0, 4]$. $P(1 < X < 2)$?
+A: $0.25$.
+
+Q: Exponential with mean 2 hours. $P(X > 2)$?
+A: $e^{-1} \approx 0.368$.
+
+Q: Mean of an exponential with rate $\lambda = 0.5$ per minute?
+A: $2$ minutes.
+
+Q: What does ""memoryless"" mean?
+A: The remaining waiting time doesn't depend on how long you've already waited.
+
+Q: How is $P(a < X < b)$ found for a continuous variable?
+A: As the area under the density curve between $a$ and $b$."
+2,MODULE,Sampling distributions,"Sampling variability, distributions of proportions and means, standard error, central limit theorem",MUST,,A statistic (like a sample mean) is itself a random variable: it changes from sample to sample.
+3,TOPIC,Sampling distributions and the sample proportion,"Parameter vs statistic, sampling variability, mean and standard error of p̂, normal approximation",MUST,FALSE,"# Sampling distributions and the sample proportion
+
+## 1. What it covers
+- **Parameter** (population value, fixed but unknown) vs **statistic** (from a sample, varies).
+- The **sampling distribution**: the distribution of a statistic over all possible samples.
+- The sample proportion $\hat{p}$: mean $p$, standard error $\sqrt{\frac{p(1 - p)}{n}}$.
+- When $\hat{p}$ is approximately normal ($np \ge 10$ and $n(1 - p) \ge 10$).
+
+## 2. Where it is used
+- **Polling:** the ""margin of error"" comes from the SD of $\hat{p}$.
+- **A/B testing:** whether a difference in conversion rates is bigger than random variation.
+- **Quality control:** control charts for defect proportions.
+- **ML evaluation:** the uncertainty of a model's accuracy measured on a finite test set.
+
+## 3. What it means
+If 54% of a sample supports a candidate, the true population proportion is probably not exactly 54%. Take another sample and you'd get, say, 51%. The **sampling distribution** describes this sample-to-sample variation.
+
+For sample proportions:
+- **Centre:** $p$ (unbiased: on average, samples get it right).
+- **Spread:** the **standard error** $\sqrt{\frac{p(1 - p)}{n}}$, which shrinks as $n$ grows. Quadrupling the sample size halves the error.
+- **Shape:** approximately normal when there are at least 10 expected successes and failures.
+
+Notice the population size doesn't appear (as long as the sample is less than about 10% of it): a sample of 1000 is as precise for Bangladesh as for a single city.
+
+## 4. Formula & worked example
+$$
+\mu_{\hat{p}} = p \qquad \sigma_{\hat{p}} = \sqrt{\frac{p(1 - p)}{n}}
+$$
+
+**Example 1.** True support $p = 0.5$, sample $n = 1000$: $\sigma_{\hat{p}} = \sqrt{\frac{0.25}{1000}} \approx 0.0158$. About 95% of samples give $\hat{p}$ within $0.5 \pm 0.032$ (the familiar ""± 3%"" margin).
+
+**Example 2.** $p = 0.1$, $n = 50$: $np = 5 < 10$ → the normal approximation isn't reliable (use binomial calculations instead).
+
+**Example 3 (probability).** A website's true conversion rate is 8%. With 2000 visitors, how likely is an observed rate above 9.5%?
+- $\sigma = \sqrt{\frac{0.08 \times 0.92}{2000}} \approx 0.00607$; $z = \frac{0.015}{0.00607} \approx 2.47$ → $P \approx 0.007$. Seeing 9.5% would be unusual if nothing had changed.
+
+**Example 4 (simulation).**
+```python
+import numpy as np
+p, n = 0.08, 2000
+phats = np.random.binomial(n, p, size=100_000) / n   # 100k simulated samples
+print(phats.mean(), phats.std())                       # ≈ 0.080  0.00607
+```
+Each simulated sample gives one $\hat{p}$; the collection of 100 000 values **is** the sampling distribution, and its SD matches the formula.
+
+## 5. Common mistakes
+- Confusing the population SD with the standard error of a statistic.
+- Thinking a bigger population needs a bigger sample (it barely matters).
+- Using the normal approximation when expected counts are below 10.
+
+## 6. Practice
+Q: Parameter or statistic: ""62% of 500 surveyed users like the feature""?
+A: Statistic.
+
+Q: Standard error of $\hat{p}$ for $p = 0.3$, $n = 100$?
+A: $\sqrt{0.0021} \approx 0.046$.
+
+Q: To halve the standard error, multiply $n$ by?
+A: 4.
+
+Q: Conditions for $\hat{p}$ to be approximately normal?
+A: $np \ge 10$ and $n(1 - p) \ge 10$.
+
+Q: Is $\hat{p}$ an unbiased estimator of $p$?
+A: Yes, its mean is $p$."
+3,TOPIC,The sample mean and the central limit theorem,"Mean and standard error of x̄, σ/√n, the central limit theorem, why normality appears",MUST,FALSE,"# The sample mean and the central limit theorem
+
+## 1. What it covers
+- The sampling distribution of $\bar{x}$: mean $\mu$, standard error $\frac{\sigma}{\sqrt{n}}$.
+- The **central limit theorem (CLT)**: for large $n$, $\bar{x}$ is approximately normal **whatever** the population's shape.
+- Rules of thumb ($n \ge 30$) and probability calculations for $\bar{x}$.
+
+## 2. Where it is used
+- **Every confidence interval and t-test** for means relies on it.
+- **A/B testing:** comparing average order values, even though individual order values are very skewed.
+- **Performance testing:** averaging many latency measurements.
+- **Quality control:** $\bar{x}$ control charts.
+- **Measurement:** averaging repeated readings reduces error by $\sqrt{n}$.
+
+## 3. What it means
+Averages are **less variable** than individual values: one person's height varies a lot, but the average height of 100 people barely changes from group to group. The SD of $\bar{x}$ is $\frac{\sigma}{\sqrt{n}}$.
+
+**Central limit theorem:** take many samples of size $n$ from **any** population (skewed, lumpy, whatever) with finite SD. The distribution of the sample means becomes approximately **normal** as $n$ grows. That's why the bell curve appears everywhere: many outcomes are averages or sums of lots of small effects.
+
+Rule of thumb: $n \ge 30$ is usually enough; more for very skewed populations; any $n$ if the population itself is normal.
+
+## 4. Formula & worked example
+$$
+\mu_{\bar{x}} = \mu \qquad \sigma_{\bar{x}} = \frac{\sigma}{\sqrt{n}} \qquad \bar{x} \approx N\!\left(\mu, \frac{\sigma}{\sqrt{n}}\right) \text{ for large } n
+$$
+
+**Example 1.** Order values: mean 1200 taka, SD 900 (right-skewed). Average of 100 orders: mean 1200, SE $= \frac{900}{10} = 90$, approximately normal.
+
+**Example 2.** $P(\bar{x} > 1350)$ for those 100 orders? $z = \frac{150}{90} \approx 1.67$ → $P \approx 0.048$.
+
+**Example 3 (individual vs average).** $P(\text{one order} > 1350)$ can't be found with the normal table because individual orders are skewed; but for the **average** of 100, the CLT makes it possible.
+
+**Example 4 (measurement).** A scale has SD 2 g per reading. Averaging 16 readings gives SD $\frac{2}{4} = 0.5$ g.
+
+**Example 5 (simulation: CLT in action).**
+```python
+import numpy as np
+pop = np.random.exponential(scale=1200, size=1_000_000)   # strongly right-skewed
+means = [np.random.choice(pop, 100).mean() for _ in range(10_000)]
+print(np.mean(means), np.std(means))                        # ≈ 1200  ≈ 120 (= 1200/√100)
+# a histogram of `means` looks like a bell curve, even though `pop` is very skewed
+```
+The exponential population has mean = SD = 1200 and is very lopsided, yet the 10 000 sample means are bell-shaped, centred at 1200, with SD $\frac{1200}{\sqrt{100}} = 120$.
+
+## 5. Common mistakes
+- Thinking the CLT makes the **data** normal (it's about the distribution of **means**).
+- Using $\sigma$ instead of $\frac{\sigma}{\sqrt{n}}$ for probabilities about $\bar{x}$.
+- Applying it to tiny samples from very skewed populations.
+
+## 6. Practice
+Q: Standard error of $\bar{x}$ with $\sigma = 20$, $n = 25$?
+A: $4$.
+
+Q: State the central limit theorem.
+A: For large $n$, the sampling distribution of $\bar{x}$ is approximately normal, whatever the population's shape.
+
+Q: Population mean 50, SD 10. $P(\bar{x} > 52)$ for $n = 100$?
+A: SE $= 1$, $z = 2$ → $\approx 0.023$.
+
+Q: Does the CLT make individual observations normal?
+A: No, only the distribution of sample means.
+
+Q: How many readings must you average to cut the error to a third?
+A: 9."
+3,TOPIC,Practice & review: Random variables and sampling distributions,Mixed problem set with worked answers,MUST,FALSE,"# Practice & review: Random variables and sampling distributions
+
+**How to use this:** 50 minutes; calculator or Python allowed.
+
+## Problems
+1. $X$ = number of items a customer buys: $P(1) = 0.4$, $P(2) = 0.3$, $P(3) = 0.2$, $P(4) = 0.1$. Find $E(X)$ and $\text{SD}(X)$.
+2. Each item gives 150 taka profit, minus a 50 taka fixed cost per customer. Mean and SD of profit per customer?
+3. A test has 10 multiple-choice questions with 4 options. Guessing randomly, $P(\text{at least 5 correct})$?
+4. 2% of emails bounce. In 300 emails, what are the mean and SD of the number of bounces? Is 15 bounces unusual?
+5. Typos occur at 1.5 per page. $P(\text{a page has no typos})$? $P(\text{3 or more})$?
+6. A bus comes every 15 minutes (uniform wait). $P(\text{wait} > 10 \text{ min})$? Mean wait?
+7. True defect rate 5%; you inspect 400 items. Mean and SE of $\hat{p}$; $P(\hat{p} > 0.07)$?
+8. Delivery times have mean 40 min, SD 15 min (skewed). For a random sample of 36 deliveries, $P(\bar{x} < 36)$?
+
+## Answers
+1. $E = 0.4 + 0.6 + 0.6 + 0.4 = 2$; $E(X^2) = 0.4 + 1.2 + 1.8 + 1.6 = 5$ → $\text{Var} = 1$, SD $= 1$.
+2. Profit $= 150X - 50$: mean 250, SD 150.
+3. Binomial $n = 10$, $p = 0.25$: $P(X \ge 5) \approx 0.078$.
+4. Mean 6, SD $\sqrt{5.88} \approx 2.42$; 15 is $z \approx 3.7$ → very unusual.
+5. $e^{-1.5} \approx 0.223$; $1 - P(0) - P(1) - P(2) = 1 - 0.223 - 0.335 - 0.251 \approx 0.191$.
+6. $\frac{5}{15} = \frac{1}{3}$; 7.5 min.
+7. Mean 0.05; SE $= \sqrt{\frac{0.0475}{400}} \approx 0.0109$; $z \approx 1.84$ → $P \approx 0.033$.
+8. SE $= \frac{15}{6} = 2.5$; $z = -1.6$ → $P \approx 0.055$.
+
+## Flashcards
+Q: Expected value formula?
+A: $E(X) = \sum xP(x)$.
+
+Q: Binomial mean and SD?
+A: $np$ and $\sqrt{np(1 - p)}$.
+
+Q: Standard error of $\bar{x}$?
+A: $\frac{\sigma}{\sqrt{n}}$.
+
+Q: Variance of the sum of independent variables?
+A: The sum of their variances."
+1,MODULE,Phase 6 — Statistical Inference (Advanced),"Confidence intervals, hypothesis tests, errors and power, p-hacking, two-sample methods, chi-square tests, regression inference, multiple regression, ANOVA, tests in Python",MUST,,"# Phase 6: Statistical inference
+
+**Inference** means using a sample to draw conclusions about a whole population, with an honest statement of uncertainty. Two main tools:
+- **Confidence intervals:** a range of plausible values for an unknown parameter (""conversion rate 6.2% ± 0.8%"").
+- **Hypothesis tests:** is an observed effect real, or could it be random chance? (""Is version B really better?"")
+
+These are the methods behind A/B tests, clinical trials, polls, scientific papers and data-driven business decisions."
+2,MODULE,Confidence intervals,"Point estimates, margin of error, intervals for proportions and means, interpretation, sample size",MUST,,An estimate without a margin of error is only half an answer.
+3,TOPIC,Confidence intervals for a proportion,"Point estimate ± margin of error, critical values, conditions, construction",MUST,FALSE,"# Confidence intervals for a proportion
+
+## 1. What it covers
+- **Point estimate** and **margin of error**.
+- The structure: estimate ± (critical value) × (standard error).
+- The interval $\hat{p} \pm z^*\sqrt{\frac{\hat{p}(1 - \hat{p})}{n}}$.
+- Conditions: random sample, $n\hat{p} \ge 10$ and $n(1 - \hat{p}) \ge 10$, independence.
+
+## 2. Where it is used
+- **Polls:** ""45% ± 3% at 95% confidence"".
+- **Product analytics:** conversion rate, churn rate, click-through rate with uncertainty.
+- **Quality control:** estimated defect rate.
+- **ML evaluation:** a confidence interval for a model's accuracy on a test set.
+
+## 3. What it means
+A sample proportion $\hat{p}$ is our best single guess (point estimate), but it varies from sample to sample. A **confidence interval** gives a range likely to contain the true $p$.
+
+The SE measures typical sampling error. Going about **2 SEs** each way (exactly $z^* = 1.96$) captures the truth in 95% of samples, since $\hat{p}$ is approximately normal.
+
+Common critical values: 90% → 1.645; 95% → 1.96; 99% → 2.576. Higher confidence needs a wider interval: it's like casting a wider net to be more sure of catching the fish.
+
+## 4. Formula & worked example
+$$
+\hat{p} \pm z^*\sqrt{\frac{\hat{p}(1 - \hat{p})}{n}} \qquad \text{margin of error } ME = z^*\,SE
+$$
+
+**Example 1 (poll).** 540 of 1200 voters support a candidate. 95% CI?
+- $\hat{p} = 0.45$; $SE = \sqrt{\frac{0.45 \times 0.55}{1200}} \approx 0.01436$; $ME = 1.96 \times 0.01436 \approx 0.028$
+- CI: $0.45 \pm 0.028$ → $(0.422, 0.478)$, i.e. 42.2% to 47.8%.
+
+**Example 2 (conversion).** 96 purchases from 1500 visitors: $\hat{p} = 0.064$; $SE \approx 0.00632$; 95% CI: $0.064 \pm 0.0124$ → $(5.2\%, 7.6\%)$.
+
+**Example 3 (99%).** Same data at 99%: $ME = 2.576 \times 0.00632 \approx 0.0163$ → $(4.8\%, 8.0\%)$ (wider).
+
+**Example 4 (conditions).** 4 defects in 80 items: $n\hat{p} = 4 < 10$ → the normal-based interval is unreliable (use an exact or Wilson interval).
+
+**Example 5 (code).**
+```python
+from statsmodels.stats.proportion import proportion_confint
+print(proportion_confint(540, 1200, alpha=0.05, method=""normal""))   # (0.4219, 0.4781)
+print(proportion_confint(4, 80, alpha=0.05, method=""wilson""))       # better for small counts
+```
+`method=""normal""` is the formula above; the Wilson method behaves much better when counts are small or $\hat{p}$ is near 0 or 1.
+
+## 5. Common mistakes
+- Using $p$ (unknown) instead of $\hat{p}$ in the SE.
+- Forgetting to check the success/failure conditions.
+- Thinking a 95% CI contains 95% of the data (it's about the parameter).
+
+## 6. Practice
+Q: Critical value $z^*$ for 95% confidence?
+A: $1.96$.
+
+Q: 200 of 500 say yes. 95% margin of error?
+A: $\hat{p} = 0.4$, $SE \approx 0.0219$, $ME \approx 0.043$.
+
+Q: What happens to the interval if confidence goes from 95% to 99%?
+A: It gets wider.
+
+Q: What happens to the margin of error if $n$ is quadrupled?
+A: It halves.
+
+Q: Conditions for the proportion interval?
+A: Random sample, independence, at least 10 successes and 10 failures."
+3,TOPIC,Confidence intervals for a mean (t-intervals),"Unknown σ, the t-distribution, degrees of freedom, constructing and checking conditions",MUST,FALSE,"# Confidence intervals for a mean (t-intervals)
+
+## 1. What it covers
+- Why we use the **t-distribution** when $\sigma$ is unknown.
+- **Degrees of freedom** $df = n - 1$.
+- The interval $\bar{x} \pm t^*\frac{s}{\sqrt{n}}$.
+- Conditions: random sample, independence, approximately normal or $n \ge 30$.
+
+## 2. Where it is used
+- **Product metrics:** average order value, average session time, average latency with uncertainty.
+- **Science and medicine:** average effect of a treatment.
+- **Manufacturing:** average fill volume of bottles.
+- **Benchmarking:** average run time of code over repeated runs.
+
+## 3. What it means
+We rarely know the population SD $\sigma$, so we use the sample SD $s$. That adds extra uncertainty, especially for small samples. The **t-distribution** accounts for it: it looks like the normal curve but with **heavier tails** (so $t^* > z^*$). As $n$ grows, $t$ approaches the normal.
+
+The interval has the same shape as before: estimate ± critical value × SE, with $SE = \frac{s}{\sqrt{n}}$.
+
+## 4. Formula & worked example
+$$
+\bar{x} \pm t^*_{n-1}\frac{s}{\sqrt{n}}
+$$
+($t^*$ for 95%: $df = 9$ → 2.262; $df = 24$ → 2.064; $df = 99$ → 1.984.)
+
+**Example 1.** 10 bottles: mean fill 498.2 mL, $s = 2.66$ mL. 95% CI?
+- $SE = \frac{2.66}{\sqrt{10}} \approx 0.841$; $t^* = 2.262$ → $498.2 \pm 1.90$ → $(496.3, 500.1)$ mL
+- 500 mL is (just) inside the interval, so the data are consistent with the target.
+
+**Example 2 (larger sample).** 100 orders: $\bar{x} = 1240$ taka, $s = 850$. 95% CI: $1240 \pm 1.984 \times 85 \approx 1240 \pm 169$ → $(1071, 1409)$.
+
+**Example 3 (benchmark).** 25 runs of a function: mean 12.4 ms, $s = 1.5$ ms → $12.4 \pm 2.064 \times 0.3 = 12.4 \pm 0.62$ ms.
+
+**Example 4 (code).**
+```python
+import numpy as np
+from scipy import stats
+x = np.array([497, 501, 495, 499, 502, 496, 498, 500, 494, 500])
+ci = stats.t.interval(0.95, df=len(x)-1, loc=x.mean(), scale=stats.sem(x))
+print(x.mean(), ci)      # 498.2 (496.30, 500.10)
+```
+`stats.sem` computes $\frac{s}{\sqrt{n}}$ (with the sample SD), and `t.interval` applies the t critical value with $n - 1$ degrees of freedom.
+
+## 5. Common mistakes
+- Using $z^*$ instead of $t^*$ for small samples with unknown $\sigma$.
+- Using $\sigma$ formulas with $s$ but forgetting $\sqrt{n}$.
+- Applying t-intervals to small, strongly skewed samples or with outliers.
+
+## 6. Practice
+Q: Why use $t$ instead of $z$?
+A: Because $\sigma$ is estimated by $s$, adding uncertainty.
+
+Q: Degrees of freedom for a sample of 16?
+A: $15$.
+
+Q: $n = 16$, $\bar{x} = 50$, $s = 8$, $t^* = 2.131$. 95% CI?
+A: $50 \pm 2.131 \times 2 = (45.74, 54.26)$.
+
+Q: How does the t-distribution compare with the normal?
+A: Heavier tails; it approaches the normal as $df$ grows.
+
+Q: Condition for small samples?
+A: The population should be roughly normal (no strong skew or outliers)."
+3,TOPIC,Interpreting confidence intervals and choosing sample size,"Correct interpretation, common misreadings, what affects width, sample size formulas",MUST,FALSE,"# Interpreting confidence intervals and choosing sample size
+
+## 1. What it covers
+- The correct interpretation of a confidence interval and of the confidence **level**.
+- Common misinterpretations.
+- What makes intervals wider or narrower.
+- Choosing a **sample size** for a desired margin of error.
+
+## 2. Where it is used
+- **Survey planning:** how many people to interview for ± 3%.
+- **A/B test planning:** how many users are needed.
+- **Reporting results** honestly to stakeholders.
+- **Clinical trial design.**
+
+## 3. What it means
+**Correct:** ""We are 95% confident that the true proportion is between 42.2% and 47.8%.""
+
+**What ""95% confident"" means:** the **method** captures the true value in 95% of samples. If 100 different teams each took a sample and built a 95% CI, about 95 of the intervals would contain the truth and about 5 would miss. For any one interval, the truth is either in it or not; we just don't know which.
+
+**Wrong interpretations:**
+- ""There's a 95% probability the true value is in this interval"" (the parameter isn't random).
+- ""95% of the data are in this interval.""
+- ""95% of sample means fall in this interval.""
+
+**Width** depends on: confidence level (higher → wider), sample size (larger → narrower, by $\sqrt{n}$), variability (more → wider).
+
+**Sample size:** solve the margin-of-error formula for $n$. If you have no estimate of $p$, use $p = 0.5$ (the worst case, giving the largest $n$).
+
+## 4. Formula & worked example
+$$
+n = \left(\frac{z^*}{ME}\right)^2 p(1 - p) \qquad n = \left(\frac{z^*\sigma}{ME}\right)^2
+$$
+(Always round **up**.)
+
+**Example 1 (poll).** Margin of error 3% at 95%, no prior estimate:
+- $n = \left(\frac{1.96}{0.03}\right)^2(0.25) \approx 1067.1$ → 1068 people (why national polls often survey about 1000).
+
+**Example 2 (±1%).** $n = \left(\frac{1.96}{0.01}\right)^2(0.25) = 9604$: to cut the margin to a third, you need 9 times the sample.
+
+**Example 3 (mean).** Estimate average delivery time within ± 2 minutes at 95%, $\sigma \approx 12$:
+- $n = \left(\frac{1.96 \times 12}{2}\right)^2 \approx 138.3$ → 139 deliveries.
+
+**Example 4 (interpretation).** A 95% CI for mean session length is (4.1, 4.9) minutes. Correct statement: ""We're 95% confident the true average session length is between 4.1 and 4.9 minutes.""
+
+## 5. Common mistakes
+- Saying ""95% probability the parameter is in this interval"".
+- Rounding the sample size down.
+- Thinking a larger population requires a much larger sample.
+
+## 6. Practice
+Q: What does a 95% confidence level mean?
+A: In repeated sampling, 95% of intervals built this way contain the true parameter.
+
+Q: Sample size for ±5% at 95% with $p = 0.5$?
+A: $\left(\frac{1.96}{0.05}\right)^2(0.25) = 384.2$ → 385.
+
+Q: Three things that make a CI narrower?
+A: Larger sample, lower confidence level, less variability.
+
+Q: Is ""95% of the data lie in the CI"" correct?
+A: No.
+
+Q: Why use $p = 0.5$ when planning?
+A: It maximises $p(1 - p)$, giving a safe (large enough) sample size."
+2,MODULE,Hypothesis testing,"Hypotheses, p-values, one-sample tests, errors and power, pitfalls",MUST,,"A test asks: if nothing interesting were going on, how surprising would these data be?"
+3,TOPIC,Hypothesis tests and p-values,"Null and alternative hypotheses, test statistics, p-values, significance level, conclusions in context",MUST,FALSE,"# Hypothesis tests and p-values
+
+## 1. What it covers
+- **Null hypothesis** $H_0$ (no effect / no difference) and **alternative** $H_a$.
+- One-sided vs two-sided alternatives.
+- The **test statistic** and the **p-value**.
+- **Significance level** $\alpha$ and writing conclusions.
+
+## 2. Where it is used
+- **A/B testing:** is the new design's conversion rate really higher?
+- **Medicine:** does the drug work better than placebo?
+- **Manufacturing:** has the process mean shifted?
+- **Science:** most published findings report p-values.
+
+## 3. What it means
+A hypothesis test works like a court trial:
+- $H_0$ is ""innocent"" (no effect); we assume it unless the evidence is strong.
+- The data are the evidence.
+- The **p-value** is the probability of getting results **at least as extreme as ours if $H_0$ were true**. A small p-value means our data would be very surprising under $H_0$, which is evidence against it.
+- If $p \le \alpha$ (commonly 0.05), we **reject $H_0$**: the result is **statistically significant**. Otherwise we **fail to reject $H_0$** (not enough evidence). We never ""prove"" $H_0$ (""not guilty"" isn't ""innocent"").
+
+**Steps:**
+1. State $H_0$ and $H_a$ (about the **parameter**), and $\alpha$.
+2. Check conditions.
+3. Compute the test statistic: $\frac{\text{statistic} - \text{null value}}{SE}$.
+4. Find the p-value.
+5. Conclude **in context**.
+
+## 4. Formula & worked example
+$$
+\text{test statistic} = \frac{\text{observed} - \text{hypothesised}}{SE} \qquad \text{reject } H_0 \text{ if } p\text{-value} \le \alpha
+$$
+
+**Example 1 (hypotheses).** A website's conversion rate has been 5%. After a redesign you want to know if it increased.
+- $H_0: p = 0.05$; $H_a: p > 0.05$ (one-sided).
+
+**Example 2 (two-sided).** Is a coin fair? $H_0: p = 0.5$; $H_a: p \ne 0.5$.
+
+**Example 3 (interpret a p-value).** $p = 0.03$: ""If the true rate were still 5%, there'd be only a 3% chance of seeing a sample rate this high or higher. At $\alpha = 0.05$, we reject $H_0$: there's convincing evidence the conversion rate increased.""
+
+**Example 4 (not significant).** $p = 0.21$: ""We fail to reject $H_0$; the data don't provide convincing evidence of an increase."" (Not: ""the redesign has no effect."")
+
+**Example 5 (simulation view).**
+```python
+import numpy as np
+# Observed 62 heads in 100 flips. How surprising if the coin is fair?
+sims = np.random.binomial(100, 0.5, 100_000)
+print(np.mean(np.abs(sims - 50) >= 12))   # ≈ 0.02 (two-sided p-value)
+```
+Simulating many fair-coin experiments shows that a result at least 12 away from 50 happens only about 2% of the time, which is the p-value.
+
+## 5. Common mistakes
+- Writing hypotheses about the sample statistic ($\hat{p}$) instead of the parameter ($p$).
+- Interpreting the p-value as ""the probability $H_0$ is true"".
+- ""Accepting"" $H_0$ instead of ""failing to reject"" it.
+
+## 6. Practice
+Q: What does the null hypothesis usually state?
+A: No effect, no difference, or the status quo value.
+
+Q: Define a p-value.
+A: The probability of results at least as extreme as observed, assuming $H_0$ is true.
+
+Q: $p = 0.004$, $\alpha = 0.05$. Decision?
+A: Reject $H_0$.
+
+Q: Is ""fail to reject $H_0$"" the same as ""$H_0$ is true""?
+A: No, it means there isn't enough evidence against it.
+
+Q: Write hypotheses: is the mean delivery time different from 30 minutes?
+A: $H_0: \mu = 30$; $H_a: \mu \ne 30$."
+3,TOPIC,One-sample z-test for a proportion,"Full procedure: hypotheses, conditions, z statistic, p-value, conclusion",MUST,FALSE,"# One-sample z-test for a proportion
+
+## 1. What it covers
+- Testing a claim about a population proportion $p$.
+- The test statistic $z = \frac{\hat{p} - p_0}{\sqrt{p_0(1 - p_0)/n}}$ (using $p_0$ in the SE).
+- One- and two-sided p-values; the link with confidence intervals.
+
+## 2. Where it is used
+- **Product:** has the sign-up rate changed from its historical 12%?
+- **Quality:** is the defect rate above the 2% contract limit?
+- **Elections:** does a candidate have majority support?
+- **Fairness checks:** is a random process (shuffle, coin, RNG) biased?
+
+## 3. What it means
+Under $H_0$ the true proportion is $p_0$, so the sampling distribution of $\hat{p}$ is approximately normal with mean $p_0$ and SE $\sqrt{\frac{p_0(1 - p_0)}{n}}$. The z-statistic counts how many SEs the observed $\hat{p}$ is from $p_0$.
+
+**Conditions:** random sample; $np_0 \ge 10$ and $n(1 - p_0) \ge 10$; sample less than 10% of the population.
+
+**Link with CIs:** a two-sided test at $\alpha = 0.05$ rejects $H_0$ exactly when $p_0$ is outside the 95% CI (approximately, since the SEs differ slightly).
+
+## 4. Formula & worked example
+$$
+z = \frac{\hat{p} - p_0}{\sqrt{\dfrac{p_0(1 - p_0)}{n}}}
+$$
+
+**Example 1.** Historically 12% of visitors sign up. After a change, 150 of 1000 sign up. Did it increase? ($\alpha = 0.05$)
+- $H_0: p = 0.12$, $H_a: p > 0.12$. Conditions: $120 \ge 10$, $880 \ge 10$ ✓
+- $\hat{p} = 0.15$; $SE = \sqrt{\frac{0.12 \times 0.88}{1000}} \approx 0.01028$; $z = \frac{0.03}{0.01028} \approx 2.92$
+- p-value $= P(Z > 2.92) \approx 0.0018$ → reject $H_0$. Strong evidence the sign-up rate increased.
+
+**Example 2 (two-sided).** A coin gives 58 heads in 100 flips. Fair?
+- $z = \frac{0.58 - 0.5}{0.05} = 1.6$; p-value $= 2 \times 0.0548 \approx 0.11$ → fail to reject; not convincing evidence of bias.
+
+**Example 3 (defects).** Contract limit 2%. A sample of 800 has 24 defects (3%). Is the rate above 2%?
+- $z = \frac{0.01}{\sqrt{0.02 \times 0.98/800}} = \frac{0.01}{0.00495} \approx 2.02$ → p-value $\approx 0.022$ → reject at 5%.
+
+**Example 4 (code).**
+```python
+from statsmodels.stats.proportion import proportions_ztest
+z, p = proportions_ztest(count=150, nobs=1000, value=0.12, alternative=""larger"", prop_var=0.12)
+print(round(z, 2), round(p, 4))     # 2.92 0.0018
+```
+`prop_var=0.12` tells statsmodels to use $p_0$ in the standard error, matching the textbook test.
+
+## 5. Common mistakes
+- Using $\hat{p}$ instead of $p_0$ in the SE for the test.
+- Forgetting to double the one-tail area for a two-sided test.
+- Checking conditions with $\hat{p}$ instead of $p_0$.
+
+## 6. Practice
+Q: Test statistic for a proportion?
+A: $z = \frac{\hat{p} - p_0}{\sqrt{p_0(1 - p_0)/n}}$.
+
+Q: $\hat{p} = 0.55$, $p_0 = 0.5$, $n = 400$. $z$?
+A: $SE = 0.025$ → $z = 2$.
+
+Q: Two-sided p-value for $z = 2$?
+A: $\approx 0.046$.
+
+Q: Why use $p_0$ in the SE?
+A: The test assumes $H_0$ is true, so $p = p_0$.
+
+Q: $H_a: p < 0.3$ and $z = -1.2$. p-value?
+A: $P(Z < -1.2) \approx 0.115$."
+3,TOPIC,One-sample t-test for a mean,"Testing a population mean with unknown σ; procedure, conditions and interpretation",MUST,FALSE,"# One-sample t-test for a mean
+
+## 1. What it covers
+- Testing $H_0: \mu = \mu_0$ when $\sigma$ is unknown.
+- The test statistic $t = \frac{\bar{x} - \mu_0}{s/\sqrt{n}}$ with $df = n - 1$.
+- Conditions and conclusions.
+
+## 2. Where it is used
+- **Quality control:** is the mean fill volume really 500 mL?
+- **Service levels:** is average response time above the 200 ms target?
+- **Product claims:** does a battery last the advertised 10 hours on average?
+- **Benchmarking:** did a code change shift the mean run time?
+
+## 3. What it means
+Same logic as the proportion test, but for means: how many standard errors is the sample mean from the hypothesised mean? Because $s$ estimates $\sigma$, the statistic follows a t-distribution with $n - 1$ degrees of freedom.
+
+**Conditions:** random sample; independence; population roughly normal or $n \ge 30$ (check a histogram for strong skew or outliers when $n$ is small).
+
+## 4. Formula & worked example
+$$
+t = \frac{\bar{x} - \mu_0}{s / \sqrt{n}}, \quad df = n - 1
+$$
+
+**Example 1 (bottles).** Target 500 mL. A sample of 10: $\bar{x} = 498.2$, $s = 2.66$. Is the mean different from 500? ($\alpha = 0.05$)
+- $t = \frac{-1.8}{0.841} \approx -2.14$, $df = 9$ → two-sided p-value $\approx 0.061$ → fail to reject at 5% (it's borderline). Not convincing evidence that the mean differs from 500 mL; a larger sample would settle it.
+
+**Example 2 (latency).** Target: average below 200 ms. 40 requests: $\bar{x} = 212$ ms, $s = 35$. Is the mean above 200?
+- $t = \frac{12}{35/\sqrt{40}} = \frac{12}{5.534} \approx 2.17$, $df = 39$ → one-sided p-value $\approx 0.018$ → reject; the mean latency exceeds the target.
+
+**Example 3 (battery).** Claimed 10 hours; 20 batteries: $\bar{x} = 9.6$, $s = 0.8$. Less than claimed?
+- $t = \frac{-0.4}{0.179} \approx -2.24$, $df = 19$ → p-value $\approx 0.019$ → reject at 5%.
+
+**Example 4 (code).**
+```python
+import numpy as np
+from scipy import stats
+x = np.array([497, 501, 495, 499, 502, 496, 498, 500, 494, 500])
+t, p = stats.ttest_1samp(x, popmean=500)
+print(round(t, 2), round(p, 3))       # -2.14 0.061  (two-sided)
+t, p = stats.ttest_1samp(x, 500, alternative=""less"")   # one-sided version
+```
+scipy returns the t-statistic and the p-value; use `alternative=` for one-sided tests.
+
+## 5. Common mistakes
+- Using the normal table instead of the t-distribution for small samples.
+- Choosing a one-sided test **after** seeing the data (decide before collecting).
+- Ignoring outliers in small samples.
+
+## 6. Practice
+Q: Test statistic for a mean with unknown $\sigma$?
+A: $t = \frac{\bar{x} - \mu_0}{s/\sqrt{n}}$.
+
+Q: $n = 25$, $\bar{x} = 52$, $s = 10$, $\mu_0 = 50$. $t$?
+A: $1$.
+
+Q: Degrees of freedom for $n = 25$?
+A: $24$.
+
+Q: When should a one-sided alternative be chosen?
+A: Before seeing the data, when only one direction matters.
+
+Q: Large $\lvert t\rvert$ means?
+A: The sample mean is many standard errors from $\mu_0$: strong evidence against $H_0$."
+3,TOPIC,Type I and Type II errors and power,"False positives and false negatives, α and β, power, what increases power",MUST,FALSE,"# Type I and Type II errors and power
+
+## 1. What it covers
+- **Type I error:** rejecting a true $H_0$ (false positive), probability $\alpha$.
+- **Type II error:** failing to reject a false $H_0$ (false negative), probability $\beta$.
+- **Power** $= 1 - \beta$: the chance of detecting a real effect.
+- What increases power, and the trade-offs.
+
+## 2. Where it is used
+- **A/B testing:** an underpowered test misses real improvements; too many tests produce false wins.
+- **Medicine:** false positives (unnecessary treatment) vs false negatives (missed disease).
+- **Security and fraud detection:** false alarms vs missed attacks.
+- **ML classification:** the same trade-off as precision vs recall.
+- **Planning experiments:** power analysis decides sample size.
+
+## 3. What it means
+| | $H_0$ true | $H_0$ false |
+|---|---|---|
+| Reject $H_0$ | **Type I error** ($\alpha$) | Correct (power) |
+| Fail to reject | Correct | **Type II error** ($\beta$) |
+
+Like a smoke alarm: a Type I error is the alarm going off with no fire; a Type II error is no alarm during a real fire.
+
+**Trade-off:** lowering $\alpha$ (being stricter) makes Type I errors rarer but Type II errors more common.
+
+**Power increases with:**
+- a larger sample size;
+- a larger true effect;
+- less variability in the data;
+- a larger $\alpha$ (at the cost of more false positives).
+
+A common target is 80% power.
+
+## 4. Formula & worked example
+$$
+\alpha = P(\text{reject } H_0 \mid H_0 \text{ true}) \qquad \beta = P(\text{fail to reject} \mid H_0 \text{ false}) \qquad \text{power} = 1 - \beta
+$$
+
+**Example 1 (consequences).** Testing a new drug ($H_0$: no better than placebo).
+- Type I: approving a useless drug. Type II: rejecting a drug that works.
+
+**Example 2 (choose α).** A spam filter: $H_0$ = ""email is legitimate"". A Type I error sends a real email to spam (costly), so use a small $\alpha$.
+
+**Example 3 (power, A/B).** Baseline conversion 5%; you want to detect a lift to 6% with 80% power at $\alpha = 0.05$ (two-sided). Required sample size per group ≈ 8140 (see code). To detect 5% → 5.5% you'd need about four times as many.
+
+**Example 4 (code).**
+```python
+from statsmodels.stats.power import NormalIndPower
+from statsmodels.stats.proportion import proportion_effectsize
+es = proportion_effectsize(0.06, 0.05)                 # Cohen's h effect size
+n = NormalIndPower().solve_power(effect_size=es, alpha=0.05, power=0.8)
+print(round(n))                                        # ≈ 8140 users per group
+```
+Power analysis turns ""how small an effect do I care about?"" into a sample size. Small effects on low baseline rates need surprisingly large samples, which is why many A/B tests are underpowered.
+
+## 5. Common mistakes
+- Thinking $\alpha$ is the probability that a significant result is a false positive (that depends on how many true effects exist; see the next topic).
+- Running tests with too little data and concluding ""no effect"".
+- Lowering $\alpha$ without increasing $n$, which reduces power.
+
+## 6. Practice
+Q: Define a Type I error.
+A: Rejecting $H_0$ when it is actually true (a false positive).
+
+Q: Define power.
+A: The probability of correctly rejecting a false $H_0$.
+
+Q: Name two ways to increase power.
+A: Increase the sample size; reduce variability (also: larger effect, larger $\alpha$).
+
+Q: In a fire alarm analogy, what is a Type II error?
+A: No alarm during a real fire.
+
+Q: What happens to $\beta$ if you lower $\alpha$ (same $n$)?
+A: $\beta$ increases (less power)."
+3,TOPIC,"Pitfalls: multiple testing, p-hacking and practical significance","Multiple comparisons, Bonferroni correction, peeking, practical vs statistical significance, effect sizes",MUST,FALSE,"# Pitfalls: multiple testing, p-hacking and practical significance
+
+## 1. What it covers
+- The **multiple comparisons** problem and the Bonferroni correction.
+- **p-hacking**: trying many analyses until something is ""significant"".
+- **Peeking** at A/B tests and stopping early.
+- **Statistical vs practical significance**; reporting effect sizes and confidence intervals.
+
+## 2. Where it is used
+- **Tech:** companies that run hundreds of A/B tests must control false discoveries.
+- **Science:** the ""replication crisis"": many published findings don't hold up.
+- **Data science:** testing many features or segments (""it works for left-handed users on Tuesdays!"").
+- **Genomics:** testing thousands of genes at once needs strict corrections.
+
+## 3. What it means
+**Multiple testing:** at $\alpha = 0.05$, each test of a true $H_0$ has a 5% false-positive chance. Run 20 such tests and you expect about one ""significant"" result **by pure chance**. The chance of at least one false positive is $1 - 0.95^{20} \approx 64\%$.
+
+**Bonferroni correction:** with $m$ tests, use $\frac{\alpha}{m}$ for each (simple but conservative). Other methods (e.g. Benjamini–Hochberg) control the false discovery rate.
+
+**p-hacking:** trying different subsets, outcome measures, outlier rules or stopping times until $p < 0.05$, then reporting only that. The p-value is then meaningless.
+
+**Peeking:** checking an A/B test every day and stopping the first time $p < 0.05$ hugely inflates false positives. Fix the sample size in advance (or use sequential methods designed for peeking).
+
+**Practical significance:** with huge samples, tiny, useless effects become ""statistically significant"". A 0.01% increase in conversion may be real but not worth anything. Always report the **effect size** with a **confidence interval**.
+
+## 4. Formula & worked example
+$$
+P(\text{at least one false positive in } m \text{ tests}) = 1 - (1 - \alpha)^m \qquad \alpha_{\text{Bonferroni}} = \frac{\alpha}{m}
+$$
+
+**Example 1.** Testing 10 page variants against control at $\alpha = 0.05$: chance of at least one false winner $= 1 - 0.95^{10} \approx 40\%$. Bonferroni: use $\alpha = 0.005$ per test.
+
+**Example 2 (p-hacking).** An analyst tests a campaign's effect on 15 customer segments; one shows $p = 0.03$. Reported alone, it looks like a discovery; with Bonferroni ($0.05/15 \approx 0.0033$) it's not significant.
+
+**Example 3 (practical significance).** With 10 million users, the conversion rate rises from 4.00% to 4.03%, $p = 0.001$. Statistically significant, but is a 0.03 percentage-point lift worth the engineering cost? Decide using the effect size and business value.
+
+**Example 4 (peeking simulation).**
+```python
+import numpy as np
+rng = np.random.default_rng(0)
+false_wins = 0
+for _ in range(2000):                      # 2000 A/A tests: no real difference
+    a = rng.binomial(1, 0.05, 20_000); b = rng.binomial(1, 0.05, 20_000)
+    for n in range(1000, 20_001, 1000):    # peek after every 1000 users
+        pa, pb = a[:n].mean(), b[:n].mean(); p = (pa + pb) / 2
+        z = (pb - pa) / np.sqrt(2 * p * (1 - p) / n)
+        if abs(z) > 1.96:
+            false_wins += 1; break
+print(false_wins / 2000)                   # ≈ 0.2+ instead of the promised 0.05
+```
+Both groups have the same true rate, so every ""win"" is false. Stopping at the first significant peek produces false positives far more often than 5%.
+
+## 5. Common mistakes
+- Reporting only the significant result out of many tried.
+- Stopping an experiment as soon as it looks significant.
+- Equating ""statistically significant"" with ""important"".
+
+## 6. Practice
+Q: 20 independent tests of true nulls at $\alpha = 0.05$. Expected false positives?
+A: About 1.
+
+Q: Bonferroni-corrected $\alpha$ for 8 tests at overall 0.05?
+A: $0.00625$.
+
+Q: What is p-hacking?
+A: Trying many analyses and reporting only those with small p-values.
+
+Q: Why is peeking at an A/B test dangerous?
+A: Repeated looks give many chances for a false positive.
+
+Q: What should you report besides a p-value?
+A: The effect size with a confidence interval."
+2,MODULE,Comparing groups and relationships,"Two-sample proportions and means, paired data, chi-square tests, regression inference, multiple regression, ANOVA",SHOULD,,"Most real questions compare two or more groups, or ask whether variables are related."
+3,TOPIC,Comparing two proportions,Two-sample z interval and pooled z-test for p₁ − p₂; A/B test analysis,SHOULD,FALSE,"# Comparing two proportions
+
+## 1. What it covers
+- Confidence interval for $p_1 - p_2$.
+- **Two-sample z-test** with a **pooled** proportion.
+- Analysing a full A/B test.
+
+## 2. Where it is used
+- **A/B testing:** conversion rate of version B vs A.
+- **Medicine:** recovery rate on treatment vs placebo.
+- **Marketing:** response rates of two email campaigns.
+- **Social science:** comparing opinions of two groups.
+
+## 3. What it means
+Each sample proportion varies; their **difference** varies more (variances add). The SE of the difference is $\sqrt{\frac{\hat{p}_1(1 - \hat{p}_1)}{n_1} + \frac{\hat{p}_2(1 - \hat{p}_2)}{n_2}}$.
+
+For a **test** of $H_0: p_1 = p_2$, assume the null is true: both groups share one proportion, estimated by pooling all the data: $\hat{p} = \frac{x_1 + x_2}{n_1 + n_2}$.
+
+**Conditions:** independent random samples/assignment; at least 10 successes and failures in each group.
+
+## 4. Formula & worked example
+$$
+\text{CI: } (\hat{p}_1 - \hat{p}_2) \pm z^*\sqrt{\frac{\hat{p}_1(1 - \hat{p}_1)}{n_1} + \frac{\hat{p}_2(1 - \hat{p}_2)}{n_2}} \qquad z = \frac{\hat{p}_1 - \hat{p}_2}{\sqrt{\hat{p}(1 - \hat{p})\left(\frac{1}{n_1} + \frac{1}{n_2}\right)}}
+$$
+
+**Example (A/B test).** A: 400 conversions from 8000 visitors (5.0%). B: 480 from 8000 (6.0%).
+- $H_0: p_B = p_A$, $H_a: p_B \ne p_A$.
+- Pooled $\hat{p} = \frac{880}{16\,000} = 0.055$; $SE = \sqrt{0.055 \times 0.945 \times \frac{2}{8000}} \approx 0.003605$
+- $z = \frac{0.01}{0.003605} \approx 2.77$ → p-value $\approx 0.0056$ → reject $H_0$.
+- 95% CI for $p_B - p_A$: $SE = \sqrt{\frac{0.05 \times 0.95}{8000} + \frac{0.06 \times 0.94}{8000}} \approx 0.003602$ → $0.01 \pm 0.00706$ → $(0.3\%, 1.7\%)$.
+- Conclusion: B's conversion rate is higher, by about 0.3 to 1.7 percentage points.
+
+**Code.**
+```python
+from statsmodels.stats.proportion import proportions_ztest, confint_proportions_2indep
+z, p = proportions_ztest([480, 400], [8000, 8000])
+print(round(z, 2), round(p, 4))                                   # 2.77 0.0056
+print(confint_proportions_2indep(480, 8000, 400, 8000, method=""wald""))
+```
+`proportions_ztest` with two counts runs the pooled two-sample test; the second function gives the interval for the difference.
+
+## 5. Common mistakes
+- Using the pooled SE for the confidence interval (pool only for the test).
+- Treating paired data as two independent samples.
+- Reporting only ""significant"" without the size of the difference.
+
+## 6. Practice
+Q: Why pool the proportions in the test?
+A: Because $H_0$ assumes $p_1 = p_2$, so one common proportion is estimated.
+
+Q: 30/200 vs 45/200. Difference in sample proportions?
+A: $0.225 - 0.15 = 0.075$.
+
+Q: Pooled proportion for 30/200 and 45/200?
+A: $\frac{75}{400} = 0.1875$.
+
+Q: A 95% CI for $p_1 - p_2$ is $(-0.02, 0.05)$. Significant difference at 5%?
+A: No, 0 is inside the interval.
+
+Q: Conditions for a two-proportion test?
+A: Independent random groups and at least 10 successes and failures in each."
+3,TOPIC,Comparing two means and paired data,"Two-sample t-test (Welch), paired t-test on differences, choosing between them",SHOULD,FALSE,"# Comparing two means and paired data
+
+## 1. What it covers
+- **Two-sample t** interval and test for $\mu_1 - \mu_2$ (Welch's version, not assuming equal variances).
+- **Paired** data: analyse the differences with a one-sample t procedure.
+- Choosing between independent and paired designs.
+
+## 2. Where it is used
+- **A/B testing:** average order value or session time in two groups.
+- **Before/after studies:** performance before and after an optimisation on the same machines (paired).
+- **Medicine:** blood pressure before and after treatment (paired) or treatment vs control groups (independent).
+- **Benchmarking:** comparing two algorithms on the same test inputs (paired).
+
+## 3. What it means
+**Independent samples:** two separate groups. The SE of $\bar{x}_1 - \bar{x}_2$ is $\sqrt{\frac{s_1^2}{n_1} + \frac{s_2^2}{n_2}}$ (variances add). Welch's t-test handles unequal spreads and is the safe default.
+
+**Paired data:** each observation in one group is linked to one in the other (same person before/after, same input run on two algorithms). Compute the **differences** and do a one-sample t-test on them. Pairing removes variation between individuals, which often makes the test much more powerful.
+
+## 4. Formula & worked example
+$$
+t = \frac{\bar{x}_1 - \bar{x}_2}{\sqrt{\dfrac{s_1^2}{n_1} + \dfrac{s_2^2}{n_2}}} \qquad \text{paired: } t = \frac{\bar{d}}{s_d / \sqrt{n}}
+$$
+
+**Example 1 (independent).** Average order value: A $n = 120$, $\bar{x} = 1150$, $s = 400$; B $n = 130$, $\bar{x} = 1260$, $s = 450$.
+- $SE = \sqrt{\frac{160\,000}{120} + \frac{202\,500}{130}} \approx \sqrt{1333.3 + 1557.7} \approx 53.8$
+- $t = \frac{110}{53.8} \approx 2.05$ → p-value ≈ 0.042 (two-sided) → significant at 5%.
+
+**Example 2 (paired).** Run time (ms) of 6 test inputs before and after an optimisation:
+| Input | 1 | 2 | 3 | 4 | 5 | 6 |
+|---|---|---|---|---|---|---|
+| Before | 120 | 85 | 200 | 150 | 95 | 170 |
+| After | 112 | 80 | 188 | 141 | 92 | 160 |
+| Difference | 8 | 5 | 12 | 9 | 3 | 10 |
+- $\bar{d} = 7.83$, $s_d \approx 3.31$, $t = \frac{7.83}{3.31/\sqrt{6}} \approx 5.80$, $df = 5$ → p ≈ 0.002 → a clear speed-up.
+- Treated (wrongly) as independent samples, the large differences **between inputs** would hide the effect (p ≈ 0.8).
+
+**Code.**
+```python
+from scipy import stats
+before = [120, 85, 200, 150, 95, 170]
+after  = [112, 80, 188, 141, 92, 160]
+print(stats.ttest_rel(before, after))                    # paired: t ≈ 5.80, p ≈ 0.002
+print(stats.ttest_ind(before, after, equal_var=False))   # wrong here: p ≈ 0.8
+```
+`ttest_rel` is the paired test (it works on the differences); `ttest_ind(..., equal_var=False)` is Welch's two-sample test for independent groups.
+
+## 5. Common mistakes
+- Using a two-sample test on paired data (loses power).
+- Pairing data that aren't naturally paired.
+- Assuming equal variances without reason (prefer Welch).
+
+## 6. Practice
+Q: When are data paired?
+A: When each observation in one group is naturally linked to one in the other.
+
+Q: Paired test on differences: $\bar{d} = 4$, $s_d = 6$, $n = 36$. $t$?
+A: $4$.
+
+Q: Why can pairing increase power?
+A: It removes variation between individuals.
+
+Q: SE for independent means with $s_1 = 10$, $n_1 = 25$, $s_2 = 12$, $n_2 = 36$?
+A: $\sqrt{4 + 4} \approx 2.83$.
+
+Q: Which scipy function runs a paired t-test?
+A: `stats.ttest_rel`."
+3,TOPIC,"Chi-square tests: goodness of fit, independence and homogeneity","Expected counts, the χ² statistic, degrees of freedom, conditions, interpreting results",SHOULD,FALSE,"# Chi-square tests: goodness of fit, independence and homogeneity
+
+## 1. What it covers
+- **Goodness of fit:** does one categorical variable follow a claimed distribution?
+- **Independence:** are two categorical variables related (one sample)?
+- **Homogeneity:** do several groups have the same distribution?
+- Expected counts, the $\chi^2$ statistic, degrees of freedom, conditions.
+
+## 2. Where it is used
+- **Product analytics:** is plan choice related to country? Is the device mix the same across marketing channels?
+- **Quality:** are defects equally likely on each shift?
+- **Genetics:** do observed offspring ratios match Mendel's predictions?
+- **Fairness and randomness checks:** is a die or a random number generator fair? Is a model's error rate independent of a demographic group?
+
+## 3. What it means
+Compare **observed** counts with the counts **expected** if $H_0$ were true. Big differences → evidence against $H_0$.
+
+$$
+\chi^2 = \sum\frac{(\text{observed} - \text{expected})^2}{\text{expected}}
+$$
+Each cell adds its squared difference, scaled by the expected count. The larger $\chi^2$, the stronger the evidence.
+
+- **Goodness of fit:** expected count $= n \times$ claimed proportion; $df$ = number of categories − 1.
+- **Two-way tables (independence/homogeneity):** expected $= \frac{\text{row total} \times \text{column total}}{\text{grand total}}$; $df = (r - 1)(c - 1)$.
+
+**Condition:** all expected counts at least 5.
+
+## 4. Formula & worked example
+$$
+\chi^2 = \sum\frac{(O - E)^2}{E} \qquad E_{ij} = \frac{(\text{row } i \text{ total})(\text{column } j \text{ total})}{\text{grand total}}
+$$
+
+**Example 1 (goodness of fit).** A die is rolled 120 times: counts 25, 17, 15, 23, 24, 16. Fair?
+- Expected 20 each. $\chi^2 = \frac{25 + 9 + 25 + 9 + 16 + 16}{20} = 5.0$, $df = 5$ → p ≈ 0.42 → no evidence the die is unfair.
+
+**Example 2 (independence).** Plan choice by device (300 users):
+| | Basic | Pro | Total |
+|---|---|---|---|
+| Mobile | 120 | 30 | 150 |
+| Desktop | 90 | 60 | 150 |
+| Total | 210 | 90 | 300 |
+- Expected: mobile-basic $= \frac{150 \times 210}{300} = 105$; mobile-pro 45; desktop-basic 105; desktop-pro 45.
+- $\chi^2 = \frac{15^2}{105} + \frac{15^2}{45} + \frac{15^2}{105} + \frac{15^2}{45} \approx 2.14 + 5 + 2.14 + 5 = 14.29$, $df = 1$ → p ≈ 0.0002 → plan choice is associated with device (desktop users choose Pro more often).
+
+**Code.**
+```python
+from scipy.stats import chisquare, chi2_contingency
+print(chisquare([25, 17, 15, 23, 24, 16]))                 # statistic 5.0, p ≈ 0.416
+chi2, p, dof, expected = chi2_contingency([[120, 30], [90, 60]], correction=False)
+print(round(chi2, 2), p, dof)                               # 14.29  0.00016  1
+```
+`chisquare` does goodness of fit (equal expected counts by default); `chi2_contingency` computes expected counts for a two-way table. `correction=False` turns off the small-sample Yates correction to match the hand calculation.
+
+## 5. Common mistakes
+- Using percentages instead of counts.
+- Expected counts below 5 (combine categories or use an exact test).
+- Concluding causation from a significant association.
+
+## 6. Practice
+Q: Expected count formula in a two-way table?
+A: Row total × column total ÷ grand total.
+
+Q: Degrees of freedom for a 3 × 4 table?
+A: $(3 - 1)(4 - 1) = 6$.
+
+Q: Degrees of freedom for goodness of fit with 5 categories?
+A: $4$.
+
+Q: Condition for chi-square tests?
+A: All expected counts at least 5.
+
+Q: Difference between independence and homogeneity tests?
+A: Independence: one sample, two variables. Homogeneity: several samples, one variable. The calculation is the same."
+3,TOPIC,Inference for regression and multiple regression,"t-test and CI for the slope, conditions (LINE), reading regression output, several predictors",SHOULD,FALSE,"# Inference for regression and multiple regression
+
+## 1. What it covers
+- Testing whether the true slope $\beta$ is 0; confidence interval for $\beta$.
+- Conditions: **L**inear, **I**ndependent, **N**ormal residuals, **E**qual variance (LINE).
+- Reading regression output (coefficients, SEs, t, p, $R^2$).
+- **Multiple regression**: several predictors; interpreting coefficients ""holding others constant"".
+
+## 2. Where it is used
+- **Economics and business:** which factors drive sales or prices, and by how much.
+- **Data science:** linear and logistic regression are the most interpretable models.
+- **Science:** quantifying relationships with uncertainty.
+- **Real estate:** price models with area, location, age.
+
+## 3. What it means
+A fitted slope $b$ from a sample estimates the true slope $\beta$. If the true slope were 0, $x$ would be useless for predicting $y$. The test asks whether $b$ is far enough from 0 relative to its SE: $t = \frac{b}{SE_b}$ with $df = n - 2$.
+
+**Multiple regression:** $\hat{y} = b_0 + b_1x_1 + b_2x_2 + \cdots$. Each $b_j$ is the predicted change in $y$ for a one-unit increase in $x_j$, **holding the other predictors fixed**. A variable can look important on its own but not after controlling for others (or vice versa).
+
+**Warnings:** check residual plots (LINE); highly correlated predictors (**multicollinearity**) make coefficients unstable; adding predictors always raises $R^2$, so use adjusted $R^2$ or validation data.
+
+## 4. Formula & worked example
+$$
+t = \frac{b - 0}{SE_b},\ df = n - 2 \qquad \text{CI: } b \pm t^*SE_b
+$$
+
+**Example 1 (output).** Regressing exam score on study hours ($n = 30$):
+| | coef | std err | t | p |
+|---|---|---|---|---|
+| const | 41.0 | 3.2 | 12.8 | <0.001 |
+| hours | 4.8 | 0.65 | 7.38 | <0.001 |
+- Strong evidence of a positive slope. 95% CI ($t^* = 2.048$): $4.8 \pm 1.33$ → $(3.47, 6.13)$ points per hour.
+
+**Example 2 (multiple regression).** House price (lakh taka) $= 10 + 0.08 \times \text{area (sq ft)} - 0.5 \times \text{age (years)} + 15 \times \text{near\_metro}$.
+- Holding age and metro access fixed, each extra square foot adds 0.08 lakh (8000 taka); each year of age reduces price by 0.5 lakh; being near a metro station adds 15 lakh.
+
+**Example 3 (code).**
+```python
+import numpy as np, statsmodels.api as sm
+rng = np.random.default_rng(1)
+hours = rng.uniform(0, 10, 30)
+score = 41 + 4.8 * hours + rng.normal(0, 7, 30)
+model = sm.OLS(score, sm.add_constant(hours)).fit()
+print(model.summary().tables[1])     # coefficients, SEs, t, p, 95% CI
+```
+`add_constant` adds the intercept column; `summary()` prints the regression table used in reports and papers, including the slope test and confidence interval.
+
+## 5. Common mistakes
+- Concluding causation from a significant slope in observational data.
+- Interpreting a multiple-regression coefficient without ""holding the others constant"".
+- Skipping residual checks.
+
+## 6. Practice
+Q: Null hypothesis for the regression slope test?
+A: $H_0: \beta = 0$ (no linear relationship).
+
+Q: $b = 2.5$, $SE_b = 0.5$. $t$?
+A: $5$.
+
+Q: Degrees of freedom for simple regression with $n = 40$?
+A: $38$.
+
+Q: What does LINE stand for?
+A: Linear, Independent, Normal residuals, Equal variance.
+
+Q: Interpret $b_2 = -0.5$ for ""age"" in a price model.
+A: Holding the other predictors fixed, each extra year of age is associated with a 0.5 lower predicted price."
+3,TOPIC,Analysis of variance (ANOVA),"Comparing several means, between vs within variation, the F-statistic, post-hoc comparisons",NICE,FALSE,"# Analysis of variance (ANOVA)
+
+## 1. What it covers
+- Why not run many t-tests (multiple comparisons).
+- **One-way ANOVA**: are all group means equal?
+- **Between-group** vs **within-group** variation and the **F-statistic**.
+- **Post-hoc** tests (Tukey) to find which groups differ.
+
+## 2. Where it is used
+- **A/B/n tests:** comparing several page variants at once.
+- **Manufacturing:** comparing output from several machines or suppliers.
+- **Agriculture:** comparing crop yields under several fertilisers.
+- **Education and psychology:** comparing several teaching methods or conditions.
+
+## 3. What it means
+With 4 groups there are 6 pairwise t-tests, inflating the false-positive rate. ANOVA asks one question: $H_0$: all means are equal; $H_a$: at least one differs.
+
+The idea: compare **how far apart the group means are** (between-group variation) with **how spread out the data are within each group** (within-group variation).
+$$
+F = \frac{\text{variation between groups}}{\text{variation within groups}}
+$$
+If the group means differ a lot relative to the noise inside groups, $F$ is large and the p-value small.
+
+A significant ANOVA doesn't say **which** groups differ; follow up with a post-hoc test like Tukey's HSD, which controls the overall error rate.
+
+**Conditions:** independent random samples; roughly normal groups; similar SDs (largest SD less than about twice the smallest).
+
+## 4. Formula & worked example
+$$
+F = \frac{MSG}{MSE} = \frac{SSG/(k - 1)}{SSE/(N - k)}
+$$
+
+**Example 1 (idea).** Three machines' mean output: 50, 52, 51 units with within-group SDs of about 10 → $F$ small → differences look like noise. Same means with SDs about 0.5 → $F$ large → real differences.
+
+**Example 2 (by hand, small).** Groups: A = 4, 5, 6; B = 6, 7, 8; C = 9, 10, 11. Grand mean 7.33.
+- $SSG = 3[(5 - 7.33)^2 + (7 - 7.33)^2 + (10 - 7.33)^2] = 3[5.44 + 0.11 + 7.11] = 38$
+- $SSE$ = within-group squared deviations $= 2 + 2 + 2 = 6$
+- $F = \frac{38/2}{6/6} = 19$ → p ≈ 0.0025 → the means are not all equal.
+
+**Example 3 (code).**
+```python
+from scipy.stats import f_oneway
+from statsmodels.stats.multicomp import pairwise_tukeyhsd
+A, B, C = [4, 5, 6], [6, 7, 8], [9, 10, 11]
+print(f_oneway(A, B, C))                                   # F = 19.0, p ≈ 0.0025
+print(pairwise_tukeyhsd(A + B + C, [""A""]*3 + [""B""]*3 + [""C""]*3))
+```
+`f_oneway` runs the ANOVA; `pairwise_tukeyhsd` then shows which pairs differ (here C differs from A and B; A vs B is not significant with so little data).
+
+## 5. Common mistakes
+- Running many t-tests instead of ANOVA.
+- Concluding all means differ after a significant ANOVA (only at least one does).
+- Ignoring very unequal spreads.
+
+## 6. Practice
+Q: Null hypothesis of one-way ANOVA?
+A: All group means are equal.
+
+Q: What does a large F-statistic indicate?
+A: Between-group differences are large relative to within-group variation.
+
+Q: Why not just run all pairwise t-tests?
+A: It inflates the overall Type I error rate.
+
+Q: After a significant ANOVA, how do you find which groups differ?
+A: Use a post-hoc test such as Tukey's HSD.
+
+Q: Degrees of freedom for $k = 4$ groups and $N = 40$ observations?
+A: $3$ and $36$."
+3,TOPIC,Statistical tests on real data in Python,"A complete workflow: load, explore, check conditions, test, report effect sizes; choosing the right test",SHOULD,FALSE,"# Statistical tests on real data in Python
+
+## 1. What it covers
+- A complete, reproducible analysis workflow.
+- A guide for **choosing the right test**.
+- Reporting results properly (effect size, CI, p-value, conditions).
+
+## 2. Where it is used
+- **Data analyst and data scientist work:** every experiment report.
+- **Engineering:** deciding whether a performance change is real.
+- **Product teams:** A/B test readouts.
+
+## 3. What it means
+**Workflow:**
+1. **Question:** write it in words, then as $H_0$/$H_a$, before looking at results.
+2. **Load and explore:** summary statistics, plots, missing values, outliers.
+3. **Check conditions** (randomness, independence, sample size, shape).
+4. **Run the test** and compute a confidence interval.
+5. **Report:** effect size + CI + p-value + caveats, in plain language.
+
+**Choosing a test:**
+| Question | Data | Test |
+|---|---|---|
+| One proportion vs a value | counts | one-sample z (proportion) |
+| Two proportions | counts in 2 groups | two-sample z / chi-square |
+| One mean vs a value | numbers | one-sample t |
+| Two independent means | numbers in 2 groups | Welch t-test |
+| Before/after on same units | paired numbers | paired t-test |
+| 3+ means | numbers in 3+ groups | ANOVA (+ Tukey) |
+| Two categorical variables | two-way table | chi-square independence |
+| Relationship between numbers | x, y pairs | regression slope test |
+| Small/skewed samples | numbers | nonparametric (Mann–Whitney, Wilcoxon) |
+
+## 4. Formula & worked example
+**Example (full workflow): does a new onboarding flow increase 7-day retention?**
+```python
+import numpy as np, pandas as pd
+from statsmodels.stats.proportion import proportions_ztest, confint_proportions_2indep
+
+rng = np.random.default_rng(42)
+df = pd.DataFrame({
+    ""group"": np.repeat([""old"", ""new""], 3000),
+    ""retained"": np.concatenate([rng.binomial(1, 0.30, 3000), rng.binomial(1, 0.33, 3000)]),
+})
+summary = df.groupby(""group"")[""retained""].agg([""sum"", ""count"", ""mean""])
+print(summary)                                            # explore
+
+x = summary.loc[[""new"", ""old""], ""sum""].values
+n = summary.loc[[""new"", ""old""], ""count""].values
+z, p = proportions_ztest(x, n)                            # test
+lo, hi = confint_proportions_2indep(x[0], n[0], x[1], n[1])   # effect size CI
+print(f""lift = {summary.loc['new','mean'] - summary.loc['old','mean']:.3f}, ""
+      f""95% CI ({lo:.3f}, {hi:.3f}), p = {p:.4f}"")
+```
+The script simulates a randomised experiment, summarises each group, runs the two-proportion test and reports the lift with its confidence interval. A good write-up: ""The new flow increased 7-day retention by about 3 percentage points (95% CI roughly 0.7 to 5.4 points, p ≈ 0.01) in a randomised test of 6000 users."" (Exact numbers depend on the random seed.)
+
+**Nonparametric alternative.**
+```python
+from scipy.stats import mannwhitneyu
+print(mannwhitneyu([12, 15, 11, 30, 14], [18, 22, 19, 25, 40]))
+```
+The Mann–Whitney test compares two groups using ranks, so it doesn't need normality, which is useful for small, skewed samples like revenue per user.
+
+## 5. Common mistakes
+- Choosing the test after seeing which gives the smallest p-value.
+- Reporting only p-values.
+- Ignoring how the data were collected (no randomisation → no causal claim).
+
+## 6. Practice
+Q: Test for comparing mean spend between two independent groups?
+A: Welch's two-sample t-test.
+
+Q: Test for whether churn is related to subscription plan (categorical)?
+A: Chi-square test of independence.
+
+Q: Test for comparing the same servers' latency before and after a patch?
+A: Paired t-test.
+
+Q: Five things a good test report includes?
+A: The question, effect size, confidence interval, p-value, and conditions/caveats.
+
+Q: When might you use a Mann–Whitney test?
+A: For small or strongly skewed samples where t-test conditions fail."
+3,TOPIC,Practice & review: Inference,Mixed problem set with worked answers,MUST,FALSE,"# Practice & review: Inference
+
+**How to use this:** 60 minutes; calculator or Python allowed. State hypotheses and check conditions every time.
+
+## Problems
+1. 312 of 600 surveyed users want a dark mode. Build a 95% CI for the proportion.
+2. How many users are needed to estimate a proportion within ±2% at 95% (no prior estimate)?
+3. 16 cereal boxes: $\bar{x} = 495$ g, $s = 8$ g. Test whether the mean is less than the labelled 500 g ($t^*$ one-sided 5%, $df = 15$: 1.753).
+4. A/B test: A 210/3000 converted, B 255/3000. Test at $\alpha = 0.05$ (two-sided).
+5. A die rolled 60 times gives 4, 10, 8, 12, 9, 17. Chi-square statistic and conclusion ($\chi^2_{0.05,5} = 11.07$).
+6. A team runs 12 A/B tests at $\alpha = 0.05$ with no real effects. Probability of at least one false win?
+7. Why is a paired design better for comparing two algorithms on the same 20 datasets?
+8. A regression of sales on ad spend gives slope 3.2 with SE 1.1 ($n = 25$). Is the slope significant? 95% CI ($t^* = 2.069$)?
+
+## Answers
+1. $\hat{p} = 0.52$; $SE \approx 0.0204$; $0.52 \pm 0.040$ → $(0.48, 0.56)$.
+2. $\left(\frac{1.96}{0.02}\right)^2(0.25) = 2401$.
+3. $t = \frac{-5}{8/4} = -2.5 < -1.753$ → reject $H_0$; evidence the mean is below 500 g.
+4. $\hat{p}_A = 0.07$, $\hat{p}_B = 0.085$; pooled $0.0775$; $SE = \sqrt{0.0775 \times 0.9225 \times \frac{2}{3000}} \approx 0.0069$; $z \approx 2.17$ → p ≈ 0.03 → reject; B converts better.
+5. Expected 10 each: $\frac{36 + 0 + 4 + 4 + 1 + 49}{10} = 9.4 < 11.07$ → fail to reject; no convincing evidence of unfairness.
+6. $1 - 0.95^{12} \approx 0.46$.
+7. Pairing removes dataset-to-dataset variation, so differences between algorithms are measured more precisely.
+8. $t = \frac{3.2}{1.1} \approx 2.91$, $df = 23$ → p ≈ 0.008 → significant; CI $3.2 \pm 2.28$ → $(0.92, 5.48)$.
+
+## Flashcards
+Q: General form of a confidence interval?
+A: Estimate ± critical value × standard error.
+
+Q: p-value meaning?
+A: The probability of data at least as extreme as observed if $H_0$ is true.
+
+Q: Type I vs Type II error?
+A: Type I: false positive (reject a true $H_0$). Type II: false negative (miss a real effect).
+
+Q: Chi-square statistic?
+A: $\sum\frac{(O - E)^2}{E}$."
+2,MODULE,Final review,Cumulative mixed set covering the whole roadmap,MUST,,"Mix everything. After this, continue with Linear Algebra (the language of machine learning) or apply these methods to your own data."
+3,TOPIC,Final review: Statistics and probability,Cumulative mixed problems from all phases with answers,MUST,FALSE,"# Final review: Statistics and probability
+
+**How to use this:** 75 minutes; calculator or Python allowed. Re-study the topic for every miss.
+
+## Problems
+1. Salaries (thousand taka): 28, 30, 31, 33, 35, 36, 38, 120. Which centre and spread measures should you report, and why? Compute them.
+2. A test has mean 60 and SD 12; scores are roughly normal. What percent score above 84? What score marks the top 5%?
+3. For data with $\bar{x} = 10$, $s_x = 2$, $\bar{y} = 50$, $s_y = 8$, $r = -0.6$: find the regression line and $r^2$.
+4. A researcher compares sleep in students who drink coffee and those who don't, using a survey. Can she conclude coffee causes poor sleep? What design would allow that?
+5. 5% of a population has a condition. A test has 90% sensitivity and a 10% false positive rate. $P(\text{condition} \mid \text{positive})$?
+6. A password has 4 lowercase letters followed by 2 digits. How many passwords are possible?
+7. A call centre averages 5 calls per 10 minutes. $P(\text{no calls in 10 minutes})$? Expected wait between calls?
+8. Average basket value: $\mu = 900$, $\sigma = 600$ (skewed). For 144 random baskets, $P(\bar{x} > 1000)$?
+9. 230 of 500 surveyed customers are satisfied. 95% CI for the satisfaction rate. Is ""a majority are satisfied"" supported?
+10. An A/B test: A 300/5000, B 360/5000. Test for a difference at 5% and give a 95% CI for the lift.
+
+## Answers
+1. Right-skewed with an outlier (120) → median and IQR. Median $= \frac{33 + 35}{2} = 34$; $Q_1 = 30.5$, $Q_3 = 37$, IQR $= 6.5$ (mean ≈ 43.9 is misleading).
+2. 84 is $z = 2$ → about 2.5%; top 5%: $60 + 1.645 \times 12 \approx 79.7$.
+3. $b = -0.6 \times \frac{8}{2} = -2.4$; $a = 50 + 24 = 74$ → $\hat{y} = 74 - 2.4x$; $r^2 = 0.36$.
+4. No: observational study with possible confounders (stress, workload). A randomised experiment assigning coffee/no coffee would allow causal conclusions.
+5. $\frac{0.9 \times 0.05}{0.9 \times 0.05 + 0.1 \times 0.95} = \frac{0.045}{0.14} \approx 0.32$.
+6. $26^4 \times 10^2 = 45\,697\,600$.
+7. $e^{-5} \approx 0.0067$; expected wait 2 minutes.
+8. SE $= \frac{600}{12} = 50$; $z = 2$ → $\approx 0.023$.
+9. $\hat{p} = 0.46$, $SE \approx 0.0223$, CI $0.46 \pm 0.044$ → $(0.416, 0.504)$; the claim isn't supported (the interval is mostly below 0.5).
+10. Pooled $\hat{p} = 0.066$; $SE = \sqrt{0.066 \times 0.934 \times \frac{2}{5000}} \approx 0.00497$; $z = \frac{0.012}{0.00497} \approx 2.42$ → p ≈ 0.016 → significant. CI: $SE \approx 0.00496$ → $0.012 \pm 0.0097$ → $(0.2\%, 2.2\%)$."

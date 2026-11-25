@@ -1,0 +1,70 @@
+/* Note typography for the phone, modelled on the desktop's Tailwind "prose" + .note-content rules. */
+:root {
+  --text: #0f172a;
+  --muted: #475569;
+  --border: #e2e8f0;
+  --code-bg: #f1f5f9;
+  --link: #0369a1;
+  --wiki: #0369a1;
+  --quote: #cbd5e1;
+  --mark: #fef08a;
+  color-scheme: light;
+}
+.dark {
+  --text: #e2e8f0;
+  --muted: #94a3b8;
+  --border: #334155;
+  --code-bg: #1e293b;
+  --link: #38bdf8;
+  --wiki: #7dd3fc;
+  --quote: #475569;
+  --mark: #854d0e;
+  color-scheme: dark;
+}
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  padding: 0 2px 8px;
+  background: transparent;
+  color: var(--text);
+  font: 1rem/1.65 -apple-system, system-ui, Roboto, "Segoe UI", sans-serif;
+  overflow-wrap: anywhere;
+}
+#note > :first-child { margin-top: 0; }
+h1, h2, h3, h4 { line-height: 1.3; margin: 1.4em 0 0.5em; }
+h1 { font-size: 1.5em; } h2 { font-size: 1.3em; } h3 { font-size: 1.12em; } h4 { font-size: 1em; }
+p, ul, ol, blockquote, table, pre { margin: 0.7em 0; }
+ul, ol { padding-left: 1.4em; }
+li { margin: 0.2em 0; }
+li > p { margin: 0.2em 0; }
+ul:has(> li > input[type="checkbox"]) { list-style: none; padding-left: 0.4em; }
+input[type="checkbox"] { width: 1.05em; height: 1.05em; vertical-align: -0.15em; margin-right: 0.4em; }
+a { color: var(--link); }
+a.wikilink { color: var(--wiki); text-decoration: underline dotted; text-underline-offset: 3px; }
+a.wikilink-missing { color: var(--muted); text-decoration-style: dashed; }
+blockquote { border-left: 3px solid var(--quote); margin-left: 0; padding-left: 0.9em; color: var(--muted); }
+hr { border: 0; border-top: 1px solid var(--border); margin: 1.5em 0; }
+mark { background: var(--mark); color: inherit; border-radius: 2px; padding: 0 2px; }
+img { max-width: 100%; height: auto; }
+table { border-collapse: collapse; display: block; overflow-x: auto; }
+th, td { border: 1px solid var(--border); padding: 0.35em 0.6em; text-align: left; }
+th { font-weight: 600; }
+code { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 0.88em; }
+:not(pre) > code { background: var(--code-bg); border-radius: 4px; padding: 0.1em 0.35em; }
+/* code blocks are always dark, like the desktop, so one highlight palette */
+pre { background: #0d1117; color: #e6edf3; border-radius: 8px; padding: 0.8em 1em; overflow-x: auto; }
+pre code.hljs { display: block; overflow-x: auto; background: none; padding: 0; }
+.math-display { overflow-x: auto; overflow-y: hidden; padding: 0.25rem 0; }
+.mermaid-diagram { margin: 1em 0; overflow-x: auto; text-align: center; }
+.mermaid-diagram svg { display: inline-block; max-width: 100%; height: auto; }
+.diagram-error { color: #dc2626; font-size: 0.8em; }
+
+/* highlight.js classes: the desktop's palette (frontend/src/style.css) */
+.hljs-comment, .hljs-quote { color: #8b949e; font-style: italic; }
+.hljs-keyword, .hljs-selector-tag, .hljs-type, .hljs-doctag { color: #ff7b72; }
+.hljs-string, .hljs-regexp, .hljs-addition, .hljs-meta .hljs-string { color: #a5d6ff; }
+.hljs-number, .hljs-literal, .hljs-variable.language_, .hljs-symbol, .hljs-bullet { color: #79c0ff; }
+.hljs-title, .hljs-title.function_, .hljs-section { color: #d2a8ff; }
+.hljs-attr, .hljs-attribute, .hljs-property, .hljs-name, .hljs-selector-class, .hljs-selector-id { color: #7ee787; }
+.hljs-built_in, .hljs-meta { color: #ffa657; }
+.hljs-deletion { color: #ffdcd7; }

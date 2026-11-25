@@ -5,7 +5,11 @@ app:
   data-dir: ${LOCALAPPDATA:${user.home}}/LearningTracker/data
 
 server:
-  address: 127.0.0.1   # this PC only
+  # Listen on the local network too, so the phone app can sync over Wi-Fi. Everything except the
+  # token-protected sync endpoints stays this-PC-only: RemoteAccessFilter answers 403 to any other
+  # request from another device (docs/SYNC_PROTOCOL.md §5). Windows asks once whether to allow it;
+  # allow "Private networks".
+  address: 0.0.0.0
 
 logging:
   # No console window: log to a file instead.

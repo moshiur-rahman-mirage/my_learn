@@ -1,0 +1,3627 @@
+﻿level,type,name,description,priority,completed,content
+1,MODULE,Phase 1 — Limits and Continuity (Foundation),"The idea of a limit, limit laws, algebraic techniques, squeeze theorem, continuity, limits at infinity, IVT",MUST,,"# Phase 1: Limits and continuity
+
+**Calculus** is the mathematics of **change** and **accumulation**. Its two big tools are the **derivative** (how fast something is changing right now) and the **integral** (how much has built up). Both rest on one idea: the **limit**, which describes what a function approaches as its input gets closer and closer to some value.
+
+Calculus is everywhere in modern technology: physics engines, optimisation, machine learning (training a neural network is calculus: gradient descent), economics, medicine and engineering.
+
+**What you need first:** the Algebra & Functions roadmap (functions, graphs, factoring, rational functions, exponentials and logs) and the Trigonometry roadmap.
+
+Each topic has six parts: what it covers, where it is used, what it means, formulas with worked examples, common mistakes, and practice flashcards."
+2,MODULE,Limits,"Meaning, notation, laws, algebraic techniques, squeeze theorem",MUST,,"A limit asks ""where is the function heading?"", not ""where is it?""."
+3,TOPIC,"The idea of a limit: graphs, tables and one-sided limits","Approaching a value, notation, left and right limits, when a limit does not exist",MUST,FALSE,"# The idea of a limit: graphs, tables and one-sided limits
+
+## 1. What it covers
+- What $\lim_{x \to a} f(x) = L$ means.
+- Estimating limits from **tables** and **graphs**.
+- **One-sided limits** ($x \to a^-$ and $x \to a^+$).
+- When a limit **does not exist**.
+
+## 2. Where it is used
+- **Derivatives and integrals:** both are defined as limits.
+- **Numerical computing:** algorithms that converge (Newton's method, iterative solvers, training loss) are limits in practice.
+- **Physics:** instantaneous speed is the limit of average speeds over shorter and shorter intervals.
+- **Finance:** continuous compounding is the limit of compounding more and more often.
+
+## 3. What it means
+$\lim_{x \to a} f(x) = L$ means: **as $x$ gets closer and closer to $a$ (from both sides), $f(x)$ gets closer and closer to $L$**. What happens exactly **at** $a$ doesn't matter; $f(a)$ might even be undefined.
+
+Think of walking towards a door: the limit is the door you're heading for, even if you never step through it.
+
+**One-sided limits:** $x \to a^-$ means approaching from the **left** (values less than $a$), $x \to a^+$ from the **right**. The two-sided limit exists **only if both one-sided limits exist and are equal**.
+
+**A limit does not exist (DNE) when:**
+- the left and right limits differ (a jump);
+- the function grows without bound (it goes to $\pm\infty$);
+- the function oscillates forever (like $\sin\frac{1}{x}$ near 0).
+
+## 4. Formula & worked example
+$$
+\lim_{x \to a} f(x) = L \iff \lim_{x \to a^-} f(x) = \lim_{x \to a^+} f(x) = L
+$$
+
+**Example 1 (table).** Estimate $\lim_{x \to 2} \frac{x^2 - 4}{x - 2}$.
+| $x$ | 1.9 | 1.99 | 1.999 | 2.001 | 2.01 | 2.1 |
+|---|---|---|---|---|---|---|
+| $f(x)$ | 3.9 | 3.99 | 3.999 | 4.001 | 4.01 | 4.1 |
+- The values approach 4 from both sides → limit 4, even though $f(2)$ is undefined ($\frac{0}{0}$).
+
+**Example 2 (jump).** $f(x) = 1$ for $x < 0$ and $f(x) = 3$ for $x \ge 0$.
+- $\lim_{x \to 0^-} f(x) = 1$, $\lim_{x \to 0^+} f(x) = 3$ → two-sided limit DNE.
+
+**Example 3 (unbounded).** $\lim_{x \to 0} \frac{1}{x^2}$: values grow without bound → the limit is $\infty$ (it DNE as a number).
+
+**Example 4 (hole).** $g(x) = x + 1$ for $x \ne 3$ and $g(3) = 10$. $\lim_{x \to 3} g(x) = 4$ (the value at 3 is irrelevant).
+
+**Example 5 (code).** Watching a limit numerically.
+```python
+import math
+for h in (0.1, 0.01, 0.001, 0.0001):
+    print(h, math.sin(h) / h)
+# 0.998334..., 0.999983..., 0.9999998..., 0.99999999...  -> approaching 1
+```
+As `h` shrinks, $\frac{\sin h}{h}$ gets closer to 1, so $\lim_{h \to 0}\frac{\sin h}{h} = 1$ (proved later with the squeeze theorem).
+
+## 5. Common mistakes
+- Thinking the limit must equal $f(a)$ (only true for continuous functions).
+- Checking only one side.
+- Trusting a table with too few or badly chosen values (calculators can also round misleadingly for very small $h$).
+
+## 6. Practice
+Q: What does $\lim_{x \to 5} f(x) = 2$ mean?
+A: As $x$ approaches 5 from both sides, $f(x)$ approaches 2.
+
+Q: Left limit 4, right limit 4, $f(a) = 7$. Two-sided limit?
+A: $4$.
+
+Q: Left limit 2, right limit $-1$. Two-sided limit?
+A: Does not exist.
+
+Q: $\lim_{x \to 0^+} \frac{1}{x}$?
+A: $+\infty$ (unbounded).
+
+Q: Name three ways a limit can fail to exist.
+A: Different one-sided limits, unbounded growth, endless oscillation."
+3,TOPIC,Limit laws and direct substitution,"Sum, product, quotient and power laws; substitution for continuous functions",MUST,FALSE,"# Limit laws and direct substitution
+
+## 1. What it covers
+- The **limit laws**: limits of sums, differences, products, quotients, powers and roots.
+- **Direct substitution** for polynomials, rational functions (when the denominator isn't 0) and other continuous functions.
+- What to do when substitution gives $\frac{0}{0}$ (next topic) or $\frac{k}{0}$.
+
+## 2. Where it is used
+- **Computing limits quickly** in every later topic.
+- **Proving derivative rules** (sum rule, product rule) uses the limit laws.
+- **Error analysis:** if each input converges, combinations converge too.
+
+## 3. What it means
+Limits behave nicely with arithmetic: the limit of a sum is the sum of the limits, and so on (as long as each limit exists and you don't divide by 0).
+
+For **continuous** functions (polynomials, $\sin$, $\cos$, $e^x$, rational functions away from zeros of the denominator), the limit is simply the value: **plug in**.
+
+**Substitution results:**
+- A number → that's the limit.
+- $\frac{k}{0}$ with $k \ne 0$ → the limit is infinite or DNE (check signs on each side).
+- $\frac{0}{0}$ → **indeterminate**: more work needed (factor, rationalise, etc.).
+
+## 4. Formula & worked example
+$$
+\lim(f \pm g) = \lim f \pm \lim g \qquad \lim(fg) = \lim f \cdot \lim g \qquad \lim\frac{f}{g} = \frac{\lim f}{\lim g}\ (\lim g \ne 0) \qquad \lim f^n = (\lim f)^n
+$$
+
+**Example 1.** $\lim_{x \to 3}(2x^2 - 5x + 1) = 18 - 15 + 1 = 4$
+
+**Example 2.** $\lim_{x \to -1} \frac{x^2 + 3}{x - 2} = \frac{4}{-3} = -\frac{4}{3}$
+
+**Example 3.** $\lim_{x \to \pi} (x\cos x) = \pi \cdot (-1) = -\pi$
+
+**Example 4.** $\lim_{x \to 4} \sqrt{x^2 + 9} = \sqrt{25} = 5$
+
+**Example 5 ($k/0$).** $\lim_{x \to 2} \frac{3}{x - 2}$: from the right $+\infty$, from the left $-\infty$ → DNE.
+
+**Example 6 (laws).** If $\lim_{x \to a} f(x) = 6$ and $\lim_{x \to a} g(x) = -2$, then $\lim_{x \to a}\frac{f(x) + g(x)}{f(x)g(x)} = \frac{4}{-12} = -\frac{1}{3}$.
+
+## 5. Common mistakes
+- Calling $\frac{0}{0}$ ""0"" or ""undefined, so DNE"". It's indeterminate; the limit may well exist.
+- Using the quotient law when the denominator's limit is 0.
+- Forgetting to check both sides for $\frac{k}{0}$.
+
+## 6. Practice
+Q: $\lim_{x \to 2}(x^3 - 4x)$?
+A: $0$.
+
+Q: $\lim_{x \to 1}\frac{x + 4}{x^2 + 1}$?
+A: $\frac{5}{2}$.
+
+Q: Substitution gives $\frac{0}{0}$. What does that tell you?
+A: The form is indeterminate; simplify before concluding.
+
+Q: $\lim_{x \to 0} e^x\cos x$?
+A: $1$.
+
+Q: $\lim f = 3$, $\lim g = 5$. $\lim(2f - g^2)$?
+A: $6 - 25 = -19$."
+3,TOPIC,Algebraic limit techniques for 0/0,"Factoring and cancelling, rationalising, simplifying complex fractions",MUST,FALSE,"# Algebraic limit techniques for 0/0
+
+## 1. What it covers
+- Resolving the indeterminate form $\frac{0}{0}$:
+  - **factor and cancel**;
+  - **rationalise** with a conjugate;
+  - **simplify** compound fractions;
+  - expand and simplify.
+
+## 2. Where it is used
+- **Derivatives from first principles:** the derivative definition always starts as $\frac{0}{0}$.
+- **Removable discontinuities** (holes) in graphs.
+- **Numerical stability:** rewriting $\sqrt{x + h} - \sqrt{x}$ as $\frac{h}{\sqrt{x + h} + \sqrt{x}}$ avoids catastrophic cancellation in floating-point code.
+
+## 3. What it means
+$\frac{0}{0}$ means a factor that is 0 at $x = a$ appears in both the top and bottom. The limit only cares about values **near** $a$, not at $a$, so you're allowed to cancel that factor (for $x \ne a$). After cancelling, substitute again.
+
+**Strategy:**
+1. Substitute. If you get a number, done.
+2. If $\frac{0}{0}$: polynomials → **factor**; square roots → **multiply by the conjugate**; fractions inside fractions → **common denominator**.
+3. Cancel the common factor, then substitute.
+
+## 4. Formula & worked example
+**Example 1 (factor).** $\lim_{x \to 3}\frac{x^2 - 9}{x - 3} = \lim_{x \to 3}\frac{(x - 3)(x + 3)}{x - 3} = \lim_{x \to 3}(x + 3) = 6$
+
+**Example 2 (factor).** $\lim_{x \to -2}\frac{x^2 + 5x + 6}{x^2 - 4} = \lim\frac{(x + 2)(x + 3)}{(x + 2)(x - 2)} = \frac{1}{-4} = -\frac{1}{4}$
+
+**Example 3 (rationalise).** $\lim_{x \to 0}\frac{\sqrt{x + 9} - 3}{x}$
+- $\times \frac{\sqrt{x + 9} + 3}{\sqrt{x + 9} + 3}$: $\frac{x + 9 - 9}{x(\sqrt{x + 9} + 3)} = \frac{1}{\sqrt{x + 9} + 3} \to \frac{1}{6}$
+
+**Example 4 (compound fraction).** $\lim_{x \to 2}\frac{\frac{1}{x} - \frac{1}{2}}{x - 2}$
+- Top: $\frac{2 - x}{2x}$ → $\frac{2 - x}{2x(x - 2)} = \frac{-1}{2x} \to -\frac{1}{4}$
+
+**Example 5 (expand).** $\lim_{h \to 0}\frac{(3 + h)^2 - 9}{h} = \lim\frac{6h + h^2}{h} = \lim(6 + h) = 6$ (this is the derivative of $x^2$ at 3).
+
+**Example 6 (cubes).** $\lim_{x \to 1}\frac{x^3 - 1}{x - 1} = \lim(x^2 + x + 1) = 3$
+
+## 5. Common mistakes
+- Cancelling terms instead of factors.
+- Concluding ""DNE"" as soon as you see $\frac{0}{0}$.
+- Rationalising and forgetting to multiply the other part of the fraction too.
+
+## 6. Practice
+Q: $\lim_{x \to 4}\frac{x^2 - 16}{x - 4}$?
+A: $8$.
+
+Q: $\lim_{x \to 1}\frac{x^2 - 3x + 2}{x - 1}$?
+A: $\lim(x - 2) = -1$.
+
+Q: $\lim_{x \to 0}\frac{\sqrt{4 + x} - 2}{x}$?
+A: $\frac{1}{4}$.
+
+Q: $\lim_{h \to 0}\frac{(2 + h)^3 - 8}{h}$?
+A: $12$.
+
+Q: $\lim_{x \to 5}\frac{x - 5}{x^2 - 25}$?
+A: $\frac{1}{10}$."
+3,TOPIC,Squeeze theorem and trig limits,"Sandwiching a function, lim sin x / x = 1, lim (1 − cos x)/x = 0",MUST,FALSE,"# Squeeze theorem and trig limits
+
+## 1. What it covers
+- The **squeeze (sandwich) theorem**.
+- The key trig limits $\lim_{x \to 0}\frac{\sin x}{x} = 1$ and $\lim_{x \to 0}\frac{1 - \cos x}{x} = 0$.
+- Using them to evaluate related limits.
+
+## 2. Where it is used
+- **Derivatives of sin and cos** are proved with these two limits.
+- **Physics and engineering:** the small-angle approximation $\sin\theta \approx \theta$ (pendulums, optics, structural analysis) comes from $\frac{\sin x}{x} \to 1$.
+- **Signal processing:** the sinc function $\frac{\sin x}{x}$ appears in sampling and filter design.
+- **Proving limits** of oscillating functions.
+
+## 3. What it means
+**Squeeze theorem:** if $g(x) \le f(x) \le h(x)$ near $a$, and both $g$ and $h$ approach the same limit $L$, then $f$ is trapped and must approach $L$ too. Like a person walking between two police officers who both go to the station: the person ends up there as well.
+
+**Example of use:** $x^2\sin\frac{1}{x}$ oscillates wildly near 0, but $-x^2 \le x^2\sin\frac{1}{x} \le x^2$, and both bounds go to 0, so the limit is 0.
+
+**Why $\frac{\sin x}{x} \to 1$:** on the unit circle, for small positive $x$, the areas give $\cos x \le \frac{\sin x}{x} \le 1$. Both bounds approach 1, so the squeeze theorem gives 1. Numerically: $\sin(0.01) = 0.0099998$, almost exactly $0.01$.
+
+## 4. Formula & worked example
+$$
+g(x) \le f(x) \le h(x),\ \lim g = \lim h = L \Rightarrow \lim f = L \qquad \lim_{x \to 0}\frac{\sin x}{x} = 1 \qquad \lim_{x \to 0}\frac{1 - \cos x}{x} = 0
+$$
+($x$ in radians.)
+
+**Example 1.** $\lim_{x \to 0}\frac{\sin 5x}{x} = \lim 5 \cdot \frac{\sin 5x}{5x} = 5$
+
+**Example 2.** $\lim_{x \to 0}\frac{\sin 3x}{\sin 7x} = \lim\frac{3}{7} \cdot \frac{\sin 3x}{3x} \cdot \frac{7x}{\sin 7x} = \frac{3}{7}$
+
+**Example 3.** $\lim_{x \to 0}\frac{\tan x}{x} = \lim\frac{\sin x}{x} \cdot \frac{1}{\cos x} = 1$
+
+**Example 4 (squeeze).** $\lim_{x \to 0} x\cos\frac{1}{x}$
+- $-\lvert x\rvert \le x\cos\frac{1}{x} \le \lvert x\rvert$, both bounds → 0 → limit 0
+
+**Example 5.** $\lim_{x \to 0}\frac{1 - \cos x}{x^2}$
+- $\times\frac{1 + \cos x}{1 + \cos x}$: $\frac{\sin^2 x}{x^2(1 + \cos x)} \to 1 \cdot \frac{1}{2} = \frac{1}{2}$
+
+## 5. Common mistakes
+- Using degrees (these limits need radians).
+- Writing $\frac{\sin 5x}{x} = \sin 5$.
+- Using the squeeze theorem with bounds that approach different limits.
+
+## 6. Practice
+Q: $\lim_{x \to 0}\frac{\sin 4x}{x}$?
+A: $4$.
+
+Q: $\lim_{x \to 0}\frac{\sin x}{3x}$?
+A: $\frac{1}{3}$.
+
+Q: $\lim_{x \to 0} x^2\sin\frac{1}{x}$?
+A: $0$ (squeeze).
+
+Q: $\lim_{x \to 0}\frac{x}{\sin x}$?
+A: $1$.
+
+Q: State the squeeze theorem.
+A: If $g \le f \le h$ near $a$ and $g, h \to L$, then $f \to L$."
+2,MODULE,Continuity and behaviour at infinity,"Continuity, discontinuities, infinite limits, limits at infinity, IVT",MUST,,A continuous function can be drawn without lifting your pen.
+3,TOPIC,Continuity and types of discontinuity,"Three-part definition, removable, jump and infinite discontinuities, continuity on intervals",MUST,FALSE,"# Continuity and types of discontinuity
+
+## 1. What it covers
+- The definition of **continuity at a point** (three conditions).
+- Types of discontinuity: **removable** (hole), **jump**, **infinite** (vertical asymptote).
+- Which functions are continuous; continuity on an interval.
+- Making a piecewise function continuous.
+
+## 2. Where it is used
+- **Physics and engineering:** physical quantities (temperature, position) change continuously; jumps signal events (a switch, a collision).
+- **Numerical methods:** root-finding (bisection) and many theorems require continuity.
+- **Signal processing:** discontinuities cause ringing artefacts.
+- **Pricing:** tax brackets and shipping tiers are jump discontinuities.
+
+## 3. What it means
+$f$ is **continuous at $a$** if:
+1. $f(a)$ is defined;
+2. $\lim_{x \to a} f(x)$ exists;
+3. they're equal: $\lim_{x \to a} f(x) = f(a)$.
+
+Informally: no breaks, jumps or holes; you can draw it without lifting the pen.
+
+**Discontinuity types:**
+- **Removable:** the limit exists but $f(a)$ is missing or different (a hole). It can be ""fixed"" by redefining one point.
+- **Jump:** the one-sided limits are different.
+- **Infinite:** the function blows up (vertical asymptote).
+
+Polynomials, $\sin$, $\cos$, $e^x$ are continuous everywhere; rational functions, $\ln x$, $\sqrt{x}$, $\tan x$ are continuous on their domains.
+
+## 4. Formula & worked example
+$$
+f \text{ continuous at } a \iff \lim_{x \to a} f(x) = f(a)
+$$
+
+**Example 1.** $f(x) = \frac{x^2 - 1}{x - 1}$ at $x = 1$: undefined, but the limit is 2 → removable. Define $f(1) = 2$ to fix it.
+
+**Example 2.** $f(x) = \frac{1}{x - 3}$ at $x = 3$: infinite discontinuity.
+
+**Example 3.** $f(x) = \lfloor x\rfloor$ (floor function) at $x = 2$: left limit 1, right limit 2 → jump.
+
+**Example 4 (make it continuous).** Find $k$ so that $f(x) = x^2 + k$ for $x < 2$ and $f(x) = 3x - 1$ for $x \ge 2$ is continuous.
+- Left: $4 + k$; right: $5$ → $k = 1$
+
+**Example 5.** Where is $f(x) = \frac{x + 2}{x^2 - 9}$ continuous? Everywhere except $x = \pm 3$.
+
+## 5. Common mistakes
+- Checking only whether $f(a)$ exists.
+- Calling a hole a vertical asymptote.
+- Forgetting to compare both one-sided pieces when making a piecewise function continuous.
+
+## 6. Practice
+Q: Three conditions for continuity at $a$?
+A: $f(a)$ defined, the limit exists, and they are equal.
+
+Q: Type of discontinuity of $\frac{x^2 - 4}{x - 2}$ at 2?
+A: Removable.
+
+Q: Type of discontinuity of $\frac{1}{(x + 1)^2}$ at $-1$?
+A: Infinite.
+
+Q: Find $a$ so $f(x) = ax + 1$ ($x < 1$), $f(x) = x^2 + 3$ ($x \ge 1$) is continuous.
+A: $a + 1 = 4$ → $a = 3$.
+
+Q: Is $f(x) = \lvert x\rvert$ continuous at 0?
+A: Yes."
+3,TOPIC,Infinite limits and limits at infinity,"Vertical asymptotes, end behaviour, comparing degrees, dominant terms",MUST,FALSE,"# Infinite limits and limits at infinity
+
+## 1. What it covers
+- **Infinite limits**: $f(x) \to \pm\infty$ as $x \to a$ (vertical asymptotes).
+- **Limits at infinity**: $\lim_{x \to \pm\infty} f(x)$ (horizontal asymptotes, end behaviour).
+- Rational functions: divide by the highest power.
+- Growth rates: logs < powers < exponentials.
+
+## 2. Where it is used
+- **Algorithm analysis:** comparing $n^2$ vs $2^n$ vs $n\log n$ as $n \to \infty$ is exactly big-O thinking.
+- **Long-run behaviour:** average cost, drug concentration, population limits.
+- **Physics:** terminal velocity; charge on a capacitor approaching its maximum.
+- **Machine learning:** the sigmoid $\frac{1}{1 + e^{-x}}$ approaches 0 and 1 at $\mp\infty$.
+
+## 3. What it means
+**Infinite limit:** near $a$, $f(x)$ grows without bound. Check the sign of the function on each side of $a$.
+
+**Limit at infinity:** what $f(x)$ settles towards as $x$ becomes huge. For a rational function, only the **highest-power terms** matter for huge $x$ (they dominate). Divide top and bottom by the highest power of $x$ in the denominator:
+- degree top < degree bottom → 0;
+- equal degrees → ratio of leading coefficients;
+- degree top > degree bottom → $\pm\infty$.
+
+**Growth hierarchy** (as $x \to \infty$): $\ln x \ll x^p \ll e^x \ll x!$. Any exponential eventually beats any power.
+
+## 4. Formula & worked example
+$$
+\lim_{x \to \infty}\frac{1}{x^p} = 0\ (p > 0) \qquad \lim_{x \to \infty} e^{-x} = 0 \qquad \lim_{x \to \infty}\frac{x^n}{e^x} = 0
+$$
+
+**Example 1.** $\lim_{x \to \infty}\frac{3x^2 - x}{5x^2 + 2} = \lim\frac{3 - 1/x}{5 + 2/x^2} = \frac{3}{5}$
+
+**Example 2.** $\lim_{x \to \infty}\frac{4x + 1}{x^3} = 0$
+
+**Example 3.** $\lim_{x \to -\infty}\frac{x^3}{x^2 + 1} = -\infty$
+
+**Example 4 (infinite limit).** $\lim_{x \to 2^+}\frac{x}{x - 2}$: top → 2, bottom → $0^+$ → $+\infty$. From the left: $-\infty$.
+
+**Example 5 (roots).** $\lim_{x \to \infty}\frac{\sqrt{9x^2 + 1}}{2x - 3} = \lim\frac{3x\sqrt{1 + 1/(9x^2)}}{2x - 3} = \frac{3}{2}$
+
+**Example 6 (algorithms).** Is $n^{10}$ or $1.01^n$ bigger for very large $n$? Eventually $1.01^n$ (exponential beats any power), even though $n^{10}$ is far bigger for moderate $n$.
+
+## 5. Common mistakes
+- Dividing by the wrong power of $x$.
+- Ignoring signs when $x \to -\infty$ (e.g. $\sqrt{x^2} = \lvert x\rvert = -x$ for negative $x$).
+- Saying $\frac{\infty}{\infty} = 1$. It's indeterminate.
+
+## 6. Practice
+Q: $\lim_{x \to \infty}\frac{7x^3 + x}{2x^3 - 5}$?
+A: $\frac{7}{2}$.
+
+Q: $\lim_{x \to \infty}\frac{x^2}{x + 1}$?
+A: $\infty$.
+
+Q: $\lim_{x \to 3^-}\frac{1}{x - 3}$?
+A: $-\infty$.
+
+Q: $\lim_{x \to \infty} \frac{\ln x}{x}$?
+A: $0$ (powers beat logs).
+
+Q: Horizontal asymptote of $\frac{1}{1 + e^{-x}}$ as $x \to \infty$?
+A: $y = 1$."
+3,TOPIC,Intermediate value theorem,"Statement, guaranteeing roots, the bisection method",MUST,FALSE,"# Intermediate value theorem
+
+## 1. What it covers
+- The **intermediate value theorem (IVT)**.
+- Using it to prove an equation has a solution in an interval.
+- The **bisection method** for finding roots numerically.
+
+## 2. Where it is used
+- **Numerical root finding:** the bisection method (used in solvers, financial software for interest rates, and `scipy.optimize.bisect`).
+- **Debugging:** `git bisect` uses the same halving idea to find the commit that introduced a bug.
+- **Physics:** if temperature goes from 10°C to 30°C, at some moment it was exactly 20°C.
+- **Proofs** of existence in analysis.
+
+## 3. What it means
+If $f$ is **continuous** on $[a, b]$, it takes **every value** between $f(a)$ and $f(b)$. You can't get from one height to another on a continuous path without passing through every height in between, like climbing a hill from 100 m to 500 m: you must pass 300 m at some point.
+
+**Root version:** if $f(a)$ and $f(b)$ have **opposite signs**, there is at least one root ($f(c) = 0$) between $a$ and $b$.
+
+The IVT says a value is reached; it doesn't say where or how many times.
+
+**Bisection method:** check the sign at the midpoint and keep the half where the sign changes. Each step halves the interval.
+
+## 4. Formula & worked example
+$$
+f \text{ continuous on } [a, b],\ N \text{ between } f(a), f(b) \Rightarrow \exists\, c \in (a, b): f(c) = N
+$$
+
+**Example 1.** Show $x^3 + x - 1 = 0$ has a root in $[0, 1]$.
+- $f(0) = -1 < 0$, $f(1) = 1 > 0$, $f$ is continuous → a root exists.
+
+**Example 2.** Show $\cos x = x$ has a solution in $[0, \frac{\pi}{2}]$.
+- Let $g(x) = \cos x - x$: $g(0) = 1 > 0$, $g(\frac{\pi}{2}) = -\frac{\pi}{2} < 0$ → yes.
+
+**Example 3 (bisection by hand).** Root of $f(x) = x^2 - 2$ in $[1, 2]$:
+- $f(1.5) = 0.25 > 0$ → root in $[1, 1.5]$; $f(1.25) = -0.4375 < 0$ → $[1.25, 1.5]$; $f(1.375) \approx -0.109$ → $[1.375, 1.5]$; ... → approaches $\sqrt{2} \approx 1.414$.
+
+**Example 4 (code).**
+```python
+def bisect(f, a, b, tol=1e-6):
+    while b - a > tol:
+        m = (a + b) / 2
+        if f(a) * f(m) <= 0:   # sign change in the left half
+            b = m
+        else:
+            a = m
+    return (a + b) / 2
+print(bisect(lambda x: x**3 + x - 1, 0, 1))   # 0.6823...
+```
+`f(a) * f(m) <= 0` means the values have opposite signs (or one is 0), so by the IVT a root lies in $[a, m]$. Each loop halves the interval, so 20 loops shrink it by a factor of about a million.
+
+**Example 5 (IVT needs continuity).** $f(x) = \frac{1}{x}$ on $[-1, 1]$: $f(-1) = -1$, $f(1) = 1$, but there's no root, because $f$ isn't continuous at 0.
+
+## 5. Common mistakes
+- Applying the IVT to a discontinuous function.
+- Concluding there's exactly one root (there could be several).
+- Thinking the IVT tells you where the root is.
+
+## 6. Practice
+Q: State the IVT root version.
+A: If $f$ is continuous on $[a, b]$ and $f(a)$, $f(b)$ have opposite signs, then $f$ has a root in $(a, b)$.
+
+Q: $f(2) = 5$, $f(4) = -3$, $f$ continuous. Must $f(c) = 0$ for some $c$ in $(2, 4)$?
+A: Yes.
+
+Q: Does the IVT apply to $\tan x$ on $[0, \pi]$?
+A: No, $\tan x$ is discontinuous at $\frac{\pi}{2}$.
+
+Q: After 10 bisection steps on an interval of length 1, how wide is the interval?
+A: $2^{-10} \approx 0.001$.
+
+Q: Show $x^5 = 3$ has a solution between 1 and 2.
+A: $f(x) = x^5 - 3$: $f(1) = -2$, $f(2) = 29$; continuous → yes."
+3,TOPIC,Practice & review: Limits and continuity,Mixed problem set with worked answers,MUST,FALSE,"# Practice & review: Limits and continuity
+
+**How to use this:** 45 minutes, no calculator.
+
+## Problems
+1. $\lim_{x \to -3}\frac{x^2 + 2x - 3}{x + 3}$
+2. $\lim_{x \to 0}\frac{\sqrt{1 + x} - 1}{x}$
+3. $\lim_{x \to 0}\frac{\sin 6x}{2x}$
+4. $\lim_{x \to 0}\frac{\tan 3x}{\sin 2x}$
+5. $\lim_{x \to \infty}\frac{5x^4 - 3x}{2x^4 + x^2}$ and $\lim_{x \to -\infty}\frac{2x + 1}{\sqrt{x^2 + 4}}$
+6. $\lim_{x \to 1^-}\frac{x}{x - 1}$
+7. Find $c$ so that $f(x) = cx^2 - 1$ for $x \le 2$ and $f(x) = 4x + c$ for $x > 2$ is continuous.
+8. Classify the discontinuities of $f(x) = \frac{x - 1}{x^2 - 1}$.
+9. Use the IVT to show $e^x = 3 - x$ has a solution in $[0, 1]$.
+
+## Answers
+1. $\frac{(x + 3)(x - 1)}{x + 3} \to -4$.
+2. $\frac{1}{\sqrt{1 + x} + 1} \to \frac{1}{2}$.
+3. $3$.
+4. $\frac{3x \cdot \frac{\tan 3x}{3x}}{2x \cdot \frac{\sin 2x}{2x}} \to \frac{3}{2}$.
+5. $\frac{5}{2}$; for $x < 0$, $\sqrt{x^2 + 4} \approx \lvert x\rvert = -x$ → $\frac{2x}{-x} \to -2$.
+6. $-\infty$.
+7. $4c - 1 = 8 + c$ → $c = 3$.
+8. $\frac{x - 1}{(x - 1)(x + 1)}$: removable at $x = 1$ (limit $\frac{1}{2}$), infinite at $x = -1$.
+9. $g(x) = e^x + x - 3$: $g(0) = -2$, $g(1) = e - 2 \approx 0.72$; continuous → a root exists.
+
+## Flashcards
+Q: When does a two-sided limit exist?
+A: When both one-sided limits exist and are equal.
+
+Q: First thing to try for a limit?
+A: Direct substitution.
+
+Q: $\lim_{x \to 0}\frac{\sin x}{x}$?
+A: $1$ (radians).
+
+Q: Limit at infinity when top and bottom degrees are equal?
+A: The ratio of the leading coefficients."
+1,MODULE,Phase 2 — Derivatives (Core),"Definition, derivative graphs, differentiability, power/sum/product/quotient/chain rules, implicit, inverse, exponential and log derivatives",MUST,,"# Phase 2: Derivatives
+
+The **derivative** measures **instantaneous rate of change**: the speed shown on a speedometer at this exact moment, the slope of a curve at one point, the marginal cost of making one more item. Once you know the rules in this phase, you can differentiate almost any formula mechanically.
+
+In machine learning, every training step computes derivatives (gradients) of a loss function with respect to millions of parameters; libraries like PyTorch do this with the **chain rule** automatically (""autograd"")."
+2,MODULE,Definition and basic rules,"Rate of change, the limit definition, differentiability, power, sum, trig, exponential, product and quotient rules",MUST,,"Learn what a derivative **is** first, then the shortcuts."
+3,TOPIC,The derivative as a limit,"From average to instantaneous rate, secant to tangent, the difference quotient, notation",MUST,FALSE,"# The derivative as a limit
+
+## 1. What it covers
+- From **average** rate of change (secant slope) to **instantaneous** rate (tangent slope).
+- The definition $f'(x) = \lim_{h \to 0}\frac{f(x + h) - f(x)}{h}$.
+- Computing derivatives from the definition.
+- Notation: $f'(x)$, $\frac{dy}{dx}$, $\frac{d}{dx}f(x)$, $\dot{x}$.
+
+## 2. Where it is used
+- **Physics:** velocity is the derivative of position; acceleration is the derivative of velocity.
+- **Economics:** marginal cost and marginal revenue.
+- **Machine learning:** gradients drive training (gradient descent).
+- **Numerical computing:** finite differences $\frac{f(x + h) - f(x)}{h}$ approximate derivatives in simulations.
+- **Biology and medicine:** growth rates, rate of drug absorption.
+
+## 3. What it means
+The average rate of change between $x$ and $x + h$ is the slope of the **secant** line through two points on the curve. Now slide the second point towards the first ($h \to 0$). The secant turns into the **tangent** line, the line that just touches the curve at that point. Its slope is the derivative.
+
+Think of a car journey: average speed over the last hour is a secant; the speedometer reading right now is the tangent.
+
+**Notation:** $f'(x)$ (Lagrange) and $\frac{dy}{dx}$ (Leibniz: ""a tiny change in $y$ per tiny change in $x$""). They mean the same thing.
+
+## 4. Formula & worked example
+$$
+f'(x) = \lim_{h \to 0}\frac{f(x + h) - f(x)}{h}
+$$
+
+**Example 1.** $f(x) = x^2$.
+$$
+f'(x) = \lim_{h \to 0}\frac{(x + h)^2 - x^2}{h} = \lim_{h \to 0}\frac{2xh + h^2}{h} = \lim_{h \to 0}(2x + h) = 2x
+$$
+At $x = 3$ the tangent slope is 6.
+
+**Example 2.** $f(x) = 3x - 7$: $\frac{3(x + h) - 7 - (3x - 7)}{h} = 3$ → $f'(x) = 3$ (a line's slope is constant).
+
+**Example 3.** $f(x) = \frac{1}{x}$.
+$$
+\frac{\frac{1}{x + h} - \frac{1}{x}}{h} = \frac{x - (x + h)}{h\,x(x + h)} = \frac{-1}{x(x + h)} \to -\frac{1}{x^2}
+$$
+
+**Example 4.** $f(x) = \sqrt{x}$: rationalise: $\frac{\sqrt{x + h} - \sqrt{x}}{h} = \frac{1}{\sqrt{x + h} + \sqrt{x}} \to \frac{1}{2\sqrt{x}}$.
+
+**Example 5 (numerical, code).**
+```python
+def derivative(f, x, h=1e-6):
+    return (f(x + h) - f(x - h)) / (2 * h)   # central difference
+print(derivative(lambda x: x**2, 3))          # 6.000000000...
+```
+This replaces the limit with a very small `h`. The **central** difference (using $x + h$ and $x - h$) is more accurate than the one-sided version. Making `h` too small causes floating-point rounding errors, so around $10^{-6}$ is a common choice.
+
+## 5. Common mistakes
+- Expanding $f(x + h)$ wrongly (e.g. $(x + h)^2 = x^2 + h^2$ ✗).
+- Setting $h = 0$ before simplifying (gives $\frac{0}{0}$).
+- Confusing the derivative function $f'(x)$ with its value at one point $f'(a)$.
+
+## 6. Practice
+Q: Write the limit definition of the derivative.
+A: $f'(x) = \lim_{h \to 0}\frac{f(x + h) - f(x)}{h}$.
+
+Q: Use the definition to differentiate $f(x) = 5x^2$.
+A: $10x$.
+
+Q: Geometric meaning of $f'(a)$?
+A: The slope of the tangent line at $x = a$.
+
+Q: $s(t)$ is position. What is $s'(t)$?
+A: Velocity.
+
+Q: Why is the central difference more accurate than $\frac{f(x + h) - f(x)}{h}$?
+A: Its errors from the two sides cancel to first order."
+3,TOPIC,Derivative graphs and differentiability,"Sketching f′ from f, where derivatives fail (corners, cusps, vertical tangents, discontinuities)",MUST,FALSE,"# Derivative graphs and differentiability
+
+## 1. What it covers
+- Sketching the graph of $f'$ from the graph of $f$.
+- Reading information about $f$ from $f'$.
+- **Differentiability:** where the derivative fails to exist (corners, cusps, vertical tangents, discontinuities).
+- Differentiable ⇒ continuous (but not the reverse).
+
+## 2. Where it is used
+- **Data analysis:** a velocity graph from a position graph (GPS speed from location data).
+- **Machine learning:** ReLU has a corner at 0, so it isn't differentiable there; frameworks choose a value by convention.
+- **Optimisation:** algorithms like gradient descent need differentiable functions (or special handling).
+- **Engineering:** sharp corners in a path cause infinite acceleration, so roads and roller coasters are designed smooth.
+
+## 3. What it means
+**Sketching $f'$:** read the slope of $f$ at each point.
+- Where $f$ is **increasing**, $f' > 0$ (above the axis).
+- Where $f$ is **decreasing**, $f' < 0$.
+- Where $f$ has a **flat tangent** (peak or valley), $f' = 0$ (crosses the axis).
+- Where $f$ is steepest, $\lvert f'\rvert$ is largest.
+
+**Not differentiable at $a$ if:**
+- **Corner:** the slopes from the left and right differ ($\lvert x\rvert$ at 0).
+- **Cusp:** slopes go to $+\infty$ on one side and $-\infty$ on the other ($x^{2/3}$ at 0).
+- **Vertical tangent:** slope infinite ($\sqrt[3]{x}$ at 0).
+- **Discontinuity:** a jump or hole.
+
+If $f$ is differentiable at $a$, it is continuous there. The reverse fails: $\lvert x\rvert$ is continuous at 0 but not differentiable.
+
+## 4. Formula & worked example
+**Example 1.** $f(x) = x^2$ has slope negative for $x < 0$, zero at 0, positive for $x > 0$ → $f'(x) = 2x$ is a line through the origin.
+
+**Example 2.** $f(x) = x^3 - 3x$ has peaks/valleys at $x = \pm 1$ → $f'(\pm 1) = 0$. Indeed $f'(x) = 3x^2 - 3$, a parabola crossing zero at $\pm 1$.
+
+**Example 3 (corner).** $f(x) = \lvert x - 2\rvert$: slope $-1$ on the left, $+1$ on the right → not differentiable at 2.
+
+**Example 4 (piecewise).** Is $f(x) = x^2$ ($x \le 1$), $2x - 1$ ($x > 1$) differentiable at 1?
+- Continuous: $1 = 1$ ✓. Left slope $2x = 2$, right slope $2$ ✓ → yes.
+
+**Example 5.** Where is $f(x) = x^{1/3}$ not differentiable? At 0 (vertical tangent: $f'(x) = \frac{1}{3}x^{-2/3}$ blows up).
+
+## 5. Common mistakes
+- Plotting the values of $f$ instead of its slopes.
+- Thinking continuous means differentiable.
+- Forgetting to check continuity before matching slopes for a piecewise function.
+
+## 6. Practice
+Q: $f$ is increasing on $(0, 3)$. Sign of $f'$ there?
+A: Positive.
+
+Q: Where is $f' = 0$ on a smooth graph?
+A: At horizontal tangents (peaks, valleys, flat points).
+
+Q: Is $\lvert x\rvert$ differentiable at 0?
+A: No (corner).
+
+Q: Does differentiability imply continuity?
+A: Yes.
+
+Q: Name four ways a function can fail to be differentiable at a point.
+A: Corner, cusp, vertical tangent, discontinuity."
+3,TOPIC,"Power, constant multiple and sum rules","d/dx xⁿ = nxⁿ⁻¹, differentiating polynomials and powers with negative and fractional exponents",MUST,FALSE,"# Power, constant multiple and sum rules
+
+## 1. What it covers
+- The **power rule** $\frac{d}{dx}x^n = nx^{n-1}$ for any real $n$.
+- **Constant rule**, **constant multiple rule**, **sum/difference rule**.
+- Rewriting roots and fractions as powers first.
+
+## 2. Where it is used
+- **Physics:** $s = 4.9t^2$ → $v = 9.8t$.
+- **Economics:** marginal cost of a polynomial cost function.
+- **Geometry:** $\frac{d}{dr}(\pi r^2) = 2\pi r$ (the circumference: adding a thin ring to a circle).
+- **Machine learning:** the derivative of squared error $(y - \hat{y})^2$.
+
+## 3. What it means
+**Power rule:** bring the exponent down in front, then subtract 1 from the exponent. It works for negative and fractional exponents too, so rewrite $\frac{1}{x^3} = x^{-3}$ and $\sqrt{x} = x^{1/2}$ first.
+
+**Constants:** the derivative of a constant is 0 (a flat line has slope 0). A constant multiplier stays: $\frac{d}{dx}(5x^3) = 5 \cdot 3x^2$.
+
+**Sums:** differentiate term by term.
+
+## 4. Formula & worked example
+$$
+\frac{d}{dx}c = 0 \qquad \frac{d}{dx}x^n = nx^{n-1} \qquad \frac{d}{dx}[cf] = cf' \qquad \frac{d}{dx}[f \pm g] = f' \pm g'
+$$
+
+**Example 1.** $\frac{d}{dx}(4x^5 - 3x^2 + 7x - 9) = 20x^4 - 6x + 7$
+
+**Example 2.** $\frac{d}{dx}\left(\frac{2}{x^3}\right) = \frac{d}{dx}(2x^{-3}) = -6x^{-4} = -\frac{6}{x^4}$
+
+**Example 3.** $\frac{d}{dx}(6\sqrt{x}) = 6 \cdot \frac{1}{2}x^{-1/2} = \frac{3}{\sqrt{x}}$
+
+**Example 4.** $\frac{d}{dx}\left(\frac{x^3 + 2x}{x}\right) = \frac{d}{dx}(x^2 + 2) = 2x$ (simplify first)
+
+**Example 5 (tangent line).** Tangent to $y = x^3 - 2x$ at $x = 1$.
+- $y' = 3x^2 - 2$ → slope 1; point $(1, -1)$ → $y = x - 2$
+
+**Example 6 (physics).** $s(t) = 4.9t^2 + 2t$ m. Velocity at $t = 3$ s? → $s' = 9.8t + 2$ → $31.4$ m/s.
+
+## 5. Common mistakes
+- Forgetting to subtract 1 from the exponent, or subtracting from a negative exponent wrongly ($x^{-3} \to -3x^{-4}$, not $x^{-2}$).
+- Differentiating a constant to 1.
+- Applying the power rule to $2^x$ (that's an exponential, not a power).
+
+## 6. Practice
+Q: $\frac{d}{dx}x^7$?
+A: $7x^6$.
+
+Q: $\frac{d}{dx}(3x^4 - 5x + 2)$?
+A: $12x^3 - 5$.
+
+Q: $\frac{d}{dx}\frac{1}{x}$?
+A: $-\frac{1}{x^2}$.
+
+Q: $\frac{d}{dx}x^{3/2}$?
+A: $\frac{3}{2}x^{1/2}$.
+
+Q: $\frac{d}{dx}(\pi^2)$?
+A: $0$ (it's a constant)."
+3,TOPIC,"Derivatives of sin, cos, eˣ and ln x",The basic table and why each holds,MUST,FALSE,"# Derivatives of sin, cos, eˣ and ln x
+
+## 1. What it covers
+- $\frac{d}{dx}\sin x = \cos x$, $\frac{d}{dx}\cos x = -\sin x$.
+- $\frac{d}{dx}e^x = e^x$ and $\frac{d}{dx}\ln x = \frac{1}{x}$.
+- The other trig derivatives: $\tan x$, $\sec x$, $\csc x$, $\cot x$.
+- Why each is true (sketch).
+
+## 2. Where it is used
+- **Oscillations:** springs, AC circuits, sound waves; the derivative of a sine wave is another (shifted) sine wave.
+- **Growth and decay:** $e^x$ is the function whose rate of change equals itself, which is why it models natural growth.
+- **Machine learning:** derivatives of sigmoid, softmax and log-loss use $e^x$ and $\ln x$.
+- **Information theory:** derivatives of entropy involve $\ln$.
+
+## 3. What it means
+- **Sine:** the slope of $\sin x$ is greatest (1) at $x = 0$, zero at its peaks, and $-1$ at $\pi$, exactly the values of $\cos x$. (Proof: use the sum identity and the limits $\frac{\sin h}{h} \to 1$, $\frac{1 - \cos h}{h} \to 0$.)
+- **Cosine:** its slope is $-\sin x$ (it goes down where sine is positive).
+- **$e^x$:** the number $e$ is exactly the base for which the slope of $b^x$ at 0 equals 1. That makes $\frac{d}{dx}e^x = e^x$: at every point, the height equals the slope.
+- **$\ln x$:** it's the inverse of $e^x$, and inverse functions have reciprocal slopes, giving $\frac{1}{x}$.
+
+All of these need **radians** for trig.
+
+## 4. Formula & worked example
+$$
+\frac{d}{dx}\sin x = \cos x \quad \frac{d}{dx}\cos x = -\sin x \quad \frac{d}{dx}\tan x = \sec^2 x \quad \frac{d}{dx}e^x = e^x \quad \frac{d}{dx}\ln x = \frac{1}{x}
+$$
+$$
+\frac{d}{dx}\sec x = \sec x\tan x \qquad \frac{d}{dx}\csc x = -\csc x\cot x \qquad \frac{d}{dx}\cot x = -\csc^2 x
+$$
+
+**Example 1.** $\frac{d}{dx}(3\sin x - 2\cos x) = 3\cos x + 2\sin x$
+
+**Example 2.** $\frac{d}{dx}(5e^x + 4\ln x) = 5e^x + \frac{4}{x}$
+
+**Example 3.** Slope of $y = \sin x$ at $x = \frac{\pi}{3}$? → $\cos\frac{\pi}{3} = \frac{1}{2}$.
+
+**Example 4.** $\frac{d}{dx}(x^2 - e^x + \tan x) = 2x - e^x + \sec^2 x$
+
+**Example 5 (oscillation).** $x(t) = 4\cos t$ (a spring). Velocity $= -4\sin t$; acceleration $= -4\cos t = -x(t)$ (acceleration is opposite to displacement, which is what makes it oscillate).
+
+## 5. Common mistakes
+- Sign error: $\frac{d}{dx}\cos x = -\sin x$, not $\sin x$.
+- Using the power rule on $e^x$ ($xe^{x-1}$ ✗).
+- Forgetting radian mode when evaluating.
+
+## 6. Practice
+Q: $\frac{d}{dx}\cos x$?
+A: $-\sin x$.
+
+Q: $\frac{d}{dx}(e^x + x^e)$?
+A: $e^x + ex^{e-1}$.
+
+Q: $\frac{d}{dx}\ln x$?
+A: $\frac{1}{x}$.
+
+Q: $\frac{d}{dx}\tan x$?
+A: $\sec^2 x$.
+
+Q: What is special about $e^x$?
+A: It is its own derivative."
+3,TOPIC,Product and quotient rules,"(fg)′ = f′g + fg′, (f/g)′ = (f′g − fg′)/g²",MUST,FALSE,"# Product and quotient rules
+
+## 1. What it covers
+- The **product rule** for $f(x)g(x)$.
+- The **quotient rule** for $\frac{f(x)}{g(x)}$.
+- When to simplify first instead.
+
+## 2. Where it is used
+- **Economics:** revenue $R = p \cdot q$ where both price and quantity change.
+- **Physics:** power $P = Fv$; momentum with changing mass.
+- **Biology:** total biomass = number of organisms × average mass.
+- **Machine learning:** derivatives of expressions like $x\sigma(x)$ (the SiLU/Swish activation).
+
+## 3. What it means
+The derivative of a product is **not** the product of the derivatives. Picture a rectangle with sides $f$ and $g$ that are both growing. The area $fg$ grows by two strips: $f' \cdot g$ (one side growing) plus $f \cdot g'$ (the other side growing). The tiny corner piece vanishes in the limit.
+
+**Quotient rule** memory aid: ""**low d-high minus high d-low, over low squared**"", where ""high"" is the numerator and ""low"" the denominator.
+
+Sometimes simplifying first is easier: $\frac{x^3 + x}{x} = x^2 + 1$ needs no quotient rule.
+
+## 4. Formula & worked example
+$$
+(fg)' = f'g + fg' \qquad \left(\frac{f}{g}\right)' = \frac{f'g - fg'}{g^2}
+$$
+
+**Example 1.** $\frac{d}{dx}(x^2\sin x) = 2x\sin x + x^2\cos x$
+
+**Example 2.** $\frac{d}{dx}(xe^x) = e^x + xe^x = e^x(1 + x)$
+
+**Example 3.** $\frac{d}{dx}\frac{x^2}{x + 1} = \frac{2x(x + 1) - x^2(1)}{(x + 1)^2} = \frac{x^2 + 2x}{(x + 1)^2}$
+
+**Example 4 (derive tan).** $\frac{d}{dx}\frac{\sin x}{\cos x} = \frac{\cos x\cos x - \sin x(-\sin x)}{\cos^2 x} = \frac{1}{\cos^2 x} = \sec^2 x$
+
+**Example 5.** $\frac{d}{dx}\frac{\ln x}{x} = \frac{\frac{1}{x} \cdot x - \ln x}{x^2} = \frac{1 - \ln x}{x^2}$
+
+**Example 6 (revenue).** Price $p(t) = 50 + 2t$, units sold $q(t) = 1000 - 10t$. Rate of change of revenue at $t = 5$?
+- $R' = p'q + pq' = 2(950) + 60(-10) = 1900 - 600 = 1300$ per unit time
+
+## 5. Common mistakes
+- $(fg)' = f'g'$ ✗.
+- Quotient rule in the wrong order ($fg' - f'g$ gives the wrong sign).
+- Forgetting to square the denominator.
+
+## 6. Practice
+Q: $\frac{d}{dx}(x^3e^x)$?
+A: $3x^2e^x + x^3e^x$.
+
+Q: $\frac{d}{dx}(x\ln x)$?
+A: $\ln x + 1$.
+
+Q: $\frac{d}{dx}\frac{1}{x^2 + 1}$?
+A: $\frac{-2x}{(x^2 + 1)^2}$.
+
+Q: $\frac{d}{dx}\frac{x}{e^x}$?
+A: $\frac{e^x - xe^x}{e^{2x}} = \frac{1 - x}{e^x}$.
+
+Q: $\frac{d}{dx}(\sin x\cos x)$?
+A: $\cos^2 x - \sin^2 x = \cos 2x$."
+2,MODULE,The chain rule and advanced differentiation,"Chain rule, implicit differentiation, inverse functions, general exponentials and logs, higher derivatives",MUST,,"The chain rule is the most important rule in calculus, and the engine of backpropagation in neural networks."
+3,TOPIC,The chain rule,"Derivatives of composite functions, outer × inner, Leibniz form, nested functions",MUST,FALSE,"# The chain rule
+
+## 1. What it covers
+- Differentiating **composite** functions $f(g(x))$.
+- ""Derivative of the outer (inner left alone) × derivative of the inner.""
+- Leibniz form $\frac{dy}{dx} = \frac{dy}{du}\cdot\frac{du}{dx}$.
+- Nested compositions (chain rule applied several times).
+
+## 2. Where it is used
+- **Neural networks:** **backpropagation** is the chain rule applied layer by layer; PyTorch and TensorFlow implement it automatically (automatic differentiation).
+- **Physics:** if temperature depends on height and height depends on time, $\frac{dT}{dt} = \frac{dT}{dh}\cdot\frac{dh}{dt}$.
+- **Related rates** problems (next phase).
+- **Every** non-trivial derivative: $\sin(3x)$, $e^{-x^2}$, $(2x + 1)^{10}$.
+
+## 3. What it means
+Rates multiply through a chain. If a gear A turns 3 times as fast as gear B, and B turns 2 times as fast as C, then A turns $3 \times 2 = 6$ times as fast as C.
+
+For $y = f(g(x))$, let $u = g(x)$ be the **inner** function:
+1. Differentiate the **outer** function, keeping the inner one unchanged: $f'(g(x))$.
+2. Multiply by the derivative of the **inner** function: $g'(x)$.
+
+For deeper nesting, keep peeling layers from the outside in, multiplying each derivative.
+
+## 4. Formula & worked example
+$$
+\frac{d}{dx}f(g(x)) = f'(g(x))\cdot g'(x) \qquad \frac{dy}{dx} = \frac{dy}{du}\cdot\frac{du}{dx}
+$$
+
+**Example 1.** $\frac{d}{dx}(3x^2 + 1)^5 = 5(3x^2 + 1)^4 \cdot 6x = 30x(3x^2 + 1)^4$
+
+**Example 2.** $\frac{d}{dx}\sin(4x) = 4\cos(4x)$
+
+**Example 3.** $\frac{d}{dx}e^{-x^2} = e^{-x^2}\cdot(-2x) = -2xe^{-x^2}$
+
+**Example 4.** $\frac{d}{dx}\ln(x^2 + 1) = \frac{2x}{x^2 + 1}$
+
+**Example 5.** $\frac{d}{dx}\sqrt{1 - x^2} = \frac{1}{2}(1 - x^2)^{-1/2}(-2x) = \frac{-x}{\sqrt{1 - x^2}}$
+
+**Example 6 (nested).** $\frac{d}{dx}\cos^3(2x) = 3\cos^2(2x)\cdot(-\sin 2x)\cdot 2 = -6\cos^2(2x)\sin(2x)$
+
+**Example 7 (chain + product).** $\frac{d}{dx}\left(x^2e^{3x}\right) = 2xe^{3x} + 3x^2e^{3x}$
+
+**Example 8 (backprop idea, code).**
+```python
+import math
+x = 0.5
+u = 3 * x            # inner layer
+y = math.tanh(u)     # outer layer
+dy_du = 1 - y**2     # derivative of tanh
+du_dx = 3
+print(dy_du * du_dx) # dy/dx by the chain rule = 3(1 - tanh²(1.5)) ≈ 0.5421
+```
+Each layer contributes its local derivative, and the chain rule multiplies them. A neural network does exactly this, from the output layer back to the input, for every weight.
+
+## 5. Common mistakes
+- Forgetting to multiply by the inner derivative: $\frac{d}{dx}\sin 4x \ne \cos 4x$.
+- Changing the inner function when differentiating the outer: $\frac{d}{dx}(3x^2 + 1)^5 \ne 5(6x)^4$.
+- Missing a layer in nested functions.
+
+## 6. Practice
+Q: $\frac{d}{dx}(5x - 2)^3$?
+A: $15(5x - 2)^2$.
+
+Q: $\frac{d}{dx}e^{4x}$?
+A: $4e^{4x}$.
+
+Q: $\frac{d}{dx}\cos(x^2)$?
+A: $-2x\sin(x^2)$.
+
+Q: $\frac{d}{dx}\ln(\sin x)$?
+A: $\frac{\cos x}{\sin x} = \cot x$.
+
+Q: $\frac{d}{dx}\sqrt{x^3 + 1}$?
+A: $\frac{3x^2}{2\sqrt{x^3 + 1}}$."
+3,TOPIC,Implicit differentiation,"Differentiating equations in x and y, dy/dx for circles and curves, tangent lines",MUST,FALSE,"# Implicit differentiation
+
+## 1. What it covers
+- Finding $\frac{dy}{dx}$ when $y$ isn't isolated (e.g. $x^2 + y^2 = 25$).
+- Treating $y$ as a function of $x$ and using the chain rule on every $y$ term.
+- Tangent lines to implicit curves.
+
+## 2. Where it is used
+- **Geometry and graphics:** slopes of circles, ellipses and other curves defined by equations.
+- **Economics:** indifference curves and isoquants ($f(x, y) = c$).
+- **Physics:** thermodynamic relations like $PV = nRT$.
+- **Related rates** problems.
+- **Derivatives of inverse functions** (next topic).
+
+## 3. What it means
+Many curves are given by an equation linking $x$ and $y$ without $y$ alone on one side. You can still find the slope: differentiate **both sides** with respect to $x$, remembering that $y$ depends on $x$. So whenever you differentiate something with $y$ in it, the chain rule attaches a factor $\frac{dy}{dx}$:
+$$
+\frac{d}{dx}(y^2) = 2y\frac{dy}{dx}
+$$
+Then solve the resulting equation for $\frac{dy}{dx}$.
+
+## 4. Formula & worked example
+**Example 1.** $x^2 + y^2 = 25$.
+- $2x + 2y\frac{dy}{dx} = 0$ → $\frac{dy}{dx} = -\frac{x}{y}$
+- At $(3, 4)$: slope $-\frac{3}{4}$, matching the tangent from the Geometry roadmap.
+
+**Example 2.** $x^3 + y^3 = 6xy$.
+- $3x^2 + 3y^2y' = 6y + 6xy'$ (product rule on $xy$)
+- $y'(3y^2 - 6x) = 6y - 3x^2$ → $y' = \frac{2y - x^2}{y^2 - 2x}$
+
+**Example 3.** $\sin(xy) = x$.
+- $\cos(xy)\cdot(y + xy') = 1$ → $y' = \frac{1 - y\cos(xy)}{x\cos(xy)}$
+
+**Example 4 (tangent).** Tangent to $x^2 + xy + y^2 = 7$ at $(1, 2)$.
+- $2x + y + xy' + 2yy' = 0$ → at $(1, 2)$: $2 + 2 + y' + 4y' = 0$ → $y' = -\frac{4}{5}$
+- $y - 2 = -\frac{4}{5}(x - 1)$
+
+**Example 5.** $e^y = x$ → $e^y y' = 1$ → $y' = \frac{1}{e^y} = \frac{1}{x}$ (this proves $\frac{d}{dx}\ln x = \frac{1}{x}$, since $y = \ln x$).
+
+## 5. Common mistakes
+- Forgetting the $\frac{dy}{dx}$ factor on $y$ terms.
+- Forgetting the product rule on terms like $xy$.
+- Differentiating the constant on the right as anything other than 0.
+
+## 6. Practice
+Q: $\frac{dy}{dx}$ for $x^2 + y^2 = 16$?
+A: $-\frac{x}{y}$.
+
+Q: $\frac{d}{dx}(y^3)$?
+A: $3y^2\frac{dy}{dx}$.
+
+Q: $\frac{dy}{dx}$ for $xy = 10$?
+A: $y + xy' = 0$ → $y' = -\frac{y}{x}$.
+
+Q: $\frac{dy}{dx}$ for $y^2 = 4x$?
+A: $\frac{2}{y}$.
+
+Q: Slope of $x^2 + y^2 = 25$ at $(-3, 4)$?
+A: $\frac{3}{4}$."
+3,TOPIC,Derivatives of inverse functions and inverse trig,"(f⁻¹)′ = 1/f′(f⁻¹(x)), derivatives of arcsin, arccos, arctan",MUST,FALSE,"# Derivatives of inverse functions and inverse trig
+
+## 1. What it covers
+- The inverse function derivative rule.
+- Derivatives of $\arcsin x$, $\arccos x$, $\arctan x$.
+- Combining with the chain rule.
+
+## 2. Where it is used
+- **Integration:** these derivatives explain integrals like $\int\frac{dx}{1 + x^2} = \arctan x$, which appear in physics and probability (the Cauchy distribution).
+- **Robotics and graphics:** angles computed with `atan2` and `acos`, and their sensitivities.
+- **Machine learning:** derivatives of activation-function inverses.
+
+## 3. What it means
+The graph of $f^{-1}$ is the graph of $f$ reflected in $y = x$. Reflection swaps rise and run, so slopes become **reciprocals**: if $f$ has slope 3 at a point, $f^{-1}$ has slope $\frac{1}{3}$ at the reflected point.
+
+For inverse trig, differentiate implicitly. For $y = \arcsin x$: $\sin y = x$ → $\cos y \cdot y' = 1$ → $y' = \frac{1}{\cos y} = \frac{1}{\sqrt{1 - x^2}}$ (using $\cos y = \sqrt{1 - \sin^2 y}$, positive on arcsin's range).
+
+## 4. Formula & worked example
+$$
+(f^{-1})'(x) = \frac{1}{f'(f^{-1}(x))} \qquad \frac{d}{dx}\arcsin x = \frac{1}{\sqrt{1 - x^2}} \qquad \frac{d}{dx}\arccos x = -\frac{1}{\sqrt{1 - x^2}} \qquad \frac{d}{dx}\arctan x = \frac{1}{1 + x^2}
+$$
+
+**Example 1.** $f(x) = x^3 + x$; find $(f^{-1})'(2)$.
+- $f(1) = 2$, so $f^{-1}(2) = 1$. $f'(x) = 3x^2 + 1$, $f'(1) = 4$ → $(f^{-1})'(2) = \frac{1}{4}$
+
+**Example 2.** $\frac{d}{dx}\arctan(3x) = \frac{3}{1 + 9x^2}$
+
+**Example 3.** $\frac{d}{dx}\arcsin(x^2) = \frac{2x}{\sqrt{1 - x^4}}$
+
+**Example 4.** $\frac{d}{dx}\left(x\arctan x\right) = \arctan x + \frac{x}{1 + x^2}$
+
+**Example 5.** Slope of $y = \arctan x$ at $x = 1$? → $\frac{1}{2}$.
+
+## 5. Common mistakes
+- Evaluating $f'$ at $x$ instead of at $f^{-1}(x)$.
+- Forgetting the minus sign for $\arccos$.
+- Forgetting the chain rule factor for $\arctan(3x)$.
+
+## 6. Practice
+Q: $\frac{d}{dx}\arctan x$?
+A: $\frac{1}{1 + x^2}$.
+
+Q: $\frac{d}{dx}\arcsin x$?
+A: $\frac{1}{\sqrt{1 - x^2}}$.
+
+Q: $\frac{d}{dx}\arctan(x^2)$?
+A: $\frac{2x}{1 + x^4}$.
+
+Q: $f(2) = 5$ and $f'(2) = 4$. Find $(f^{-1})'(5)$.
+A: $\frac{1}{4}$.
+
+Q: Why are inverse slopes reciprocals?
+A: Reflecting in $y = x$ swaps rise and run."
+3,TOPIC,"General exponentials, logarithms and logarithmic differentiation","d/dx aˣ = aˣ ln a, d/dx log_a x, differentiating products, quotients and variable exponents with logs",MUST,FALSE,"# General exponentials, logarithms and logarithmic differentiation
+
+## 1. What it covers
+- $\frac{d}{dx}a^x = a^x\ln a$ and $\frac{d}{dx}\log_a x = \frac{1}{x\ln a}$.
+- $\frac{d}{dx}\ln\lvert x\rvert = \frac{1}{x}$.
+- **Logarithmic differentiation** for messy products/quotients and **variable exponents** like $x^x$.
+
+## 2. Where it is used
+- **Computing:** growth of $2^n$ (algorithm complexity, doubling processes).
+- **Finance:** sensitivity of $P(1 + r)^t$ to time.
+- **Statistics and ML:** maximum likelihood estimation takes the **log** of a product of probabilities before differentiating (log-likelihood): exactly logarithmic differentiation.
+- **Information theory:** derivatives of $\log_2$.
+
+## 3. What it means
+Write $a^x = e^{x\ln a}$; the chain rule gives $e^{x\ln a}\cdot\ln a = a^x\ln a$. So for base $e$ the extra factor is $\ln e = 1$, which is why $e$ is the ""natural"" base.
+
+**Logarithmic differentiation:** for $y$ = a complicated product, quotient or power:
+1. Take $\ln$ of both sides.
+2. Use log rules to turn products into sums and powers into multiples.
+3. Differentiate implicitly: $\frac{y'}{y} = \ldots$
+4. Multiply by $y$.
+
+It's the only way (at this level) to differentiate $x^x$, where both base and exponent vary.
+
+## 4. Formula & worked example
+$$
+\frac{d}{dx}a^x = a^x\ln a \qquad \frac{d}{dx}\log_a x = \frac{1}{x\ln a} \qquad \frac{d}{dx}\ln\lvert x\rvert = \frac{1}{x}
+$$
+
+**Example 1.** $\frac{d}{dx}2^x = 2^x\ln 2$
+
+**Example 2.** $\frac{d}{dx}10^{3x} = 3\ln 10 \cdot 10^{3x}$
+
+**Example 3.** $\frac{d}{dx}\log_2 x = \frac{1}{x\ln 2}$
+
+**Example 4 ($x^x$).** $y = x^x$ → $\ln y = x\ln x$ → $\frac{y'}{y} = \ln x + 1$ → $y' = x^x(\ln x + 1)$
+
+**Example 5 (messy quotient).** $y = \frac{x^2\sqrt{x + 1}}{(x - 2)^3}$
+- $\ln y = 2\ln x + \frac{1}{2}\ln(x + 1) - 3\ln(x - 2)$
+- $y' = y\left(\frac{2}{x} + \frac{1}{2(x + 1)} - \frac{3}{x - 2}\right)$
+
+**Example 6.** $\frac{d}{dx}(\sin x)^x$: $\ln y = x\ln\sin x$ → $y' = (\sin x)^x\left(\ln\sin x + x\cot x\right)$
+
+## 5. Common mistakes
+- Treating $x^x$ with the power rule ($x \cdot x^{x-1}$ ✗) or the exponential rule ($x^x\ln x$ ✗). It needs both terms.
+- Forgetting $\ln a$ in $\frac{d}{dx}a^x$.
+- Forgetting to multiply by $y$ at the end of logarithmic differentiation.
+
+## 6. Practice
+Q: $\frac{d}{dx}5^x$?
+A: $5^x\ln 5$.
+
+Q: $\frac{d}{dx}\log_{10} x$?
+A: $\frac{1}{x\ln 10}$.
+
+Q: $\frac{d}{dx}x^{\sin x}$?
+A: $x^{\sin x}\left(\cos x\ln x + \frac{\sin x}{x}\right)$.
+
+Q: $\frac{d}{dx}\ln(3x)$?
+A: $\frac{1}{x}$.
+
+Q: Why is $e$ called the natural base?
+A: $\frac{d}{dx}e^x = e^x$ with no extra factor ($\ln e = 1$)."
+3,TOPIC,Higher-order derivatives and choosing a strategy,"Second and third derivatives, notation, meaning; picking the right rule",MUST,FALSE,"# Higher-order derivatives and choosing a strategy
+
+## 1. What it covers
+- Second, third and $n$th derivatives: $f''$, $f'''$, $f^{(n)}$, $\frac{d^2y}{dx^2}$.
+- Meaning: acceleration, jerk, concavity.
+- Patterns ($\sin x$ derivatives cycle; $e^x$ stays the same).
+- A checklist for choosing which rule(s) to use.
+
+## 2. Where it is used
+- **Physics:** acceleration is the second derivative of position; **jerk** (third derivative) is minimised in elevator and vehicle design for comfort.
+- **Curve analysis:** concavity and inflection points (next phase).
+- **Taylor series:** built from all the higher derivatives (Phase 6).
+- **Optimisation:** Newton's method and the second derivative test use $f''$.
+
+## 3. What it means
+Differentiate again: $f''$ is the rate of change of the rate of change. If position is $s(t)$, then $s'$ is velocity and $s''$ is acceleration: pressing the accelerator changes how fast your speed changes.
+
+**Strategy checklist:**
+1. **Simplify first** (expand, split fractions, use log rules).
+2. Sum/difference → term by term.
+3. Product → product rule; quotient → quotient rule (or rewrite as a product with a negative power).
+4. Something inside something → chain rule.
+5. Variable in both base and exponent, or a huge product → logarithmic differentiation.
+6. $y$ not isolated → implicit differentiation.
+
+## 4. Formula & worked example
+$$
+f''(x) = \frac{d}{dx}f'(x) = \frac{d^2y}{dx^2}
+$$
+
+**Example 1.** $f(x) = x^4 - 3x^2$: $f' = 4x^3 - 6x$, $f'' = 12x^2 - 6$, $f''' = 24x$, $f^{(4)} = 24$, $f^{(5)} = 0$.
+
+**Example 2 (cycle).** $\frac{d}{dx}\sin x = \cos x$, then $-\sin x$, $-\cos x$, $\sin x$ (repeats every 4). So $\frac{d^{10}}{dx^{10}}\sin x = -\sin x$.
+
+**Example 3.** $\frac{d^n}{dx^n}e^{2x} = 2^ne^{2x}$.
+
+**Example 4 (motion).** $s(t) = t^3 - 6t^2 + 9t$: $v = 3t^2 - 12t + 9$, $a = 6t - 12$. At $t = 1$: $v = 0$ (momentarily stopped), $a = -6$ (slowing/turning back).
+
+**Example 5 (strategy).** $\frac{d}{dx}\frac{e^{2x}\sin x}{x}$: simplest as a product $e^{2x}\sin x \cdot x^{-1}$ or with log differentiation.
+
+## 5. Common mistakes
+- Writing $f''$ as $(f')^2$.
+- Not simplifying $f'$ before differentiating again.
+- Starting with the quotient rule when simplifying would avoid it.
+
+## 6. Practice
+Q: $f(x) = 3x^5$. Find $f''(x)$.
+A: $60x^3$.
+
+Q: $\frac{d^2}{dx^2}\ln x$?
+A: $-\frac{1}{x^2}$.
+
+Q: $\frac{d^4}{dx^4}\cos x$?
+A: $\cos x$.
+
+Q: Position $s = 5t^2 - 2t$. Acceleration?
+A: $10$.
+
+Q: Best method for $y = (x^2 + 1)^{\cos x}$?
+A: Logarithmic differentiation."
+3,TOPIC,Practice & review: Derivatives,Mixed problem set with worked answers,MUST,FALSE,"# Practice & review: Derivatives
+
+**How to use this:** 60 minutes, no calculator. Simplify each answer.
+
+## Problems
+1. Use the definition to differentiate $f(x) = 2x^2 - x$.
+2. $\frac{d}{dx}\left(4x^3 - \frac{2}{x^2} + 3\sqrt{x}\right)$
+3. $\frac{d}{dx}(x^2\cos x)$
+4. $\frac{d}{dx}\frac{e^x}{x^2 + 1}$
+5. $\frac{d}{dx}\sin^2(3x)$
+6. $\frac{d}{dx}\ln\left(\frac{x^2}{\sqrt{x + 4}}\right)$
+7. $\frac{dy}{dx}$ for $x^2y + y^3 = 10$
+8. $\frac{d}{dx}\arctan(e^x)$
+9. $\frac{d}{dx}x^{\ln x}$
+10. Tangent line to $y = xe^{x}$ at $x = 0$.
+11. $s(t) = 2t^3 - 9t^2 + 12t$. When is the velocity zero? Acceleration then?
+
+## Answers
+1. $\frac{2(x + h)^2 - (x + h) - 2x^2 + x}{h} = 4x + 2h - 1 \to 4x - 1$.
+2. $12x^2 + \frac{4}{x^3} + \frac{3}{2\sqrt{x}}$.
+3. $2x\cos x - x^2\sin x$.
+4. $\frac{e^x(x^2 + 1) - 2xe^x}{(x^2 + 1)^2} = \frac{e^x(x - 1)^2}{(x^2 + 1)^2}$.
+5. $2\sin(3x)\cos(3x)\cdot 3 = 3\sin(6x)$.
+6. $2\ln x - \frac{1}{2}\ln(x + 4)$ → $\frac{2}{x} - \frac{1}{2(x + 4)}$.
+7. $2xy + x^2y' + 3y^2y' = 0$ → $y' = \frac{-2xy}{x^2 + 3y^2}$.
+8. $\frac{e^x}{1 + e^{2x}}$.
+9. $\ln y = (\ln x)^2$ → $y' = x^{\ln x}\cdot\frac{2\ln x}{x}$.
+10. $y' = e^x(1 + x)$ → slope 1 at $(0, 0)$ → $y = x$.
+11. $v = 6t^2 - 18t + 12 = 6(t - 1)(t - 2) = 0$ → $t = 1, 2$; $a = 12t - 18$: $a(1) = -6$, $a(2) = 6$.
+
+## Flashcards
+Q: Product rule?
+A: $(fg)' = f'g + fg'$.
+
+Q: Quotient rule?
+A: $\left(\frac{f}{g}\right)' = \frac{f'g - fg'}{g^2}$.
+
+Q: Chain rule?
+A: $\frac{d}{dx}f(g(x)) = f'(g(x))g'(x)$.
+
+Q: $\frac{d}{dx}a^x$?
+A: $a^x\ln a$.
+
+Q: $\frac{d}{dx}\arctan x$?
+A: $\frac{1}{1 + x^2}$."
+1,MODULE,Phase 3 — Applications of Derivatives (Core),"Linear approximation, motion, related rates, MVT, extrema, curve sketching, optimisation, L'Hôpital, Newton's method and gradient descent",MUST,,"# Phase 3: Applications of derivatives
+
+Now the payoff: derivatives tell you where a function is increasing, where it peaks, how fast connected quantities change, and how to find the **best** design, price or path. This is the calculus used daily in engineering, economics and machine learning."
+2,MODULE,Rates and approximation,"Tangent lines, linear approximation, motion, related rates, mean value theorem",MUST,,The derivative is a local rate of change; these topics use it directly.
+3,TOPIC,Tangent lines and linear approximation,"Equation of the tangent, local linearisation, differentials, estimating values",MUST,FALSE,"# Tangent lines and linear approximation
+
+## 1. What it covers
+- The tangent line $y = f(a) + f'(a)(x - a)$.
+- **Linear approximation**: near $a$, $f(x) \approx f(a) + f'(a)(x - a)$.
+- **Differentials** $dy = f'(x)\,dx$ for estimating small changes and errors.
+
+## 2. Where it is used
+- **Physics and engineering:** small-angle approximation $\sin\theta \approx \theta$; linearising nonlinear systems around an operating point (control engineering).
+- **Error propagation:** how a small measurement error affects a computed result.
+- **Numerical methods:** Newton's method and Euler's method are built on tangent lines.
+- **Machine learning:** gradient descent assumes the loss is roughly linear in a small step.
+
+## 3. What it means
+Zoom in far enough on any smooth curve and it looks like a straight line: its tangent. So for $x$ close to $a$, the tangent line is a good, simple estimate of the function. Think of the Earth: it's round, but locally (your street) it looks flat.
+
+**Differentials:** a small change $dx$ in the input causes a change of about $dy = f'(x)\,dx$ in the output.
+
+## 4. Formula & worked example
+$$
+L(x) = f(a) + f'(a)(x - a) \qquad dy = f'(x)\,dx
+$$
+
+**Example 1.** Tangent to $f(x) = \sqrt{x}$ at $x = 9$.
+- $f(9) = 3$, $f'(x) = \frac{1}{2\sqrt{x}}$, $f'(9) = \frac{1}{6}$ → $y = 3 + \frac{1}{6}(x - 9)$
+
+**Example 2.** Estimate $\sqrt{9.4}$ with that line: $3 + \frac{0.4}{6} \approx 3.0667$ (true $3.0659$).
+
+**Example 3.** Estimate $\sin(0.05)$: near 0, $\sin x \approx x$ → $0.05$ (true $0.04998$).
+
+**Example 4 (error).** The radius of a ball is measured as 10 cm ± 0.1 cm. Error in its volume?
+- $V = \frac{4}{3}\pi r^3$, $dV = 4\pi r^2\,dr = 4\pi(100)(0.1) \approx 125.7$ cm³ (about 3% of $V \approx 4189$).
+
+**Example 5.** Estimate $e^{0.1}$: near 0, $e^x \approx 1 + x$ → $1.1$ (true $1.1052$).
+
+## 5. Common mistakes
+- Using the approximation far from $a$ (error grows quickly).
+- Evaluating $f'$ at $x$ instead of $a$.
+- Forgetting radians for trig approximations.
+
+## 6. Practice
+Q: Linear approximation formula?
+A: $f(x) \approx f(a) + f'(a)(x - a)$.
+
+Q: Estimate $\sqrt{25.5}$.
+A: $5 + \frac{0.5}{10} = 5.05$.
+
+Q: Tangent to $y = x^3$ at $x = 2$?
+A: $y = 8 + 12(x - 2)$.
+
+Q: Linear approximation of $\ln x$ near $x = 1$?
+A: $\ln x \approx x - 1$.
+
+Q: A square's side is 5 cm ± 0.02 cm. Approximate error in area?
+A: $dA = 2s\,ds = 0.2$ cm²."
+3,TOPIC,"Motion: position, velocity and acceleration","s, v = s′, a = v′ = s″; speeding up vs slowing down; displacement vs distance",MUST,FALSE,"# Motion: position, velocity and acceleration
+
+## 1. What it covers
+- Velocity $v = s'(t)$ and acceleration $a = v'(t) = s''(t)$.
+- **Speed** $= \lvert v\rvert$.
+- When an object is moving left/right, at rest, **speeding up** or **slowing down**.
+- Total distance vs displacement.
+
+## 2. Where it is used
+- **Physics and engineering:** vehicle dynamics, rockets, projectiles.
+- **Game physics:** update loops compute position from velocity and velocity from acceleration each frame.
+- **Sports science:** sprint analysis.
+- **Robotics and drones:** motion planning with velocity and acceleration limits.
+
+## 3. What it means
+- $s(t)$: position (where it is).
+- $v(t)$: velocity (how fast and which direction). $v > 0$ moving forward/right; $v < 0$ backward/left; $v = 0$ at rest (possibly turning around).
+- $a(t)$: acceleration (how fast velocity changes).
+
+**Speeding up vs slowing down:** compare signs. If $v$ and $a$ have the **same sign**, speed is increasing; **opposite signs**, it's decreasing. (Braking while going forward is negative acceleration with positive velocity.)
+
+**Total distance:** add the distances of each leg between turning points (where $v = 0$).
+
+## 4. Formula & worked example
+$$
+v(t) = s'(t) \qquad a(t) = v'(t) = s''(t) \qquad \text{speed} = \lvert v(t)\rvert
+$$
+
+**Example 1.** $s(t) = t^3 - 6t^2 + 9t$ (metres, $t \ge 0$).
+- $v = 3t^2 - 12t + 9 = 3(t - 1)(t - 3)$; $a = 6t - 12$
+- At rest at $t = 1$ and $t = 3$.
+- Moving right on $[0, 1)$ and $(3, \infty)$; left on $(1, 3)$.
+
+**Example 2 (speeding up?).** Same motion at $t = 2$: $v = -3$, $a = 0$ → neither. At $t = 2.5$: $v = -2.25$, $a = 3$ → opposite signs → slowing down.
+
+**Example 3 (distance).** Total distance from $t = 0$ to $t = 4$:
+- $s(0) = 0$, $s(1) = 4$, $s(3) = 0$, $s(4) = 4$ → $4 + 4 + 4 = 12$ m (displacement only 4 m).
+
+**Example 4 (projectile).** $h(t) = -4.9t^2 + 19.6t + 2$: $v = -9.8t + 19.6$ → top at $t = 2$ s; $a = -9.8$ m/s² (gravity).
+
+**Example 5 (code, game loop).**
+```python
+dt = 1 / 60              # one frame at 60 fps
+pos, vel, acc = 0.0, 10.0, -9.8
+for frame in range(60):  # simulate one second
+    vel += acc * dt      # a = dv/dt  ->  dv ≈ a·dt
+    pos += vel * dt      # v = ds/dt  ->  ds ≈ v·dt
+print(round(pos, 2), round(vel, 2))   # ≈ 5.02, 0.2
+```
+Each frame uses the derivative relationships backwards: a small change in velocity is acceleration × time step, and a small change in position is velocity × time step. (Exact answer: $s = 10 - 4.9 = 5.1$, $v = 0.2$; the small difference is the error of this simple method.)
+
+## 5. Common mistakes
+- Treating displacement as total distance when the object turns around.
+- Saying ""negative acceleration means slowing down"" (only if velocity is positive).
+- Mixing up velocity (signed) and speed (unsigned).
+
+## 6. Practice
+Q: $s(t) = 4t^2 - 8t$. When is the object at rest?
+A: $v = 8t - 8 = 0$ → $t = 1$.
+
+Q: $v = -5$, $a = -2$. Speeding up or slowing down?
+A: Speeding up (same signs).
+
+Q: $s(t) = \sin t$. Acceleration?
+A: $-\sin t$.
+
+Q: Difference between distance and displacement?
+A: Distance counts every metre travelled; displacement is the net change in position.
+
+Q: $h(t) = -5t^2 + 20t$. Velocity at $t = 1$?
+A: $10$ m/s."
+3,TOPIC,Related rates,"Differentiating an equation with respect to time; ladders, balloons, cones, shadows, distances",MUST,FALSE,"# Related rates
+
+## 1. What it covers
+- Finding how fast one quantity changes from how fast a **related** quantity changes.
+- The method: draw, write an equation linking the quantities, differentiate with respect to $t$, substitute, solve.
+- Classic problems: sliding ladder, inflating balloon, filling cone, moving shadow, separating cars.
+
+## 2. Where it is used
+- **Engineering:** how fast the water level rises as a tank fills.
+- **Aviation and radar:** how fast the distance to a plane is changing.
+- **Medicine:** rate of change of a tumour's volume from its radius growth.
+- **Economics:** how fast revenue changes as price and demand both change over time.
+
+## 3. What it means
+When two quantities are linked by an equation and both change over time, their **rates** are linked too. Differentiate the equation with respect to time $t$ (using the chain rule: $\frac{d}{dt}(x^2) = 2x\frac{dx}{dt}$).
+
+**Method:**
+1. Draw a picture; label quantities that change with variables.
+2. Write down the given rate and the rate you want (with units).
+3. Write an equation linking the variables (Pythagoras, volume formula, similar triangles...).
+4. Differentiate both sides with respect to $t$.
+5. **Only now** substitute the numbers for that instant, and solve.
+
+## 4. Formula & worked example
+**Example 1 (ladder).** A 10 m ladder slides down a wall; the bottom moves away at 1.5 m/s. How fast does the top slide down when the bottom is 6 m from the wall?
+- $x^2 + y^2 = 100$ → $2x\frac{dx}{dt} + 2y\frac{dy}{dt} = 0$
+- At $x = 6$: $y = 8$ → $6(1.5) + 8\frac{dy}{dt} = 0$ → $\frac{dy}{dt} = -1.125$ m/s (sliding down)
+
+**Example 2 (balloon).** Air is pumped into a spherical balloon at 100 cm³/s. How fast is the radius growing when $r = 5$ cm?
+- $V = \frac{4}{3}\pi r^3$ → $\frac{dV}{dt} = 4\pi r^2\frac{dr}{dt}$ → $100 = 100\pi\frac{dr}{dt}$ → $\frac{dr}{dt} = \frac{1}{\pi} \approx 0.318$ cm/s
+
+**Example 3 (cone).** Water flows into a cone (tip down, radius 3 m, height 6 m) at 2 m³/min. How fast is the depth rising at depth 4 m?
+- Similar triangles: $r = \frac{h}{2}$ → $V = \frac{1}{3}\pi\frac{h^2}{4}h = \frac{\pi h^3}{12}$
+- $\frac{dV}{dt} = \frac{\pi h^2}{4}\frac{dh}{dt}$ → $2 = 4\pi\frac{dh}{dt}$ → $\frac{dh}{dt} = \frac{1}{2\pi} \approx 0.159$ m/min
+
+**Example 4 (cars).** Car A drives north at 60 km/h, car B east at 80 km/h, from the same point. How fast is the distance between them growing after 1 hour?
+- $z^2 = x^2 + y^2$ → $z\frac{dz}{dt} = x\frac{dx}{dt} + y\frac{dy}{dt}$; at 1 h: $x = 80$, $y = 60$, $z = 100$ → $100z' = 80(80) + 60(60)$ → $z' = 100$ km/h
+
+## 5. Common mistakes
+- Substituting numbers before differentiating (constants differentiate to 0 and the rate disappears).
+- Wrong sign for decreasing quantities (a shrinking length has a negative rate).
+- Forgetting to remove an extra variable with similar triangles first.
+
+## 6. Practice
+Q: A circle's radius grows at 2 cm/s. How fast is the area growing when $r = 10$?
+A: $\frac{dA}{dt} = 2\pi r\frac{dr}{dt} = 40\pi$ cm²/s.
+
+Q: A cube's edge grows at 0.5 cm/s. Rate of volume change when the edge is 4 cm?
+A: $3s^2\frac{ds}{dt} = 24$ cm³/s.
+
+Q: Ladder of 13 m, bottom moving out at 2 m/s. Rate of the top when the bottom is 5 m out?
+A: $5(2) + 12y' = 0$ → $y' = -\frac{5}{6}$ m/s.
+
+Q: Why must you differentiate before substituting the instant's values?
+A: Substituting first turns changing quantities into constants, losing their rates.
+
+Q: $V = \pi r^2h$ with $r$ fixed at 2. Water enters at 8 m³/min. Rate of rise?
+A: $\frac{dh}{dt} = \frac{8}{4\pi} = \frac{2}{\pi}$ m/min."
+3,TOPIC,The mean value theorem,"Statement, geometric meaning, Rolle's theorem, applications",MUST,FALSE,"# The mean value theorem
+
+## 1. What it covers
+- **Rolle's theorem** and the **mean value theorem (MVT)**.
+- Geometric meaning: a tangent parallel to the secant.
+- Finding the value $c$; applications (speed cameras, bounding functions).
+
+## 2. Where it is used
+- **Speed enforcement:** average-speed cameras over a stretch of motorway: if your average speed was 110 km/h, the MVT guarantees you were going exactly 110 km/h at some moment.
+- **Analysis:** proving that a function with zero derivative is constant, and that $f' > 0$ means increasing.
+- **Numerical analysis:** error bounds for approximations (Taylor remainder).
+
+## 3. What it means
+**MVT:** if $f$ is continuous on $[a, b]$ and differentiable on $(a, b)$, there is at least one point $c$ in between where the **instantaneous** rate equals the **average** rate:
+$$
+f'(c) = \frac{f(b) - f(a)}{b - a}
+$$
+Geometrically: somewhere the tangent is parallel to the secant joining the endpoints.
+
+**Rolle's theorem** (special case): if $f(a) = f(b)$, there's a point with $f'(c) = 0$ (a flat tangent). If you leave home and come back, at some moment your velocity was zero (or you turned around).
+
+## 4. Formula & worked example
+$$
+f'(c) = \frac{f(b) - f(a)}{b - a} \text{ for some } c \in (a, b)
+$$
+
+**Example 1.** $f(x) = x^2$ on $[1, 3]$.
+- Average rate $\frac{9 - 1}{2} = 4$; $f'(c) = 2c = 4$ → $c = 2$.
+
+**Example 2.** $f(x) = x^3 - 3x$ on $[0, 2]$.
+- Average $\frac{2 - 0}{2} = 1$; $3c^2 - 3 = 1$ → $c = \frac{2}{\sqrt{3}} \approx 1.155$ (in the interval ✓).
+
+**Example 3 (Rolle).** $f(x) = x^2 - 4x$ on $[0, 4]$: $f(0) = f(4) = 0$; $f'(c) = 2c - 4 = 0$ → $c = 2$.
+
+**Example 4 (speeding).** A car passes two cameras 30 km apart in 15 minutes. Must it have exceeded 100 km/h?
+- Average speed $= 120$ km/h → by the MVT, at some instant it was exactly 120 km/h → yes.
+
+**Example 5 (MVT fails).** $f(x) = \lvert x\rvert$ on $[-1, 1]$: average rate 0, but $f'$ is never 0 (not differentiable at 0, so the theorem doesn't apply).
+
+## 5. Common mistakes
+- Forgetting to check the conditions (continuity and differentiability).
+- Giving a $c$ outside the open interval.
+- Thinking the MVT tells you how to find $c$ in practice (it guarantees existence only).
+
+## 6. Practice
+Q: State the MVT.
+A: If $f$ is continuous on $[a, b]$ and differentiable on $(a, b)$, some $c$ has $f'(c) = \frac{f(b) - f(a)}{b - a}$.
+
+Q: Find $c$ for $f(x) = x^2 + 2x$ on $[0, 2]$.
+A: Average 4; $2c + 2 = 4$ → $c = 1$.
+
+Q: What is Rolle's theorem?
+A: If $f(a) = f(b)$ (plus the conditions), some $c$ has $f'(c) = 0$.
+
+Q: A runner covers 10 km in 50 minutes. What does the MVT guarantee?
+A: At some instant they ran exactly 12 km/h.
+
+Q: Does the MVT apply to $\frac{1}{x}$ on $[-1, 1]$?
+A: No, it's not continuous at 0."
+2,MODULE,Analysing functions and optimisation,"Extrema, increasing/decreasing, concavity, curve sketching, optimisation, L'Hôpital, numerical methods",MUST,,Derivatives tell you the shape of a graph without plotting hundreds of points.
+3,TOPIC,Critical points and absolute extrema,"Critical numbers, extreme value theorem, closed interval method",MUST,FALSE,"# Critical points and absolute extrema
+
+## 1. What it covers
+- **Critical points:** where $f'(x) = 0$ or $f'(x)$ is undefined.
+- **Absolute** (global) vs **relative** (local) maxima and minima.
+- The **extreme value theorem**.
+- The **closed interval method** for absolute extrema.
+
+## 2. Where it is used
+- **Engineering:** maximum stress in a beam; peak load.
+- **Business:** maximum profit and minimum cost within production limits.
+- **Physics:** highest point of a projectile.
+- **Machine learning:** training seeks the minimum of a loss function; critical points include minima, maxima and saddle points.
+
+## 3. What it means
+At a smooth peak or valley, the tangent is flat, so $f' = 0$. At a sharp corner, $f'$ is undefined. These **critical points** are the only interior places where a max or min can occur (but not every critical point is one: $x^3$ has $f'(0) = 0$ and no extremum).
+
+**Extreme value theorem:** a continuous function on a **closed** interval $[a, b]$ always has an absolute max and an absolute min.
+
+**Closed interval method:**
+1. Find the critical points inside $(a, b)$.
+2. Evaluate $f$ at those points **and at the endpoints**.
+3. The largest value is the absolute max; the smallest is the absolute min.
+
+## 4. Formula & worked example
+**Example 1.** Critical points of $f(x) = x^3 - 12x$: $f'(x) = 3x^2 - 12 = 0$ → $x = \pm 2$.
+
+**Example 2 (closed interval).** Absolute extrema of $f(x) = x^3 - 12x$ on $[-3, 5]$.
+- Candidates: $f(-3) = 9$, $f(-2) = 16$, $f(2) = -16$, $f(5) = 65$
+- Absolute max 65 at $x = 5$; absolute min $-16$ at $x = 2$.
+
+**Example 3 (undefined derivative).** $f(x) = x^{2/3}$ on $[-1, 8]$: $f'(x) = \frac{2}{3}x^{-1/3}$, undefined at 0.
+- $f(-1) = 1$, $f(0) = 0$, $f(8) = 4$ → max 4, min 0.
+
+**Example 4.** $f(x) = xe^{-x}$ on $[0, 3]$: $f' = e^{-x}(1 - x) = 0$ → $x = 1$.
+- $f(0) = 0$, $f(1) = e^{-1} \approx 0.368$, $f(3) = 3e^{-3} \approx 0.149$ → max $\frac{1}{e}$ at $x = 1$, min 0 at $x = 0$.
+
+## 5. Common mistakes
+- Forgetting to check the endpoints.
+- Missing critical points where $f'$ is undefined.
+- Assuming every critical point is a max or min.
+
+## 6. Practice
+Q: Define a critical point.
+A: An interior point where $f'(x) = 0$ or $f'(x)$ is undefined.
+
+Q: Critical points of $f(x) = x^2 - 6x + 1$?
+A: $x = 3$.
+
+Q: Absolute max and min of $f(x) = x^2$ on $[-1, 3]$?
+A: Max 9 at $x = 3$; min 0 at $x = 0$.
+
+Q: What does the extreme value theorem guarantee?
+A: A continuous function on a closed interval has an absolute max and min.
+
+Q: Is $x = 0$ an extremum of $f(x) = x^3$?
+A: No, though it is a critical point."
+3,TOPIC,"Increasing, decreasing and the first derivative test","Sign charts of f′, classifying critical points as local max, min or neither",MUST,FALSE,"# Increasing, decreasing and the first derivative test
+
+## 1. What it covers
+- $f' > 0$ → increasing; $f' < 0$ → decreasing.
+- **Sign charts** for $f'$.
+- The **first derivative test**: classifying critical points by how the sign of $f'$ changes.
+
+## 2. Where it is used
+- **Business analytics:** where profit is rising or falling with price.
+- **Biology:** when a population is growing or shrinking.
+- **Engineering:** detecting peaks in signals.
+- **Optimisation algorithms:** they move in the direction where the function decreases (gradient descent).
+
+## 3. What it means
+If the slope is positive, the graph goes up; if negative, down.
+
+**Sign chart:** mark the critical points on a number line; test one value in each interval to find the sign of $f'$.
+
+**First derivative test** at a critical point $c$:
+- $f'$ changes from $+$ to $-$ → **local maximum** (up, then down: a hilltop).
+- $f'$ changes from $-$ to $+$ → **local minimum** (a valley).
+- No sign change → neither (a flat spot, like $x^3$ at 0).
+
+## 4. Formula & worked example
+**Example 1.** $f(x) = x^3 - 3x^2 - 9x + 5$.
+- $f'(x) = 3x^2 - 6x - 9 = 3(x - 3)(x + 1)$ → critical points $-1, 3$.
+- Signs: $x < -1$: $+$; $-1 < x < 3$: $-$; $x > 3$: $+$.
+- Increasing on $(-\infty, -1)$ and $(3, \infty)$; decreasing on $(-1, 3)$.
+- Local max at $x = -1$: $f(-1) = 10$; local min at $x = 3$: $f(3) = -22$.
+
+**Example 2.** $f(x) = x^4 - 4x^3$: $f' = 4x^2(x - 3)$; critical points 0 and 3.
+- Signs: $x < 0$: $-$; $0 < x < 3$: $-$; $x > 3$: $+$ → $x = 0$ neither; $x = 3$ local min ($f(3) = -27$).
+
+**Example 3.** $f(x) = \frac{x}{x^2 + 1}$: $f' = \frac{1 - x^2}{(x^2 + 1)^2}$ → critical points $\pm 1$; $-$ then $+$ then $-$ → local min at $-1$ ($-\frac{1}{2}$), local max at 1 ($\frac{1}{2}$).
+
+**Example 4 (profit).** $P(x) = -2x^2 + 120x - 1000$: $P' = -4x + 120$, $+$ before 30, $-$ after → maximum profit at 30 units.
+
+## 5. Common mistakes
+- Using the sign of $f$ instead of $f'$.
+- Forgetting points where $f'$ is undefined (or where $f$ itself is undefined) when making the sign chart.
+- Concluding ""max"" or ""min"" without checking the sign change.
+
+## 6. Practice
+Q: $f'(x) > 0$ on an interval means?
+A: $f$ is increasing there.
+
+Q: $f'$ changes from $-$ to $+$ at $c$. What is at $c$?
+A: A local minimum.
+
+Q: Intervals of increase for $f(x) = x^2 - 4x$?
+A: $(2, \infty)$.
+
+Q: Local extrema of $f(x) = x^3 - 3x$?
+A: Max $2$ at $x = -1$; min $-2$ at $x = 1$.
+
+Q: $f'$ doesn't change sign at a critical point. Conclusion?
+A: No local extremum there."
+3,TOPIC,"Concavity, inflection points and the second derivative test","f″ > 0 concave up, f″ < 0 concave down, inflection points, classifying with f″",MUST,FALSE,"# Concavity, inflection points and the second derivative test
+
+## 1. What it covers
+- **Concave up** ($f'' > 0$, like a cup) and **concave down** ($f'' < 0$, like a cap).
+- **Inflection points**: where concavity changes.
+- The **second derivative test** for local extrema.
+
+## 2. Where it is used
+- **Economics:** diminishing returns: output still rises but more slowly (concave down); the inflection point is where returns start diminishing.
+- **Epidemiology:** the inflection point of an outbreak curve is where new cases per day peak; after it, growth slows.
+- **Finance:** convexity of bond prices.
+- **Optimisation:** a convex (concave up) loss function has one minimum, which makes training reliable.
+
+## 3. What it means
+$f''$ tells you how the slope is changing:
+- $f'' > 0$: the slope is increasing → the graph bends **upward** (cup-shaped, holds water).
+- $f'' < 0$: the slope is decreasing → it bends **downward** (cap-shaped).
+- An **inflection point** is where the bending switches direction ($f''$ changes sign).
+
+**Second derivative test** at a critical point $c$ with $f'(c) = 0$:
+- $f''(c) > 0$ → local **min** (at the bottom of a cup).
+- $f''(c) < 0$ → local **max** (at the top of a cap).
+- $f''(c) = 0$ → inconclusive (use the first derivative test).
+
+## 4. Formula & worked example
+**Example 1.** $f(x) = x^3 - 6x^2 + 9x$.
+- $f' = 3x^2 - 12x + 9$; $f'' = 6x - 12$
+- $f'' < 0$ for $x < 2$ (concave down), $> 0$ for $x > 2$ (concave up) → inflection at $(2, 2)$.
+
+**Example 2 (second derivative test).** Same function: critical points $x = 1, 3$.
+- $f''(1) = -6 < 0$ → local max $f(1) = 4$; $f''(3) = 6 > 0$ → local min $f(3) = 0$.
+
+**Example 3 (inconclusive).** $f(x) = x^4$: $f'(0) = 0$, $f''(0) = 0$ → inconclusive; the first derivative test shows a minimum.
+
+**Example 4.** $f(x) = xe^{-x}$: $f'' = e^{-x}(x - 2)$ → inflection at $x = 2$.
+
+**Example 5 (epidemic).** Cumulative cases $C(t)$: while $C'' > 0$, daily new cases are rising; after the inflection ($C'' < 0$), daily cases fall, even though the total keeps growing.
+
+## 5. Common mistakes
+- Calling every point with $f'' = 0$ an inflection point ($x^4$ at 0 isn't one; check the sign change).
+- Mixing up the test: $f'' > 0$ means **minimum**.
+- Using the second derivative test when $f'(c) \ne 0$.
+
+## 6. Practice
+Q: $f''(x) < 0$ on an interval means?
+A: Concave down.
+
+Q: Inflection point of $f(x) = x^3$?
+A: $(0, 0)$.
+
+Q: $f'(2) = 0$ and $f''(2) = 5$. Conclusion?
+A: Local minimum at $x = 2$.
+
+Q: Concavity of $e^x$?
+A: Concave up everywhere ($f'' = e^x > 0$).
+
+Q: What does the inflection point of a cumulative-cases curve represent?
+A: The moment daily new cases peak."
+3,TOPIC,Curve sketching,"Combining domain, intercepts, symmetry, asymptotes, f′ and f″ into a sketch",MUST,FALSE,"# Curve sketching
+
+## 1. What it covers
+- A full checklist for sketching $y = f(x)$ by hand.
+- Combining domain, intercepts, symmetry, asymptotes, increasing/decreasing, extrema, concavity and inflection points.
+
+## 2. Where it is used
+- **Checking computer output:** knowing the expected shape lets you catch bugs in plots and models.
+- **Exams and interviews.**
+- **Modelling:** understanding a function's behaviour before using it (e.g. an activation function, a cost curve).
+
+## 3. What it means
+**Checklist:**
+1. **Domain** (and any excluded points).
+2. **Intercepts** ($x = 0$ and $f(x) = 0$).
+3. **Symmetry** (even/odd).
+4. **Asymptotes** (vertical, horizontal or slant).
+5. **$f'$:** critical points, increasing/decreasing, local extrema.
+6. **$f''$:** concavity, inflection points.
+7. Plot the key points and join them with the right shape.
+
+## 4. Formula & worked example
+**Example.** Sketch $f(x) = \frac{x^2}{x^2 - 1}$.
+1. Domain: $x \ne \pm 1$.
+2. Intercept: $(0, 0)$.
+3. Even ($f(-x) = f(x)$): symmetric about the y-axis.
+4. VA $x = \pm 1$; HA $y = 1$.
+5. $f'(x) = \frac{2x(x^2 - 1) - x^2(2x)}{(x^2 - 1)^2} = \frac{-2x}{(x^2 - 1)^2}$: positive for $x < 0$, negative for $x > 0$ → increasing on $(-\infty, -1)$ and $(-1, 0)$, decreasing on $(0, 1)$ and $(1, \infty)$; local max at $(0, 0)$.
+6. $f''(x) = \frac{6x^2 + 2}{(x^2 - 1)^3}$: sign follows $(x^2 - 1)^3$ → concave up for $\lvert x\rvert > 1$, concave down for $\lvert x\rvert < 1$; no inflection points (the change happens at asymptotes).
+7. Shape: a cap between $-1$ and 1 peaking at the origin and diving to $-\infty$ at the asymptotes; outside, two branches coming down from $+\infty$ and approaching $y = 1$ from above.
+
+```mermaid
+xychart-beta
+    title ""y = x²/(x² − 1), right half (x > 1 branch)""
+    x-axis ""x"" [1.1, 1.25, 1.5, 2, 3, 4, 6]
+    y-axis ""y"" 0 --> 6
+    line [5.76, 2.78, 1.8, 1.33, 1.13, 1.07, 1.03]
+```
+
+## 5. Common mistakes
+- Skipping asymptotes and drawing the curve across them.
+- Getting concavity signs wrong because of the denominator's sign.
+- Calling a concavity change at an asymptote an inflection point (the function isn't defined there).
+
+## 6. Practice
+Q: First three items on the curve-sketching checklist?
+A: Domain, intercepts, symmetry.
+
+Q: How do you find intervals of increase?
+A: Where $f'(x) > 0$.
+
+Q: $f(x) = x^3 - 3x$: local max, min, inflection?
+A: Max $(-1, 2)$, min $(1, -2)$, inflection $(0, 0)$.
+
+Q: Horizontal asymptote of $\frac{2x^2}{x^2 + 3}$?
+A: $y = 2$.
+
+Q: Can an inflection point occur at a vertical asymptote?
+A: No, the function must be defined there."
+3,TOPIC,Optimisation,"Setting up and solving max/min problems: geometry, cost, revenue, distance",MUST,FALSE,"# Optimisation
+
+## 1. What it covers
+- Turning a word problem into a function of **one variable** to maximise or minimise.
+- Using a **constraint** to remove extra variables.
+- Finding and justifying the optimum (closed interval method or derivative tests).
+
+## 2. Where it is used
+- **Packaging:** least material for a given volume (cans, boxes).
+- **Business:** profit-maximising price, cost-minimising order quantity (the EOQ model in inventory management).
+- **Engineering:** strongest beam, fastest route, minimum energy.
+- **Machine learning:** every model is trained by minimising a loss function; this topic is the single-variable version.
+- **Physics:** light takes the path of least time (Snell's law follows from optimisation).
+
+## 3. What it means
+**Method:**
+1. Draw and label. Identify the quantity to optimise (the **objective**).
+2. Write the objective as a formula.
+3. Use the **constraint** (fixed perimeter, volume, budget...) to write it in terms of **one** variable.
+4. Find the domain (physically sensible values).
+5. Differentiate, set equal to 0, solve.
+6. Justify max/min (endpoints, first or second derivative test).
+7. Answer the question asked, with units.
+
+## 4. Formula & worked example
+**Example 1 (fencing).** 1200 m of fence encloses a rectangle along a river (no fence on the river side). Maximise the area.
+- $2x + y = 1200$ → $A = x(1200 - 2x) = 1200x - 2x^2$
+- $A' = 1200 - 4x = 0$ → $x = 300$, $y = 600$; $A'' = -4 < 0$ → max $= 180\,000$ m²
+
+**Example 2 (open box).** Cut equal squares from the corners of a 30 × 30 cm sheet and fold up the sides. Maximise the volume.
+- $V = x(30 - 2x)^2$, $0 < x < 15$
+- $V' = (30 - 2x)^2 - 4x(30 - 2x) = (30 - 2x)(30 - 6x) = 0$ → $x = 5$ (or 15, which gives zero volume)
+- $V(5) = 5 \times 400 = 2000$ cm³
+
+**Example 3 (can).** A can must hold 500 cm³. Minimise the metal (surface area).
+- $\pi r^2h = 500$ → $h = \frac{500}{\pi r^2}$; $S = 2\pi r^2 + 2\pi rh = 2\pi r^2 + \frac{1000}{r}$
+- $S' = 4\pi r - \frac{1000}{r^2} = 0$ → $r^3 = \frac{250}{\pi}$ → $r \approx 4.30$ cm, $h \approx 8.60$ cm ($h = 2r$: height equals diameter)
+
+**Example 4 (closest point).** Point on $y = \sqrt{x}$ closest to $(3, 0)$.
+- Minimise $D^2 = (x - 3)^2 + x$: derivative $2(x - 3) + 1 = 0$ → $x = 2.5$ → point $(2.5, \sqrt{2.5})$
+
+**Example 5 (pricing).** Demand $q = 400 - 20p$. Revenue-maximising price?
+- $R = p(400 - 20p)$, $R' = 400 - 40p = 0$ → $p = 10$
+
+## 5. Common mistakes
+- Not using the constraint, leaving two variables.
+- Ignoring the domain (e.g. negative lengths, or endpoints that give the true optimum).
+- Answering with $x$ when the question asks for the area or the cost.
+
+## 6. Practice
+Q: Two positive numbers sum to 20. Maximise their product.
+A: $10$ and $10$ (product 100).
+
+Q: A rectangle has area 100. Minimise its perimeter.
+A: A $10 \times 10$ square (perimeter 40).
+
+Q: $C(x) = x^2 - 40x + 500$. Minimum cost?
+A: At $x = 20$: $C = 100$.
+
+Q: Why must you check endpoints in optimisation?
+A: The optimum may occur at the boundary of the allowed values.
+
+Q: Profit $P(x) = -x^3 + 12x^2 + 60x$ for $0 \le x \le 15$. Best $x$?
+A: $P' = -3x^2 + 24x + 60 = 0$ → $x = 10$ ($P = 1600$); endpoints $P(0) = 0$, $P(15) = 225$ → $x = 10$."
+3,TOPIC,L'Hôpital's rule,"Indeterminate forms 0/0 and ∞/∞; rewriting 0·∞, ∞ − ∞, 1^∞, 0⁰, ∞⁰",MUST,FALSE,"# L'Hôpital's rule
+
+## 1. What it covers
+- **L'Hôpital's rule** for $\frac{0}{0}$ and $\frac{\infty}{\infty}$.
+- Rewriting other indeterminate forms ($0 \cdot \infty$, $\infty - \infty$, $1^\infty$, $0^0$, $\infty^0$) into a fraction.
+- Using logs for exponential forms.
+
+## 2. Where it is used
+- **Comparing growth rates:** proving $\frac{x^n}{e^x} \to 0$ and $\frac{\ln x}{x} \to 0$ (used in algorithm analysis).
+- **Physics and engineering limits:** e.g. behaviour of formulas at resonance.
+- **Finance:** deriving continuous compounding $\left(1 + \frac{r}{n}\right)^n \to e^r$.
+- **Statistics:** limits in probability distributions.
+
+## 3. What it means
+When $\frac{f}{g}$ gives $\frac{0}{0}$ or $\frac{\infty}{\infty}$, compare **how fast** $f$ and $g$ change instead: the limit of $\frac{f}{g}$ equals the limit of $\frac{f'}{g'}$ (if that exists). Near the point, both functions behave like their tangent lines, so the ratio of values approaches the ratio of slopes.
+
+**Important:** differentiate the top and bottom **separately**; this is not the quotient rule.
+
+**Other forms:**
+- $0 \cdot \infty$: rewrite $fg = \frac{f}{1/g}$.
+- $\infty - \infty$: combine into one fraction.
+- $1^\infty$, $0^0$, $\infty^0$: let $y = f^g$, take $\ln y = g\ln f$, find its limit $L$, then the answer is $e^L$.
+
+## 4. Formula & worked example
+$$
+\lim\frac{f(x)}{g(x)} = \lim\frac{f'(x)}{g'(x)} \quad \text{for } \frac{0}{0} \text{ or } \frac{\infty}{\infty}
+$$
+
+**Example 1.** $\lim_{x \to 0}\frac{e^x - 1}{x}$ ($\frac{0}{0}$) $= \lim\frac{e^x}{1} = 1$
+
+**Example 2.** $\lim_{x \to \infty}\frac{x^2}{e^x}$ ($\frac{\infty}{\infty}$) $= \lim\frac{2x}{e^x} = \lim\frac{2}{e^x} = 0$ (applied twice)
+
+**Example 3.** $\lim_{x \to 0}\frac{1 - \cos x}{x^2} = \lim\frac{\sin x}{2x} = \frac{1}{2}$
+
+**Example 4 ($0 \cdot \infty$).** $\lim_{x \to 0^+} x\ln x = \lim\frac{\ln x}{1/x} = \lim\frac{1/x}{-1/x^2} = \lim(-x) = 0$
+
+**Example 5 ($1^\infty$).** $\lim_{n \to \infty}\left(1 + \frac{r}{n}\right)^n$
+- $\ln y = n\ln\left(1 + \frac{r}{n}\right) = \frac{\ln(1 + r/n)}{1/n}$ → L'Hôpital → $\frac{\frac{-r/n^2}{1 + r/n}}{-1/n^2} = \frac{r}{1 + r/n} \to r$ → $y \to e^r$
+
+**Example 6 ($0^0$).** $\lim_{x \to 0^+} x^x$: $\ln y = x\ln x \to 0$ → $y \to e^0 = 1$
+
+## 5. Common mistakes
+- Using the rule when the form isn't $\frac{0}{0}$ or $\frac{\infty}{\infty}$ (e.g. $\frac{1}{0}$).
+- Applying the quotient rule instead of differentiating top and bottom separately.
+- Forgetting to exponentiate at the end for $1^\infty$-type limits.
+
+## 6. Practice
+Q: $\lim_{x \to 0}\frac{\sin 3x}{x}$ with L'Hôpital?
+A: $\lim\frac{3\cos 3x}{1} = 3$.
+
+Q: $\lim_{x \to \infty}\frac{\ln x}{\sqrt{x}}$?
+A: $\lim\frac{1/x}{1/(2\sqrt{x})} = \lim\frac{2}{\sqrt{x}} = 0$.
+
+Q: $\lim_{x \to 1}\frac{\ln x}{x - 1}$?
+A: $1$.
+
+Q: Which forms does L'Hôpital's rule handle directly?
+A: $\frac{0}{0}$ and $\frac{\infty}{\infty}$.
+
+Q: $\lim_{x \to 0}(1 + x)^{1/x}$?
+A: $e$."
+3,TOPIC,Newton's method and gradient descent,Root finding with tangent lines; minimising functions by stepping downhill; code,SHOULD,FALSE,"# Newton's method and gradient descent
+
+## 1. What it covers
+- **Newton's method**: finding roots with tangent lines, $x_{n+1} = x_n - \frac{f(x_n)}{f'(x_n)}$.
+- **Gradient descent** (1D): minimising a function by stepping against the slope, $x_{n+1} = x_n - \eta f'(x_n)$.
+- Convergence behaviour, learning rate, and when the methods fail.
+
+## 2. Where it is used
+- **Computers:** square roots and division in hardware and libraries use Newton-type iterations.
+- **Machine learning:** **gradient descent** (and variants like Adam) trains almost every neural network.
+- **Engineering and finance:** solving equations with no algebraic solution (e.g. the internal rate of return).
+- **Optimisation solvers:** Newton's method on $f'$ finds minima quickly.
+
+## 3. What it means
+**Newton's method:** start with a guess. Draw the tangent line there and see where it crosses the x-axis; that's a better guess. Repeat. Near a root it converges extremely fast (the number of correct digits roughly doubles each step).
+
+**Gradient descent:** imagine standing on a hillside in fog, wanting to reach the valley. Feel the slope under your feet and take a step downhill; repeat. The step size is the **learning rate** $\eta$:
+- too small → very slow;
+- too big → you overshoot and may bounce around or diverge.
+
+Gradient descent finds a **local** minimum; with several valleys, where you end up depends on where you start.
+
+## 4. Formula & worked example
+$$
+\text{Newton: } x_{n+1} = x_n - \frac{f(x_n)}{f'(x_n)} \qquad \text{Gradient descent: } x_{n+1} = x_n - \eta\,f'(x_n)
+$$
+
+**Example 1 (Newton for $\sqrt{2}$).** $f(x) = x^2 - 2$, $f'(x) = 2x$, start $x_0 = 1$.
+- $x_1 = 1 - \frac{-1}{2} = 1.5$; $x_2 = 1.5 - \frac{0.25}{3} = 1.41667$; $x_3 \approx 1.414216$ (true $1.414214$)
+
+**Example 2 (code: Newton).**
+```python
+def newton(f, df, x, steps=6):
+    for _ in range(steps):
+        x = x - f(x) / df(x)       # jump to where the tangent hits zero
+    return x
+print(newton(lambda x: x**3 - 2*x - 5, lambda x: 3*x**2 - 2, 2.0))   # 2.0945514815...
+```
+Each step uses the tangent line at the current guess. For this cubic, six steps give about 15 correct digits.
+
+**Example 3 (gradient descent by hand).** Minimise $f(x) = (x - 3)^2$, $f'(x) = 2(x - 3)$, $\eta = 0.25$, start $x_0 = 0$.
+- $x_1 = 0 - 0.25(-6) = 1.5$; $x_2 = 1.5 - 0.25(-3) = 2.25$; $x_3 = 2.625$; ... → 3 (each step halves the distance).
+
+**Example 4 (code: gradient descent).**
+```python
+def grad_descent(df, x, lr=0.01, steps=100):
+    for _ in range(steps):
+        x = x - lr * df(x)         # step against the slope
+    return x
+print(grad_descent(lambda x: 4*x**3 - 9*x**2, x=4.0))   # ≈ 2.25 (minimum of x⁴ − 3x³)
+```
+The derivative of $x^4 - 3x^3$ is $4x^3 - 9x^2$, which is zero at $x = 2.25$ (a minimum). Try `lr=0.1` to see it blow up (an overflow error after a few steps): a learning rate that's too large makes the steps overshoot.
+
+## 5. Common mistakes
+- Newton: starting where $f'(x_0) = 0$ (division by zero) or far from the root (may wander off).
+- Gradient descent: adding the gradient instead of subtracting it (that climbs uphill).
+- Picking a learning rate that is too large.
+
+## 6. Practice
+Q: Newton's method formula?
+A: $x_{n+1} = x_n - \frac{f(x_n)}{f'(x_n)}$.
+
+Q: One Newton step for $f(x) = x^2 - 5$ from $x_0 = 2$?
+A: $2 - \frac{-1}{4} = 2.25$.
+
+Q: Gradient descent update?
+A: $x_{n+1} = x_n - \eta f'(x_n)$.
+
+Q: What happens if the learning rate is too large?
+A: Steps overshoot the minimum and may diverge.
+
+Q: Why might gradient descent end in different places from different starts?
+A: It finds a local minimum, and there may be several."
+3,TOPIC,Practice & review: Applications of derivatives,Mixed problem set with worked answers,MUST,FALSE,"# Practice & review: Applications of derivatives
+
+**How to use this:** 60 minutes; calculator allowed.
+
+## Problems
+1. Use linear approximation to estimate $\sqrt[3]{27.6}$.
+2. $s(t) = t^3 - 9t^2 + 24t$ ($t \ge 0$). When is the particle at rest? When is it speeding up?
+3. A 5 m ladder slides; the top falls at 0.6 m/s. How fast does the bottom move when the top is 3 m high?
+4. Find $c$ from the MVT for $f(x) = \sqrt{x}$ on $[1, 9]$.
+5. Absolute extrema of $f(x) = 2x^3 - 3x^2 - 12x + 4$ on $[-2, 3]$.
+6. For $f(x) = x^4 - 4x^3$, find intervals of concavity and inflection points.
+7. A farmer has 600 m of fencing to make a rectangular pen divided into two equal parts by a fence parallel to one side. Maximise the area.
+8. $\lim_{x \to 0}\frac{x - \sin x}{x^3}$
+9. Do two Newton steps for $f(x) = x^3 - 10$ starting from $x_0 = 2$.
+
+## Answers
+1. $f(x) = x^{1/3}$, $f'(27) = \frac{1}{27}$ → $3 + \frac{0.6}{27} \approx 3.0222$.
+2. $v = 3t^2 - 18t + 24 = 3(t - 2)(t - 4)$ → rest at $t = 2, 4$. $a = 6t - 18$. Speeding up when $v$ and $a$ share a sign: $(2, 3)$ (both negative) and $(4, \infty)$ (both positive).
+3. $x^2 + y^2 = 25$, $y = 3$ → $x = 4$; $4x' + 3(-0.6) = 0$ → $x' = 0.45$ m/s.
+4. Average rate $\frac{3 - 1}{8} = \frac{1}{4}$; $\frac{1}{2\sqrt{c}} = \frac{1}{4}$ → $c = 4$.
+5. $f' = 6(x - 2)(x + 1)$; $f(-2) = 0$, $f(-1) = 11$, $f(2) = -16$, $f(3) = -5$ → max 11, min $-16$.
+6. $f'' = 12x^2 - 24x = 12x(x - 2)$ → up on $(-\infty, 0)$ and $(2, \infty)$, down on $(0, 2)$; inflection at $(0, 0)$ and $(2, -16)$.
+7. $3x + 2y = 600$ (3 fences of length $x$) → $A = x\cdot\frac{600 - 3x}{2}$ → $A' = 300 - 3x = 0$ → $x = 100$, $y = 150$, $A = 15\,000$ m².
+8. L'Hôpital three times: $\frac{1 - \cos x}{3x^2} \to \frac{\sin x}{6x} \to \frac{1}{6}$.
+9. $x_1 = 2 - \frac{-2}{12} \approx 2.1667$; $x_2 = 2.1667 - \frac{0.1713}{14.083} \approx 2.1545$ (true $\sqrt[3]{10} \approx 2.1544$).
+
+## Flashcards
+Q: Steps for related rates?
+A: Draw, write an equation linking the variables, differentiate with respect to time, then substitute and solve.
+
+Q: Second derivative test: $f'(c) = 0$, $f''(c) < 0$?
+A: Local maximum.
+
+Q: Closed interval method?
+A: Evaluate $f$ at the critical points and the endpoints; pick the largest and smallest.
+
+Q: L'Hôpital's rule?
+A: For $\frac{0}{0}$ or $\frac{\infty}{\infty}$: $\lim\frac{f}{g} = \lim\frac{f'}{g'}$."
+1,MODULE,Phase 4 — Integrals and Integration Techniques (Core),"Riemann sums, definite integrals, antiderivatives, the fundamental theorem, substitution, parts, trig methods, partial fractions, improper integrals, numerical integration",MUST,,"# Phase 4: Integrals and integration techniques
+
+The **integral** adds up infinitely many tiny pieces to find a total: distance from speed, area under a curve, total water that flowed, total energy used, probability from a density. The **fundamental theorem of calculus** reveals that integration is the reverse of differentiation, which turns hard sums into easy formulas."
+2,MODULE,The definite integral and the fundamental theorem,"Area and accumulation, Riemann sums, properties, antiderivatives, FTC",MUST,,Integration = accumulation. The fundamental theorem connects it to derivatives.
+3,TOPIC,"Accumulation, area and Riemann sums","Distance from velocity, left/right/midpoint sums, trapezoidal rule, sigma notation",MUST,FALSE,"# Accumulation, area and Riemann sums
+
+## 1. What it covers
+- The **area problem**: total accumulation as area under a rate curve.
+- **Riemann sums**: approximating with rectangles (left, right, midpoint).
+- The **trapezoidal rule**.
+- Over- and under-estimates.
+
+## 2. Where it is used
+- **Physics:** distance travelled = area under the velocity–time graph.
+- **Energy:** kWh used = area under the power–time graph (your electricity bill).
+- **Data:** total rainfall, total traffic or total sales from rate measurements taken at intervals.
+- **Numerical computing:** computers integrate by summing small pieces (e.g. `numpy.trapz`).
+- **Medicine:** total drug exposure (AUC: area under the concentration curve).
+
+## 3. What it means
+If you drive at a constant 60 km/h for 2 h, the distance is $60 \times 2 = 120$ km: the area of a rectangle under the velocity graph. If the speed **changes**, split the time into small intervals, assume the speed is roughly constant in each, and add up the little rectangles. Thinner rectangles give a better estimate; in the limit you get the exact area: the **definite integral**.
+
+- **Left sum:** each rectangle's height is the value at its left edge. **Right sum:** at the right edge. **Midpoint:** at the middle (usually more accurate).
+- **Trapezoidal rule:** use trapezoids instead of rectangles (the average of left and right sums).
+
+For an increasing function, left sums underestimate and right sums overestimate.
+
+## 4. Formula & worked example
+$$
+\int_a^b f(x)\,dx = \lim_{n \to \infty}\sum_{i=1}^{n} f(x_i^*)\,\Delta x, \quad \Delta x = \frac{b - a}{n}
+$$
+$$
+T_n = \frac{\Delta x}{2}\left[f(x_0) + 2f(x_1) + \cdots + 2f(x_{n-1}) + f(x_n)\right]
+$$
+
+**Example 1.** Estimate $\int_0^2 x^2\,dx$ with 4 rectangles ($\Delta x = 0.5$).
+- Left: $0.5(0 + 0.25 + 1 + 2.25) = 1.75$
+- Right: $0.5(0.25 + 1 + 2.25 + 4) = 3.75$
+- Midpoint: $0.5(0.0625 + 0.5625 + 1.5625 + 3.0625) = 2.625$
+- Trapezoid: $\frac{1.75 + 3.75}{2} = 2.75$
+- Exact: $\frac{8}{3} \approx 2.667$
+
+**Example 2 (data).** Velocities (m/s) every 10 s: 0, 4, 9, 12, 14. Distance in 40 s (trapezoid)?
+- $\frac{10}{2}[0 + 2(4) + 2(9) + 2(12) + 14] = 5(64) = 320$ m
+
+**Example 3 (code).**
+```python
+def midpoint_sum(f, a, b, n):
+    dx = (b - a) / n
+    return sum(f(a + (i + 0.5) * dx) for i in range(n)) * dx
+for n in (4, 100, 10_000):
+    print(n, midpoint_sum(lambda x: x**2, 0, 2, n))
+# 4 2.625 / 100 2.6666 / 10000 2.66666666  -> approaching 8/3
+```
+`a + (i + 0.5) * dx` is the midpoint of the $i$-th strip. As `n` grows, the sum converges to the exact integral $\frac{8}{3}$.
+
+## 5. Common mistakes
+- Using $n + 1$ rectangles or the wrong endpoints.
+- Forgetting the factor $\Delta x$.
+- In the trapezoidal rule, doubling the first and last values (only the interior values are doubled).
+
+## 6. Practice
+Q: What does the area under a velocity–time graph represent?
+A: Distance travelled (displacement).
+
+Q: $\Delta x$ for $[1, 5]$ with $n = 8$?
+A: $0.5$.
+
+Q: Left sum of $f(x) = x$ on $[0, 4]$ with $n = 4$?
+A: $1(0 + 1 + 2 + 3) = 6$.
+
+Q: For an increasing function, does a right sum over- or underestimate?
+A: Overestimate.
+
+Q: How is the trapezoidal rule related to left and right sums?
+A: It's their average."
+3,TOPIC,The definite integral: notation and properties,"Signed area, bounds, linearity, additivity, reversing limits, using geometry",MUST,FALSE,"# The definite integral: notation and properties
+
+## 1. What it covers
+- Notation $\int_a^b f(x)\,dx$: integrand, limits, $dx$.
+- **Signed area**: area below the axis counts as negative.
+- Properties: linearity, additivity over intervals, reversing the limits, zero-width intervals.
+- Evaluating with geometry (rectangles, triangles, semicircles).
+
+## 2. Where it is used
+- **Physics:** net displacement (forward minus backward).
+- **Finance:** net cash flow (income minus spending).
+- **Probability:** probabilities are integrals of densities over intervals; splitting intervals uses additivity.
+- **Engineering:** net charge, net work.
+
+## 3. What it means
+$\int_a^b f(x)\,dx$ is the **net signed area** between the curve and the x-axis from $a$ to $b$: area above the axis is positive, area below is negative. The $\int$ sign is a stretched ""S"" for **sum**, and $dx$ is the width of each tiny strip.
+
+**Properties:**
+- Constants factor out; integrals of sums split.
+- Additivity: $\int_a^b + \int_b^c = \int_a^c$.
+- Reversing limits flips the sign.
+- $\int_a^a f = 0$.
+
+## 4. Formula & worked example
+$$
+\int_a^b [cf \pm g]\,dx = c\int_a^b f\,dx \pm \int_a^b g\,dx \qquad \int_a^c f = \int_a^b f + \int_b^c f \qquad \int_b^a f = -\int_a^b f
+$$
+
+**Example 1 (geometry).** $\int_0^4 (x + 1)\,dx$: a trapezoid with heights 1 and 5, width 4 → $12$.
+
+**Example 2 (semicircle).** $\int_{-3}^{3}\sqrt{9 - x^2}\,dx$: upper half of a circle of radius 3 → $\frac{9\pi}{2}$.
+
+**Example 3 (signed).** $\int_0^{2\pi}\sin x\,dx = 0$ (the hump above cancels the hump below).
+
+**Example 4 (properties).** If $\int_0^5 f = 8$ and $\int_0^2 f = 3$, then $\int_2^5 f = 5$ and $\int_5^2 f = -5$.
+
+**Example 5.** If $\int_1^4 f = 6$ and $\int_1^4 g = -2$, then $\int_1^4 (3f - 2g) = 18 + 4 = 22$.
+
+## 5. Common mistakes
+- Forgetting that area below the axis is negative in a definite integral.
+- Reversing limits without changing the sign.
+- Thinking $\int fg = \int f \cdot \int g$ (false).
+
+## 6. Practice
+Q: $\int_2^2 x^5\,dx$?
+A: $0$.
+
+Q: $\int_0^3 4\,dx$?
+A: $12$.
+
+Q: $\int_{-2}^{2} x^3\,dx$?
+A: $0$ (odd function, symmetric interval).
+
+Q: $\int_1^3 f = 7$. What is $\int_3^1 f$?
+A: $-7$.
+
+Q: $\int_0^2 \sqrt{4 - x^2}\,dx$ using geometry?
+A: A quarter circle of radius 2: $\pi$."
+3,TOPIC,Antiderivatives and basic integration rules,"Indefinite integrals, + C, power rule for integrals, trig, exponential and 1/x",MUST,FALSE,"# Antiderivatives and basic integration rules
+
+## 1. What it covers
+- **Antiderivatives**: functions whose derivative is the given function.
+- **Indefinite integral** notation $\int f(x)\,dx = F(x) + C$.
+- The basic rules: powers, $\frac{1}{x}$, $e^x$, $\sin$, $\cos$, $\sec^2$, and the inverse trig forms.
+- Finding a specific antiderivative from an initial condition.
+
+## 2. Where it is used
+- **Physics:** position from velocity, velocity from acceleration ($v = \int a\,dt$).
+- **Economics:** total cost from marginal cost.
+- **Every definite integral** (via the fundamental theorem).
+- **Differential equations:** the simplest ones are solved by antidifferentiation.
+
+## 3. What it means
+Antidifferentiation runs differentiation **backwards**: ""which function has this derivative?"" Since constants differentiate to 0, there's a whole family of answers differing by a constant, hence **$+ C$**. (Knowing only your speed, you can't tell where you started; that's the $C$.)
+
+**Power rule for integrals:** add 1 to the exponent, then divide by the new exponent (except $n = -1$, which gives $\ln\lvert x\rvert$). Always check by differentiating your answer.
+
+## 4. Formula & worked example
+$$
+\int x^n\,dx = \frac{x^{n+1}}{n + 1} + C\ (n \ne -1) \qquad \int\frac{1}{x}\,dx = \ln\lvert x\rvert + C \qquad \int e^x\,dx = e^x + C
+$$
+$$
+\int\cos x\,dx = \sin x + C \quad \int\sin x\,dx = -\cos x + C \quad \int\sec^2 x\,dx = \tan x + C \quad \int\frac{dx}{1 + x^2} = \arctan x + C
+$$
+
+**Example 1.** $\int(6x^2 - 4x + 5)\,dx = 2x^3 - 2x^2 + 5x + C$
+
+**Example 2.** $\int\frac{3}{x^4}\,dx = \int 3x^{-4}\,dx = -x^{-3} + C = -\frac{1}{x^3} + C$
+
+**Example 3.** $\int\sqrt{x}\,dx = \frac{2}{3}x^{3/2} + C$
+
+**Example 4.** $\int(2e^x - 3\sin x + \frac{1}{x})\,dx = 2e^x + 3\cos x + \ln\lvert x\rvert + C$
+
+**Example 5 (initial condition).** $f'(x) = 4x - 1$, $f(2) = 5$.
+- $f(x) = 2x^2 - x + C$; $8 - 2 + C = 5$ → $C = -1$ → $f(x) = 2x^2 - x - 1$
+
+**Example 6 (physics).** $a(t) = -9.8$, $v(0) = 15$, $s(0) = 2$.
+- $v = -9.8t + 15$; $s = -4.9t^2 + 15t + 2$
+
+## 5. Common mistakes
+- Forgetting $+ C$.
+- $\int\frac{1}{x}dx = \frac{x^0}{0}$ ✗; it's $\ln\lvert x\rvert$.
+- Sign errors with $\sin$/$\cos$: $\int\sin x\,dx = -\cos x$.
+
+## 6. Practice
+Q: $\int x^5\,dx$?
+A: $\frac{x^6}{6} + C$.
+
+Q: $\int\frac{1}{\sqrt{x}}\,dx$?
+A: $2\sqrt{x} + C$.
+
+Q: $\int(\cos x + e^x)\,dx$?
+A: $\sin x + e^x + C$.
+
+Q: $\int\frac{5}{x}\,dx$?
+A: $5\ln\lvert x\rvert + C$.
+
+Q: $f'(x) = 3x^2$ and $f(1) = 4$. Find $f$.
+A: $f(x) = x^3 + 3$."
+3,TOPIC,The fundamental theorem of calculus,Part 1: derivative of an accumulation function; Part 2: evaluating definite integrals with antiderivatives,MUST,FALSE,"# The fundamental theorem of calculus
+
+## 1. What it covers
+- **FTC part 1:** if $F(x) = \int_a^x f(t)\,dt$, then $F'(x) = f(x)$.
+- **FTC part 2:** $\int_a^b f(x)\,dx = F(b) - F(a)$ for any antiderivative $F$.
+- Accumulation functions, and the chain rule with variable limits.
+
+## 2. Where it is used
+- **Everywhere integrals are computed exactly:** physics, engineering, probability, economics.
+- **Probability:** the cumulative distribution function (CDF) is the integral of the density (PDF), and the PDF is the derivative of the CDF.
+- **Accumulation models:** total water in a tank, total distance, total revenue.
+
+## 3. What it means
+**Part 1:** think of $F(x)$ as ""the area so far"" under $f$ from $a$ up to $x$. If you move $x$ a tiny bit to the right, the area grows by a thin strip of height $f(x)$. So the rate at which the accumulated area grows is $f(x)$. **Accumulating and then differentiating gets you back to the original function.**
+
+**Part 2:** to find the exact area from $a$ to $b$, you don't need to add rectangles at all. Find any antiderivative $F$ and subtract: $F(b) - F(a)$. The $+C$ cancels.
+
+This theorem connects the two halves of calculus: differentiation and integration are inverse operations.
+
+## 4. Formula & worked example
+$$
+\frac{d}{dx}\int_a^x f(t)\,dt = f(x) \qquad \int_a^b f(x)\,dx = F(b) - F(a) = \Big[F(x)\Big]_a^b
+$$
+With a variable upper limit $g(x)$: $\frac{d}{dx}\int_a^{g(x)} f(t)\,dt = f(g(x))\,g'(x)$.
+
+**Example 1.** $\int_0^2 x^2\,dx = \left[\frac{x^3}{3}\right]_0^2 = \frac{8}{3}$ (matches the Riemann sums).
+
+**Example 2.** $\int_1^4 (3\sqrt{x} - 2)\,dx = \left[2x^{3/2} - 2x\right]_1^4 = (16 - 8) - (2 - 2) = 8$
+
+**Example 3.** $\int_0^{\pi}\sin x\,dx = [-\cos x]_0^{\pi} = 1 + 1 = 2$
+
+**Example 4.** $\int_1^e\frac{1}{x}\,dx = [\ln x]_1^e = 1$
+
+**Example 5 (part 1).** $\frac{d}{dx}\int_2^x \cos(t^2)\,dt = \cos(x^2)$
+
+**Example 6 (variable limit).** $\frac{d}{dx}\int_0^{x^3} e^{t}\,dt = e^{x^3}\cdot 3x^2$
+
+## 5. Common mistakes
+- Subtracting in the wrong order ($F(a) - F(b)$).
+- Forgetting the chain-rule factor with a variable limit like $x^3$.
+- Applying part 2 across a discontinuity of $f$ (e.g. $\int_{-1}^{1}\frac{1}{x^2}dx$ is improper, not $-2$).
+
+## 6. Practice
+Q: $\int_0^3 2x\,dx$?
+A: $9$.
+
+Q: $\int_0^{\pi/2}\cos x\,dx$?
+A: $1$.
+
+Q: $\frac{d}{dx}\int_1^x \sqrt{1 + t^3}\,dt$?
+A: $\sqrt{1 + x^3}$.
+
+Q: $\int_0^1 e^x\,dx$?
+A: $e - 1$.
+
+Q: $\frac{d}{dx}\int_0^{2x}\sin t\,dt$?
+A: $2\sin(2x)$."
+2,MODULE,Integration techniques,"Substitution, parts, trig integrals and substitution, partial fractions, improper integrals, strategy and numerical integration",MUST,,Integration has no single mechanical recipe like differentiation does; these techniques are your toolbox.
+3,TOPIC,u-substitution,"Reversing the chain rule, choosing u, definite integrals and changing limits",MUST,FALSE,"# u-substitution
+
+## 1. What it covers
+- **Substitution** as the chain rule in reverse.
+- Choosing $u$ (usually the ""inside"" function whose derivative also appears).
+- Adjusting constants.
+- Definite integrals: changing the limits.
+
+## 2. Where it is used
+- **Physics and engineering:** integrals like $\int t e^{-t^2}dt$ and $\int\sin(\omega t)\,dt$.
+- **Probability:** standardising the normal distribution is a substitution.
+- **Almost every integral** that isn't a basic rule.
+
+## 3. What it means
+The chain rule says $\frac{d}{dx}F(g(x)) = f(g(x))g'(x)$. So when you see an integral of the form $\int f(g(x))\,g'(x)\,dx$, the answer is $F(g(x)) + C$.
+
+**Method:**
+1. Choose $u$ = an inner function whose derivative (up to a constant) is also in the integrand.
+2. Compute $du = u'(x)\,dx$.
+3. Rewrite everything in terms of $u$; there should be no $x$ left.
+4. Integrate, then substitute back (or, for definite integrals, change the limits to $u$-values and don't substitute back).
+
+## 4. Formula & worked example
+$$
+\int f(g(x))\,g'(x)\,dx = \int f(u)\,du \quad (u = g(x))
+$$
+
+**Example 1.** $\int 2x(x^2 + 1)^5\,dx$: $u = x^2 + 1$, $du = 2x\,dx$ → $\int u^5\,du = \frac{(x^2 + 1)^6}{6} + C$
+
+**Example 2 (adjust a constant).** $\int x e^{x^2}\,dx$: $u = x^2$, $du = 2x\,dx$ → $\frac{1}{2}\int e^u\,du = \frac{1}{2}e^{x^2} + C$
+
+**Example 3.** $\int\cos(3x)\,dx = \frac{1}{3}\sin(3x) + C$
+
+**Example 4.** $\int\frac{x}{x^2 + 4}\,dx$: $u = x^2 + 4$ → $\frac{1}{2}\ln(x^2 + 4) + C$
+
+**Example 5.** $\int\tan x\,dx = \int\frac{\sin x}{\cos x}dx$: $u = \cos x$, $du = -\sin x\,dx$ → $-\ln\lvert\cos x\rvert + C$
+
+**Example 6 (definite, change limits).** $\int_0^2 x\sqrt{x^2 + 5}\,dx$: $u = x^2 + 5$; $x = 0 \to u = 5$, $x = 2 \to u = 9$
+- $\frac{1}{2}\int_5^9 u^{1/2}\,du = \frac{1}{3}\left[u^{3/2}\right]_5^9 = \frac{1}{3}(27 - 5\sqrt{5}) \approx 5.27$
+
+## 5. Common mistakes
+- Leaving some $x$ in the integral after substituting.
+- Forgetting to change the limits (or using $x$-limits with $u$).
+- Choosing $u$ whose derivative isn't present (then substitution doesn't help).
+
+## 6. Practice
+Q: $\int 3x^2(x^3 - 2)^4\,dx$?
+A: $\frac{(x^3 - 2)^5}{5} + C$.
+
+Q: $\int e^{5x}\,dx$?
+A: $\frac{1}{5}e^{5x} + C$.
+
+Q: $\int\frac{2x}{x^2 + 1}\,dx$?
+A: $\ln(x^2 + 1) + C$.
+
+Q: $\int\sin x\cos^3 x\,dx$?
+A: $-\frac{\cos^4 x}{4} + C$.
+
+Q: $\int_0^1 2x e^{x^2}\,dx$?
+A: $e - 1$."
+3,TOPIC,Integration by parts,"∫u dv = uv − ∫v du, choosing u (LIATE), repeated and cyclic cases",MUST,FALSE,"# Integration by parts
+
+## 1. What it covers
+- The formula $\int u\,dv = uv - \int v\,du$ (the product rule in reverse).
+- Choosing $u$ with the **LIATE** guideline.
+- Repeated parts and the **tabular** method.
+- Cyclic integrals like $\int e^x\sin x\,dx$.
+- $\int\ln x\,dx$.
+
+## 2. Where it is used
+- **Physics:** work and moments; expected values involving $xe^{-x}$.
+- **Probability:** the mean and variance of the exponential distribution.
+- **Signal processing:** Fourier coefficients ($\int x\sin(nx)\,dx$).
+- **Laplace transforms** in engineering.
+
+## 3. What it means
+From the product rule $(uv)' = u'v + uv'$, integrate both sides and rearrange: $\int u\,dv = uv - \int v\,du$. It swaps a hard integral for (hopefully) an easier one.
+
+**Choosing $u$ — LIATE:** pick $u$ from whichever comes first: **L**ogarithms, **I**nverse trig, **A**lgebraic (polynomials), **T**rig, **E**xponentials. The idea: $u$ should get simpler when differentiated, and $dv$ should be easy to integrate.
+
+**Cyclic case:** after two rounds the original integral reappears; move it to the left side and solve for it.
+
+## 4. Formula & worked example
+$$
+\int u\,dv = uv - \int v\,du
+$$
+
+**Example 1.** $\int xe^x\,dx$: $u = x$, $dv = e^x\,dx$ → $du = dx$, $v = e^x$
+- $= xe^x - \int e^x\,dx = xe^x - e^x + C$
+
+**Example 2.** $\int x\cos x\,dx$: $u = x$, $dv = \cos x\,dx$ → $x\sin x + \cos x + C$
+
+**Example 3.** $\int\ln x\,dx$: $u = \ln x$, $dv = dx$ → $x\ln x - \int x\cdot\frac{1}{x}dx = x\ln x - x + C$
+
+**Example 4 (repeated).** $\int x^2e^x\,dx = x^2e^x - \int 2xe^x\,dx = x^2e^x - 2(xe^x - e^x) + C = e^x(x^2 - 2x + 2) + C$
+
+**Example 5 (cyclic).** $I = \int e^x\sin x\,dx$
+- Parts ($u = \sin x$): $I = e^x\sin x - \int e^x\cos x\,dx$
+- Parts again ($u = \cos x$): $\int e^x\cos x\,dx = e^x\cos x + I$
+- $I = e^x\sin x - e^x\cos x - I$ → $I = \frac{e^x(\sin x - \cos x)}{2} + C$
+
+**Example 6 (definite).** $\int_0^1 xe^{-x}\,dx = \left[-xe^{-x} - e^{-x}\right]_0^1 = (-2e^{-1}) - (-1) = 1 - \frac{2}{e} \approx 0.264$
+
+## 5. Common mistakes
+- Choosing $u$ and $dv$ the wrong way round (the new integral gets harder).
+- Sign errors in repeated parts.
+- Forgetting the $uv$ term or evaluating it at the limits in definite integrals.
+
+## 6. Practice
+Q: Formula for integration by parts?
+A: $\int u\,dv = uv - \int v\,du$.
+
+Q: $\int x\sin x\,dx$?
+A: $-x\cos x + \sin x + C$.
+
+Q: In $\int x^3\ln x\,dx$, what should $u$ be?
+A: $\ln x$ (logarithm comes first in LIATE).
+
+Q: $\int x^3\ln x\,dx$?
+A: $\frac{x^4}{4}\ln x - \frac{x^4}{16} + C$.
+
+Q: $\int\arctan x\,dx$?
+A: $x\arctan x - \frac{1}{2}\ln(1 + x^2) + C$."
+3,TOPIC,Trigonometric integrals and trig substitution,"Powers of sin and cos, power reduction, tan/sec; substituting x = a sin θ, a tan θ, a sec θ",MUST,FALSE,"# Trigonometric integrals and trig substitution
+
+## 1. What it covers
+- Integrals of powers of $\sin$ and $\cos$ (odd power: save one factor; even powers: power reduction).
+- Integrals involving $\tan$ and $\sec$.
+- **Trig substitution** for $\sqrt{a^2 - x^2}$, $\sqrt{a^2 + x^2}$, $\sqrt{x^2 - a^2}$.
+
+## 2. Where it is used
+- **Physics and electrical engineering:** average power in AC circuits uses $\int\sin^2(\omega t)\,dt$.
+- **Geometry:** area of a circle or ellipse from $\int\sqrt{a^2 - x^2}\,dx$.
+- **Signal processing:** orthogonality of sines and cosines in Fourier series.
+- **Arc length and surface area** integrals.
+
+## 3. What it means
+**Powers of sin and cos:**
+- If one power is **odd**, peel off one factor and convert the rest using $\sin^2 + \cos^2 = 1$, then substitute.
+- If both are **even**, use power reduction: $\sin^2 x = \frac{1 - \cos 2x}{2}$, $\cos^2 x = \frac{1 + \cos 2x}{2}$.
+
+**Trig substitution** turns square roots of quadratics into trig expressions, using Pythagorean identities to remove the root:
+| Expression | Substitute | Identity used |
+|---|---|---|
+| $\sqrt{a^2 - x^2}$ | $x = a\sin\theta$ | $1 - \sin^2\theta = \cos^2\theta$ |
+| $\sqrt{a^2 + x^2}$ | $x = a\tan\theta$ | $1 + \tan^2\theta = \sec^2\theta$ |
+| $\sqrt{x^2 - a^2}$ | $x = a\sec\theta$ | $\sec^2\theta - 1 = \tan^2\theta$ |
+
+Draw a right triangle from the substitution to convert the answer back to $x$.
+
+## 4. Formula & worked example
+**Example 1 (odd power).** $\int\sin^3 x\,dx = \int(1 - \cos^2 x)\sin x\,dx$; $u = \cos x$ → $-\cos x + \frac{\cos^3 x}{3} + C$
+
+**Example 2 (even power).** $\int\cos^2 x\,dx = \int\frac{1 + \cos 2x}{2}dx = \frac{x}{2} + \frac{\sin 2x}{4} + C$
+
+**Example 3 (AC power).** Average of $\sin^2(t)$ over one period $[0, 2\pi]$:
+- $\frac{1}{2\pi}\int_0^{2\pi}\frac{1 - \cos 2t}{2}dt = \frac{1}{2\pi}\cdot\pi = \frac{1}{2}$ (why AC RMS voltage is peak ÷ $\sqrt{2}$)
+
+**Example 4 (tan/sec).** $\int\tan^2 x\,dx = \int(\sec^2 x - 1)\,dx = \tan x - x + C$
+
+**Example 5 (trig sub).** $\int_0^a\sqrt{a^2 - x^2}\,dx$ with $x = a\sin\theta$:
+- $= \int_0^{\pi/2} a^2\cos^2\theta\,d\theta = a^2\cdot\frac{\pi}{4}$ → the quarter-circle area, as expected.
+
+**Example 6.** $\int\frac{dx}{x^2\sqrt{9 - x^2}}$: $x = 3\sin\theta$, $dx = 3\cos\theta\,d\theta$
+- $= \int\frac{3\cos\theta}{9\sin^2\theta\cdot 3\cos\theta}d\theta = \frac{1}{9}\int\csc^2\theta\,d\theta = -\frac{1}{9}\cot\theta + C = -\frac{\sqrt{9 - x^2}}{9x} + C$
+
+## 5. Common mistakes
+- Forgetting to convert $dx$ in trig substitution.
+- Leaving the answer in terms of $\theta$.
+- Using power reduction when an odd power makes substitution easier.
+
+## 6. Practice
+Q: $\int\sin^2 x\,dx$?
+A: $\frac{x}{2} - \frac{\sin 2x}{4} + C$.
+
+Q: $\int\cos^3 x\,dx$?
+A: $\sin x - \frac{\sin^3 x}{3} + C$.
+
+Q: Substitution for $\sqrt{16 + x^2}$?
+A: $x = 4\tan\theta$.
+
+Q: $\int\sec^2 x\tan x\,dx$?
+A: $\frac{\tan^2 x}{2} + C$ (with $u = \tan x$).
+
+Q: Average value of $\cos^2 t$ over a full period?
+A: $\frac{1}{2}$."
+3,TOPIC,Integrating rational functions with partial fractions,"Decomposing into simpler fractions, distinct, repeated and irreducible quadratic factors",MUST,FALSE,"# Integrating rational functions with partial fractions
+
+## 1. What it covers
+- Splitting $\frac{P(x)}{Q(x)}$ into simpler fractions.
+- Cases: distinct linear factors, repeated linear factors, irreducible quadratic factors.
+- Polynomial division first when the degree of the top is at least the degree of the bottom.
+
+## 2. Where it is used
+- **Control engineering:** inverse Laplace transforms of system responses.
+- **Population biology:** solving the logistic equation uses $\frac{1}{P(K - P)}$ = partial fractions.
+- **Chemistry:** reaction-rate integrals.
+- **Probability:** some generating-function calculations.
+
+## 3. What it means
+Adding fractions combines them; partial fractions **un-adds** them into pieces you can integrate easily (each piece gives a log or an arctan).
+
+**Forms:**
+- Distinct linear factors: $\frac{A}{x - a} + \frac{B}{x - b}$.
+- Repeated factor $(x - a)^2$: $\frac{A}{x - a} + \frac{B}{(x - a)^2}$.
+- Irreducible quadratic $x^2 + c$: $\frac{Ax + B}{x^2 + c}$.
+
+Find the constants by multiplying out and substituting convenient $x$ values (or by comparing coefficients).
+
+## 4. Formula & worked example
+$$
+\int\frac{dx}{x - a} = \ln\lvert x - a\rvert + C \qquad \int\frac{dx}{(x - a)^2} = -\frac{1}{x - a} + C \qquad \int\frac{dx}{x^2 + a^2} = \frac{1}{a}\arctan\frac{x}{a} + C
+$$
+
+**Example 1.** $\int\frac{5x - 1}{(x - 1)(x + 1)}\,dx$
+- $5x - 1 = A(x + 1) + B(x - 1)$; $x = 1$: $4 = 2A$ → $A = 2$; $x = -1$: $-6 = -2B$ → $B = 3$
+- $= 2\ln\lvert x - 1\rvert + 3\ln\lvert x + 1\rvert + C$
+
+**Example 2 (repeated).** $\int\frac{x + 3}{(x - 1)^2}\,dx$
+- $x + 3 = A(x - 1) + B$ → $A = 1$, $B = 4$
+- $= \ln\lvert x - 1\rvert - \frac{4}{x - 1} + C$
+
+**Example 3 (quadratic).** $\int\frac{2}{x(x^2 + 1)}\,dx$
+- $\frac{2}{x(x^2 + 1)} = \frac{2}{x} - \frac{2x}{x^2 + 1}$ → $2\ln\lvert x\rvert - \ln(x^2 + 1) + C$
+
+**Example 4 (divide first).** $\int\frac{x^2}{x - 1}\,dx = \int\left(x + 1 + \frac{1}{x - 1}\right)dx = \frac{x^2}{2} + x + \ln\lvert x - 1\rvert + C$
+
+## 5. Common mistakes
+- Skipping the division step when the top's degree is too high.
+- Using a constant (not $Ax + B$) over an irreducible quadratic.
+- Missing the $\frac{B}{(x - a)^2}$ term for a repeated factor.
+
+## 6. Practice
+Q: Partial fraction form of $\frac{1}{(x - 2)(x + 3)}$?
+A: $\frac{A}{x - 2} + \frac{B}{x + 3}$ with $A = \frac{1}{5}$, $B = -\frac{1}{5}$.
+
+Q: $\int\frac{1}{x^2 - 1}\,dx$?
+A: $\frac{1}{2}\ln\left\lvert\frac{x - 1}{x + 1}\right\rvert + C$.
+
+Q: Form for $\frac{3x + 1}{(x + 2)^2}$?
+A: $\frac{A}{x + 2} + \frac{B}{(x + 2)^2}$.
+
+Q: $\int\frac{1}{x^2 + 9}\,dx$?
+A: $\frac{1}{3}\arctan\frac{x}{3} + C$.
+
+Q: When must you divide before using partial fractions?
+A: When the top's degree is at least the bottom's."
+3,TOPIC,Improper integrals,"Infinite limits of integration, infinite discontinuities, convergence and divergence, p-integrals",MUST,FALSE,"# Improper integrals
+
+## 1. What it covers
+- Integrals over **infinite intervals**: $\int_a^\infty f(x)\,dx$.
+- Integrals of functions with **infinite discontinuities** (vertical asymptotes).
+- **Convergence** vs **divergence**.
+- The p-integral test: $\int_1^\infty\frac{dx}{x^p}$.
+
+## 2. Where it is used
+- **Probability:** total probability $\int_{-\infty}^{\infty} f(x)\,dx = 1$; expected values of continuous distributions (exponential, normal).
+- **Physics:** escape velocity: the work to move a rocket from Earth to ""infinity"" is finite.
+- **Engineering:** Laplace transforms $\int_0^\infty e^{-st}f(t)\,dt$.
+- **Series convergence** (the integral test, Phase 6).
+
+## 3. What it means
+You can't plug in $\infty$, so use a limit: integrate to a finite $b$, then let $b \to \infty$. If the limit is a finite number, the integral **converges**; otherwise it **diverges**.
+
+Surprisingly, an infinitely long region can have **finite area** if the curve drops fast enough: $\frac{1}{x^2}$ does, $\frac{1}{x}$ doesn't.
+
+**p-integrals:** $\int_1^\infty\frac{1}{x^p}dx$ converges if $p > 1$ and diverges if $p \le 1$.
+
+For a vertical asymptote at an endpoint (or inside the interval), approach it with a limit as well.
+
+## 4. Formula & worked example
+$$
+\int_a^\infty f(x)\,dx = \lim_{b \to \infty}\int_a^b f(x)\,dx \qquad \int_1^\infty\frac{dx}{x^p} = \frac{1}{p - 1}\ (p > 1)
+$$
+
+**Example 1.** $\int_1^\infty\frac{1}{x^2}dx = \lim_{b \to \infty}\left[-\frac{1}{x}\right]_1^b = \lim\left(1 - \frac{1}{b}\right) = 1$ (converges)
+
+**Example 2.** $\int_1^\infty\frac{1}{x}dx = \lim[\ln b - 0] = \infty$ (diverges)
+
+**Example 3 (probability).** $\int_0^\infty 2e^{-2x}\,dx = \lim[-e^{-2x}]_0^b = 1$ (a valid probability density)
+
+**Example 4 (asymptote).** $\int_0^1\frac{1}{\sqrt{x}}dx = \lim_{a \to 0^+}[2\sqrt{x}]_a^1 = 2$ (converges)
+
+**Example 5 (asymptote inside).** $\int_{-1}^{1}\frac{1}{x^2}dx$: split at 0; $\int_0^1\frac{1}{x^2}dx = \infty$ → diverges. (Blindly applying the FTC gives $-2$, which is wrong.)
+
+**Example 6 (expected value).** Mean of the exponential distribution with rate $\lambda$: $\int_0^\infty x\lambda e^{-\lambda x}\,dx = \frac{1}{\lambda}$ (by parts).
+
+## 5. Common mistakes
+- Treating $\infty$ like a number in $F(\infty)$.
+- Missing an asymptote inside the interval.
+- Thinking ""infinite region"" always means infinite area.
+
+## 6. Practice
+Q: Does $\int_1^\infty\frac{1}{x^3}dx$ converge? Value?
+A: Yes, $\frac{1}{2}$.
+
+Q: Does $\int_1^\infty\frac{1}{\sqrt{x}}dx$ converge?
+A: No ($p = \frac{1}{2} \le 1$).
+
+Q: $\int_0^\infty e^{-x}dx$?
+A: $1$.
+
+Q: $\int_0^4\frac{1}{\sqrt{x}}dx$?
+A: $4$.
+
+Q: Why is $\int_{-1}^{1}\frac{dx}{x^2} \ne -2$?
+A: The integrand has an infinite discontinuity at 0; the integral diverges."
+3,TOPIC,Integration strategy and numerical integration,"Choosing a method, integrals with no elementary antiderivative, Simpson's rule and code",MUST,FALSE,"# Integration strategy and numerical integration
+
+## 1. What it covers
+- A checklist for choosing an integration technique.
+- Integrals with **no elementary antiderivative** (like $\int e^{-x^2}dx$).
+- **Simpson's rule** and comparing numerical methods.
+- Integrating numerically in code.
+
+## 2. Where it is used
+- **Statistics:** the normal distribution's CDF has no closed form; software computes it numerically.
+- **Engineering simulations:** integrals of measured data or complicated functions.
+- **Science:** computing areas, volumes and totals from sensor data.
+- **Libraries:** `scipy.integrate.quad`, `numpy.trapz`.
+
+## 3. What it means
+**Strategy checklist:**
+1. **Simplify** (algebra, trig identities, split fractions).
+2. Is it a **basic rule**?
+3. Is an inner function's derivative present? → **substitution**.
+4. Product of different types (polynomial × exponential/trig, or a log)? → **parts**.
+5. Powers of trig functions? → **trig identities**.
+6. $\sqrt{a^2 \pm x^2}$ or $\sqrt{x^2 - a^2}$? → **trig substitution**.
+7. Rational function? → **partial fractions** (divide first if needed).
+8. None works? → it may have **no elementary antiderivative**: integrate **numerically**.
+
+**Simpson's rule** fits parabolas through groups of three points; it's much more accurate than the trapezoidal rule for smooth functions (error shrinks like $\frac{1}{n^4}$ instead of $\frac{1}{n^2}$).
+
+## 4. Formula & worked example
+$$
+S_n = \frac{\Delta x}{3}\left[f(x_0) + 4f(x_1) + 2f(x_2) + 4f(x_3) + \cdots + 4f(x_{n-1}) + f(x_n)\right] \quad (n \text{ even})
+$$
+
+**Example 1 (choose).** $\int x\sqrt{x + 1}\,dx$ → substitution $u = x + 1$ ($x = u - 1$): $\int(u - 1)u^{1/2}du = \frac{2}{5}(x + 1)^{5/2} - \frac{2}{3}(x + 1)^{3/2} + C$
+
+**Example 2 (choose).** $\int x^2\sin x\,dx$ → parts twice.
+
+**Example 3 (choose).** $\int\frac{dx}{x^2 - 4x + 3}$ → partial fractions: $\frac{1}{(x - 1)(x - 3)}$.
+
+**Example 4 (Simpson by hand).** $\int_0^2 x^3\,dx$ with $n = 2$ ($\Delta x = 1$): $\frac{1}{3}[0 + 4(1) + 8] = 4$, exactly right (Simpson's rule is exact for cubics).
+
+**Example 5 (code).**
+```python
+import math
+from scipy.integrate import quad
+f = lambda x: math.exp(-x**2)
+value, err = quad(f, 0, 1)
+print(value)                      # 0.746824132812427
+
+def simpson(f, a, b, n=10):       # n must be even
+    h = (b - a) / n
+    s = f(a) + f(b) + sum((4 if i % 2 else 2) * f(a + i * h) for i in range(1, n))
+    return s * h / 3
+print(simpson(f, 0, 1))           # 0.7468249482...  (already 6 correct digits with n = 10)
+```
+$\int_0^1 e^{-x^2}dx$ has no formula in elementary functions, but numerical methods give it to high accuracy. `quad` is an adaptive library routine; the hand-written `simpson` applies the weights 1, 4, 2, 4, ..., 4, 1.
+
+## 5. Common mistakes
+- Trying a technique for a long time without simplifying first.
+- Using Simpson's rule with an odd number of intervals.
+- Assuming every integral has a formula.
+
+## 6. Practice
+Q: Best method for $\int x e^{3x}dx$?
+A: Integration by parts.
+
+Q: Best method for $\int\frac{\ln x}{x}dx$?
+A: Substitution $u = \ln x$ → $\frac{(\ln x)^2}{2} + C$.
+
+Q: Best method for $\int\frac{x + 5}{x^2 + x - 2}dx$?
+A: Partial fractions.
+
+Q: Name an integral with no elementary antiderivative.
+A: $\int e^{-x^2}dx$ (also $\int\frac{\sin x}{x}dx$).
+
+Q: Why is Simpson's rule more accurate than the trapezoidal rule?
+A: It fits parabolas instead of straight lines, so its error shrinks much faster."
+3,TOPIC,Practice & review: Integrals and techniques,Mixed problem set with worked answers,MUST,FALSE,"# Practice & review: Integrals and techniques
+
+**How to use this:** 60 minutes, no calculator. Check indefinite answers by differentiating.
+
+## Problems
+1. Estimate $\int_1^3\frac{1}{x}dx$ with the trapezoidal rule, $n = 4$.
+2. $\int(4x^3 - \frac{2}{\sqrt{x}} + e^x)\,dx$
+3. $\int_1^2\left(x^2 + \frac{1}{x^2}\right)dx$
+4. $\frac{d}{dx}\int_x^{5}\sqrt{t^2 + 1}\,dt$
+5. $\int\frac{\cos x}{1 + \sin x}\,dx$
+6. $\int_0^{\pi/2}\sin^3 x\cos x\,dx$
+7. $\int x^2\ln x\,dx$
+8. $\int\frac{x + 7}{x^2 - x - 6}\,dx$
+9. $\int_0^\infty xe^{-x}\,dx$
+10. $\int\frac{dx}{\sqrt{4 - x^2}}$
+
+## Answers
+1. $\Delta x = 0.5$: $\frac{0.5}{2}[1 + 2(0.6667) + 2(0.5) + 2(0.4) + 0.3333] = 0.25(4.4667) \approx 1.1167$ (exact $\ln 3 \approx 1.0986$).
+2. $x^4 - 4\sqrt{x} + e^x + C$.
+3. $\left[\frac{x^3}{3} - \frac{1}{x}\right]_1^2 = \left(\frac{8}{3} - \frac{1}{2}\right) - \left(\frac{1}{3} - 1\right) = \frac{17}{6}$.
+4. $-\sqrt{x^2 + 1}$ (the variable is the lower limit).
+5. $\ln\lvert 1 + \sin x\rvert + C$.
+6. $u = \sin x$: $\int_0^1 u^3du = \frac{1}{4}$.
+7. $\frac{x^3}{3}\ln x - \frac{x^3}{9} + C$.
+8. $\frac{x + 7}{(x - 3)(x + 2)} = \frac{2}{x - 3} - \frac{1}{x + 2}$ → $2\ln\lvert x - 3\rvert - \ln\lvert x + 2\rvert + C$.
+9. $1$.
+10. $\arcsin\frac{x}{2} + C$.
+
+## Flashcards
+Q: FTC part 2?
+A: $\int_a^b f(x)\,dx = F(b) - F(a)$.
+
+Q: Integration by parts formula?
+A: $\int u\,dv = uv - \int v\,du$.
+
+Q: When does $\int_1^\infty\frac{dx}{x^p}$ converge?
+A: When $p > 1$.
+
+Q: LIATE order?
+A: Logarithmic, inverse trig, algebraic, trig, exponential."
+1,MODULE,Phase 5 — Applications of Integrals and Differential Equations (Applied),"Net change, average value, area between curves, volumes, arc length, parametric/polar calculus, slope fields, Euler's method, separable and logistic equations",SHOULD,,"# Phase 5: Applications of integrals and differential equations
+
+Integrals compute totals of anything that can be sliced into small pieces: areas, volumes, lengths, work, mass, probability. This phase also introduces **differential equations**, equations involving derivatives, which describe how systems evolve: populations, cooling coffee, charging batteries, spreading diseases. (The Multivariable Calculus & Differential Equations roadmap continues with more methods.)"
+2,MODULE,Applications of integration,"Net change, average value, areas, volumes, arc length, parametric and polar curves",SHOULD,,"The pattern is always the same: slice, approximate one slice, add the slices with an integral."
+3,TOPIC,"Net change, motion and average value","∫ of a rate = net change, displacement vs distance, average value of a function",SHOULD,FALSE,"# Net change, motion and average value
+
+## 1. What it covers
+- **Net change theorem**: integrating a rate gives the total change.
+- **Displacement** $\int v\,dt$ vs **total distance** $\int\lvert v\rvert\,dt$.
+- **Average value** of a function: $\frac{1}{b - a}\int_a^b f(x)\,dx$.
+
+## 2. Where it is used
+- **Physics:** displacement and distance from velocity data.
+- **Economics:** total cost from marginal cost; total revenue over a period.
+- **Engineering:** average power, average temperature, average flow rate.
+- **Data analysis:** the average of a continuous signal (e.g. average CPU load over an hour).
+
+## 3. What it means
+If $r(t)$ is the rate at which something changes, then $\int_a^b r(t)\,dt$ is the **total change** over that time. Water flowing in at $r(t)$ litres per minute: the integral is the total litres added.
+
+**Displacement vs distance:** if velocity goes negative (moving backwards), the integral subtracts that motion. To get total distance, integrate the **absolute value** (split at the times where $v = 0$).
+
+**Average value:** the height of the rectangle with the same area as the region under the curve, like levelling out a sand pile into a flat layer of the same volume.
+
+## 4. Formula & worked example
+$$
+\int_a^b F'(t)\,dt = F(b) - F(a) \qquad f_{\text{avg}} = \frac{1}{b - a}\int_a^b f(x)\,dx
+$$
+
+**Example 1.** Water flows into a tank at $r(t) = 20 - 2t$ L/min for $0 \le t \le 10$. Total water added?
+- $\int_0^{10}(20 - 2t)\,dt = [20t - t^2]_0^{10} = 100$ L
+
+**Example 2 (displacement vs distance).** $v(t) = t^2 - 4t + 3$ m/s on $[0, 3]$.
+- Displacement $= \left[\frac{t^3}{3} - 2t^2 + 3t\right]_0^3 = 0$ m
+- $v < 0$ on $(1, 3)$: distance $= \int_0^1 v\,dt - \int_1^3 v\,dt = \frac{4}{3} + \frac{4}{3} = \frac{8}{3}$ m
+
+**Example 3 (average value).** Average of $f(x) = x^2$ on $[0, 3]$: $\frac{1}{3}\cdot 9 = 3$.
+
+**Example 4 (temperature).** $T(t) = 20 + 6\sin\left(\frac{\pi t}{12}\right)$ over a day ($0 \le t \le 24$): average $= 20$ °C (the sine part averages to zero over a full period).
+
+## 5. Common mistakes
+- Using displacement when total distance is asked (or vice versa).
+- Forgetting to divide by $b - a$ for the average.
+- Integrating a quantity instead of its rate.
+
+## 6. Practice
+Q: Integral of a rate of change over $[a, b]$ gives?
+A: The net change in the quantity.
+
+Q: Average value of $f(x) = 2x$ on $[0, 4]$?
+A: $4$.
+
+Q: $v(t) = 3t^2$ m/s. Displacement from $t = 0$ to $2$?
+A: $8$ m.
+
+Q: How do you get total distance from velocity?
+A: Integrate $\lvert v(t)\rvert$ (split where $v$ changes sign).
+
+Q: Marginal cost $C'(x) = 50 - 0.1x$. Cost of increasing production from 100 to 200 units?
+A: $\int_{100}^{200}(50 - 0.1x)\,dx = 5000 - 1500 = 3500$."
+3,TOPIC,Area between curves,"Top minus bottom, finding intersections, integrating with respect to y",SHOULD,FALSE,"# Area between curves
+
+## 1. What it covers
+- Area between two curves: $\int_a^b[\text{top} - \text{bottom}]\,dx$.
+- Finding the limits from intersection points.
+- Curves that cross (split the integral).
+- Integrating with respect to $y$ (right minus left).
+
+## 2. Where it is used
+- **Economics:** consumer and producer surplus are areas between demand/supply curves and the price line.
+- **Statistics:** the Lorenz curve and the **Gini coefficient** (income inequality) use the area between a curve and the line $y = x$.
+- **Machine learning:** AUC (area under the ROC curve) to evaluate classifiers.
+- **Engineering:** cross-sectional areas of irregular shapes.
+
+## 3. What it means
+Slice the region into thin vertical strips. Each strip has height (top curve − bottom curve) and width $dx$. Add them up with an integral.
+
+**Steps:**
+1. Sketch the curves.
+2. Find where they intersect (the limits).
+3. Decide which is on top in each interval (test a point).
+4. Integrate top − bottom; if they cross, split the interval.
+
+Sometimes horizontal strips are easier: $\int_c^d[\text{right} - \text{left}]\,dy$.
+
+## 4. Formula & worked example
+$$
+A = \int_a^b\big[f(x) - g(x)\big]\,dx \quad (f \ge g \text{ on } [a, b])
+$$
+
+**Example 1.** Area between $y = x^2$ and $y = x + 2$.
+- Intersections: $x^2 = x + 2$ → $x = -1, 2$. Top: $x + 2$.
+- $\int_{-1}^{2}(x + 2 - x^2)\,dx = \left[\frac{x^2}{2} + 2x - \frac{x^3}{3}\right]_{-1}^{2} = \frac{10}{3} + \frac{7}{6} = \frac{9}{2}$
+
+**Example 2 (crossing).** Area between $y = \sin x$ and $y = \cos x$ on $[0, \frac{\pi}{2}]$.
+- They cross at $\frac{\pi}{4}$. $\int_0^{\pi/4}(\cos x - \sin x)\,dx + \int_{\pi/4}^{\pi/2}(\sin x - \cos x)\,dx = (\sqrt{2} - 1) + (\sqrt{2} - 1) = 2\sqrt{2} - 2 \approx 0.828$
+
+**Example 3 (with respect to y).** Area between $x = y^2$ and $x = 4$.
+- $\int_{-2}^{2}(4 - y^2)\,dy = \left[4y - \frac{y^3}{3}\right]_{-2}^{2} = \frac{32}{3}$
+
+**Example 4 (consumer surplus).** Demand $p = 100 - 2q$, market price 60 (so $q = 20$).
+- $\int_0^{20}(100 - 2q - 60)\,dq = [40q - q^2]_0^{20} = 400$
+
+## 5. Common mistakes
+- Subtracting in the wrong order (negative area).
+- Not splitting when the curves cross (areas cancel).
+- Using x-limits with a $dy$ integral.
+
+## 6. Practice
+Q: Area between $y = x$ and $y = x^2$ on $[0, 1]$?
+A: $\int_0^1(x - x^2)dx = \frac{1}{6}$.
+
+Q: Area between $y = 4 - x^2$ and the x-axis?
+A: $\int_{-2}^{2}(4 - x^2)dx = \frac{32}{3}$.
+
+Q: What do you integrate for vertical strips?
+A: Top curve minus bottom curve.
+
+Q: Area between $y = e^x$ and $y = 1$ on $[0, 1]$?
+A: $e - 2$.
+
+Q: Why split the integral when curves cross?
+A: Otherwise positive and negative parts cancel."
+3,TOPIC,Volumes of solids of revolution: disks and washers,"Rotating regions about an axis, disk method, washer method",SHOULD,FALSE,"# Volumes of solids of revolution: disks and washers
+
+## 1. What it covers
+- Volume by **disks**: $V = \pi\int R(x)^2\,dx$.
+- Volume by **washers** (hollow solids): $V = \pi\int(R^2 - r^2)\,dx$.
+- Rotating about the x-axis, the y-axis or another horizontal/vertical line.
+
+## 2. Where it is used
+- **Manufacturing:** volumes of lathe-turned parts, bottles, vases, rocket nose cones.
+- **Engineering:** tank capacities with curved profiles.
+- **3D printing and CAD:** material volume of rotational parts.
+- **Medicine:** estimating organ volumes from cross-sectional profiles.
+
+## 3. What it means
+Rotating a region around an axis creates a solid. Slice it perpendicular to the axis: each slice is a thin **disk** (a coin) of radius $R(x)$ and thickness $dx$, with volume $\pi R^2\,dx$. Add them up.
+
+If there's a hole (the region doesn't touch the axis), each slice is a **washer** (a coin with a hole): outer radius $R$, inner radius $r$, volume $\pi(R^2 - r^2)\,dx$.
+
+**Radius = distance from the curve to the axis of rotation.** For an axis like $y = -1$, the radius is $f(x) - (-1) = f(x) + 1$.
+
+## 4. Formula & worked example
+$$
+V_{\text{disk}} = \pi\int_a^b [R(x)]^2\,dx \qquad V_{\text{washer}} = \pi\int_a^b\left([R(x)]^2 - [r(x)]^2\right)dx
+$$
+
+**Example 1 (cone check).** Rotate $y = \frac{r}{h}x$, $0 \le x \le h$, about the x-axis.
+- $V = \pi\int_0^h\frac{r^2}{h^2}x^2\,dx = \pi\frac{r^2}{h^2}\cdot\frac{h^3}{3} = \frac{1}{3}\pi r^2h$ ✓ (the cone formula)
+
+**Example 2 (sphere check).** Rotate $y = \sqrt{r^2 - x^2}$ about the x-axis.
+- $V = \pi\int_{-r}^{r}(r^2 - x^2)\,dx = \pi\left[r^2x - \frac{x^3}{3}\right]_{-r}^{r} = \frac{4}{3}\pi r^3$ ✓
+
+**Example 3.** Rotate $y = \sqrt{x}$, $0 \le x \le 4$, about the x-axis: $\pi\int_0^4 x\,dx = 8\pi$.
+
+**Example 4 (washer).** Region between $y = x$ and $y = x^2$, rotated about the x-axis.
+- $R = x$, $r = x^2$ on $[0, 1]$: $\pi\int_0^1(x^2 - x^4)\,dx = \pi\left(\frac{1}{3} - \frac{1}{5}\right) = \frac{2\pi}{15}$
+
+**Example 5 (other axis).** Rotate $y = x^2$, $0 \le x \le 1$, about $y = -1$ (region between the curve and the x-axis).
+- $R = x^2 + 1$, $r = 1$: $\pi\int_0^1\left((x^2 + 1)^2 - 1\right)dx = \pi\int_0^1(x^4 + 2x^2)\,dx = \pi\left(\frac{1}{5} + \frac{2}{3}\right) = \frac{13\pi}{15}$
+
+## 5. Common mistakes
+- Using $(R - r)^2$ instead of $R^2 - r^2$.
+- Forgetting $\pi$.
+- Measuring the radius from the x-axis when the axis of rotation is a different line.
+
+## 6. Practice
+Q: Disk method formula?
+A: $V = \pi\int[R(x)]^2dx$.
+
+Q: Rotate $y = x$, $0 \le x \le 3$, about the x-axis. Volume?
+A: $\pi\int_0^3x^2dx = 9\pi$.
+
+Q: Rotate $y = e^x$, $0 \le x \le 1$, about the x-axis.
+A: $\pi\int_0^1e^{2x}dx = \frac{\pi}{2}(e^2 - 1)$.
+
+Q: When do you use washers instead of disks?
+A: When the region doesn't touch the axis, leaving a hole.
+
+Q: Radius for rotating $y = f(x)$ about $y = 2$ (curve below the line)?
+A: $2 - f(x)$."
+3,TOPIC,Volumes by cylindrical shells and known cross sections,"Shell method, choosing disks vs shells, solids with square/triangular/semicircular cross sections",SHOULD,FALSE,"# Volumes by cylindrical shells and known cross sections
+
+## 1. What it covers
+- The **shell method**: $V = 2\pi\int(\text{radius})(\text{height})\,dx$.
+- When shells are easier than washers.
+- Volumes of solids with **known cross sections** (not rotational): $V = \int A(x)\,dx$.
+
+## 2. Where it is used
+- **Engineering:** volumes of pipes, tubes and rotated profiles where solving for $x$ in terms of $y$ is hard.
+- **Architecture:** volumes of buildings and structures with varying cross sections.
+- **Geology and civil engineering:** earthwork volumes from cross-section surveys (cut and fill for roads).
+- **Medical imaging:** organ volume = sum of cross-sectional areas × slice thickness (exactly $\int A(x)\,dx$).
+
+## 3. What it means
+**Shells:** instead of slicing perpendicular to the axis, take thin strips **parallel** to the axis and spin them. Each becomes a thin cylindrical shell (like a toilet paper tube). Unroll it: a thin rectangular sheet with length $2\pi r$ (circumference), height $h$ and thickness $dx$. Volume $\approx 2\pi rh\,dx$.
+
+**Choosing:** use whichever gives simpler integrals; rotating about the y-axis with $y = f(x)$ usually suits shells.
+
+**Known cross sections:** if you know the area $A(x)$ of each slice (squares, triangles, semicircles built on a base region), the volume is $\int A(x)\,dx$, a generalisation of Cavalieri's principle.
+
+## 4. Formula & worked example
+$$
+V_{\text{shell}} = 2\pi\int_a^b r(x)\,h(x)\,dx \qquad V = \int_a^b A(x)\,dx
+$$
+
+**Example 1 (shells).** Rotate the region under $y = x^2$, $0 \le x \le 2$, about the **y-axis**.
+- Radius $x$, height $x^2$: $V = 2\pi\int_0^2 x^3\,dx = 2\pi\cdot 4 = 8\pi$
+
+**Example 2 (shells, hard with washers).** Rotate $y = x - x^3$, $0 \le x \le 1$, about the y-axis.
+- $V = 2\pi\int_0^1 x(x - x^3)\,dx = 2\pi\left(\frac{1}{3} - \frac{1}{5}\right) = \frac{4\pi}{15}$ (washers would need to solve a cubic for $x$)
+
+**Example 3 (square cross sections).** The base is the region between $y = \sqrt{x}$ and the x-axis for $0 \le x \le 4$; cross sections perpendicular to the x-axis are squares.
+- Side $\sqrt{x}$ → $A = x$ → $V = \int_0^4 x\,dx = 8$
+
+**Example 4 (semicircle cross sections).** Base: the disk $x^2 + y^2 \le 4$; cross sections perpendicular to the x-axis are semicircles.
+- Diameter $2\sqrt{4 - x^2}$ → radius $\sqrt{4 - x^2}$ → $A = \frac{\pi}{2}(4 - x^2)$
+- $V = \frac{\pi}{2}\int_{-2}^{2}(4 - x^2)\,dx = \frac{\pi}{2}\cdot\frac{32}{3} = \frac{16\pi}{3}$
+
+## 5. Common mistakes
+- Using the shell formula with radius and height swapped.
+- Forgetting the $2\pi$.
+- Using the full width as the radius of a semicircle (it's the diameter).
+
+## 6. Practice
+Q: Shell method formula?
+A: $2\pi\int r\,h\,dx$.
+
+Q: Rotate the region under $y = x$, $0 \le x \le 1$, about the y-axis (shells).
+A: $2\pi\int_0^1x^2dx = \frac{2\pi}{3}$.
+
+Q: Volume formula for known cross sections?
+A: $\int A(x)\,dx$.
+
+Q: Base $0 \le x \le 2$ under $y = x$, square cross sections. Volume?
+A: $\int_0^2x^2dx = \frac{8}{3}$.
+
+Q: When are shells usually easier?
+A: When rotating about the y-axis a region given as $y = f(x)$ that is hard to solve for $x$."
+3,TOPIC,Arc length and surface area,"Length of a curve, ∫√(1 + f′²) dx, surface area of revolution",SHOULD,FALSE,"# Arc length and surface area
+
+## 1. What it covers
+- **Arc length** of $y = f(x)$: $L = \int_a^b\sqrt{1 + [f'(x)]^2}\,dx$.
+- Why it works (Pythagoras on tiny pieces).
+- **Surface area** of a solid of revolution.
+- Numerical arc length for curves without nice antiderivatives.
+
+## 2. Where it is used
+- **Engineering:** length of cables (power lines hang as catenaries), pipes, roads and roller-coaster tracks.
+- **Computer graphics and fonts:** length of Bézier curves for animation timing (constant-speed motion along a path).
+- **Manufacturing:** material needed for curved parts; area of curved surfaces to paint or plate.
+- **Robotics:** path length for motion planning.
+
+## 3. What it means
+Zoom into a tiny piece of the curve: it's almost straight, with horizontal change $dx$ and vertical change $dy = f'(x)\,dx$. By Pythagoras its length is
+$$
+\sqrt{dx^2 + dy^2} = \sqrt{1 + (f'(x))^2}\,dx
+$$
+Adding all the pieces gives the arc length.
+
+Most arc length integrals can't be done by hand, so they're computed numerically.
+
+**Surface area of revolution:** each tiny piece sweeps out a thin band of circumference $2\pi f(x)$ and slant width $ds$.
+
+## 4. Formula & worked example
+$$
+L = \int_a^b\sqrt{1 + [f'(x)]^2}\,dx \qquad S = 2\pi\int_a^b f(x)\sqrt{1 + [f'(x)]^2}\,dx
+$$
+
+**Example 1 (check with a line).** $y = 2x$, $0 \le x \le 3$: $L = \int_0^3\sqrt{1 + 4}\,dx = 3\sqrt{5}$ (matches the distance formula).
+
+**Example 2.** $y = \frac{2}{3}x^{3/2}$, $0 \le x \le 3$: $f' = x^{1/2}$ → $L = \int_0^3\sqrt{1 + x}\,dx = \frac{2}{3}\left[(1 + x)^{3/2}\right]_0^3 = \frac{2}{3}(8 - 1) = \frac{14}{3}$
+
+**Example 3 (numerical).** Length of $y = x^2$ from 0 to 1.
+```python
+import math
+from scipy.integrate import quad
+L, _ = quad(lambda x: math.sqrt(1 + (2 * x) ** 2), 0, 1)
+print(L)    # 1.4789428575...
+```
+The integrand $\sqrt{1 + 4x^2}$ comes straight from the formula with $f'(x) = 2x$.
+
+**Example 4 (surface area check).** Sphere: rotate $y = \sqrt{r^2 - x^2}$ about the x-axis.
+- $f\sqrt{1 + f'^2} = \sqrt{r^2 - x^2}\cdot\frac{r}{\sqrt{r^2 - x^2}} = r$ → $S = 2\pi\int_{-r}^{r} r\,dx = 4\pi r^2$ ✓
+
+## 5. Common mistakes
+- Forgetting to square $f'(x)$ or to add 1.
+- Integrating $\sqrt{1 + f'(x)}$.
+- Expecting a closed-form answer for every curve.
+
+## 6. Practice
+Q: Arc length formula?
+A: $\int_a^b\sqrt{1 + [f'(x)]^2}\,dx$.
+
+Q: Which theorem is behind the formula?
+A: Pythagoras (on tiny pieces of the curve).
+
+Q: Arc length of $y = 5$ from $x = 0$ to $x = 7$?
+A: $7$.
+
+Q: Arc length of $y = \frac{3}{4}x$ from 0 to 4?
+A: $4 \cdot \frac{5}{4} = 5$.
+
+Q: Why are arc lengths often computed numerically?
+A: $\sqrt{1 + f'^2}$ rarely has an elementary antiderivative."
+3,TOPIC,"Calculus with parametric, polar and vector-valued functions","dy/dx for parametric curves, polar slopes and area, velocity/acceleration vectors, arc length in t",NICE,FALSE,"# Calculus with parametric, polar and vector-valued functions
+
+## 1. What it covers
+- **Parametric derivatives:** $\frac{dy}{dx} = \frac{dy/dt}{dx/dt}$; second derivatives.
+- **Parametric arc length.**
+- **Polar area:** $\frac{1}{2}\int r^2\,d\theta$.
+- **Vector-valued functions:** position $\vec{r}(t)$, velocity $\vec{v} = \vec{r}'$, acceleration, speed.
+
+## 2. Where it is used
+- **Physics:** projectile and orbital motion in 2D/3D.
+- **Animation and games:** objects moving along parametric paths need velocity (for facing direction) and speed (for timing).
+- **Robotics and drones:** trajectories as vector functions.
+- **Engineering:** cam profiles and polar antenna patterns.
+
+## 3. What it means
+**Parametric curves** $x(t)$, $y(t)$: the slope is ""how fast $y$ changes"" divided by ""how fast $x$ changes"", both per unit of time: $\frac{dy}{dx} = \frac{y'(t)}{x'(t)}$.
+
+**Vector functions:** $\vec{r}(t) = \langle x(t), y(t)\rangle$ is the position. Differentiate each component:
+- velocity $\vec{v}(t) = \langle x'(t), y'(t)\rangle$ (points along the path);
+- **speed** $= \lvert\vec{v}\rvert = \sqrt{x'^2 + y'^2}$;
+- acceleration $\vec{a} = \vec{v}'$.
+
+**Arc length** in $t$: integrate the speed.
+
+**Polar area:** a thin wedge of angle $d\theta$ and radius $r$ is almost a sector with area $\frac{1}{2}r^2\,d\theta$.
+
+## 4. Formula & worked example
+$$
+\frac{dy}{dx} = \frac{dy/dt}{dx/dt} \qquad L = \int_a^b\sqrt{x'(t)^2 + y'(t)^2}\,dt \qquad A_{\text{polar}} = \frac{1}{2}\int_\alpha^\beta r^2\,d\theta
+$$
+
+**Example 1.** $x = t^2$, $y = t^3 - 3t$. Slope at $t = 2$?
+- $\frac{dy}{dx} = \frac{3t^2 - 3}{2t} = \frac{9}{4}$
+
+**Example 2 (circle).** $x = 3\cos t$, $y = 3\sin t$: speed $= \sqrt{9\sin^2 t + 9\cos^2 t} = 3$; length over $[0, 2\pi]$: $6\pi$ ✓
+
+**Example 3 (projectile).** $\vec{r}(t) = \langle 20t,\ 15t - 4.9t^2\rangle$.
+- $\vec{v} = \langle 20,\ 15 - 9.8t\rangle$; at $t = 1$: speed $= \sqrt{400 + 27.04} \approx 20.7$ m/s; $\vec{a} = \langle 0, -9.8\rangle$.
+
+**Example 4 (polar area).** Area inside the cardioid $r = 1 + \cos\theta$.
+- $\frac{1}{2}\int_0^{2\pi}(1 + \cos\theta)^2\,d\theta = \frac{1}{2}\int_0^{2\pi}\left(1 + 2\cos\theta + \frac{1 + \cos 2\theta}{2}\right)d\theta = \frac{1}{2}(2\pi + 0 + \pi) = \frac{3\pi}{2}$
+
+**Example 5 (one rose petal).** $r = \cos 2\theta$ has a petal for $-\frac{\pi}{4} \le \theta \le \frac{\pi}{4}$: $\frac{1}{2}\int_{-\pi/4}^{\pi/4}\cos^2 2\theta\,d\theta = \frac{\pi}{8}$.
+
+## 5. Common mistakes
+- Computing $\frac{dx}{dy}$ instead of $\frac{dy}{dx}$.
+- Forgetting the $\frac{1}{2}$ in polar area, or using $r$ instead of $r^2$.
+- Confusing velocity (a vector) with speed (its length).
+
+## 6. Practice
+Q: Slope of $x = 2t$, $y = t^2$ at $t = 3$?
+A: $\frac{2t}{2} = 3$.
+
+Q: Speed for $\vec{r}(t) = \langle\cos t, \sin t\rangle$?
+A: $1$.
+
+Q: Polar area formula?
+A: $\frac{1}{2}\int r^2\,d\theta$.
+
+Q: Area inside $r = 2$?
+A: $\frac{1}{2}\int_0^{2\pi}4\,d\theta = 4\pi$.
+
+Q: Velocity of $\vec{r}(t) = \langle t^2, 3t\rangle$?
+A: $\langle 2t, 3\rangle$."
+2,MODULE,Introduction to differential equations,"Modelling, slope fields, Euler's method, separable equations, exponential and logistic growth",SHOULD,,A differential equation describes a rule for change; solving it gives the function that follows the rule.
+3,TOPIC,"Differential equations: modelling, slope fields and Euler's method","Writing DEs from words, verifying solutions, slope fields, numerical solutions",SHOULD,FALSE,"# Differential equations: modelling, slope fields and Euler's method
+
+## 1. What it covers
+- What a **differential equation** (DE) is; order; general vs particular solutions.
+- Turning descriptions into DEs (""the rate is proportional to ..."").
+- Verifying a proposed solution.
+- **Slope fields** for visualising solutions.
+- **Euler's method** for approximate numerical solutions.
+
+## 2. Where it is used
+- **Physics and engineering:** Newton's second law $F = ma$ is a DE; circuits, vibrations, heat flow.
+- **Biology and epidemiology:** population and disease models (SIR models).
+- **Finance:** continuously compounded growth $\frac{dA}{dt} = rA$.
+- **Simulation and games:** physics engines solve DEs step by step, exactly like Euler's method.
+
+## 3. What it means
+A DE relates a function to its derivatives. Instead of telling you **what** $y$ is, it tells you **how $y$ changes**. ""The population grows at a rate proportional to its size"" becomes $\frac{dP}{dt} = kP$.
+
+**Solution:** a function that makes the equation true. There's usually a family of solutions (a constant $C$); an **initial condition** like $P(0) = 100$ picks one.
+
+**Slope field:** at many points $(t, y)$, draw a short line with slope given by the DE. Solution curves follow the arrows, like leaves floating on a stream.
+
+**Euler's method:** start at the initial point and take small steps along the slope: $y_{n+1} = y_n + h \cdot f(t_n, y_n)$. Smaller steps give better accuracy.
+
+## 4. Formula & worked example
+$$
+\frac{dy}{dt} = f(t, y) \qquad \text{Euler: } y_{n+1} = y_n + h\,f(t_n, y_n),\quad t_{n+1} = t_n + h
+$$
+
+**Example 1 (modelling).** A cup of tea cools at a rate proportional to the difference between its temperature and the room's (22°C) → $\frac{dT}{dt} = -k(T - 22)$ (Newton's law of cooling).
+
+**Example 2 (verify).** Is $y = Ce^{3t}$ a solution of $y' = 3y$? $y' = 3Ce^{3t} = 3y$ ✓
+
+**Example 3 (Euler by hand).** $y' = y$, $y(0) = 1$, step $h = 0.5$; estimate $y(1)$.
+- $y_1 = 1 + 0.5(1) = 1.5$; $y_2 = 1.5 + 0.5(1.5) = 2.25$ (true value $e \approx 2.718$; smaller steps get closer)
+
+**Example 4 (code).**
+```python
+def euler(f, t, y, h, steps):
+    for _ in range(steps):
+        y = y + h * f(t, y)    # follow the slope for one small step
+        t = t + h
+    return y
+for n in (2, 10, 1000):
+    print(n, euler(lambda t, y: y, 0, 1, 1 / n, n))
+# 2 2.25 / 10 2.5937 / 1000 2.7169  -> approaching e = 2.71828
+```
+Each step moves along the tangent line for a short time `h`. With 1000 steps the estimate of $y(1) = e$ is accurate to about 3 digits; this is the same loop a game uses to move objects every frame.
+
+**Example 5 (slope field reading).** For $y' = y(2 - y)$: slopes are 0 on the lines $y = 0$ and $y = 2$; positive between them; so solutions starting between 0 and 2 rise towards 2.
+
+## 5. Common mistakes
+- Confusing the DE with its solution.
+- Forgetting to update $t$ in Euler's method when $f$ depends on $t$.
+- Using a large step size and trusting the result.
+
+## 6. Practice
+Q: Write a DE: the rate of growth of $N$ is proportional to $N$.
+A: $\frac{dN}{dt} = kN$.
+
+Q: Is $y = x^2$ a solution of $xy' = 2y$?
+A: $x(2x) = 2x^2 = 2y$ ✓ yes.
+
+Q: One Euler step for $y' = t + y$, $y(0) = 1$, $h = 0.1$?
+A: $y_1 = 1 + 0.1(0 + 1) = 1.1$.
+
+Q: What does a slope field show?
+A: The slope of the solution through each point, so you can see the shape of solutions.
+
+Q: How does Euler's method become more accurate?
+A: By using a smaller step size."
+3,TOPIC,Separable equations; exponential and logistic models,"Separating variables, initial value problems, exponential growth/decay, Newton's cooling, logistic growth",SHOULD,FALSE,"# Separable equations; exponential and logistic models
+
+## 1. What it covers
+- **Separable** DEs: $\frac{dy}{dx} = g(x)h(y)$.
+- Solving initial value problems.
+- **Exponential growth/decay** $y' = ky$; **Newton's law of cooling**.
+- **Logistic growth** $P' = kP\left(1 - \frac{P}{K}\right)$ with carrying capacity $K$.
+
+## 2. Where it is used
+- **Biology and ecology:** populations limited by resources (logistic).
+- **Epidemiology:** early spread is exponential; with saturation, logistic.
+- **Marketing and technology:** product adoption curves (S-curves).
+- **Physics:** radioactive decay, cooling, RC circuits.
+- **Machine learning:** the logistic function $\frac{1}{1 + e^{-x}}$ comes from the logistic equation.
+
+## 3. What it means
+**Separable:** move all $y$ terms (with $dy$) to one side and all $x$ terms (with $dx$) to the other, then integrate both sides:
+$$
+\frac{dy}{h(y)} = g(x)\,dx \Rightarrow \int\frac{dy}{h(y)} = \int g(x)\,dx
+$$
+
+**Exponential:** $y' = ky$ gives $y = y_0e^{kt}$: growth ($k > 0$) or decay ($k < 0$).
+
+**Logistic:** growth is nearly exponential when $P$ is small, but slows as $P$ approaches the **carrying capacity** $K$, giving an S-shaped curve. Growth is fastest at $P = \frac{K}{2}$ (the inflection point).
+
+## 4. Formula & worked example
+$$
+y' = ky \Rightarrow y = y_0e^{kt} \qquad T' = -k(T - T_s) \Rightarrow T = T_s + (T_0 - T_s)e^{-kt} \qquad P = \frac{K}{1 + Ae^{-kt}},\ A = \frac{K - P_0}{P_0}
+$$
+
+**Example 1 (separable).** $\frac{dy}{dx} = \frac{x}{y}$, $y(0) = 2$.
+- $y\,dy = x\,dx$ → $\frac{y^2}{2} = \frac{x^2}{2} + C$ → $y^2 = x^2 + 4$ → $y = \sqrt{x^2 + 4}$
+
+**Example 2.** $\frac{dy}{dx} = 2xy$, $y(0) = 3$.
+- $\frac{dy}{y} = 2x\,dx$ → $\ln\lvert y\rvert = x^2 + C$ → $y = 3e^{x^2}$
+
+**Example 3 (decay).** A drug decays with $k = 0.2$ per hour from 50 mg: $A = 50e^{-0.2t}$; half-life $= \frac{\ln 2}{0.2} \approx 3.47$ h.
+
+**Example 4 (cooling).** Tea at 90°C in a 22°C room cools to 70°C in 5 minutes. When does it reach 50°C?
+- $70 = 22 + 68e^{-5k}$ → $e^{-5k} = \frac{48}{68}$ → $k \approx 0.0697$
+- $50 = 22 + 68e^{-kt}$ → $t = \frac{\ln(68/28)}{0.0697} \approx 12.7$ min
+
+**Example 5 (logistic).** A town's app has $K = 10\,000$ potential users, starts with 100, and $k = 0.5$ per week.
+- $A = 99$ → $P(t) = \frac{10\,000}{1 + 99e^{-0.5t}}$; half the market ($P = 5000$) when $99e^{-0.5t} = 1$ → $t = 2\ln 99 \approx 9.2$ weeks.
+
+## 5. Common mistakes
+- Forgetting $+C$ (or adding it on both sides; one is enough).
+- Losing the absolute value or sign when exponentiating.
+- Applying the initial condition before integrating.
+
+## 6. Practice
+Q: Solve $y' = -3y$, $y(0) = 10$.
+A: $y = 10e^{-3t}$.
+
+Q: Solve $\frac{dy}{dx} = y^2$, $y(0) = 1$.
+A: $-\frac{1}{y} = x - 1$ → $y = \frac{1}{1 - x}$.
+
+Q: In logistic growth, when is growth fastest?
+A: When $P = \frac{K}{2}$.
+
+Q: Half-life for $y' = -ky$?
+A: $\frac{\ln 2}{k}$.
+
+Q: What does the carrying capacity $K$ represent?
+A: The long-run maximum population the environment supports."
+3,TOPIC,Practice & review: Applications of integrals and DEs,Mixed problem set with worked answers,SHOULD,FALSE,"# Practice & review: Applications of integrals and DEs
+
+**How to use this:** 60 minutes; calculator allowed.
+
+## Problems
+1. $v(t) = 6 - 2t$ m/s on $[0, 5]$. Find displacement and total distance.
+2. Average value of $f(x) = \sin x$ on $[0, \pi]$.
+3. Area between $y = x^2 - 4$ and $y = 2x - 1$.
+4. Volume when the region under $y = \frac{1}{x}$, $1 \le x \le 3$, is rotated about the x-axis.
+5. Volume when the region between $y = \sqrt{x}$ and $y = x$ is rotated about the y-axis (shells).
+6. Arc length of $y = \ln(\cos x)$ for $0 \le x \le \frac{\pi}{4}$.
+7. Slope of the parametric curve $x = e^t$, $y = t^2$ at $t = 1$.
+8. Use Euler's method with $h = 0.5$ to estimate $y(1)$ for $y' = 2t - y$, $y(0) = 1$.
+9. Solve $\frac{dy}{dx} = \frac{y}{x}$, $y(1) = 3$.
+10. A population follows $P' = 0.3P(1 - P/500)$, $P(0) = 50$. Find $P(t)$ and $\lim_{t \to \infty} P(t)$.
+
+## Answers
+1. Displacement $[6t - t^2]_0^5 = 5$ m. $v = 0$ at $t = 3$: distance $= 9 + 4 = 13$ m.
+2. $\frac{1}{\pi}[-\cos x]_0^\pi = \frac{2}{\pi}$.
+3. Intersections $x^2 - 2x - 3 = 0$ → $x = -1, 3$; $\int_{-1}^{3}(2x - 1 - x^2 + 4)\,dx = \int_{-1}^{3}(-x^2 + 2x + 3)\,dx = \frac{32}{3}$.
+4. $\pi\int_1^3\frac{1}{x^2}dx = \pi\left(1 - \frac{1}{3}\right) = \frac{2\pi}{3}$.
+5. $2\pi\int_0^1 x(\sqrt{x} - x)\,dx = 2\pi\left(\frac{2}{5} - \frac{1}{3}\right) = \frac{2\pi}{15}$.
+6. $f' = -\tan x$ → $\sqrt{1 + \tan^2 x} = \sec x$ → $\int_0^{\pi/4}\sec x\,dx = \ln(\sec x + \tan x)\Big|_0^{\pi/4} = \ln(\sqrt{2} + 1) \approx 0.881$.
+7. $\frac{2t}{e^t} = \frac{2}{e}$.
+8. $y_1 = 1 + 0.5(0 - 1) = 0.5$; $y_2 = 0.5 + 0.5(1 - 0.5) = 0.75$.
+9. $\ln\lvert y\rvert = \ln\lvert x\rvert + C$ → $y = 3x$.
+10. $A = 9$: $P(t) = \frac{500}{1 + 9e^{-0.3t}}$; limit 500.
+
+## Flashcards
+Q: Area between curves formula?
+A: $\int_a^b(\text{top} - \text{bottom})\,dx$.
+
+Q: Washer method?
+A: $\pi\int(R^2 - r^2)\,dx$.
+
+Q: Euler's method update?
+A: $y_{n+1} = y_n + h\,f(t_n, y_n)$.
+
+Q: Solution of $y' = ky$?
+A: $y = y_0e^{kt}$."
+1,MODULE,Phase 6 — Sequences and Series (Advanced),"Convergence of sequences and series, divergence/integral/comparison/ratio/root/alternating tests, power series, Taylor and Maclaurin series",SHOULD,,"# Phase 6: Sequences and series
+
+Can you add infinitely many numbers and get a finite answer? Sometimes yes ($\frac{1}{2} + \frac{1}{4} + \frac{1}{8} + \cdots = 1$), sometimes no ($1 + \frac{1}{2} + \frac{1}{3} + \cdots = \infty$). This phase gives you tests to tell the difference, and then the big payoff: **Taylor series**, which write functions like $e^x$, $\sin x$ and $\ln(1 + x)$ as ""infinite polynomials"". That's how calculators and computer libraries actually compute these functions.
+
+**Before starting:** review arithmetic and geometric series and sigma notation in the Algebra & Functions roadmap (Phase 6)."
+2,MODULE,Convergence tests,"Sequences, series, divergence test, integral and p-series, comparison, ratio and root, alternating series",SHOULD,,Each test answers one question: does the infinite sum settle to a finite value?
+3,TOPIC,"Sequences, series and the divergence test","Limits of sequences, partial sums, convergence of a series, geometric and telescoping series, nth-term test",SHOULD,FALSE,"# Sequences, series and the divergence test
+
+## 1. What it covers
+- **Sequences** and their limits.
+- **Series** as limits of **partial sums**.
+- Geometric and **telescoping** series (ones you can sum exactly).
+- The **divergence (nth-term) test**.
+
+## 2. Where it is used
+- **Computing:** iterative algorithms produce sequences of approximations that should converge.
+- **Finance:** perpetuities (payments forever) are infinite geometric series.
+- **Physics and engineering:** series solutions of equations; signal decomposition.
+- **Probability:** expected values of discrete distributions are series.
+
+## 3. What it means
+A **sequence** $a_1, a_2, a_3, \ldots$ **converges** if its terms approach a fixed number.
+
+A **series** $\sum a_n$ is the sum of a sequence's terms. Add them one at a time to get **partial sums** $S_1, S_2, S_3, \ldots$. The series converges if the partial sums approach a finite limit.
+
+**Divergence test:** if the terms $a_n$ do **not** go to 0, the series **diverges** (you keep adding chunks that don't shrink). **But** if $a_n \to 0$, the test is inconclusive: the harmonic series $\sum\frac{1}{n}$ has terms going to 0 and still diverges.
+
+**Telescoping:** terms cancel in pairs, like a collapsing telescope, leaving only the ends.
+
+## 4. Formula & worked example
+$$
+\sum_{n=0}^{\infty} ar^n = \frac{a}{1 - r}\ (\lvert r\rvert < 1) \qquad \lim_{n \to \infty} a_n \ne 0 \Rightarrow \sum a_n \text{ diverges}
+$$
+
+**Example 1 (sequence).** $a_n = \frac{3n + 1}{n + 2} \to 3$. Converges.
+
+**Example 2 (geometric).** $\sum_{n=1}^\infty 5\left(\frac{2}{3}\right)^{n-1} = \frac{5}{1 - 2/3} = 15$
+
+**Example 3 (telescoping).** $\sum_{n=1}^\infty\frac{1}{n(n + 1)} = \sum\left(\frac{1}{n} - \frac{1}{n + 1}\right)$
+- $S_N = 1 - \frac{1}{N + 1} \to 1$
+
+**Example 4 (divergence test).** $\sum\frac{n}{2n + 1}$: terms → $\frac{1}{2} \ne 0$ → diverges.
+
+**Example 5 (perpetuity).** A bond pays 1000 taka a year forever, discounted at 8%: present value $= \sum_{n=1}^\infty\frac{1000}{1.08^n} = \frac{1000/1.08}{1 - 1/1.08} = 12\,500$ taka.
+
+## 5. Common mistakes
+- Concluding a series converges because $a_n \to 0$.
+- Confusing the sequence's limit with the series' sum.
+- Using the geometric formula when $\lvert r\rvert \ge 1$.
+
+## 6. Practice
+Q: Difference between a sequence and a series?
+A: A sequence is a list of terms; a series is their sum.
+
+Q: Does $\sum\frac{n^2}{n^2 + 1}$ converge?
+A: No, terms → 1 (divergence test).
+
+Q: $\sum_{n=0}^\infty\left(\frac{1}{4}\right)^n$?
+A: $\frac{4}{3}$.
+
+Q: If $a_n \to 0$, does $\sum a_n$ converge?
+A: Not necessarily (e.g. the harmonic series).
+
+Q: $\lim_{n \to \infty}\frac{\ln n}{n}$?
+A: $0$."
+3,TOPIC,The integral test and p-series,"Comparing a series with an improper integral, p-series convergence, the harmonic series",SHOULD,FALSE,"# The integral test and p-series
+
+## 1. What it covers
+- The **integral test**: a positive decreasing series behaves like the matching improper integral.
+- **p-series** $\sum\frac{1}{n^p}$: converges iff $p > 1$.
+- Why the **harmonic series** $\sum\frac{1}{n}$ diverges.
+
+## 2. Where it is used
+- **Algorithm analysis:** $\sum_{k=1}^{n}\frac{1}{k} \approx \ln n$ appears in the average cost of quicksort and in hashing.
+- **Physics:** sums of inverse powers (e.g. potential energy in lattices).
+- **Number theory:** $\sum\frac{1}{n^2} = \frac{\pi^2}{6}$ (the Basel problem).
+- **Reference tool** for comparison tests.
+
+## 3. What it means
+If $f(x)$ is positive and decreasing with $f(n) = a_n$, the terms $a_n$ are the heights of unit-width rectangles that hug the curve. So the sum and the area $\int_1^\infty f(x)\,dx$ either **both** are finite or **both** are infinite.
+
+**p-series:** $\int_1^\infty\frac{dx}{x^p}$ converges iff $p > 1$, so $\sum\frac{1}{n^p}$ does too.
+- $\sum\frac{1}{n}$ ($p = 1$) **diverges**, but incredibly slowly: the first million terms add up to only about 14.4.
+- $\sum\frac{1}{n^2}$ ($p = 2$) converges (to $\frac{\pi^2}{6} \approx 1.645$).
+
+## 4. Formula & worked example
+$$
+\sum_{n=1}^{\infty}\frac{1}{n^p} \text{ converges} \iff p > 1 \qquad \sum_{k=1}^{n}\frac{1}{k} \approx \ln n + 0.577
+$$
+
+**Example 1.** $\sum\frac{1}{n^3}$: $p = 3 > 1$ → converges.
+
+**Example 2.** $\sum\frac{1}{\sqrt{n}}$: $p = \frac{1}{2}$ → diverges.
+
+**Example 3 (integral test).** $\sum_{n=2}^\infty\frac{1}{n\ln n}$: $\int_2^\infty\frac{dx}{x\ln x} = \lim[\ln(\ln x)]_2^b = \infty$ → diverges.
+
+**Example 4 (integral test).** $\sum_{n=1}^\infty ne^{-n^2}$: $\int_1^\infty xe^{-x^2}dx = \frac{1}{2e}$ (finite) → converges.
+
+**Example 5 (code).**
+```python
+import math
+s = sum(1 / k for k in range(1, 1_000_001))
+print(s, math.log(1_000_000) + 0.5772)   # 14.3927...  14.3927...
+```
+After a million terms the harmonic sum is only about 14.39, matching $\ln n + 0.577$. It keeps growing without bound, just very slowly, like $\ln n$.
+
+## 5. Common mistakes
+- Applying the integral test to a function that isn't positive and decreasing.
+- Thinking the integral's value equals the series' sum (only convergence matches).
+- Mixing up the cut-off: $p = 1$ diverges.
+
+## 6. Practice
+Q: Does $\sum\frac{1}{n^{1.01}}$ converge?
+A: Yes ($p > 1$).
+
+Q: Does $\sum\frac{1}{n^{0.99}}$ converge?
+A: No.
+
+Q: Conditions for the integral test?
+A: $f$ positive, continuous and decreasing with $f(n) = a_n$.
+
+Q: Does the harmonic series converge?
+A: No.
+
+Q: Does $\sum\frac{1}{n^2 + 1}$ converge (integral test)?
+A: Yes: $\int_1^\infty\frac{dx}{x^2 + 1} = \frac{\pi}{4}$."
+3,TOPIC,Comparison tests,Direct comparison and limit comparison with known series,SHOULD,FALSE,"# Comparison tests
+
+## 1. What it covers
+- **Direct comparison**: bound a series above by a convergent one, or below by a divergent one.
+- **Limit comparison**: if $\frac{a_n}{b_n} \to$ a positive finite number, both behave the same.
+- Choosing the comparison series (usually a p-series or geometric series).
+
+## 2. Where it is used
+- **Algorithm analysis:** bounding sums by simpler ones (big-O reasoning).
+- **Error estimation:** bounding the tail of a series.
+- **Quick convergence checks** for messy terms.
+
+## 3. What it means
+**Direct comparison** (positive terms):
+- If $a_n \le b_n$ and $\sum b_n$ converges → $\sum a_n$ converges (smaller than something finite).
+- If $a_n \ge b_n$ and $\sum b_n$ diverges → $\sum a_n$ diverges (bigger than something infinite).
+
+**Limit comparison:** for large $n$, what matters is the **dominant** terms. $\frac{3n^2 + 1}{n^4 - n}$ behaves like $\frac{3}{n^2}$. If $\lim\frac{a_n}{b_n} = c$ with $0 < c < \infty$, both series do the same thing.
+
+**Finding $b_n$:** keep the highest powers in the numerator and denominator.
+
+## 4. Formula & worked example
+$$
+\lim_{n \to \infty}\frac{a_n}{b_n} = c,\ 0 < c < \infty \Rightarrow \sum a_n \text{ and } \sum b_n \text{ both converge or both diverge}
+$$
+
+**Example 1 (direct).** $\sum\frac{1}{n^2 + 5}$: $\frac{1}{n^2 + 5} < \frac{1}{n^2}$, which converges → converges.
+
+**Example 2 (direct).** $\sum\frac{1}{\sqrt{n} - 0.5}$: $\frac{1}{\sqrt{n} - 0.5} > \frac{1}{\sqrt{n}}$, which diverges → diverges.
+
+**Example 3 (limit).** $\sum\frac{3n^2 + 1}{n^4 - n}$: compare with $\frac{1}{n^2}$: ratio → 3 → converges.
+
+**Example 4 (limit).** $\sum\frac{n + 4}{n^2 + 1}$: compare with $\frac{1}{n}$: ratio → 1 → diverges.
+
+**Example 5 (geometric comparison).** $\sum\frac{1}{2^n + n}$: $< \frac{1}{2^n}$ → converges.
+
+## 5. Common mistakes
+- Comparing in the useless direction (bigger than a convergent series tells you nothing).
+- Using comparison tests on series with negative terms.
+- Picking $b_n$ without looking at the dominant terms.
+
+## 6. Practice
+Q: Does $\sum\frac{1}{n^3 + 2n}$ converge?
+A: Yes (compare with $\frac{1}{n^3}$).
+
+Q: Does $\sum\frac{2n}{n^2 - 3}$ converge?
+A: No (behaves like $\frac{2}{n}$).
+
+Q: Does $\sum\frac{\sin^2 n}{n^2}$ converge?
+A: Yes: $0 \le \frac{\sin^2 n}{n^2} \le \frac{1}{n^2}$.
+
+Q: What comparison series for $\frac{\sqrt{n}}{n^2 + 1}$?
+A: $\frac{1}{n^{3/2}}$ → converges.
+
+Q: Why does ""bigger than a convergent series"" tell you nothing?
+A: A bigger series could still converge or diverge."
+3,TOPIC,Ratio and root tests,Limit of the ratio of consecutive terms and of the nth root; factorials and powers; when the tests are inconclusive,SHOULD,FALSE,"# Ratio and root tests
+
+## 1. What it covers
+- The **ratio test**: $L = \lim\left\lvert\frac{a_{n+1}}{a_n}\right\rvert$.
+- The **root test**: $L = \lim\sqrt[n]{\lvert a_n\rvert}$.
+- $L < 1$ converges, $L > 1$ diverges, $L = 1$ inconclusive.
+- Best for **factorials** and **exponentials** (ratio) and $n$th powers (root).
+
+## 2. Where it is used
+- **Power series:** finding the radius of convergence (next module).
+- **Probability:** sums like $\sum\frac{\lambda^k}{k!}$ (Poisson distribution).
+- **Algorithm analysis:** comparing growth of $n!$, $2^n$ and $n^k$.
+
+## 3. What it means
+For large $n$, if each term is about $L$ times the previous one, the series behaves like a **geometric series with ratio $L$**:
+- $L < 1$: the terms shrink geometrically → converges.
+- $L > 1$: they grow → diverges.
+- $L = 1$: no conclusion (e.g. both $\sum\frac{1}{n}$ and $\sum\frac{1}{n^2}$ give $L = 1$).
+
+The root test measures the same thing differently: the $n$th root of the $n$th term.
+
+## 4. Formula & worked example
+$$
+L = \lim_{n \to \infty}\left\lvert\frac{a_{n+1}}{a_n}\right\rvert \qquad L = \lim_{n \to \infty}\sqrt[n]{\lvert a_n\rvert}
+$$
+
+**Example 1.** $\sum\frac{2^n}{n!}$: $\frac{a_{n+1}}{a_n} = \frac{2^{n+1}}{(n + 1)!}\cdot\frac{n!}{2^n} = \frac{2}{n + 1} \to 0$ → converges.
+
+**Example 2.** $\sum\frac{n!}{10^n}$: ratio $= \frac{n + 1}{10} \to \infty$ → diverges (factorials beat exponentials).
+
+**Example 3.** $\sum\frac{n^3}{3^n}$: ratio $= \frac{(n + 1)^3}{n^3}\cdot\frac{1}{3} \to \frac{1}{3}$ → converges.
+
+**Example 4 (root).** $\sum\left(\frac{2n + 1}{3n - 1}\right)^n$: root $= \frac{2n + 1}{3n - 1} \to \frac{2}{3}$ → converges.
+
+**Example 5 (inconclusive).** $\sum\frac{1}{n^2}$: ratio $\to 1$ → test fails (use the p-series test: converges).
+
+## 5. Common mistakes
+- Simplifying factorials wrongly: $\frac{(n + 1)!}{n!} = n + 1$.
+- Concluding anything when $L = 1$.
+- Using the ratio test on p-series (it always gives 1).
+
+## 6. Practice
+Q: Ratio test result for $\sum\frac{5^n}{n!}$?
+A: $L = 0$ → converges.
+
+Q: Ratio test for $\sum\frac{3^n}{n^2}$?
+A: $L = 3$ → diverges.
+
+Q: What does $L = 1$ mean?
+A: Inconclusive.
+
+Q: $\frac{(n + 2)!}{n!}$?
+A: $(n + 2)(n + 1)$.
+
+Q: Root test for $\sum\left(\frac{1}{\ln n}\right)^n$?
+A: $L = \lim\frac{1}{\ln n} = 0$ → converges."
+3,TOPIC,Alternating series and absolute convergence,"Leibniz test, error bound, absolute vs conditional convergence",SHOULD,FALSE,"# Alternating series and absolute convergence
+
+## 1. What it covers
+- **Alternating series** $\sum(-1)^n b_n$.
+- The **alternating series (Leibniz) test**.
+- The **error bound**: the error is at most the first omitted term.
+- **Absolute** vs **conditional** convergence.
+
+## 2. Where it is used
+- **Numerical computing:** Taylor series for $\sin x$ and $\cos x$ alternate, and the error bound tells libraries how many terms to use.
+- **Physics:** alternating sums in electrostatics and wave analysis.
+- **Mathematics:** $1 - \frac{1}{3} + \frac{1}{5} - \cdots = \frac{\pi}{4}$ (Leibniz's formula for $\pi$).
+
+## 3. What it means
+**Leibniz test:** if $b_n$ is positive, **decreasing**, and **$\to 0$**, then $\sum(-1)^n b_n$ converges. Each step goes back and forth, overshooting by less each time, homing in on the limit like a pendulum settling.
+
+**Error bound:** stopping after $N$ terms, the error is less than the next term $b_{N+1}$.
+
+**Absolute convergence:** $\sum\lvert a_n\rvert$ converges. Then $\sum a_n$ converges too.
+**Conditional convergence:** $\sum a_n$ converges but $\sum\lvert a_n\rvert$ doesn't (e.g. the alternating harmonic series). Strangely, a conditionally convergent series can be rearranged to add up to **any** number.
+
+## 4. Formula & worked example
+$$
+\sum(-1)^{n}b_n \text{ converges if } b_{n+1} \le b_n \text{ and } b_n \to 0 \qquad \lvert S - S_N\rvert \le b_{N+1}
+$$
+
+**Example 1.** $\sum\frac{(-1)^{n+1}}{n} = 1 - \frac{1}{2} + \frac{1}{3} - \cdots$: $\frac{1}{n}$ decreases to 0 → converges (to $\ln 2$). Since $\sum\frac{1}{n}$ diverges, it's **conditionally** convergent.
+
+**Example 2.** $\sum\frac{(-1)^n}{n^2}$: $\sum\frac{1}{n^2}$ converges → **absolutely** convergent.
+
+**Example 3 (error).** How many terms of $\sum\frac{(-1)^{n+1}}{n^3}$ are needed for error $< 0.001$?
+- Need $\frac{1}{(N + 1)^3} < 0.001$ → $N + 1 > 10$ → $N = 10$ terms.
+
+**Example 4 (Leibniz π).**
+```python
+s = sum((-1) ** k / (2 * k + 1) for k in range(100_000))
+print(4 * s)    # 3.14158265...  (error about 1e-5, as the bound predicts)
+```
+The error after $N$ terms is at most the next term, $\frac{1}{2N + 1}$; times 4 that's about $2 \times 10^{-5}$ here. This series converges correctly but slowly, so real software uses faster formulas.
+
+**Example 5.** $\sum\frac{(-1)^n n}{n + 1}$: terms don't go to 0 → diverges.
+
+## 5. Common mistakes
+- Forgetting to check that $b_n$ decreases.
+- Confusing conditional and absolute convergence.
+- Using the error bound for non-alternating series.
+
+## 6. Practice
+Q: Does $\sum\frac{(-1)^n}{\sqrt{n}}$ converge?
+A: Yes, conditionally.
+
+Q: Is $\sum\frac{(-1)^n}{n^3}$ absolutely convergent?
+A: Yes.
+
+Q: Error bound after 5 terms of $\sum\frac{(-1)^{n+1}}{n!}$ (starting at $n = 1$)?
+A: Less than $\frac{1}{6!} = \frac{1}{720}$.
+
+Q: Define conditional convergence.
+A: The series converges, but the series of absolute values diverges.
+
+Q: Three conditions of the Leibniz test?
+A: Alternating signs, $b_n$ decreasing, $b_n \to 0$."
+2,MODULE,Power series and Taylor series,"Radius and interval of convergence, building Taylor and Maclaurin series, error bounds",SHOULD,,"Power series are ""infinite polynomials""; Taylor series find the one that matches a given function."
+3,TOPIC,Power series and radius of convergence,"∑cₙ(x − a)ⁿ, radius and interval of convergence, differentiating and integrating series",SHOULD,FALSE,"# Power series and radius of convergence
+
+## 1. What it covers
+- **Power series** $\sum c_n(x - a)^n$.
+- **Radius** and **interval of convergence** (using the ratio test, then checking endpoints).
+- Differentiating and integrating power series term by term.
+- Building new series from $\frac{1}{1 - x} = \sum x^n$.
+
+## 2. Where it is used
+- **Numerical computing:** evaluating functions efficiently.
+- **Differential equations:** series solutions when no formula exists.
+- **Combinatorics:** generating functions encode sequences as power series.
+- **Physics:** perturbation methods expand quantities as power series in a small parameter.
+
+## 3. What it means
+A power series is like a polynomial that never ends. For each $x$ it's a number series, which may or may not converge.
+
+A power series centred at $a$ converges:
+- for all $x$ within distance $R$ of $a$ (the **radius of convergence**),
+- diverges for all $x$ farther than $R$,
+- and must be checked separately at the two endpoints $a \pm R$.
+
+$R$ can be 0, a positive number, or $\infty$.
+
+Inside the interval, you can **differentiate and integrate term by term**, which lets you build series for $\ln(1 + x)$, $\arctan x$ and more from the geometric series.
+
+## 4. Formula & worked example
+$$
+\frac{1}{1 - x} = \sum_{n=0}^{\infty} x^n = 1 + x + x^2 + \cdots \quad (\lvert x\rvert < 1)
+$$
+
+**Example 1.** $\sum\frac{x^n}{n}$: ratio $= \frac{n}{n + 1}\lvert x\rvert \to \lvert x\rvert$ → $R = 1$.
+- $x = 1$: harmonic → diverges; $x = -1$: alternating harmonic → converges → interval $[-1, 1)$.
+
+**Example 2.** $\sum\frac{x^n}{n!}$: ratio $= \frac{\lvert x\rvert}{n + 1} \to 0$ for every $x$ → $R = \infty$.
+
+**Example 3.** $\sum\frac{(x - 2)^n}{3^n}$: geometric with ratio $\frac{x - 2}{3}$ → converges for $\lvert x - 2\rvert < 3$ → $(-1, 5)$ (endpoints diverge).
+
+**Example 4 (build).** Replace $x$ by $-x$: $\frac{1}{1 + x} = 1 - x + x^2 - \cdots$. Integrate: $\ln(1 + x) = x - \frac{x^2}{2} + \frac{x^3}{3} - \cdots$ ($-1 < x \le 1$).
+
+**Example 5 (build).** Replace $x$ by $-x^2$: $\frac{1}{1 + x^2} = 1 - x^2 + x^4 - \cdots$; integrate: $\arctan x = x - \frac{x^3}{3} + \frac{x^5}{5} - \cdots$. At $x = 1$: $\frac{\pi}{4} = 1 - \frac{1}{3} + \frac{1}{5} - \cdots$ (Leibniz).
+
+## 5. Common mistakes
+- Forgetting to test the endpoints.
+- Giving the radius when the interval is asked (or vice versa).
+- Differentiating or integrating outside the interval of convergence.
+
+## 6. Practice
+Q: Radius of convergence of $\sum n x^n$?
+A: $R = 1$.
+
+Q: Radius of $\sum\frac{x^n}{2^n}$?
+A: $R = 2$.
+
+Q: Series for $\frac{1}{1 - 2x}$?
+A: $\sum(2x)^n$, for $\lvert x\rvert < \frac{1}{2}$.
+
+Q: Radius of $\sum n!\,x^n$?
+A: $R = 0$ (converges only at $x = 0$).
+
+Q: Series for $\ln(1 + x)$?
+A: $x - \frac{x^2}{2} + \frac{x^3}{3} - \frac{x^4}{4} + \cdots$."
+3,TOPIC,Taylor and Maclaurin series,"Building series from derivatives, the standard series for eˣ, sin x, cos x, ln(1 + x), error bounds",SHOULD,FALSE,"# Taylor and Maclaurin series
+
+## 1. What it covers
+- The **Taylor series** of $f$ about $a$, and the **Maclaurin series** (about 0).
+- The standard series for $e^x$, $\sin x$, $\cos x$, $\ln(1 + x)$, $\frac{1}{1 - x}$, $(1 + x)^k$.
+- **Taylor polynomials** as approximations.
+- The **Lagrange error bound**.
+
+## 2. Where it is used
+- **Calculators and math libraries:** $\sin$, $\cos$, $e^x$ are computed from Taylor-type polynomials (after reducing the argument to a small range).
+- **Physics:** small-angle approximations ($\sin\theta \approx \theta$, $\cos\theta \approx 1 - \frac{\theta^2}{2}$); relativity's $\frac{1}{\sqrt{1 - v^2/c^2}} \approx 1 + \frac{v^2}{2c^2}$.
+- **Numerical methods and optimisation:** Newton's method and many ML optimisers use first- and second-order Taylor approximations of the loss.
+- **Euler's formula** $e^{i\theta} = \cos\theta + i\sin\theta$ follows from these series.
+
+## 3. What it means
+Build a polynomial that matches $f$ at $x = a$: same value, same slope, same curvature, same third derivative, and so on. Matching more derivatives makes the polynomial hug the curve over a wider range. The coefficient of $(x - a)^n$ must be $\frac{f^{(n)}(a)}{n!}$ to match the $n$th derivative.
+
+It's like describing a car's future position: ""it's here (value), moving this fast (1st derivative), speeding up this much (2nd derivative)..."" Each extra term improves the prediction.
+
+**Error bound:** stopping at degree $n$, the error is at most $\frac{M}{(n + 1)!}\lvert x - a\rvert^{n+1}$, where $M$ bounds $\lvert f^{(n+1)}\rvert$ between $a$ and $x$.
+
+## 4. Formula & worked example
+$$
+f(x) = \sum_{n=0}^{\infty}\frac{f^{(n)}(a)}{n!}(x - a)^n
+$$
+$$
+e^x = \sum\frac{x^n}{n!} \qquad \sin x = x - \frac{x^3}{3!} + \frac{x^5}{5!} - \cdots \qquad \cos x = 1 - \frac{x^2}{2!} + \frac{x^4}{4!} - \cdots \qquad (1 + x)^k \approx 1 + kx + \frac{k(k - 1)}{2}x^2
+$$
+
+**Example 1 (build $e^x$).** Every derivative of $e^x$ is $e^x$, equal to 1 at 0 → $e^x = 1 + x + \frac{x^2}{2!} + \frac{x^3}{3!} + \cdots$
+
+**Example 2 (estimate).** $e^{0.1} \approx 1 + 0.1 + 0.005 + 0.000167 = 1.105167$ (true $1.1051709$).
+
+**Example 3 (substitute).** $e^{-x^2} = 1 - x^2 + \frac{x^4}{2} - \frac{x^6}{6} + \cdots$. Then $\int_0^1 e^{-x^2}dx \approx 1 - \frac{1}{3} + \frac{1}{10} - \frac{1}{42} + \frac{1}{216} \approx 0.7475$ (true $0.7468$) — an integral with no elementary antiderivative.
+
+**Example 4 (Taylor about $a \ne 0$).** $\ln x$ about $a = 1$: $f(1) = 0$, $f' = 1$, $f'' = -1$, $f''' = 2$ → $\ln x \approx (x - 1) - \frac{(x - 1)^2}{2} + \frac{(x - 1)^3}{3}$.
+
+**Example 5 (error bound).** Using $\sin x \approx x - \frac{x^3}{6}$ for $x = 0.5$: the next derivative is bounded by 1, so the error $\le \frac{0.5^5}{5!} \approx 0.00026$. (Actual: $0.47917$ vs $0.47943$.)
+
+**Example 6 (code).**
+```python
+import math
+def sin_taylor(x, terms=6):
+    return sum((-1) ** k * x ** (2 * k + 1) / math.factorial(2 * k + 1) for k in range(terms))
+print(sin_taylor(1.0), math.sin(1.0))   # 0.8414709848 0.8414709848
+```
+Six terms ($x$ up to $x^{11}$) already match `math.sin` to 10 digits at $x = 1$. Libraries first reduce $x$ into a small range (using periodicity) so few terms are needed.
+
+## 5. Common mistakes
+- Forgetting the factorials.
+- Using a Maclaurin series far from 0 and expecting accuracy.
+- Mixing up the sine (odd powers) and cosine (even powers) series.
+
+## 6. Practice
+Q: First three nonzero terms of the Maclaurin series of $\cos x$?
+A: $1 - \frac{x^2}{2} + \frac{x^4}{24}$.
+
+Q: Maclaurin series of $e^{2x}$ up to $x^3$?
+A: $1 + 2x + 2x^2 + \frac{4}{3}x^3$.
+
+Q: Coefficient of $(x - a)^n$ in a Taylor series?
+A: $\frac{f^{(n)}(a)}{n!}$.
+
+Q: Approximate $\sqrt{1.1}$ with $(1 + x)^{1/2} \approx 1 + \frac{x}{2} - \frac{x^2}{8}$.
+A: $1 + 0.05 - 0.00125 = 1.04875$.
+
+Q: Maclaurin series of $x\sin x$ up to $x^4$?
+A: $x^2 - \frac{x^4}{6}$."
+3,TOPIC,Practice & review: Series,Mixed problem set with worked answers,SHOULD,FALSE,"# Practice & review: Series
+
+**How to use this:** 50 minutes. For each series, write which test you use and why.
+
+## Problems
+1. $\sum_{n=1}^\infty\frac{3}{4^n}$
+2. $\sum\frac{n^2}{3n^2 + 1}$
+3. $\sum\frac{1}{n^{3/2}}$
+4. $\sum\frac{n}{n^3 + 4}$
+5. $\sum\frac{3^n}{n!}$
+6. $\sum\frac{(-1)^n}{\ln n}$ ($n \ge 2$): absolutely, conditionally, or divergent?
+7. Interval of convergence of $\sum\frac{(x + 1)^n}{n\,2^n}$.
+8. Maclaurin series of $\frac{x}{1 - x^2}$.
+9. Use the series for $e^x$ to find $\lim_{x \to 0}\frac{e^x - 1 - x}{x^2}$.
+10. Estimate $\cos(0.2)$ with two nonzero terms and bound the error.
+
+## Answers
+1. Geometric: $\frac{3/4}{1 - 1/4} = 1$.
+2. Terms → $\frac{1}{3}$ → diverges.
+3. p-series, $p = 1.5$ → converges.
+4. Limit comparison with $\frac{1}{n^2}$ → converges.
+5. Ratio test: $\frac{3}{n + 1} \to 0$ → converges.
+6. Leibniz: $\frac{1}{\ln n}$ decreases to 0 → converges; $\frac{1}{\ln n} > \frac{1}{n}$ so $\sum\frac{1}{\ln n}$ diverges → conditionally.
+7. Ratio → $\frac{\lvert x + 1\rvert}{2}$ → $R = 2$, $-3 < x < 1$; $x = 1$: harmonic (diverges); $x = -3$: alternating harmonic (converges) → $[-3, 1)$.
+8. $x\sum(x^2)^n = x + x^3 + x^5 + \cdots$ ($\lvert x\rvert < 1$).
+9. $\frac{x^2/2 + x^3/6 + \cdots}{x^2} \to \frac{1}{2}$.
+10. $1 - \frac{0.04}{2} = 0.98$; error $\le \frac{0.2^4}{24} \approx 0.000067$ (true $0.980067$).
+
+## Flashcards
+Q: Divergence test?
+A: If $a_n \not\to 0$, the series diverges.
+
+Q: p-series convergence?
+A: $\sum\frac{1}{n^p}$ converges iff $p > 1$.
+
+Q: Ratio test outcome if $L < 1$?
+A: Converges (absolutely).
+
+Q: Maclaurin series of $e^x$?
+A: $\sum\frac{x^n}{n!}$."
+2,MODULE,Final review,Two cumulative mixed sets covering the whole roadmap,MUST,,"Mix everything. After this, continue with Statistics & Probability, Linear Algebra, or Multivariable Calculus & Differential Equations."
+3,TOPIC,Final review 1: Limits and derivatives,Cumulative mixed problems from Phases 1–3 with answers,MUST,FALSE,"# Final review 1: Limits and derivatives
+
+**How to use this:** 60 minutes; calculator for (C).
+
+## Problems
+1. $\lim_{x \to 2}\frac{x^3 - 8}{x^2 - 4}$
+2. $\lim_{x \to \infty}\left(\sqrt{x^2 + 4x} - x\right)$
+3. $\frac{d}{dx}\left[\frac{\sin(2x)}{x^2 + 1}\right]$
+4. $\frac{d}{dx}\left[e^{x}\ln(x^2 + 1)\right]$
+5. Find $\frac{dy}{dx}$ for $e^{xy} = x + y$.
+6. Tangent line to $y = \arctan(2x)$ at $x = \frac{1}{2}$.
+7. (C) A spherical snowball melts so its volume decreases at 10 cm³/min. How fast is the radius decreasing when $r = 5$ cm?
+8. Find and classify the critical points of $f(x) = x^4 - 8x^2 + 3$.
+9. Find the dimensions of the rectangle of largest area inscribed in the ellipse $\frac{x^2}{9} + \frac{y^2}{4} = 1$ (sides parallel to the axes).
+10. $\lim_{x \to 0}\frac{e^{2x} - 1 - 2x}{x^2}$
+
+## Answers
+1. $\frac{(x - 2)(x^2 + 2x + 4)}{(x - 2)(x + 2)} \to \frac{12}{4} = 3$.
+2. Multiply by the conjugate: $\frac{4x}{\sqrt{x^2 + 4x} + x} \to \frac{4}{2} = 2$.
+3. $\frac{2\cos(2x)(x^2 + 1) - 2x\sin(2x)}{(x^2 + 1)^2}$.
+4. $e^x\ln(x^2 + 1) + \frac{2xe^x}{x^2 + 1}$.
+5. $e^{xy}(y + xy') = 1 + y'$ → $y' = \frac{1 - ye^{xy}}{xe^{xy} - 1}$.
+6. $y' = \frac{2}{1 + 4x^2} = 1$ at $x = \frac{1}{2}$; point $\left(\frac{1}{2}, \frac{\pi}{4}\right)$ → $y = x - \frac{1}{2} + \frac{\pi}{4}$.
+7. $-10 = 4\pi(25)r'$ → $r' = -\frac{1}{10\pi} \approx -0.0318$ cm/min.
+8. $f' = 4x(x^2 - 4)$ → $x = 0, \pm 2$; $f'' = 12x^2 - 16$: $f''(0) < 0$ → local max $f(0) = 3$; $f''(\pm 2) > 0$ → local minima $f(\pm 2) = -13$.
+9. Area $A = 4xy$ with $y = 2\sqrt{1 - x^2/9}$; maximise $A^2$ or use $x = \frac{3}{\sqrt{2}}$, $y = \sqrt{2}$ → dimensions $3\sqrt{2} \times 2\sqrt{2}$, area 12.
+10. L'Hôpital twice (or series): $\frac{2e^{2x} - 2}{2x} \to \frac{4e^{2x}}{2} \to 2$."
+3,TOPIC,"Final review 2: Integrals, applications and series",Cumulative mixed problems from Phases 4–6 with answers,MUST,FALSE,"# Final review 2: Integrals, applications and series
+
+**How to use this:** 60 minutes; calculator for (C).
+
+## Problems
+1. $\int_0^1\frac{x}{(x^2 + 1)^2}dx$
+2. $\int x^2e^{-x}\,dx$
+3. $\int\frac{3x + 5}{x^2 + 2x - 3}dx$
+4. $\int_0^{\pi}\sin^2 x\,dx$
+5. Does $\int_1^\infty\frac{\ln x}{x^2}dx$ converge? Find its value.
+6. Area enclosed by $y = x^3$ and $y = x$ (all regions).
+7. Volume when the region under $y = \sin x$, $0 \le x \le \pi$, is rotated about the x-axis.
+8. Solve $y' = y\cos x$, $y(0) = 2$.
+9. Does $\sum\frac{n^2}{2^n}$ converge?
+10. (C) Use the first three nonzero terms of the series for $\arctan x$ to estimate $\arctan(0.2)$.
+
+## Answers
+1. $u = x^2 + 1$: $\frac{1}{2}\int_1^2 u^{-2}du = \frac{1}{2}\left(1 - \frac{1}{2}\right) = \frac{1}{4}$.
+2. $-e^{-x}(x^2 + 2x + 2) + C$.
+3. $\frac{3x + 5}{(x + 3)(x - 1)} = \frac{1}{x + 3} + \frac{2}{x - 1}$ → $\ln\lvert x + 3\rvert + 2\ln\lvert x - 1\rvert + C$.
+4. $\frac{\pi}{2}$.
+5. Parts: $\left[-\frac{\ln x}{x} - \frac{1}{x}\right]_1^\infty = 0 - (0 - 1) = 1$ → converges to 1.
+6. They meet at $x = -1, 0, 1$: $2\int_0^1(x - x^3)\,dx = 2 \cdot \frac{1}{4} = \frac{1}{2}$.
+7. $\pi\int_0^\pi\sin^2 x\,dx = \frac{\pi^2}{2}$.
+8. $\ln\lvert y\rvert = \sin x + C$ → $y = 2e^{\sin x}$.
+9. Ratio test: $\frac{(n + 1)^2}{2n^2} \to \frac{1}{2}$ → converges.
+10. $0.2 - \frac{0.008}{3} + \frac{0.00032}{5} \approx 0.197397$ (true $0.197396$)."

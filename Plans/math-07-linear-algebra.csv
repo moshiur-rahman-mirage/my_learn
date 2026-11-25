@@ -1,0 +1,2512 @@
+﻿level,type,name,description,priority,completed,content
+1,MODULE,Phase 1 — Vectors (Foundation),"Vectors in Rⁿ, addition and scaling, linear combinations, dot product, projections, cross product",MUST,,"# Phase 1: Vectors
+
+**Linear algebra** is the mathematics of vectors and matrices: of many numbers handled at once. It's arguably the most useful branch of maths for programmers: computer graphics, machine learning (every neural network is matrix multiplication), search engines, recommendation systems, image processing, robotics and data compression all run on it.
+
+This roadmap pairs each idea with **NumPy** code, so you see both the maths and how it's computed.
+
+**What you need first:** the Algebra & Functions roadmap (especially systems of equations) and basic trigonometry.
+
+Each topic has six parts: what it covers, where it is used, what it means, formulas with worked examples, common mistakes, and practice flashcards."
+2,MODULE,Vectors and the dot product,"Vectors, operations, linear combinations, dot product, projection, cross product",MUST,,"A vector is an arrow, a list of numbers, and a point, all at once."
+3,TOPIC,"Vectors in Rⁿ: components, magnitude and direction","Geometric and list views, notation, length (norm), unit vectors, vectors in higher dimensions",MUST,FALSE,"# Vectors in Rⁿ: components, magnitude and direction
+
+## 1. What it covers
+- A **vector** as an arrow (magnitude + direction) and as a list of numbers.
+- Notation: $\vec{v} = \langle 3, 4\rangle$ or a column $\begin{pmatrix}3\\4\end{pmatrix}$; vectors in $\mathbb{R}^n$.
+- **Magnitude (length, norm)** $\lVert\vec{v}\rVert$.
+- **Unit vectors** and normalising.
+
+## 2. Where it is used
+- **Games and physics:** positions, velocities, forces and directions are vectors.
+- **Machine learning:** every data point is a vector of features (a house = [area, rooms, age, ...]); word embeddings represent words as vectors with hundreds of dimensions.
+- **Graphics:** surface normals (unit vectors) decide lighting.
+- **Search and recommendations:** documents and users as vectors.
+
+## 3. What it means
+**Geometric view:** an arrow with a length and a direction. $\langle 3, 4\rangle$ means ""3 right, 4 up"". Arrows with the same length and direction are the same vector, wherever they're drawn.
+
+**List view:** a vector is an ordered list of $n$ numbers, a point in $n$-dimensional space $\mathbb{R}^n$. We can't picture 300 dimensions, but the arithmetic works exactly the same as in 2D.
+
+**Magnitude:** by Pythagoras, $\lVert\langle 3, 4\rangle\rVert = 5$. In $n$ dimensions: the square root of the sum of squares.
+
+**Unit vector:** length 1; it represents a pure direction. **Normalise** by dividing a vector by its length.
+
+## 4. Formula & worked example
+$$
+\lVert\vec{v}\rVert = \sqrt{v_1^2 + v_2^2 + \cdots + v_n^2} \qquad \hat{v} = \frac{\vec{v}}{\lVert\vec{v}\rVert}
+$$
+
+**Example 1.** $\lVert\langle 6, -8\rangle\rVert = \sqrt{36 + 64} = 10$; unit vector $\langle 0.6, -0.8\rangle$.
+
+**Example 2 (3D).** $\lVert\langle 2, 3, 6\rangle\rVert = \sqrt{4 + 9 + 36} = 7$.
+
+**Example 3 (from two points).** The vector from $A(1, 2)$ to $B(4, 6)$ is $\langle 3, 4\rangle$; distance 5.
+
+**Example 4 (game).** An enemy at $(10, 2)$ moves towards a player at $(4, 10)$ at speed 3 units/frame.
+- Direction $\langle -6, 8\rangle$, length 10, unit $\langle -0.6, 0.8\rangle$ → velocity $\langle -1.8, 2.4\rangle$ per frame.
+
+**Example 5 (code).**
+```python
+import numpy as np
+v = np.array([6, -8])
+print(np.linalg.norm(v), v / np.linalg.norm(v))   # 10.0 [ 0.6 -0.8]
+house = np.array([1450, 3, 12])                    # area, rooms, age: a point in R^3
+```
+`np.linalg.norm` computes the length; dividing by it gives the unit vector. Any row of a data table is a vector like `house`.
+
+## 5. Common mistakes
+- Forgetting to square negative components before adding.
+- Normalising the zero vector (it has no direction; division by zero).
+- Confusing a point's coordinates with a vector between two points (subtract end − start).
+
+## 6. Practice
+Q: Magnitude of $\langle 5, 12\rangle$?
+A: $13$.
+
+Q: Unit vector in the direction of $\langle 0, -7\rangle$?
+A: $\langle 0, -1\rangle$.
+
+Q: Vector from $(2, -1)$ to $(-1, 3)$?
+A: $\langle -3, 4\rangle$.
+
+Q: Magnitude of $\langle 1, 1, 1, 1\rangle$?
+A: $2$.
+
+Q: Why normalise a direction vector in a game?
+A: So that speed is controlled separately (length 1), and diagonal motion isn't faster."
+3,TOPIC,"Vector addition, scalar multiplication and linear combinations","Tip-to-tail addition, scaling, subtraction, linear combinations, forces and velocities",MUST,FALSE,"# Vector addition, scalar multiplication and linear combinations
+
+## 1. What it covers
+- **Adding** vectors (tip to tail, or component by component).
+- **Scalar multiplication** (stretching, shrinking, reversing).
+- Subtraction and the vector between two points.
+- **Linear combinations** $a\vec{u} + b\vec{v}$.
+- Applications: resultant forces, velocities with wind or current.
+
+## 2. Where it is used
+- **Physics:** combining forces; a plane's ground velocity = air velocity + wind.
+- **Games:** position += velocity × dt every frame.
+- **Graphics:** interpolating between points ($(1 - t)\vec{a} + t\vec{b}$).
+- **ML:** word-vector arithmetic: vector(""king"") − vector(""man"") + vector(""woman"") ≈ vector(""queen"").
+- **Colour mixing:** RGB colours are vectors; blending is a linear combination.
+
+## 3. What it means
+- **Addition:** place the second arrow's tail at the first arrow's tip; the sum goes from the start to the end. In components: add matching entries.
+- **Scalar multiplication:** $2\vec{v}$ is twice as long, same direction; $-\vec{v}$ points the opposite way; $0.5\vec{v}$ is half as long.
+- **Subtraction:** $\vec{b} - \vec{a}$ is the arrow from the tip of $\vec{a}$ to the tip of $\vec{b}$.
+- **Linear combination:** scale some vectors and add them. This single idea underlies almost all of linear algebra: every vector in the plane is a combination of $\langle 1, 0\rangle$ and $\langle 0, 1\rangle$.
+
+## 4. Formula & worked example
+$$
+\vec{u} + \vec{v} = \langle u_1 + v_1, u_2 + v_2\rangle \qquad c\vec{v} = \langle cv_1, cv_2\rangle \qquad a\vec{u} + b\vec{v}
+$$
+
+**Example 1.** $\langle 2, 5\rangle + \langle -3, 1\rangle = \langle -1, 6\rangle$; $3\langle 2, -1\rangle = \langle 6, -3\rangle$.
+
+**Example 2 (combination).** $2\langle 1, 3\rangle - \langle 4, -2\rangle = \langle -2, 8\rangle$.
+
+**Example 3 (write as a combination).** Express $\langle 7, 4\rangle$ as $a\langle 1, 1\rangle + b\langle 2, -1\rangle$.
+- $a + 2b = 7$, $a - b = 4$ → $b = 1$, $a = 5$.
+
+**Example 4 (plane and wind).** A plane flies at $\langle 0, 400\rangle$ km/h (north); wind blows $\langle 60, 0\rangle$ (east). Ground velocity $\langle 60, 400\rangle$; ground speed $\sqrt{3600 + 160\,000} \approx 404.5$ km/h.
+
+**Example 5 (forces).** Forces $\langle 30, 0\rangle$ N and $\langle 0, 40\rangle$ N → resultant $\langle 30, 40\rangle$, magnitude 50 N.
+
+**Example 6 (code).**
+```python
+import numpy as np
+u, v = np.array([1, 3]), np.array([4, -2])
+print(2*u - v)                               # [-2  8]
+a, b = np.array([0, 0]), np.array([10, 4])
+for t in (0, 0.5, 1):
+    print((1 - t) * a + t * b)               # interpolate from a to b
+```
+NumPy adds and scales arrays component by component, so vector arithmetic looks just like the maths. The loop is the ""lerp"" linear combination used in animation.
+
+## 5. Common mistakes
+- Adding magnitudes instead of vectors ($\lVert\vec{u} + \vec{v}\rVert \ne \lVert\vec{u}\rVert + \lVert\vec{v}\rVert$ unless they point the same way).
+- Subtracting in the wrong order for ""from A to B"".
+- Adding vectors of different dimensions.
+
+## 6. Practice
+Q: $\langle 3, -2\rangle + \langle -1, 5\rangle$?
+A: $\langle 2, 3\rangle$.
+
+Q: $-2\langle 4, 1\rangle$?
+A: $\langle -8, -2\rangle$.
+
+Q: Write $\langle 5, 5\rangle$ as $a\langle 1, 0\rangle + b\langle 1, 1\rangle$.
+A: $b = 5$, $a = 0$.
+
+Q: A boat goes $\langle 0, 8\rangle$ km/h in a current of $\langle 3, 0\rangle$. Speed over ground?
+A: $\sqrt{73} \approx 8.54$ km/h.
+
+Q: What is a linear combination?
+A: A sum of scalar multiples of vectors, $a\vec{u} + b\vec{v} + \cdots$."
+3,TOPIC,"The dot product, angles and cosine similarity","Algebraic and geometric definitions, angle between vectors, orthogonality, cosine similarity",MUST,FALSE,"# The dot product, angles and cosine similarity
+
+## 1. What it covers
+- The **dot product** $\vec{u} \cdot \vec{v}$, algebraically and geometrically.
+- Finding the **angle** between vectors.
+- **Orthogonal** (perpendicular) vectors: dot product 0.
+- **Cosine similarity**.
+
+## 2. Where it is used
+- **Search and NLP:** cosine similarity measures how similar two documents or embeddings are (semantic search, recommendations, vector databases).
+- **Graphics:** lighting brightness is $\vec{n} \cdot \vec{l}$ (surface normal · light direction); back-face culling checks the sign of a dot product.
+- **Physics:** work $= \vec{F} \cdot \vec{d}$.
+- **ML:** a neuron computes a dot product of weights and inputs; matrix multiplication is many dot products.
+
+## 3. What it means
+**Algebraically:** multiply matching components and add.
+
+**Geometrically:** $\vec{u} \cdot \vec{v} = \lVert\vec{u}\rVert\lVert\vec{v}\rVert\cos\theta$. It measures how much two vectors point the **same way**:
+- positive → angle less than 90° (roughly the same direction);
+- zero → perpendicular;
+- negative → angle greater than 90° (opposing).
+
+**Cosine similarity** $= \cos\theta = \frac{\vec{u} \cdot \vec{v}}{\lVert\vec{u}\rVert\lVert\vec{v}\rVert}$: 1 means the same direction, 0 unrelated, $-1$ opposite. It ignores length, so a long and a short document about the same topic still score as similar.
+
+## 4. Formula & worked example
+$$
+\vec{u} \cdot \vec{v} = \sum u_iv_i = \lVert\vec{u}\rVert\lVert\vec{v}\rVert\cos\theta \qquad \cos\theta = \frac{\vec{u} \cdot \vec{v}}{\lVert\vec{u}\rVert\lVert\vec{v}\rVert}
+$$
+
+**Example 1.** $\langle 2, 3\rangle \cdot \langle 4, -1\rangle = 8 - 3 = 5$.
+
+**Example 2 (angle).** Angle between $\langle 1, 0\rangle$ and $\langle 1, 1\rangle$: $\cos\theta = \frac{1}{1 \cdot \sqrt{2}}$ → $45^\circ$.
+
+**Example 3 (perpendicular?).** $\langle 3, -2, 1\rangle \cdot \langle 2, 4, 2\rangle = 6 - 8 + 2 = 0$ → orthogonal.
+
+**Example 4 (work).** A force $\langle 10, 5\rangle$ N moves a box by $\langle 4, 0\rangle$ m. Work $= 40$ J.
+
+**Example 5 (cosine similarity).** Word counts for three documents over the words [python, code, football]:
+- $A = \langle 5, 3, 0\rangle$, $B = \langle 10, 7, 1\rangle$, $C = \langle 0, 1, 8\rangle$
+- $\cos(A, B) = \frac{71}{\sqrt{34}\sqrt{150}} \approx 0.994$ (very similar); $\cos(A, C) = \frac{3}{\sqrt{34}\sqrt{65}} \approx 0.064$ (unrelated).
+
+**Example 6 (code).**
+```python
+import numpy as np
+A, B, C = np.array([5, 3, 0]), np.array([10, 7, 1]), np.array([0, 1, 8])
+cos = lambda u, v: u @ v / (np.linalg.norm(u) * np.linalg.norm(v))
+print(round(cos(A, B), 3), round(cos(A, C), 3))   # 0.994 0.064
+```
+`u @ v` is the dot product in NumPy. Dividing by both lengths gives cosine similarity, the core operation in semantic search and vector databases.
+
+## 5. Common mistakes
+- Thinking the dot product is a vector (it's a single number).
+- Forgetting to divide by both magnitudes for the angle.
+- Using degrees vs radians inconsistently with `arccos`.
+
+## 6. Practice
+Q: $\langle 1, 2, 3\rangle \cdot \langle 4, 5, 6\rangle$?
+A: $32$.
+
+Q: What does a dot product of 0 mean?
+A: The vectors are perpendicular (orthogonal).
+
+Q: Angle between $\langle 1, 0\rangle$ and $\langle -1, 0\rangle$?
+A: $180^\circ$ (cosine $-1$).
+
+Q: Find $k$ so $\langle 2, k\rangle$ is perpendicular to $\langle 3, -6\rangle$.
+A: $6 - 6k = 0$ → $k = 1$.
+
+Q: Why does cosine similarity ignore vector length?
+A: It divides by both magnitudes, leaving only the angle."
+3,TOPIC,Projections,"Scalar and vector projection, decomposing a vector into parallel and perpendicular parts",MUST,FALSE,"# Projections
+
+## 1. What it covers
+- The **scalar projection** (component) of $\vec{v}$ onto $\vec{u}$.
+- The **vector projection** $\text{proj}_{\vec{u}}\vec{v}$.
+- Splitting a vector into parts **parallel** and **perpendicular** to another.
+- Distance from a point to a line.
+
+## 2. Where it is used
+- **Physics:** the component of gravity along a slope; the force that actually moves an object.
+- **Games:** sliding along walls (remove the velocity component into the wall); shadows.
+- **Least squares and regression:** fitting a line is projecting the data vector onto a subspace (Phase 6).
+- **PCA:** projecting data onto the most important directions.
+
+## 3. What it means
+Shine a light straight down onto the line of $\vec{u}$: the shadow that $\vec{v}$ casts is its **projection**. It's the part of $\vec{v}$ that points along $\vec{u}$.
+
+- **Scalar projection:** the signed length of the shadow, $\frac{\vec{v} \cdot \vec{u}}{\lVert\vec{u}\rVert}$.
+- **Vector projection:** that length times the unit vector of $\vec{u}$.
+- The leftover $\vec{v} - \text{proj}_{\vec{u}}\vec{v}$ is **perpendicular** to $\vec{u}$.
+
+## 4. Formula & worked example
+$$
+\text{comp}_{\vec{u}}\vec{v} = \frac{\vec{v} \cdot \vec{u}}{\lVert\vec{u}\rVert} \qquad \text{proj}_{\vec{u}}\vec{v} = \frac{\vec{v} \cdot \vec{u}}{\vec{u} \cdot \vec{u}}\,\vec{u}
+$$
+
+**Example 1.** Project $\vec{v} = \langle 4, 3\rangle$ onto $\vec{u} = \langle 1, 0\rangle$: $\langle 4, 0\rangle$ (the x-part).
+
+**Example 2.** Project $\vec{v} = \langle 3, 4\rangle$ onto $\vec{u} = \langle 1, 1\rangle$.
+- $\frac{7}{2}\langle 1, 1\rangle = \langle 3.5, 3.5\rangle$; perpendicular part $\langle -0.5, 0.5\rangle$ (check: $\langle -0.5, 0.5\rangle \cdot \langle 1, 1\rangle = 0$ ✓)
+
+**Example 3 (slope).** A 10 kg box on a ramp at 30°; gravity 98 N downward. Component along the ramp $= 98\sin 30^\circ = 49$ N.
+
+**Example 4 (wall sliding, code).**
+```python
+import numpy as np
+vel = np.array([5.0, -3.0])          # moving right and down
+n = np.array([0.0, 1.0])             # floor normal (unit vector, pointing up)
+vel_slide = vel - (vel @ n) * n      # remove the part going into the floor
+print(vel_slide)                     # [5. 0.]  -> slides along the floor
+```
+`(vel @ n) * n` is the projection of the velocity onto the normal (the part pushing into the floor). Subtracting it leaves only the motion along the surface, which is how games make characters slide along walls instead of stopping dead.
+
+**Example 5 (distance to a line).** Distance from $P(3, 4)$ to the line through the origin with direction $\langle 1, 1\rangle$: the perpendicular part from Example 2 has length $\sqrt{0.5} \approx 0.707$.
+
+## 5. Common mistakes
+- Dividing by $\lVert\vec{u}\rVert$ instead of $\lVert\vec{u}\rVert^2$ for the vector projection.
+- Projecting $\vec{u}$ onto $\vec{v}$ when asked for the reverse.
+- Forgetting that the scalar projection can be negative.
+
+## 6. Practice
+Q: Vector projection of $\langle 2, 6\rangle$ onto $\langle 0, 1\rangle$?
+A: $\langle 0, 6\rangle$.
+
+Q: Projection of $\langle 1, 2\rangle$ onto $\langle 3, 4\rangle$?
+A: $\frac{11}{25}\langle 3, 4\rangle = \langle 1.32, 1.76\rangle$.
+
+Q: What can you say about $\vec{v} - \text{proj}_{\vec{u}}\vec{v}$?
+A: It's perpendicular to $\vec{u}$.
+
+Q: Scalar projection of $\langle 4, 3\rangle$ onto $\langle 0, -1\rangle$?
+A: $-3$.
+
+Q: How do games make a character slide along a wall?
+A: Subtract the velocity's projection onto the wall's normal."
+3,TOPIC,The cross product,"3D cross product, right-hand rule, area of parallelograms, normal vectors",SHOULD,FALSE,"# The cross product
+
+## 1. What it covers
+- The **cross product** $\vec{u} \times \vec{v}$ of two 3D vectors.
+- The **right-hand rule** for its direction.
+- Its magnitude = area of the parallelogram.
+- Finding **normal vectors** to planes and triangles.
+
+## 2. Where it is used
+- **3D graphics:** computing surface normals of triangles (needed for lighting and back-face culling).
+- **Physics:** torque $\vec{\tau} = \vec{r} \times \vec{F}$, angular momentum, magnetic force $q\vec{v} \times \vec{B}$.
+- **Robotics and drones:** rotational motion.
+- **Computational geometry:** orientation tests (is a point left or right of a line?).
+
+## 3. What it means
+The cross product of two 3D vectors is a **new vector**:
+- **perpendicular** to both;
+- with length $\lVert\vec{u}\rVert\lVert\vec{v}\rVert\sin\theta$, the area of the parallelogram they span;
+- pointing in the direction given by the **right-hand rule**: curl the fingers of your right hand from $\vec{u}$ towards $\vec{v}$; your thumb points along $\vec{u} \times \vec{v}$.
+
+Order matters: $\vec{v} \times \vec{u} = -(\vec{u} \times \vec{v})$. Parallel vectors have cross product $\vec{0}$.
+
+## 4. Formula & worked example
+$$
+\vec{u} \times \vec{v} = \langle u_2v_3 - u_3v_2,\ u_3v_1 - u_1v_3,\ u_1v_2 - u_2v_1\rangle \qquad \lVert\vec{u} \times \vec{v}\rVert = \lVert\vec{u}\rVert\lVert\vec{v}\rVert\sin\theta
+$$
+
+**Example 1.** $\langle 1, 0, 0\rangle \times \langle 0, 1, 0\rangle = \langle 0, 0, 1\rangle$ ($\hat{i} \times \hat{j} = \hat{k}$).
+
+**Example 2.** $\langle 2, 1, -1\rangle \times \langle 1, 3, 2\rangle = \langle 1 \cdot 2 - (-1)3,\ (-1)1 - 2 \cdot 2,\ 2 \cdot 3 - 1 \cdot 1\rangle = \langle 5, -5, 5\rangle$.
+- Check: $\langle 5, -5, 5\rangle \cdot \langle 2, 1, -1\rangle = 10 - 5 - 5 = 0$ ✓
+
+**Example 3 (triangle area).** Triangle $A(0,0,0)$, $B(3,0,0)$, $C(0,4,0)$: $\vec{AB} \times \vec{AC} = \langle 0, 0, 12\rangle$ → area $= \frac{12}{2} = 6$.
+
+**Example 4 (normal, code).**
+```python
+import numpy as np
+A, B, C = np.array([0, 0, 0]), np.array([1, 0, 0]), np.array([0, 1, 1])
+n = np.cross(B - A, C - A)
+print(n, n / np.linalg.norm(n))     # [ 0 -1  1]  unit normal of the triangle
+```
+A 3D mesh stores triangles as three vertices. The cross product of two edge vectors gives the triangle's normal, which the renderer uses for lighting.
+
+**Example 5 (torque).** A 0.3 m wrench, force 50 N perpendicular to it: torque magnitude $= 0.3 \times 50 = 15$ N·m.
+
+## 5. Common mistakes
+- Swapping the order (the result flips direction).
+- Sign error in the middle component.
+- Trying to take a cross product of 2D vectors (it's defined in 3D; for 2D, use the scalar $u_1v_2 - u_2v_1$).
+
+## 6. Practice
+Q: $\hat{j} \times \hat{i}$?
+A: $-\hat{k}$.
+
+Q: $\langle 1, 2, 3\rangle \times \langle 1, 2, 3\rangle$?
+A: $\vec{0}$ (parallel vectors).
+
+Q: What does $\lVert\vec{u} \times \vec{v}\rVert$ represent?
+A: The area of the parallelogram spanned by $\vec{u}$ and $\vec{v}$.
+
+Q: $\langle 1, 0, 0\rangle \times \langle 0, 0, 1\rangle$?
+A: $\langle 0, -1, 0\rangle$.
+
+Q: Why do 3D renderers use cross products?
+A: To compute triangle normals for lighting and culling."
+3,TOPIC,Practice & review: Vectors,Mixed problem set with worked answers,MUST,FALSE,"# Practice & review: Vectors
+
+**How to use this:** 40 minutes; check answers with NumPy afterwards.
+
+## Problems
+1. $\vec{u} = \langle 2, -1, 3\rangle$, $\vec{v} = \langle 1, 4, -2\rangle$. Find $3\vec{u} - 2\vec{v}$ and $\lVert\vec{u}\rVert$.
+2. Find the unit vector in the direction from $(1, 5)$ to $(7, -3)$.
+3. Write $\langle 1, 9\rangle$ as a combination of $\langle 1, 2\rangle$ and $\langle -1, 1\rangle$.
+4. Angle between $\langle 1, 2, 2\rangle$ and $\langle 2, -1, 2\rangle$.
+5. Cosine similarity of $\langle 1, 0, 1\rangle$ and $\langle 1, 1, 0\rangle$.
+6. Project $\langle 5, 1\rangle$ onto $\langle 2, 1\rangle$ and find the perpendicular part.
+7. Compute $\langle 1, 2, 0\rangle \times \langle 0, 1, 3\rangle$ and the area of the parallelogram they span.
+8. A force of $\langle 20, 15\rangle$ N pulls a cart along $\langle 5, 0\rangle$ m. Work done?
+
+## Answers
+1. $\langle 4, -11, 13\rangle$; $\sqrt{14}$.
+2. Vector $\langle 6, -8\rangle$ → $\langle 0.6, -0.8\rangle$.
+3. $a - b = 1$, $2a + b = 9$ → $a = \frac{10}{3}$, $b = \frac{7}{3}$.
+4. Dot $= 2 - 2 + 4 = 4$; norms 3 and 3 → $\cos\theta = \frac{4}{9}$ → $\theta \approx 63.6^\circ$.
+5. $\frac{1}{\sqrt{2}\sqrt{2}} = 0.5$.
+6. $\frac{11}{5}\langle 2, 1\rangle = \langle 4.4, 2.2\rangle$; perpendicular $\langle 0.6, -1.2\rangle$.
+7. $\langle 6, -3, 1\rangle$; area $\sqrt{46} \approx 6.78$.
+8. $100$ J.
+
+## Flashcards
+Q: Dot product formula?
+A: $\sum u_iv_i = \lVert\vec{u}\rVert\lVert\vec{v}\rVert\cos\theta$.
+
+Q: Vector projection formula?
+A: $\frac{\vec{v} \cdot \vec{u}}{\vec{u} \cdot \vec{u}}\vec{u}$.
+
+Q: Cross product direction?
+A: Perpendicular to both vectors, by the right-hand rule.
+
+Q: How do you normalise a vector?
+A: Divide it by its length."
+1,MODULE,Phase 2 — Matrices and Linear Systems (Core),"Matrix operations, matrix multiplication, Gaussian elimination, solution sets, inverses, determinants, transpose, NumPy",MUST,,"# Phase 2: Matrices and linear systems
+
+A **matrix** is a rectangular table of numbers. It can store data (rows = examples, columns = features), represent a system of equations, or represent a **transformation** that moves vectors around. Solving systems of linear equations efficiently is one of the most important computations in science and engineering."
+2,MODULE,Matrix algebra and systems,"Operations, multiplication, row reduction, solution sets, inverses, determinants, transpose",MUST,,Matrices let you handle hundreds of equations and millions of numbers with one compact notation.
+3,TOPIC,Matrix basics and operations,"Notation, dimensions, entries, addition, scalar multiplication, special matrices",MUST,FALSE,"# Matrix basics and operations
+
+## 1. What it covers
+- Matrix notation: size $m \times n$ ($m$ rows, $n$ columns), entry $a_{ij}$.
+- **Addition** and **scalar multiplication**.
+- Special matrices: zero, **identity** $I$, diagonal, square, row and column vectors.
+
+## 2. Where it is used
+- **Data science:** a dataset is a matrix (pandas DataFrames, NumPy arrays): rows are samples, columns are features.
+- **Images:** a greyscale image is a matrix of pixel brightnesses; a colour image is three matrices.
+- **Spreadsheets** are matrices.
+- **Graphs and networks:** adjacency matrices store who connects to whom.
+
+## 3. What it means
+A matrix is a grid of numbers. Its **size** is rows × columns. $a_{ij}$ is the entry in row $i$, column $j$.
+
+- **Addition:** only for matrices of the same size; add matching entries.
+- **Scalar multiplication:** multiply every entry.
+- **Identity matrix** $I$: 1s on the diagonal, 0s elsewhere. It acts like the number 1 ($AI = A$).
+
+## 4. Formula & worked example
+$$
+A = \begin{pmatrix} 1 & 2 & 3 \\ 4 & 5 & 6\end{pmatrix}\ (2 \times 3) \qquad I_3 = \begin{pmatrix} 1 & 0 & 0 \\ 0 & 1 & 0 \\ 0 & 0 & 1\end{pmatrix}
+$$
+
+**Example 1.** Size of $A$ above: $2 \times 3$; $a_{23} = 6$.
+
+**Example 2.** $\begin{pmatrix} 1 & 2 \\ 3 & 4\end{pmatrix} + \begin{pmatrix} 5 & -1 \\ 0 & 2\end{pmatrix} = \begin{pmatrix} 6 & 1 \\ 3 & 6\end{pmatrix}$
+
+**Example 3.** $3\begin{pmatrix} 2 & -1 \\ 0 & 4\end{pmatrix} = \begin{pmatrix} 6 & -3 \\ 0 & 12\end{pmatrix}$
+
+**Example 4 (sales data).** Units sold of 3 products in 2 shops in January ($J$) and February ($F$): total over both months is $J + F$; a 10% increase forecast is $1.1F$.
+
+**Example 5 (code).**
+```python
+import numpy as np
+A = np.array([[1, 2, 3], [4, 5, 6]])
+print(A.shape, A[1, 2])          # (2, 3) 6   (NumPy indexes from 0)
+print(A + 10, 2 * A)             # element-wise
+print(np.eye(3))                 # 3x3 identity
+img = np.random.randint(0, 256, (480, 640))   # a greyscale image is a 480x640 matrix
+```
+NumPy's `shape` gives (rows, columns). Note that `A[1, 2]` is the mathematical $a_{23}$ because Python counts from 0.
+
+## 5. Common mistakes
+- Writing the size as columns × rows.
+- Adding matrices of different sizes.
+- Off-by-one indexing between maths ($a_{11}$ is first) and code (`A[0, 0]`).
+
+## 6. Practice
+Q: Size of a matrix with 4 rows and 2 columns?
+A: $4 \times 2$.
+
+Q: What is the identity matrix?
+A: A square matrix with 1s on the diagonal and 0s elsewhere.
+
+Q: $\begin{pmatrix} 1 & 0 \\ 2 & 3\end{pmatrix} - \begin{pmatrix} 0 & 1 \\ 1 & 1\end{pmatrix}$?
+A: $\begin{pmatrix} 1 & -1 \\ 1 & 2\end{pmatrix}$.
+
+Q: Can you add a $2 \times 3$ and a $3 \times 2$ matrix?
+A: No.
+
+Q: In a dataset matrix, what do rows and columns usually represent?
+A: Rows are samples (examples); columns are features (variables)."
+3,TOPIC,Matrix multiplication,"Row-by-column rule, dimension compatibility, matrix-vector products, non-commutativity",MUST,FALSE,"# Matrix multiplication
+
+## 1. What it covers
+- The **row-by-column** rule.
+- When a product is defined: $(m \times n)(n \times p) = m \times p$.
+- **Matrix–vector** products $A\vec{x}$ as combinations of columns.
+- Properties: associative, distributive, but **not commutative**.
+
+## 2. Where it is used
+- **Neural networks:** each layer computes $W\vec{x} + \vec{b}$; GPUs are built to multiply matrices fast.
+- **Graphics:** transforming every vertex of a 3D model by a matrix.
+- **Business:** total cost = quantity matrix × price vector.
+- **Markov chains and graphs:** powers of a matrix count paths and evolve probabilities.
+
+## 3. What it means
+Entry $(i, j)$ of $AB$ is the **dot product** of row $i$ of $A$ with column $j$ of $B$. So the number of columns of $A$ must equal the number of rows of $B$.
+
+**Matrix–vector product:** $A\vec{x}$ is a **linear combination of the columns of $A$**, with weights from $\vec{x}$. This view explains most of linear algebra.
+
+**Order matters:** in general $AB \ne BA$ (rotating then scaling differs from scaling then rotating; and $BA$ may not even be defined).
+
+## 4. Formula & worked example
+$$
+(AB)_{ij} = \sum_k a_{ik}b_{kj} \qquad A\vec{x} = x_1\vec{a}_1 + x_2\vec{a}_2 + \cdots + x_n\vec{a}_n
+$$
+
+**Example 1.** $\begin{pmatrix} 1 & 2 \\ 3 & 4\end{pmatrix}\begin{pmatrix} 5 & 6 \\ 7 & 8\end{pmatrix} = \begin{pmatrix} 1 \cdot 5 + 2 \cdot 7 & 1 \cdot 6 + 2 \cdot 8 \\ 3 \cdot 5 + 4 \cdot 7 & 3 \cdot 6 + 4 \cdot 8\end{pmatrix} = \begin{pmatrix} 19 & 22 \\ 43 & 50\end{pmatrix}$
+
+**Example 2 (not commutative).** $\begin{pmatrix} 5 & 6 \\ 7 & 8\end{pmatrix}\begin{pmatrix} 1 & 2 \\ 3 & 4\end{pmatrix} = \begin{pmatrix} 23 & 34 \\ 31 & 46\end{pmatrix} \ne$ Example 1.
+
+**Example 3 (columns view).** $\begin{pmatrix} 1 & 2 \\ 3 & 4\end{pmatrix}\begin{pmatrix} 2 \\ -1\end{pmatrix} = 2\begin{pmatrix} 1 \\ 3\end{pmatrix} - 1\begin{pmatrix} 2 \\ 4\end{pmatrix} = \begin{pmatrix} 0 \\ 2\end{pmatrix}$
+
+**Example 4 (cost).** Two orders of [pens, notebooks, bags] = $\begin{pmatrix} 10 & 5 & 1 \\ 4 & 2 & 2\end{pmatrix}$; prices $\begin{pmatrix} 15 \\ 60 \\ 900\end{pmatrix}$ → totals $\begin{pmatrix} 1350 \\ 1980\end{pmatrix}$ taka.
+
+**Example 5 (dimensions).** $(3 \times 2)(2 \times 4) = 3 \times 4$ ✓; $(3 \times 2)(3 \times 2)$ is undefined.
+
+**Example 6 (neural network layer, code).**
+```python
+import numpy as np
+x = np.array([0.5, -1.0, 2.0])          # input with 3 features
+W = np.random.randn(4, 3)               # layer with 4 neurons
+b = np.zeros(4)
+h = np.maximum(0, W @ x + b)            # ReLU(Wx + b): shape (4,)
+print(h.shape)
+```
+`W @ x` multiplies a $4 \times 3$ matrix by a 3-vector, giving 4 outputs: each is one neuron's dot product of its weights with the input. A whole network is a chain of these products.
+
+## 5. Common mistakes
+- Multiplying entry by entry (that's `A * B` in NumPy, not matrix multiplication; use `A @ B`).
+- Assuming $AB = BA$.
+- Multiplying incompatible sizes.
+
+## 6. Practice
+Q: Size of $AB$ if $A$ is $2 \times 5$ and $B$ is $5 \times 3$?
+A: $2 \times 3$.
+
+Q: $\begin{pmatrix} 2 & 0 \\ 1 & 3\end{pmatrix}\begin{pmatrix} 4 \\ 5\end{pmatrix}$?
+A: $\begin{pmatrix} 8 \\ 19\end{pmatrix}$.
+
+Q: Is matrix multiplication commutative?
+A: No, in general $AB \ne BA$.
+
+Q: In NumPy, what's the difference between `A * B` and `A @ B`?
+A: `*` multiplies entry by entry; `@` is matrix multiplication.
+
+Q: $A\vec{x}$ is a combination of what?
+A: The columns of $A$, weighted by the entries of $\vec{x}$."
+3,TOPIC,Solving systems with Gaussian elimination,"Augmented matrices, row operations, row echelon and reduced row echelon form, back substitution",MUST,FALSE,"# Solving systems with Gaussian elimination
+
+## 1. What it covers
+- Writing a system as an **augmented matrix** $[A \mid \vec{b}]$.
+- The three **row operations**.
+- **Row echelon form** (REF) and **reduced row echelon form** (RREF).
+- Back substitution.
+
+## 2. Where it is used
+- **Engineering:** circuit analysis, structural analysis, finite-element simulations solve huge linear systems.
+- **Computer graphics:** solving for intersection points and transformations.
+- **Economics:** input–output models (Leontief).
+- **Numerical libraries:** `numpy.linalg.solve` uses LU decomposition, an organised version of Gaussian elimination.
+
+## 3. What it means
+Elimination is the systematic version of the method you used for 2 equations: combine equations to remove variables one by one.
+
+**Row operations** (they don't change the solutions):
+1. Swap two rows.
+2. Multiply a row by a non-zero number.
+3. Add a multiple of one row to another.
+
+**Goal:** a staircase shape (**row echelon form**) with zeros below each leading entry (**pivot**). Then solve from the bottom up (back substitution). Continuing until each pivot is 1 with zeros above and below gives **RREF**, where you can read off the solution directly.
+
+## 4. Formula & worked example
+**Example.** Solve:
+$$
+\begin{aligned} x + y + z &= 6 \\ 2x + 3y + z &= 14 \\ x - y + 2z &= 5 \end{aligned}
+$$
+Augmented matrix and elimination:
+$$
+\left(\begin{array}{ccc|c} 1 & 1 & 1 & 6 \\ 2 & 3 & 1 & 14 \\ 1 & -1 & 2 & 5 \end{array}\right) \xrightarrow[R_3 - R_1]{R_2 - 2R_1} \left(\begin{array}{ccc|c} 1 & 1 & 1 & 6 \\ 0 & 1 & -1 & 2 \\ 0 & -2 & 1 & -1 \end{array}\right) \xrightarrow{R_3 + 2R_2} \left(\begin{array}{ccc|c} 1 & 1 & 1 & 6 \\ 0 & 1 & -1 & 2 \\ 0 & 0 & -1 & 3 \end{array}\right)
+$$
+- Back substitution: $-z = 3$ → $z = -3$; $y - z = 2$ → $y = -1$; $x + y + z = 6$ → $x = 10$.
+- Check in equation 2: $20 - 3 - 3 = 14$ ✓
+
+**Code.**
+```python
+import numpy as np
+A = np.array([[1, 1, 1], [2, 3, 1], [1, -1, 2]], dtype=float)
+b = np.array([6, 14, 5], dtype=float)
+print(np.linalg.solve(A, b))       # [10. -1. -3.]
+import sympy as sp
+print(sp.Matrix(np.column_stack([A, b])).rref()[0])   # reduced row echelon form
+```
+`np.linalg.solve` performs (a stable form of) elimination internally. SymPy's `rref()` shows the reduced row echelon form exactly, which is handy for checking hand work.
+
+## 5. Common mistakes
+- Applying an operation to only part of a row (including forgetting the augmented column).
+- Arithmetic slips with negatives (check by substituting the answer).
+- Computing an inverse to solve a system (slower and less accurate than elimination).
+
+## 6. Practice
+Q: Three allowed row operations?
+A: Swap rows, scale a row by a non-zero number, add a multiple of one row to another.
+
+Q: Solve $x + 2y = 5$, $3x + 4y = 11$ by elimination.
+A: $R_2 - 3R_1$: $-2y = -4$ → $y = 2$, $x = 1$.
+
+Q: What is a pivot?
+A: The first non-zero entry in a row of an echelon form.
+
+Q: What does RREF let you do?
+A: Read the solution directly (each pivot 1, zeros above and below).
+
+Q: Which NumPy function solves $A\vec{x} = \vec{b}$?
+A: `np.linalg.solve(A, b)`."
+3,TOPIC,Solution sets of linear systems,"Consistent and inconsistent systems, pivots and free variables, parametric solutions, homogeneous systems",MUST,FALSE,"# Solution sets of linear systems
+
+## 1. What it covers
+- Recognising **no solution**, **exactly one** or **infinitely many** from the echelon form.
+- **Pivot** and **free** variables.
+- Writing infinite solution sets in **parametric vector form**.
+- **Homogeneous** systems $A\vec{x} = \vec{0}$.
+
+## 2. Where it is used
+- **Engineering design:** underdetermined systems (more unknowns than equations) have many solutions; you then choose the best one (e.g. least energy).
+- **Chemistry:** balancing chemical equations is a homogeneous system.
+- **Computer graphics and robotics:** robot arms with extra joints have infinitely many configurations reaching the same point.
+- **Data science:** detecting redundant features.
+
+## 3. What it means
+After row reduction:
+- A row like $[0\ 0\ 0 \mid 5]$ means $0 = 5$ → **no solution** (inconsistent).
+- Otherwise, each column with a pivot gives a **pivot (basic) variable**; columns without a pivot give **free variables**, which can be anything.
+  - No free variables → **exactly one** solution.
+  - At least one free variable → **infinitely many** solutions.
+
+**Parametric form:** write the pivot variables in terms of the free ones. The solution set is a point, a line, a plane, ... in space.
+
+**Homogeneous** $A\vec{x} = \vec{0}$ always has the solution $\vec{x} = \vec{0}$; it has others exactly when there's a free variable.
+
+## 4. Formula & worked example
+**Example 1 (no solution).**
+$$
+\left(\begin{array}{cc|c} 1 & 2 & 3 \\ 0 & 0 & 4 \end{array}\right) \Rightarrow 0 = 4 \Rightarrow \text{no solution}
+$$
+
+**Example 2 (infinitely many).** RREF:
+$$
+\left(\begin{array}{ccc|c} 1 & 0 & 2 & 5 \\ 0 & 1 & -1 & 3 \end{array}\right)
+$$
+- $z$ is free: $x = 5 - 2z$, $y = 3 + z$ →
+$$
+\vec{x} = \begin{pmatrix} 5 \\ 3 \\ 0\end{pmatrix} + z\begin{pmatrix} -2 \\ 1 \\ 1\end{pmatrix}
+$$
+a line in 3D.
+
+**Example 3 (balancing a reaction).** $a\,\text{H}_2 + b\,\text{O}_2 \to c\,\text{H}_2\text{O}$: H: $2a = 2c$; O: $2b = c$ → free variable $c$; take $c = 2$: $a = 2$, $b = 1$ → $2\text{H}_2 + \text{O}_2 \to 2\text{H}_2\text{O}$.
+
+**Example 4 (count).** A system of 3 equations in 5 unknowns (consistent) has at least $5 - 3 = 2$ free variables → infinitely many solutions.
+
+## 5. Common mistakes
+- Concluding ""no solution"" from a row of all zeros (that's $0 = 0$, which is fine).
+- Treating a free variable as 0 and reporting one solution.
+- Forgetting that homogeneous systems are always consistent.
+
+## 6. Practice
+Q: What row signals an inconsistent system?
+A: $[0\ 0\ \cdots\ 0 \mid c]$ with $c \ne 0$.
+
+Q: 4 unknowns, 2 pivots, consistent. How many solutions?
+A: Infinitely many (2 free variables).
+
+Q: Does $A\vec{x} = \vec{0}$ always have a solution?
+A: Yes, $\vec{x} = \vec{0}$.
+
+Q: RREF rows $[1\ 0 \mid 2]$, $[0\ 1 \mid -1]$. Solution?
+A: $x = 2$, $y = -1$.
+
+Q: What is a free variable?
+A: A variable whose column has no pivot; it can take any value."
+3,TOPIC,Inverse matrices,"Definition, 2×2 formula, finding inverses by row reduction, invertibility, solving with inverses",MUST,FALSE,"# Inverse matrices
+
+## 1. What it covers
+- The **inverse** $A^{-1}$ with $AA^{-1} = A^{-1}A = I$.
+- The $2 \times 2$ formula.
+- Finding $A^{-1}$ by row reducing $[A \mid I]$.
+- When an inverse exists (**invertible**/non-singular matrices).
+- Solving $A\vec{x} = \vec{b}$ as $\vec{x} = A^{-1}\vec{b}$, and properties like $(AB)^{-1} = B^{-1}A^{-1}$.
+
+## 2. Where it is used
+- **Graphics:** undoing transformations (camera view matrix = inverse of the camera's placement).
+- **Cryptography:** the Hill cipher encrypts with a matrix and decrypts with its inverse.
+- **Statistics:** the normal equation $\hat{\beta} = (X^TX)^{-1}X^T\vec{y}$ in regression (computed more stably in practice).
+- **Robotics:** inverse transformations between coordinate frames.
+
+## 3. What it means
+If $A$ transforms vectors, $A^{-1}$ **undoes** it: applying $A$ then $A^{-1}$ returns every vector to where it started. Only **square** matrices can have inverses, and only if they don't squash space flat (determinant ≠ 0).
+
+**2×2 formula:** swap the diagonal entries, negate the off-diagonal ones, divide by the determinant $ad - bc$.
+
+**Socks and shoes:** $(AB)^{-1} = B^{-1}A^{-1}$: to undo ""put on socks, then shoes"", take off shoes first.
+
+## 4. Formula & worked example
+$$
+\begin{pmatrix} a & b \\ c & d\end{pmatrix}^{-1} = \frac{1}{ad - bc}\begin{pmatrix} d & -b \\ -c & a\end{pmatrix} \qquad (AB)^{-1} = B^{-1}A^{-1}
+$$
+
+**Example 1.** $A = \begin{pmatrix} 4 & 7 \\ 2 & 6\end{pmatrix}$: $\det = 24 - 14 = 10$ → $A^{-1} = \frac{1}{10}\begin{pmatrix} 6 & -7 \\ -2 & 4\end{pmatrix}$.
+- Check: $AA^{-1} = \frac{1}{10}\begin{pmatrix} 24 - 14 & -28 + 28 \\ 12 - 12 & -14 + 24\end{pmatrix} = I$ ✓
+
+**Example 2 (not invertible).** $\begin{pmatrix} 2 & 4 \\ 1 & 2\end{pmatrix}$: $\det = 0$ → no inverse (the second column is twice the first).
+
+**Example 3 (solve).** $4x + 7y = 1$, $2x + 6y = 2$: $\vec{x} = A^{-1}\begin{pmatrix} 1 \\ 2\end{pmatrix} = \frac{1}{10}\begin{pmatrix} -8 \\ 6\end{pmatrix} = \begin{pmatrix} -0.8 \\ 0.6\end{pmatrix}$.
+
+**Example 4 (row reduction).** Reduce $[A \mid I]$ until the left side is $I$; the right side is then $A^{-1}$.
+
+**Example 5 (code).**
+```python
+import numpy as np
+A = np.array([[4, 7], [2, 6]], dtype=float)
+Ainv = np.linalg.inv(A)
+print(Ainv, A @ Ainv)                 # inverse, and ~identity
+print(np.linalg.solve(A, [1, 2]))     # [-0.8  0.6]  preferred over inv(A) @ b
+```
+`np.linalg.inv` computes the inverse, but to solve a system use `solve`: it's faster and more accurate than forming the inverse explicitly.
+
+## 5. Common mistakes
+- Writing $(AB)^{-1} = A^{-1}B^{-1}$.
+- Forgetting to divide by the determinant.
+- Computing $A^{-1}$ to solve one system (use elimination/`solve`).
+
+## 6. Practice
+Q: Inverse of $\begin{pmatrix} 2 & 1 \\ 5 & 3\end{pmatrix}$?
+A: $\det = 1$ → $\begin{pmatrix} 3 & -1 \\ -5 & 2\end{pmatrix}$.
+
+Q: When is a square matrix invertible?
+A: When its determinant is non-zero.
+
+Q: $(AB)^{-1}$?
+A: $B^{-1}A^{-1}$.
+
+Q: Inverse of $I$?
+A: $I$.
+
+Q: Inverse of $\begin{pmatrix} 3 & 0 \\ 0 & 5\end{pmatrix}$?
+A: $\begin{pmatrix} 1/3 & 0 \\ 0 & 1/5\end{pmatrix}$."
+3,TOPIC,Determinants,"2×2 and 3×3 determinants, cofactor expansion, geometric meaning as area/volume scaling",MUST,FALSE,"# Determinants
+
+## 1. What it covers
+- The **determinant** of $2 \times 2$ and $3 \times 3$ matrices.
+- **Cofactor expansion**.
+- Geometric meaning: how much a matrix scales **area** (2D) or **volume** (3D), and whether it flips orientation.
+- $\det A = 0$ ⇔ not invertible.
+
+## 2. Where it is used
+- **Invertibility checks** in solvers.
+- **Graphics and physics:** checking if a transformation flips a model inside out (negative determinant).
+- **Multivariable calculus:** the Jacobian determinant in change of variables.
+- **Geometry:** area of triangles and parallelograms from coordinates; volume of a parallelepiped.
+
+## 3. What it means
+A $2 \times 2$ matrix sends the unit square to a parallelogram. The determinant is the **area** of that parallelogram (with a sign):
+- $\lvert\det A\rvert$: how much areas are scaled.
+- $\det A < 0$: orientation is flipped (like a mirror image).
+- $\det A = 0$: space is squashed onto a line or a point, so information is lost and the transformation can't be undone.
+
+In 3D, it's the volume scaling factor.
+
+**3×3 by cofactor expansion along the first row:** each entry times the determinant of the $2 \times 2$ matrix left after deleting its row and column, with signs $+, -, +$.
+
+## 4. Formula & worked example
+$$
+\det\begin{pmatrix} a & b \\ c & d\end{pmatrix} = ad - bc \qquad \det\begin{pmatrix} a & b & c \\ d & e & f \\ g & h & i\end{pmatrix} = a(ei - fh) - b(di - fg) + c(dh - eg)
+$$
+
+**Example 1.** $\det\begin{pmatrix} 3 & 1 \\ 2 & 4\end{pmatrix} = 12 - 2 = 10$: areas are multiplied by 10.
+
+**Example 2 (flip).** $\det\begin{pmatrix} 0 & 1 \\ 1 & 0\end{pmatrix} = -1$: a reflection (swaps x and y), area unchanged, orientation flipped.
+
+**Example 3 (3×3).** $\det\begin{pmatrix} 2 & 0 & 1 \\ 1 & 3 & 2 \\ 1 & 1 & 1\end{pmatrix} = 2(3 - 2) - 0 + 1(1 - 3) = 2 - 2 = 0$ → not invertible (the columns are dependent).
+
+**Example 4 (triangle area).** Triangle with vertices $(0, 0)$, $(4, 1)$, $(1, 3)$: area $= \frac{1}{2}\left\lvert\det\begin{pmatrix} 4 & 1 \\ 1 & 3\end{pmatrix}\right\rvert = \frac{11}{2}$ (the shoelace formula from Geometry in matrix form).
+
+**Example 5 (code).**
+```python
+import numpy as np
+print(np.linalg.det(np.array([[3, 1], [2, 4]])))                  # 10.000000000000002
+print(np.linalg.det(np.array([[2, 0, 1], [1, 3, 2], [1, 1, 1]]))) # ~0 (tiny rounding error)
+```
+Floating point gives results like `1e-16` instead of exactly 0, so test invertibility with a tolerance (or better, with `np.linalg.cond` or the rank).
+
+## 5. Common mistakes
+- Sign errors in cofactor expansion (the middle term is subtracted).
+- Taking the determinant of a non-square matrix (undefined).
+- Testing `det == 0` exactly in floating-point code.
+
+## 6. Practice
+Q: $\det\begin{pmatrix} 5 & 2 \\ 3 & 1\end{pmatrix}$?
+A: $-1$.
+
+Q: What does $\det A = 0$ mean geometrically?
+A: The transformation squashes space into a lower dimension (not invertible).
+
+Q: A matrix has determinant 3. What happens to a shape of area 4?
+A: Its area becomes 12.
+
+Q: $\det(I_3)$?
+A: $1$.
+
+Q: What does a negative determinant indicate?
+A: Orientation is reversed (a reflection is involved)."
+3,TOPIC,Properties of determinants,"Effect of row operations, det(AB) = det A det B, det(Aᵀ), det(A⁻¹), triangular matrices",MUST,FALSE,"# Properties of determinants
+
+## 1. What it covers
+- How row operations change the determinant.
+- Triangular matrices: determinant = product of the diagonal.
+- $\det(AB) = \det(A)\det(B)$, $\det(A^T) = \det(A)$, $\det(A^{-1}) = \frac{1}{\det A}$, $\det(cA) = c^n\det A$.
+
+## 2. Where it is used
+- **Efficient computation:** computers find determinants by row reducing to triangular form (cofactor expansion is far too slow for large matrices: $n!$ terms).
+- **Theory:** proving invertibility, eigenvalue calculations.
+- **Graphics:** composing transformations multiplies their area/volume scale factors.
+
+## 3. What it means
+**Row operations:**
+- Swapping two rows → determinant changes **sign**.
+- Multiplying a row by $c$ → determinant is multiplied by $c$.
+- Adding a multiple of one row to another → determinant **unchanged**.
+
+So: reduce to triangular form, keep track of swaps and scalings, and multiply the diagonal.
+
+**Product rule:** doing transformation $B$ then $A$ scales area by $\det B$ then by $\det A$, so $\det(AB) = \det A \det B$.
+
+## 4. Formula & worked example
+$$
+\det(AB) = \det A\det B \qquad \det A^T = \det A \qquad \det A^{-1} = \frac{1}{\det A} \qquad \det(cA) = c^n\det A\ (n \times n)
+$$
+
+**Example 1 (triangular).** $\det\begin{pmatrix} 2 & 5 & 1 \\ 0 & 3 & 7 \\ 0 & 0 & 4\end{pmatrix} = 2 \times 3 \times 4 = 24$
+
+**Example 2 (row reduce).** $\det\begin{pmatrix} 1 & 2 & 3 \\ 2 & 5 & 7 \\ 1 & 3 & 5\end{pmatrix}$: $R_2 - 2R_1$, $R_3 - R_1$ → $\begin{pmatrix} 1 & 2 & 3 \\ 0 & 1 & 1 \\ 0 & 1 & 2\end{pmatrix}$; $R_3 - R_2$ → diagonal 1, 1, 1 → $\det = 1$.
+
+**Example 3.** $\det A = 3$, $\det B = -2$ ($3 \times 3$): $\det(AB) = -6$; $\det(A^{-1}) = \frac{1}{3}$; $\det(2A) = 8 \times 3 = 24$; $\det(A^T) = 3$.
+
+**Example 4 (swap).** Swapping two rows of a matrix with determinant 5 gives $-5$.
+
+## 5. Common mistakes
+- $\det(A + B) = \det A + \det B$ (false).
+- $\det(cA) = c\det A$ (it's $c^n$).
+- Forgetting sign changes from row swaps.
+
+## 6. Practice
+Q: Determinant of a triangular matrix?
+A: The product of its diagonal entries.
+
+Q: Effect of adding $3R_1$ to $R_2$ on the determinant?
+A: None.
+
+Q: $\det A = 4$ ($2 \times 2$). $\det(3A)$?
+A: $36$.
+
+Q: $\det A = 5$. $\det(A^{-1})$?
+A: $\frac{1}{5}$.
+
+Q: Why do computers row reduce to find determinants?
+A: Cofactor expansion takes about $n!$ operations; row reduction about $n^3$."
+3,TOPIC,Transpose and symmetric matrices,"Aᵀ, (AB)ᵀ = BᵀAᵀ, symmetric matrices, AᵀA, dot products as matrix products",MUST,FALSE,"# Transpose and symmetric matrices
+
+## 1. What it covers
+- The **transpose** $A^T$ (rows become columns).
+- Rules: $(A^T)^T = A$, $(A + B)^T = A^T + B^T$, $(AB)^T = B^TA^T$.
+- **Symmetric** matrices ($A^T = A$).
+- The dot product as $\vec{u}^T\vec{v}$; the matrix $A^TA$.
+
+## 2. Where it is used
+- **Statistics and ML:** covariance matrices $\frac{1}{n}X^TX$ (for centred data) are symmetric; the normal equations use $X^TX$.
+- **Graphs:** undirected networks have symmetric adjacency matrices.
+- **Physics:** stress and inertia tensors are symmetric.
+- **Data wrangling:** `df.T` transposes a table.
+
+## 3. What it means
+**Transpose:** flip the matrix over its main diagonal, so row $i$ becomes column $i$. An $m \times n$ matrix becomes $n \times m$.
+
+**$(AB)^T = B^TA^T$:** the order reverses (like the inverse rule).
+
+**Symmetric:** equal to its own transpose; entries mirror across the diagonal ($a_{ij} = a_{ji}$). Symmetric matrices have especially nice properties: real eigenvalues and perpendicular eigenvectors (Phase 5–6).
+
+**$A^TA$ is always symmetric** and square; it appears in least squares and PCA. Its entries are the dot products between the columns of $A$.
+
+## 4. Formula & worked example
+$$
+(A^T)_{ij} = a_{ji} \qquad (AB)^T = B^TA^T \qquad \vec{u} \cdot \vec{v} = \vec{u}^T\vec{v}
+$$
+
+**Example 1.** $\begin{pmatrix} 1 & 2 & 3 \\ 4 & 5 & 6\end{pmatrix}^T = \begin{pmatrix} 1 & 4 \\ 2 & 5 \\ 3 & 6\end{pmatrix}$
+
+**Example 2 (symmetric?).** $\begin{pmatrix} 2 & 7 \\ 7 & 3\end{pmatrix}$ yes; $\begin{pmatrix} 2 & 7 \\ 1 & 3\end{pmatrix}$ no.
+
+**Example 3 ($A^TA$).** $A = \begin{pmatrix} 1 & 2 \\ 3 & 4 \\ 5 & 6\end{pmatrix}$: $A^TA = \begin{pmatrix} 35 & 44 \\ 44 & 56\end{pmatrix}$ (symmetric; $35 = 1 + 9 + 25$ is column 1 · column 1).
+
+**Example 4 (covariance, code).**
+```python
+import numpy as np
+X = np.array([[1.0, 2.0], [2.0, 3.9], [3.0, 6.1], [4.0, 8.0]])   # 4 samples, 2 features
+Xc = X - X.mean(axis=0)                  # centre each column
+cov = Xc.T @ Xc / (len(X) - 1)
+print(cov, np.allclose(cov, np.cov(X, rowvar=False)))   # symmetric, matches np.cov
+```
+Centring and computing $\frac{1}{n-1}X_c^TX_c$ gives the covariance matrix: the diagonal holds each feature's variance, and the off-diagonals the covariances between features. It's symmetric by construction.
+
+## 5. Common mistakes
+- $(AB)^T = A^TB^T$ (order must reverse).
+- Thinking only square matrices have transposes.
+- Confusing $A^TA$ ($n \times n$) with $AA^T$ ($m \times m$).
+
+## 6. Practice
+Q: Transpose of a $3 \times 5$ matrix has what size?
+A: $5 \times 3$.
+
+Q: $(AB)^T$?
+A: $B^TA^T$.
+
+Q: Is $\begin{pmatrix} 1 & 0 \\ 0 & 4\end{pmatrix}$ symmetric?
+A: Yes.
+
+Q: Why is $A^TA$ always symmetric?
+A: $(A^TA)^T = A^T(A^T)^T = A^TA$.
+
+Q: Write $\vec{u} \cdot \vec{v}$ as a matrix product.
+A: $\vec{u}^T\vec{v}$."
+3,TOPIC,Matrix computations with NumPy,"Creating arrays, products, solving, inverse, determinant, rank, eigenvalues, broadcasting, performance",SHOULD,FALSE,"# Matrix computations with NumPy
+
+## 1. What it covers
+- Creating vectors and matrices; shapes and reshaping.
+- Products (`@`), element-wise operations, broadcasting.
+- `np.linalg`: `solve`, `inv`, `det`, `matrix_rank`, `eig`, `norm`, `lstsq`, `svd`.
+- Why vectorised code is much faster than Python loops.
+
+## 2. Where it is used
+- **All of data science and ML:** pandas, scikit-learn, PyTorch and TensorFlow are built on these array operations.
+- **Scientific computing and engineering simulations.**
+- **Image processing:** images as arrays.
+
+## 3. What it means
+NumPy stores numbers in compact arrays and runs operations in optimised C/Fortran (BLAS/LAPACK), often using multiple CPU cores. One `A @ B` on large matrices can be thousands of times faster than nested Python loops.
+
+**Broadcasting:** NumPy stretches smaller arrays to match bigger ones when shapes are compatible, e.g. subtracting a row of column means from every row of a matrix, without writing a loop.
+
+## 4. Formula & worked example
+**Example 1 (core operations).**
+```python
+import numpy as np
+A = np.array([[2., 1.], [1., 3.]])
+b = np.array([3., 5.])
+print(A @ b)                       # matrix-vector product
+print(np.linalg.solve(A, b))       # solve Ax = b  -> [0.8 1.4]
+print(np.linalg.det(A))            # 5.0
+print(np.linalg.inv(A))            # inverse
+print(np.linalg.matrix_rank(A))    # 2
+vals, vecs = np.linalg.eig(A)      # eigenvalues and eigenvectors (Phase 5)
+print(vals)
+```
+Each line maps one-to-one to a concept in this roadmap; keep this as a cheat sheet.
+
+**Example 2 (broadcasting: standardise features).**
+```python
+X = np.random.rand(1000, 3) * [100, 5, 50]     # 1000 samples, 3 features on different scales
+Z = (X - X.mean(axis=0)) / X.std(axis=0)       # subtract column means, divide by column SDs
+print(Z.mean(axis=0).round(6), Z.std(axis=0))  # ~[0 0 0] and [1 1 1]
+```
+`X.mean(axis=0)` has shape (3,), and NumPy broadcasts it across all 1000 rows: no loop needed. This is standard preprocessing before many ML models.
+
+**Example 3 (speed).**
+```python
+import time
+n = 200
+A = np.random.rand(n, n); B = np.random.rand(n, n)
+t = time.time(); C = A @ B; print(""numpy"", time.time() - t)
+t = time.time()
+C2 = [[sum(A[i, k] * B[k, j] for k in range(n)) for j in range(n)] for i in range(n)]
+print(""python loops"", time.time() - t)          # typically 1000x+ slower
+```
+The triple loop does the same $n^3 = 8$ million multiplications as `A @ B`, but in slow Python; NumPy hands the work to optimised libraries.
+
+## 5. Common mistakes
+- Using `*` for matrix multiplication.
+- Shape mismatches: a 1D array of shape `(3,)` vs a column `(3, 1)`.
+- Using `inv` to solve systems instead of `solve`.
+
+## 6. Practice
+Q: NumPy operator for matrix multiplication?
+A: `@` (or `np.matmul`).
+
+Q: Function to solve $A\vec{x} = \vec{b}$?
+A: `np.linalg.solve`.
+
+Q: What does `X.mean(axis=0)` compute for a data matrix?
+A: The mean of each column (feature).
+
+Q: Why is NumPy faster than Python loops?
+A: It runs operations in compiled, optimised libraries on whole arrays at once.
+
+Q: Function for the rank of a matrix?
+A: `np.linalg.matrix_rank`."
+3,TOPIC,Practice & review: Matrices and linear systems,Mixed problem set with worked answers,MUST,FALSE,"# Practice & review: Matrices and linear systems
+
+**How to use this:** 50 minutes by hand, then check with NumPy.
+
+## Problems
+1. $A = \begin{pmatrix} 1 & -1 \\ 2 & 0\end{pmatrix}$, $B = \begin{pmatrix} 3 & 1 \\ 0 & 2\end{pmatrix}$. Compute $AB$, $BA$, $A^T$.
+2. Solve by elimination: $x + 2y - z = 1$, $2x + y + z = 5$, $x - y + 3z = 5$.
+3. Describe the solution set of the system with RREF $\left(\begin{array}{ccc|c} 1 & -2 & 0 & 4 \\ 0 & 0 & 1 & -1 \end{array}\right)$.
+4. Find the inverse of $\begin{pmatrix} 3 & 5 \\ 1 & 2\end{pmatrix}$ and use it to solve $3x + 5y = 2$, $x + 2y = 1$.
+5. $\det\begin{pmatrix} 1 & 2 & 0 \\ 3 & 1 & 4 \\ 0 & 2 & 1\end{pmatrix}$.
+6. $\det A = -2$ for a $3 \times 3$ matrix $A$. Find $\det(A^T)$, $\det(A^2)$, $\det(-A)$, $\det(A^{-1})$.
+7. For which $k$ is $\begin{pmatrix} 2 & k \\ 3 & 6\end{pmatrix}$ not invertible?
+8. Explain why `np.linalg.solve(A, b)` is preferred to `np.linalg.inv(A) @ b`.
+
+## Answers
+1. $AB = \begin{pmatrix} 3 & -1 \\ 6 & 2\end{pmatrix}$; $BA = \begin{pmatrix} 5 & -3 \\ 4 & 0\end{pmatrix}$; $A^T = \begin{pmatrix} 1 & 2 \\ -1 & 0\end{pmatrix}$.
+2. $x = 2$, $y = 0$, $z = 1$.
+3. $y$ free: $x = 4 + 2y$, $z = -1$ → $\vec{x} = (4, 0, -1) + y(2, 1, 0)$, a line.
+4. $\det = 1$; inverse $\begin{pmatrix} 2 & -5 \\ -1 & 3\end{pmatrix}$; $\vec{x} = (2 \cdot 2 - 5,\ -2 + 3) = (-1, 1)$.
+5. $1(1 - 8) - 2(3 - 0) + 0 = -13$.
+6. $-2$; $4$; $(-1)^3(-2) = 2$; $-\frac{1}{2}$.
+7. $12 - 3k = 0$ → $k = 4$.
+8. It's faster (no full inverse needed) and numerically more accurate.
+
+## Flashcards
+Q: Condition for $AB$ to be defined?
+A: Columns of $A$ = rows of $B$.
+
+Q: 2×2 inverse formula?
+A: $\frac{1}{ad - bc}\begin{pmatrix} d & -b \\ -c & a\end{pmatrix}$.
+
+Q: Geometric meaning of the determinant?
+A: The factor by which the transformation scales area/volume (sign = orientation).
+
+Q: How do you spot infinitely many solutions in RREF?
+A: A consistent system with at least one free variable."
+1,MODULE,Phase 3 — Vector Spaces (Core),"Span, linear independence, subspaces, basis and dimension, null space and column space, rank and rank–nullity",MUST,,"# Phase 3: Vector spaces
+
+This phase gives you the vocabulary to describe **what a set of vectors can reach** (span), **whether any of them are redundant** (independence), and **how many truly different directions exist** (dimension). These ideas explain when systems have solutions, why some data features are redundant, and how dimensionality reduction works."
+2,MODULE,"Span, independence and subspaces","Span, linear independence, subspaces, basis, dimension, null and column spaces, rank",MUST,,Think of vectors as directions you're allowed to travel in; span is everywhere you can get.
+3,TOPIC,Linear combinations and span,"What a set of vectors can reach; span as a line, plane or all of space; testing membership",MUST,FALSE,"# Linear combinations and span
+
+## 1. What it covers
+- The **span** of a set of vectors: all their linear combinations.
+- Geometric pictures: a line, a plane, or all of $\mathbb{R}^n$.
+- Testing whether a vector is in a span (solving a system).
+- The link: $A\vec{x} = \vec{b}$ has a solution ⇔ $\vec{b}$ is in the span of $A$'s columns.
+
+## 2. Where it is used
+- **Solvability of systems:** whether a target can be reached by combining available ""ingredients"".
+- **Colour mixing:** which colours a set of primary lights can make.
+- **Signal processing:** which signals can be built from a set of basis waves.
+- **ML:** the outputs a linear model can produce lie in the span of its features.
+
+## 3. What it means
+Imagine you can walk any amount (forwards or backwards) along a set of direction vectors and combine the walks. The **span** is every point you can reach.
+- Span of one non-zero vector: a **line** through the origin.
+- Span of two non-parallel vectors in 3D: a **plane** through the origin.
+- Span of three vectors in 3D not in one plane: **all of 3D space**.
+
+If one vector is a combination of the others, it adds nothing new to the span.
+
+**Membership test:** $\vec{b}$ is in $\text{span}\{\vec{v}_1, \ldots, \vec{v}_k\}$ if the system $c_1\vec{v}_1 + \cdots + c_k\vec{v}_k = \vec{b}$ has a solution.
+
+## 4. Formula & worked example
+$$
+\text{span}\{\vec{v}_1, \ldots, \vec{v}_k\} = \{c_1\vec{v}_1 + \cdots + c_k\vec{v}_k : c_i \in \mathbb{R}\}
+$$
+
+**Example 1.** $\text{span}\{\langle 1, 2\rangle\}$ is the line $y = 2x$.
+
+**Example 2.** $\text{span}\{\langle 1, 0\rangle, \langle 0, 1\rangle\} = \mathbb{R}^2$; so is $\text{span}\{\langle 1, 1\rangle, \langle 1, -1\rangle\}$.
+
+**Example 3.** $\text{span}\{\langle 1, 2\rangle, \langle 2, 4\rangle\}$ is just the line $y = 2x$ (the second vector is redundant).
+
+**Example 4 (membership).** Is $\langle 4, 1, 7\rangle$ in $\text{span}\{\langle 1, 0, 1\rangle, \langle 1, 1, 3\rangle\}$?
+- $c_1 + c_2 = 4$, $c_2 = 1$, $c_1 + 3c_2 = 7$ → $c_1 = 3$, $c_2 = 1$ → check the third: $3 + 3 = 6 \ne 7$ → **no**.
+
+**Example 5 (code).**
+```python
+import numpy as np
+V = np.array([[1, 1], [0, 1], [1, 3]], dtype=float)   # columns are the spanning vectors
+b = np.array([4, 1, 7.])
+c, res, rank, _ = np.linalg.lstsq(V, b, rcond=None)
+print(c, np.allclose(V @ c, b))     # best combination, False -> b is not in the span
+```
+`lstsq` finds the best combination of the columns; if even the best one doesn't reproduce `b` exactly, `b` is outside the span. (Least squares is explained in Phase 6.)
+
+## 5. Common mistakes
+- Thinking two vectors always span a plane (not if they're parallel).
+- Forgetting that every span contains the zero vector.
+- Checking only some equations in the membership test.
+
+## 6. Practice
+Q: What is the span of $\langle 0, 0\rangle$?
+A: Just the zero vector.
+
+Q: Do $\langle 1, 2\rangle$ and $\langle 3, 1\rangle$ span $\mathbb{R}^2$?
+A: Yes (not parallel).
+
+Q: Is $\langle 3, 6\rangle$ in $\text{span}\{\langle 1, 2\rangle\}$?
+A: Yes, $3\langle 1, 2\rangle$.
+
+Q: Can two vectors span $\mathbb{R}^3$?
+A: No, at most a plane.
+
+Q: $A\vec{x} = \vec{b}$ has a solution exactly when ...?
+A: $\vec{b}$ is in the span of the columns of $A$."
+3,TOPIC,Linear independence,"Definition, testing with row reduction or determinants, redundancy, geometric meaning",MUST,FALSE,"# Linear independence
+
+## 1. What it covers
+- **Linearly independent** vs **dependent** sets.
+- Testing: solve $c_1\vec{v}_1 + \cdots + c_k\vec{v}_k = \vec{0}$; use row reduction or the determinant.
+- Facts: more than $n$ vectors in $\mathbb{R}^n$ are always dependent; a set containing $\vec{0}$ is dependent.
+
+## 2. Where it is used
+- **Data science:** perfectly correlated (dependent) features cause **multicollinearity**: regression coefficients become unstable or undefined. Dropping redundant columns fixes it (e.g. dummy-variable trap in one-hot encoding).
+- **Engineering:** independent equations are needed to determine all unknowns.
+- **Signal processing and coding theory:** independent signals/codewords carry separate information.
+
+## 3. What it means
+A set of vectors is **independent** if none of them can be built from the others: each adds a genuinely new direction. It's **dependent** if at least one is redundant (a combination of the others).
+
+**Test:** the only way to combine them into $\vec{0}$ should be with all coefficients zero. If some non-zero combination gives $\vec{0}$, one vector can be solved for in terms of the others → dependent.
+
+For $n$ vectors in $\mathbb{R}^n$: put them as columns of a square matrix; independent ⇔ $\det \ne 0$.
+
+## 4. Formula & worked example
+$$
+c_1\vec{v}_1 + \cdots + c_k\vec{v}_k = \vec{0} \text{ only for } c_1 = \cdots = c_k = 0 \iff \text{independent}
+$$
+
+**Example 1.** $\langle 1, 2\rangle$ and $\langle 2, 4\rangle$: $2\vec{v}_1 - \vec{v}_2 = \vec{0}$ → dependent.
+
+**Example 2.** $\langle 1, 0, 0\rangle$, $\langle 1, 1, 0\rangle$, $\langle 1, 1, 1\rangle$: $\det = 1 \ne 0$ → independent.
+
+**Example 3.** $\langle 1, 2, 3\rangle$, $\langle 4, 5, 6\rangle$, $\langle 7, 8, 9\rangle$: $\det = 0$ → dependent (indeed $\vec{v}_3 = 2\vec{v}_2 - \vec{v}_1$).
+
+**Example 4.** Any 4 vectors in $\mathbb{R}^3$ are dependent (only 3 independent directions exist).
+
+**Example 5 (dummy-variable trap, code).**
+```python
+import numpy as np
+# columns: intercept, is_dhaka, is_khulna, is_other (every row has exactly one city = 1)
+X = np.array([[1, 1, 0, 0], [1, 0, 1, 0], [1, 0, 0, 1], [1, 1, 0, 0]])
+print(np.linalg.matrix_rank(X))     # 3, not 4 -> columns are dependent
+```
+The three city columns always add up to the intercept column, so one is redundant. That's why `pd.get_dummies(..., drop_first=True)` drops one category.
+
+## 5. Common mistakes
+- Thinking ""not parallel"" is enough for three or more vectors (three vectors can be pairwise non-parallel yet lie in one plane).
+- Using the determinant test on a non-square set.
+- Forgetting that a set containing $\vec{0}$ is automatically dependent.
+
+## 6. Practice
+Q: Define linear independence.
+A: No vector in the set is a linear combination of the others.
+
+Q: Are $\langle 1, 3\rangle$ and $\langle -2, -6\rangle$ independent?
+A: No.
+
+Q: Are 5 vectors in $\mathbb{R}^4$ independent?
+A: No, they must be dependent.
+
+Q: Test for 3 vectors in $\mathbb{R}^3$?
+A: The determinant of the matrix with them as columns is non-zero.
+
+Q: Why do dependent features cause problems in regression?
+A: The coefficients aren't uniquely determined ($X^TX$ isn't invertible)."
+3,TOPIC,Subspaces,"Definition (contains 0, closed under addition and scaling), examples and non-examples",MUST,FALSE,"# Subspaces
+
+## 1. What it covers
+- A **subspace** of $\mathbb{R}^n$: a set that contains $\vec{0}$ and is closed under addition and scalar multiplication.
+- Examples: lines and planes through the origin, spans, solution sets of $A\vec{x} = \vec{0}$.
+- Non-examples: lines not through the origin, the first quadrant.
+
+## 2. Where it is used
+- **Solutions of homogeneous systems** (null spaces) are subspaces.
+- **Dimensionality reduction:** PCA finds a low-dimensional subspace that captures data well.
+- **Signal processing:** filters keep signals in certain subspaces (frequency bands).
+- **Error-correcting codes:** linear codes are subspaces.
+
+## 3. What it means
+A subspace is a ""flat"" piece of space through the origin that you can't escape by adding or scaling: a self-contained world for vectors.
+
+**Three checks:**
+1. Contains the zero vector.
+2. Closed under addition: if $\vec{u}$ and $\vec{v}$ are in it, so is $\vec{u} + \vec{v}$.
+3. Closed under scaling: if $\vec{u}$ is in it, so is $c\vec{u}$.
+
+In $\mathbb{R}^3$, the subspaces are: $\{\vec{0}\}$, lines through the origin, planes through the origin, and $\mathbb{R}^3$ itself.
+
+**Any span is a subspace**, and every subspace is the span of some vectors.
+
+## 4. Formula & worked example
+**Example 1.** The plane $x + 2y - z = 0$ in $\mathbb{R}^3$: contains $\vec{0}$ ✓; if two vectors satisfy it, so does their sum and any multiple ✓ → subspace.
+
+**Example 2 (not).** The plane $x + 2y - z = 5$: doesn't contain $\vec{0}$ → not a subspace.
+
+**Example 3 (not).** The first quadrant $\{(x, y) : x \ge 0, y \ge 0\}$: $(1, 1)$ is in it but $-1 \cdot (1, 1)$ isn't → not closed under scaling.
+
+**Example 4 (not).** The union of the x-axis and y-axis: $(1, 0) + (0, 1) = (1, 1)$ is in neither axis → not closed under addition.
+
+**Example 5.** The solution set of $A\vec{x} = \vec{0}$ is always a subspace (the **null space**, next topics).
+
+## 5. Common mistakes
+- Forgetting the zero-vector check (fastest way to rule a set out).
+- Thinking any line or plane is a subspace (only those through the origin).
+- Checking closure with one example instead of in general.
+
+## 6. Practice
+Q: Three conditions for a subspace?
+A: Contains $\vec{0}$; closed under addition; closed under scalar multiplication.
+
+Q: Is the line $y = 3x + 1$ a subspace of $\mathbb{R}^2$?
+A: No, it doesn't contain the origin.
+
+Q: Is $\{(x, y, z) : z = 0\}$ a subspace of $\mathbb{R}^3$?
+A: Yes (the xy-plane).
+
+Q: Is the set of vectors with integer entries a subspace?
+A: No, scaling by $0.5$ can leave it.
+
+Q: List all types of subspaces of $\mathbb{R}^2$.
+A: $\{\vec{0}\}$, lines through the origin, and $\mathbb{R}^2$."
+3,TOPIC,Basis and dimension,"Minimal spanning sets, standard basis, coordinates, dimension of a subspace",MUST,FALSE,"# Basis and dimension
+
+## 1. What it covers
+- A **basis**: a set that spans the space and is linearly independent.
+- The **standard basis** $\vec{e}_1, \ldots, \vec{e}_n$.
+- Every basis of a space has the same number of vectors: the **dimension**.
+- **Coordinates** relative to a basis.
+
+## 2. Where it is used
+- **Data compression:** JPEG represents image blocks in a cosine basis and keeps only the important coordinates.
+- **Embeddings:** word vectors have a fixed dimension (e.g. 768).
+- **Physics and graphics:** choosing convenient coordinate axes.
+- **Feature engineering:** the number of truly independent features is the dimension of their span.
+
+## 3. What it means
+A **basis** is a minimal set of building blocks: enough vectors to reach everything (spanning) and no redundant ones (independent). Every vector in the space can then be written in **exactly one** way as a combination of basis vectors; those weights are its **coordinates**.
+
+A space can have many bases (like describing a location with different sets of directions), but they always have the same number of vectors: the **dimension**. $\mathbb{R}^n$ has dimension $n$; a plane through the origin has dimension 2.
+
+**Shortcut:** in an $n$-dimensional space, any $n$ independent vectors automatically form a basis.
+
+## 4. Formula & worked example
+$$
+\vec{v} = c_1\vec{b}_1 + \cdots + c_n\vec{b}_n \quad (\text{unique } c_i) \qquad \dim\mathbb{R}^n = n
+$$
+
+**Example 1.** Standard basis of $\mathbb{R}^3$: $\langle 1, 0, 0\rangle$, $\langle 0, 1, 0\rangle$, $\langle 0, 0, 1\rangle$. The coordinates of $\langle 4, -2, 7\rangle$ are just its entries.
+
+**Example 2.** Is $\{\langle 1, 1\rangle, \langle 1, -1\rangle\}$ a basis of $\mathbb{R}^2$? Two independent vectors in a 2-dimensional space → yes.
+
+**Example 3 (coordinates).** Write $\langle 5, 1\rangle$ in that basis: $c_1 + c_2 = 5$, $c_1 - c_2 = 1$ → $c_1 = 3$, $c_2 = 2$.
+
+**Example 4 (basis of a plane).** The plane $x + y + z = 0$: $z = -x - y$, so vectors are $x\langle 1, 0, -1\rangle + y\langle 0, 1, -1\rangle$ → basis $\{\langle 1, 0, -1\rangle, \langle 0, 1, -1\rangle\}$, dimension 2.
+
+**Example 5.** Can $\{\langle 1, 2, 3\rangle, \langle 4, 5, 6\rangle\}$ be a basis of $\mathbb{R}^3$? No: only 2 vectors (they span a plane at most).
+
+## 5. Common mistakes
+- Calling a spanning set with redundant vectors a basis.
+- Thinking a space has only one basis.
+- Confusing the dimension of a subspace with the number of components of its vectors (a plane in $\mathbb{R}^3$ has dimension 2).
+
+## 6. Practice
+Q: Two properties of a basis?
+A: It spans the space and is linearly independent.
+
+Q: Dimension of a line through the origin in $\mathbb{R}^5$?
+A: $1$.
+
+Q: Do $\langle 2, 0\rangle$ and $\langle 3, 1\rangle$ form a basis of $\mathbb{R}^2$?
+A: Yes.
+
+Q: Coordinates of $\langle 2, 4\rangle$ in the basis $\{\langle 1, 1\rangle, \langle 0, 1\rangle\}$?
+A: $c_1 = 2$, $c_2 = 2$.
+
+Q: How many vectors are in every basis of $\mathbb{R}^4$?
+A: $4$."
+3,TOPIC,Null space and column space,"The column space (reachable outputs) and null space (inputs sent to 0), finding bases for each",MUST,FALSE,"# Null space and column space
+
+## 1. What it covers
+- The **column space** $\text{Col}(A)$: all vectors $A\vec{x}$ (the span of the columns).
+- The **null space** $\text{Nul}(A)$: all solutions of $A\vec{x} = \vec{0}$.
+- Finding bases for both from the RREF.
+- What they say about solving $A\vec{x} = \vec{b}$.
+
+## 2. Where it is used
+- **Solving systems:** $A\vec{x} = \vec{b}$ is solvable iff $\vec{b} \in \text{Col}(A)$; solutions are unique iff $\text{Nul}(A) = \{\vec{0}\}$.
+- **Data science:** null-space directions are combinations of features that don't affect predictions (redundancy).
+- **Robotics:** null-space motions move a redundant robot arm's joints without moving its hand.
+- **Network flows and circuits:** null spaces describe balanced flows (Kirchhoff's laws).
+
+## 3. What it means
+Think of $A$ as a machine that turns inputs $\vec{x}$ into outputs $A\vec{x}$.
+- **Column space:** the set of all possible **outputs**. If $\vec{b}$ isn't in it, $A\vec{x} = \vec{b}$ has no solution.
+- **Null space:** the set of inputs the machine sends to **zero**. If it contains non-zero vectors, different inputs give the same output (adding a null-space vector to a solution gives another solution).
+
+**Finding bases:**
+- Column space: the **pivot columns of the original $A$** (as found from the RREF).
+- Null space: solve $A\vec{x} = \vec{0}$ in parametric form; the vectors multiplying the free variables form a basis.
+
+## 4. Formula & worked example
+$$
+\text{Col}(A) = \{A\vec{x}\} \qquad \text{Nul}(A) = \{\vec{x} : A\vec{x} = \vec{0}\}
+$$
+
+**Example.** $A = \begin{pmatrix} 1 & 2 & 3 \\ 2 & 4 & 7\end{pmatrix}$, RREF $\begin{pmatrix} 1 & 2 & 0 \\ 0 & 0 & 1\end{pmatrix}$.
+- Pivots in columns 1 and 3 → basis of $\text{Col}(A)$: $\langle 1, 2\rangle$, $\langle 3, 7\rangle$ (from the **original** $A$). These span $\mathbb{R}^2$, so every $\vec{b}$ is reachable.
+- Null space: $x_1 = -2x_2$, $x_3 = 0$, $x_2$ free → basis $\langle -2, 1, 0\rangle$ (dimension 1).
+- Meaning: $A\langle -2, 1, 0\rangle = \vec{0}$, so if $\vec{x}$ solves $A\vec{x} = \vec{b}$, so does $\vec{x} + t\langle -2, 1, 0\rangle$.
+
+**Code.**
+```python
+import numpy as np, sympy as sp
+A = sp.Matrix([[1, 2, 3], [2, 4, 7]])
+print(A.columnspace())     # [Matrix([1, 2]), Matrix([3, 7])]
+print(A.nullspace())       # [Matrix([-2, 1, 0])]
+from scipy.linalg import null_space
+print(null_space(np.array([[1, 2, 3], [2, 4, 7]], dtype=float)))   # unit-length version
+```
+SymPy gives exact bases; SciPy's `null_space` returns an orthonormal basis numerically (a scaled version of $\langle -2, 1, 0\rangle$).
+
+## 5. Common mistakes
+- Using the pivot columns of the RREF instead of the original matrix for the column space.
+- Mixing up which space lives where: $\text{Col}(A) \subseteq \mathbb{R}^m$ (outputs), $\text{Nul}(A) \subseteq \mathbb{R}^n$ (inputs) for an $m \times n$ matrix.
+- Forgetting that $\vec{0}$ is always in the null space.
+
+## 6. Practice
+Q: What is the column space of $A$?
+A: The span of its columns: all possible outputs $A\vec{x}$.
+
+Q: What is the null space of $A$?
+A: All $\vec{x}$ with $A\vec{x} = \vec{0}$.
+
+Q: If $\text{Nul}(A) = \{\vec{0}\}$, what about solutions of $A\vec{x} = \vec{b}$?
+A: There's at most one solution.
+
+Q: Null space of $\begin{pmatrix} 1 & 1\end{pmatrix}$?
+A: Span of $\langle -1, 1\rangle$.
+
+Q: For a $3 \times 5$ matrix, where do the null space and column space live?
+A: Null space in $\mathbb{R}^5$; column space in $\mathbb{R}^3$."
+3,TOPIC,Rank and the rank–nullity theorem,"Rank as number of pivots, rank + nullity = number of columns, full rank, invertible matrix theorem",MUST,FALSE,"# Rank and the rank–nullity theorem
+
+## 1. What it covers
+- **Rank** = number of pivots = dimension of the column space.
+- **Nullity** = dimension of the null space.
+- **Rank–nullity theorem**: rank + nullity = number of columns.
+- Full rank, and the **invertible matrix theorem** (many equivalent conditions).
+
+## 2. Where it is used
+- **ML and statistics:** a data matrix with rank less than its number of columns has redundant features.
+- **Low-rank approximation:** recommender systems (Netflix-style) model the huge user × movie rating matrix as approximately low-rank.
+- **Image compression:** keep a low-rank approximation of an image (SVD, Phase 6).
+- **Control engineering:** rank tests for controllability.
+
+## 3. What it means
+**Rank** counts the truly independent directions among the columns (equivalently, among the rows): how many dimensions the outputs really fill.
+
+**Rank–nullity:** every column (input dimension) either contributes a new output direction (a pivot) or becomes a free variable (a null-space direction). So
+$$
+\text{rank} + \text{nullity} = n \ (\text{number of columns})
+$$
+Input dimensions are either ""kept"" or ""squashed"".
+
+**Invertible matrix theorem** (for square $n \times n$ $A$): all of these are equivalent:
+$A$ is invertible ⇔ $\det A \ne 0$ ⇔ rank $= n$ ⇔ nullity $= 0$ ⇔ columns are independent ⇔ columns span $\mathbb{R}^n$ ⇔ $A\vec{x} = \vec{b}$ has exactly one solution for every $\vec{b}$.
+
+## 4. Formula & worked example
+$$
+\text{rank}(A) + \text{nullity}(A) = n \qquad \text{rank}(A) = \text{rank}(A^T)
+$$
+
+**Example 1.** The previous topic's $A$ ($2 \times 3$): 2 pivots → rank 2, nullity $3 - 2 = 1$ ✓
+
+**Example 2.** A $5 \times 8$ matrix with rank 5: nullity $= 3$; columns span $\mathbb{R}^5$, so every $A\vec{x} = \vec{b}$ is solvable, with infinitely many solutions.
+
+**Example 3.** A $4 \times 4$ matrix with rank 3: not invertible; nullity 1; $\det = 0$.
+
+**Example 4 (low-rank image, code).**
+```python
+import numpy as np
+img = np.outer(np.linspace(0, 1, 100), np.linspace(1, 2, 80))   # a smooth 100x80 ""image""
+print(np.linalg.matrix_rank(img))    # 1: every row is a multiple of one row
+```
+An outer product of two vectors has rank 1: the whole 8000-pixel image is described by 180 numbers. Real images aren't exactly low-rank, but they're close, which is why SVD compression works.
+
+## 5. Common mistakes
+- Thinking rank can exceed the number of rows or columns (rank ≤ min(m, n)).
+- Applying rank–nullity with the number of rows instead of columns.
+- Calling a non-square matrix invertible.
+
+## 6. Practice
+Q: Define the rank of a matrix.
+A: The number of pivots: the dimension of its column space.
+
+Q: A $3 \times 7$ matrix has rank 3. Nullity?
+A: $4$.
+
+Q: Maximum possible rank of a $6 \times 4$ matrix?
+A: $4$.
+
+Q: A square matrix has nullity 0. Is it invertible?
+A: Yes.
+
+Q: Is $\text{rank}(A) = \text{rank}(A^T)$?
+A: Yes (row rank equals column rank)."
+3,TOPIC,Practice & review: Vector spaces,Mixed problem set with worked answers,MUST,FALSE,"# Practice & review: Vector spaces
+
+**How to use this:** 40 minutes. Check with SymPy (`rref`, `nullspace`, `columnspace`, `rank`).
+
+## Problems
+1. Is $\langle 1, 5, 3\rangle$ in the span of $\langle 1, 1, 1\rangle$ and $\langle 0, 2, 1\rangle$?
+2. Are $\langle 1, 2, 0\rangle$, $\langle 0, 1, 1\rangle$, $\langle 1, 0, -2\rangle$ independent?
+3. Is $\{(x, y) : xy = 0\}$ a subspace of $\mathbb{R}^2$?
+4. Find a basis and the dimension of the plane $2x - y + 3z = 0$.
+5. For $A = \begin{pmatrix} 1 & 2 & 1 & 0 \\ 2 & 4 & 3 & 1 \\ 1 & 2 & 2 & 1\end{pmatrix}$ (RREF $\begin{pmatrix} 1 & 2 & 0 & -1 \\ 0 & 0 & 1 & 1 \\ 0 & 0 & 0 & 0\end{pmatrix}$), find rank, nullity, a basis for $\text{Col}(A)$ and $\text{Nul}(A)$.
+6. A $7 \times 10$ matrix has a null space of dimension 4. What is its rank? Do its columns span $\mathbb{R}^7$?
+7. Give three conditions equivalent to ""the $3 \times 3$ matrix $A$ is invertible"".
+
+## Answers
+1. $c_1 = 1$; $c_1 + 2c_2 = 5$ → $c_2 = 2$; check: $c_1 + c_2 = 3$ ✓ → yes.
+2. $\det\begin{pmatrix} 1 & 0 & 1 \\ 2 & 1 & 0 \\ 0 & 1 & -2\end{pmatrix} = 1(-2 - 0) - 0 + 1(2 - 0) = 0$ → dependent (indeed $\vec{v}_3 = \vec{v}_1 - 2\vec{v}_2$).
+3. No: $(1, 0) + (0, 1) = (1, 1)$ has $xy = 1 \ne 0$.
+4. $y = 2x + 3z$: $x\langle 1, 2, 0\rangle + z\langle 0, 3, 1\rangle$ → basis $\{\langle 1, 2, 0\rangle, \langle 0, 3, 1\rangle\}$, dimension 2.
+5. Rank 2, nullity 2. Col basis: columns 1 and 3 of $A$: $\langle 1, 2, 1\rangle$, $\langle 1, 3, 2\rangle$. Null: $x_1 = -2x_2 + x_4$, $x_3 = -x_4$ → basis $\langle -2, 1, 0, 0\rangle$, $\langle 1, 0, -1, 1\rangle$.
+6. Rank $= 10 - 4 = 6 < 7$ → the columns don't span $\mathbb{R}^7$.
+7. Any three of: $\det A \ne 0$; rank 3; null space $\{\vec{0}\}$; columns independent; columns span $\mathbb{R}^3$; $A\vec{x} = \vec{b}$ always has a unique solution.
+
+## Flashcards
+Q: Span?
+A: The set of all linear combinations of the vectors.
+
+Q: Basis?
+A: An independent spanning set.
+
+Q: Rank–nullity theorem?
+A: rank + nullity = number of columns.
+
+Q: Column space basis from RREF?
+A: The pivot columns of the original matrix."
+1,MODULE,Phase 4 — Linear Transformations (Core),"Linear maps, matrices of transformations, 2D/3D geometric transformations, composition and inverses, change of basis",MUST,,"# Phase 4: Linear transformations
+
+A matrix is not just a table: it's a **function that moves vectors**, stretching, rotating, reflecting and shearing space while keeping lines straight and the origin fixed. This viewpoint explains matrix multiplication, determinants and eigenvectors, and it's exactly how graphics engines and game engines position everything on screen."
+2,MODULE,Transformations and coordinates,"Linear transformations, standard matrices, geometric transformations, composition, change of basis",MUST,,"Every linear transformation is a matrix, and every matrix is a linear transformation."
+3,TOPIC,Linear transformations and their matrices,"Definition, linearity properties, the standard matrix from images of basis vectors",MUST,FALSE,"# Linear transformations and their matrices
+
+## 1. What it covers
+- A **linear transformation** $T$: $T(\vec{u} + \vec{v}) = T(\vec{u}) + T(\vec{v})$ and $T(c\vec{u}) = cT(\vec{u})$.
+- Every linear transformation $\mathbb{R}^n \to \mathbb{R}^m$ is $T(\vec{x}) = A\vec{x}$.
+- Finding $A$: its columns are where the basis vectors go.
+- Examples and non-examples.
+
+## 2. Where it is used
+- **Graphics:** every rotation, scale and shear of a model is a linear transformation (translation is handled with a trick; next topic).
+- **ML:** each dense neural-network layer applies a linear transformation (followed by a non-linear activation).
+- **Signal processing:** filters and the Fourier transform are linear.
+- **Physics:** many laws are linear (Hooke's law, linear circuits).
+
+## 3. What it means
+A transformation is **linear** if it respects addition and scaling. Geometrically: grid lines stay straight, parallel and evenly spaced, and the origin stays put.
+
+**Key insight:** a linear transformation is completely determined by what it does to the basis vectors $\vec{e}_1 = \langle 1, 0\rangle$ and $\vec{e}_2 = \langle 0, 1\rangle$. Every vector is $x\vec{e}_1 + y\vec{e}_2$, so by linearity $T(\vec{x}) = xT(\vec{e}_1) + yT(\vec{e}_2)$. Therefore:
+
+**The columns of $A$ are $T(\vec{e}_1), T(\vec{e}_2), \ldots$**
+
+## 4. Formula & worked example
+$$
+A = \big[\,T(\vec{e}_1)\ \ T(\vec{e}_2)\ \cdots\ T(\vec{e}_n)\,\big]
+$$
+
+**Example 1.** $T$ doubles x and triples y: $T(\vec{e}_1) = \langle 2, 0\rangle$, $T(\vec{e}_2) = \langle 0, 3\rangle$ → $A = \begin{pmatrix} 2 & 0 \\ 0 & 3\end{pmatrix}$.
+
+**Example 2.** $T$ sends $\vec{e}_1 \to \langle 1, 1\rangle$ and $\vec{e}_2 \to \langle -1, 2\rangle$. $T\langle 3, 2\rangle = 3\langle 1, 1\rangle + 2\langle -1, 2\rangle = \langle 1, 7\rangle$.
+
+**Example 3 (not linear).** $T(x, y) = (x + 1, y)$: $T(\vec{0}) = (1, 0) \ne \vec{0}$ → not linear (a translation).
+
+**Example 4 (not linear).** $T(x, y) = (x^2, y)$: $T(2\vec{e}_1) = (4, 0) \ne 2T(\vec{e}_1) = (2, 0)$ → not linear.
+
+**Example 5 (projection is linear).** Projection onto the x-axis: $\vec{e}_1 \to \langle 1, 0\rangle$, $\vec{e}_2 \to \langle 0, 0\rangle$ → $\begin{pmatrix} 1 & 0 \\ 0 & 0\end{pmatrix}$.
+
+## 5. Common mistakes
+- Calling translations linear (they move the origin).
+- Writing the images of basis vectors as **rows** instead of columns.
+- Assuming any formula with $x$ and $y$ is linear (powers, products and constants break linearity).
+
+## 6. Practice
+Q: Two properties of a linear transformation?
+A: $T(\vec{u} + \vec{v}) = T\vec{u} + T\vec{v}$ and $T(c\vec{u}) = cT\vec{u}$.
+
+Q: How do you find the matrix of a linear transformation?
+A: Its columns are the images of the standard basis vectors.
+
+Q: Is $T(x, y) = (2x - y, 3y)$ linear? Matrix?
+A: Yes; $\begin{pmatrix} 2 & -1 \\ 0 & 3\end{pmatrix}$.
+
+Q: Is $T(x, y) = (xy, x)$ linear?
+A: No.
+
+Q: Must a linear transformation send $\vec{0}$ to $\vec{0}$?
+A: Yes."
+3,TOPIC,Geometric transformations in 2D and 3D,"Rotation, reflection, scaling, shear, projection matrices; homogeneous coordinates for translation",MUST,FALSE,"# Geometric transformations in 2D and 3D
+
+## 1. What it covers
+- Standard matrices for **rotation**, **reflection**, **scaling**, **shear** and **projection**.
+- What each does to areas (determinant).
+- **Homogeneous coordinates**: handling translation with a $3 \times 3$ (2D) or $4 \times 4$ (3D) matrix.
+- 3D rotations about the axes.
+
+## 2. Where it is used
+- **Game engines and graphics APIs** (OpenGL, WebGL, Unity, three.js): model, view and projection matrices are $4 \times 4$ matrices in homogeneous coordinates.
+- **CSS:** `transform: matrix(a, b, c, d, e, f)` is a 2D affine matrix.
+- **Image processing:** rotating, scaling and deskewing images.
+- **Robotics:** transforming between coordinate frames.
+
+## 3. What it means
+Using ""columns = images of basis vectors"":
+- **Rotation by $\theta$:** $\vec{e}_1 \to (\cos\theta, \sin\theta)$, $\vec{e}_2 \to (-\sin\theta, \cos\theta)$. Determinant 1 (areas preserved).
+- **Scaling** by $s_x, s_y$: diagonal matrix; determinant $s_xs_y$.
+- **Reflection** in the x-axis: $\vec{e}_2 \to -\vec{e}_2$; determinant $-1$.
+- **Shear** (horizontal): $\vec{e}_2 \to (k, 1)$; slants shapes, determinant 1.
+
+**Translation isn't linear**, but there's a trick: add a third coordinate equal to 1, writing $(x, y)$ as $(x, y, 1)$. Then translation by $(t_x, t_y)$ becomes a matrix multiplication, so rotations, scales and translations can all be combined into **one** matrix.
+
+## 4. Formula & worked example
+$$
+R_\theta = \begin{pmatrix} \cos\theta & -\sin\theta \\ \sin\theta & \cos\theta\end{pmatrix} \quad S = \begin{pmatrix} s_x & 0 \\ 0 & s_y\end{pmatrix} \quad H = \begin{pmatrix} 1 & k \\ 0 & 1\end{pmatrix} \quad T = \begin{pmatrix} 1 & 0 & t_x \\ 0 & 1 & t_y \\ 0 & 0 & 1\end{pmatrix}
+$$
+
+**Example 1.** Rotate $\langle 3, 1\rangle$ by $90^\circ$: $R_{90} = \begin{pmatrix} 0 & -1 \\ 1 & 0\end{pmatrix}$ → $\langle -1, 3\rangle$.
+
+**Example 2.** Reflection in $y = x$: $\vec{e}_1 \to \vec{e}_2$, $\vec{e}_2 \to \vec{e}_1$ → $\begin{pmatrix} 0 & 1 \\ 1 & 0\end{pmatrix}$.
+
+**Example 3 (shear).** $H$ with $k = 0.5$ sends the unit square's corner $(1, 1)$ to $(1.5, 1)$: the square becomes a parallelogram of the same area.
+
+**Example 4 (homogeneous).** Translate $(2, 3)$ by $(5, -1)$: $\begin{pmatrix} 1 & 0 & 5 \\ 0 & 1 & -1 \\ 0 & 0 & 1\end{pmatrix}\begin{pmatrix} 2 \\ 3 \\ 1\end{pmatrix} = \begin{pmatrix} 7 \\ 2 \\ 1\end{pmatrix}$ → $(7, 2)$.
+
+**Example 5 (code: rotate a sprite about its centre).**
+```python
+import numpy as np
+def T(tx, ty): return np.array([[1, 0, tx], [0, 1, ty], [0, 0, 1]])
+def R(deg):
+    t = np.radians(deg); c, s = np.cos(t), np.sin(t)
+    return np.array([[c, -s, 0], [s, c, 0], [0, 0, 1]])
+center = (5, 5)
+M = T(*center) @ R(90) @ T(-center[0], -center[1])   # move to origin, rotate, move back
+corner = np.array([6, 5, 1])
+print((M @ corner).round(6))                          # [5. 6. 1.]
+```
+Reading right to left: translate the centre to the origin, rotate, translate back. Multiplying the three matrices gives one matrix `M` that does everything; a game applies such a matrix to every vertex.
+
+## 5. Common mistakes
+- Rotating clockwise with the standard matrix (positive $\theta$ is anticlockwise; screen coordinates with y pointing down flip this).
+- Forgetting the 1 in homogeneous coordinates.
+- Reading a matrix product in the wrong order (the rightmost matrix acts first).
+
+## 6. Practice
+Q: Matrix for rotation by $180^\circ$?
+A: $\begin{pmatrix} -1 & 0 \\ 0 & -1\end{pmatrix}$.
+
+Q: Matrix for reflection in the y-axis?
+A: $\begin{pmatrix} -1 & 0 \\ 0 & 1\end{pmatrix}$.
+
+Q: Determinant of any rotation matrix?
+A: $1$.
+
+Q: Why are homogeneous coordinates used in graphics?
+A: They let translations be written as matrix multiplications, so all transformations combine into one matrix.
+
+Q: In $M = ABC$ applied to $\vec{x}$, which acts first?
+A: $C$."
+3,TOPIC,"Composition, inverses and matrix products as transformations","Composing transformations, why order matters, inverse transformations, determinants of products",MUST,FALSE,"# Composition, inverses and matrix products as transformations
+
+## 1. What it covers
+- **Composing** transformations = multiplying their matrices.
+- Why $AB \ne BA$ geometrically.
+- **Inverse** transformations = inverse matrices.
+- Determinants multiply under composition.
+
+## 2. Where it is used
+- **Graphics pipelines:** a vertex is transformed by projection × view × model matrices.
+- **Robotics:** forward kinematics multiplies joint transformation matrices along the arm.
+- **Animation rigs:** parent–child bone transforms.
+- **Neural networks:** stacking linear layers without activations collapses into a single matrix, which is why non-linear activations are needed.
+
+## 3. What it means
+Applying $B$ then $A$ to $\vec{x}$ gives $A(B\vec{x}) = (AB)\vec{x}$: the product $AB$ is the combined transformation, with the **rightmost acting first**.
+
+**Order matters:** rotate 90° then reflect in the x-axis gives a different result from reflecting then rotating. Matrix multiplication mirrors this.
+
+**Inverse:** $A^{-1}$ undoes $A$. A rotation's inverse rotates back ($R_\theta^{-1} = R_{-\theta} = R_\theta^T$); a scale by 2 is undone by a scale by $\frac{1}{2}$. Squashing transformations (det 0) can't be undone.
+
+**Determinants:** areas scale by $\det B$, then by $\det A$ → $\det(AB) = \det A\det B$.
+
+**Stacked linear layers:** $W_2(W_1\vec{x}) = (W_2W_1)\vec{x}$, just one linear map. Activations like ReLU between layers are what give deep networks their power.
+
+## 4. Formula & worked example
+$$
+(A \circ B)(\vec{x}) = A(B\vec{x}) = (AB)\vec{x} \qquad (AB)^{-1} = B^{-1}A^{-1}
+$$
+
+**Example 1.** Rotate 90° ($R$), then reflect in the x-axis ($F$):
+- $FR = \begin{pmatrix} 1 & 0 \\ 0 & -1\end{pmatrix}\begin{pmatrix} 0 & -1 \\ 1 & 0\end{pmatrix} = \begin{pmatrix} 0 & -1 \\ -1 & 0\end{pmatrix}$ (reflection in $y = -x$)
+- Reflect first, then rotate: $RF = \begin{pmatrix} 0 & 1 \\ 1 & 0\end{pmatrix}$ (reflection in $y = x$). Different!
+
+**Example 2.** Two rotations: $R_{30}R_{60} = R_{90}$ (angles add), and rotations about the origin commute.
+
+**Example 3 (inverse).** Undo ""scale by 2 then rotate 45°"": $(R_{45}S_2)^{-1} = S_{1/2}R_{-45}$ (undo the rotation first).
+
+**Example 4 (determinant).** Scale by 3 (det 9) then shear (det 1): areas scale by 9.
+
+**Example 5 (collapse, code).**
+```python
+import numpy as np
+W1, W2 = np.random.randn(5, 3), np.random.randn(2, 5)
+x = np.random.randn(3)
+print(np.allclose(W2 @ (W1 @ x), (W2 @ W1) @ x))   # True: two linear layers = one 2x3 matrix
+```
+Without a non-linearity between them, any stack of linear layers equals a single matrix, so it can only learn linear functions.
+
+## 5. Common mistakes
+- Multiplying matrices in the order the transformations are described (it's the reverse).
+- Forgetting to reverse the order for inverses.
+- Assuming all transformations commute.
+
+## 6. Practice
+Q: Matrix for ""do $B$, then $A$""?
+A: $AB$.
+
+Q: Inverse of rotation by $\theta$?
+A: Rotation by $-\theta$ (also $R_\theta^T$).
+
+Q: Do reflections and rotations commute in general?
+A: No.
+
+Q: $\det A = 2$, $\det B = 5$. Area scale of $AB$?
+A: $10$.
+
+Q: Why do neural networks need non-linear activations?
+A: Without them, stacked linear layers collapse into one linear transformation."
+3,TOPIC,Change of basis,"Coordinates in a new basis, change-of-basis matrices, the same transformation in different coordinates",SHOULD,FALSE,"# Change of basis
+
+## 1. What it covers
+- **Coordinates** of a vector relative to a basis $B$: $[\vec{x}]_B$.
+- The **change-of-basis matrix** $P$ (columns = new basis vectors): $\vec{x} = P[\vec{x}]_B$.
+- Converting a transformation's matrix to a new basis: $P^{-1}AP$.
+
+## 2. Where it is used
+- **Graphics and robotics:** world, camera and object coordinate frames.
+- **Data science:** PCA re-expresses data in a basis of principal components.
+- **Signal processing:** the Fourier transform changes to a basis of sine waves; JPEG uses a cosine basis.
+- **Physics:** choosing axes aligned with symmetry to simplify problems.
+- **Diagonalisation** (Phase 5) is a change of basis.
+
+## 3. What it means
+The same arrow can be described with different ""rulers"". In the standard basis, $\langle 3, 1\rangle$ means 3 steps along $\vec{e}_1$ and 1 along $\vec{e}_2$. In another basis $\{\vec{b}_1, \vec{b}_2\}$, the same arrow has different coordinates.
+
+Like giving directions: ""3 km east, 1 km north"" vs ""2 blocks along Main Street, 1 block along Park Road"". Same place, different description.
+
+- **New → standard:** multiply by $P$ (whose columns are the new basis vectors in standard coordinates).
+- **Standard → new:** multiply by $P^{-1}$.
+
+A transformation $A$ (in standard coordinates) looks like $P^{-1}AP$ in the new basis: convert to standard, apply $A$, convert back. A good basis can make the matrix much simpler (even diagonal).
+
+## 4. Formula & worked example
+$$
+\vec{x} = P[\vec{x}]_B \qquad [\vec{x}]_B = P^{-1}\vec{x} \qquad [T]_B = P^{-1}AP
+$$
+
+**Example 1.** Basis $\vec{b}_1 = \langle 1, 1\rangle$, $\vec{b}_2 = \langle 1, -1\rangle$; $P = \begin{pmatrix} 1 & 1 \\ 1 & -1\end{pmatrix}$. Coordinates of $\vec{x} = \langle 3, 1\rangle$?
+- $P^{-1} = \frac{1}{2}\begin{pmatrix} 1 & 1 \\ 1 & -1\end{pmatrix}$ → $[\vec{x}]_B = \frac{1}{2}\langle 4, 2\rangle = \langle 2, 1\rangle$. Check: $2\langle 1, 1\rangle + \langle 1, -1\rangle = \langle 3, 1\rangle$ ✓
+
+**Example 2.** $[\vec{x}]_B = \langle -1, 4\rangle$ → $\vec{x} = -\langle 1, 1\rangle + 4\langle 1, -1\rangle = \langle 3, -5\rangle$.
+
+**Example 3 (simpler matrix).** Reflection in $y = x$ has standard matrix $A = \begin{pmatrix} 0 & 1 \\ 1 & 0\end{pmatrix}$. In the basis above (along and across the mirror line):
+- $P^{-1}AP = \begin{pmatrix} 1 & 0 \\ 0 & -1\end{pmatrix}$: ""keep the component along the mirror, flip the one across it"". Much clearer.
+
+**Example 4 (code).**
+```python
+import numpy as np
+P = np.array([[1, 1], [1, -1]], dtype=float)
+A = np.array([[0, 1], [1, 0]], dtype=float)
+print(np.linalg.solve(P, [3, 1]))        # [2. 1.]  coordinates in the new basis
+print(np.linalg.inv(P) @ A @ P)          # [[1, 0], [0, -1]]
+```
+
+## 5. Common mistakes
+- Using $P$ where $P^{-1}$ is needed (and vice versa).
+- Putting basis vectors in rows instead of columns.
+- Writing $PAP^{-1}$ instead of $P^{-1}AP$ (it depends on the convention; check with a test vector).
+
+## 6. Practice
+Q: Columns of the change-of-basis matrix $P$?
+A: The new basis vectors written in standard coordinates.
+
+Q: Basis $\{\langle 2, 0\rangle, \langle 0, 3\rangle\}$. Coordinates of $\langle 4, 9\rangle$?
+A: $\langle 2, 3\rangle$.
+
+Q: Formula for a transformation's matrix in basis $B$?
+A: $P^{-1}AP$.
+
+Q: Why change basis?
+A: To make vectors or transformations simpler to describe.
+
+Q: Name an everyday technology that relies on a change of basis.
+A: JPEG compression (cosine basis); also the Fourier transform in audio."
+3,TOPIC,Practice & review: Linear transformations,Mixed problem set with worked answers,MUST,FALSE,"# Practice & review: Linear transformations
+
+**How to use this:** 40 minutes; verify with NumPy.
+
+## Problems
+1. Is $T(x, y) = (3x - y, x + 2y)$ linear? Give its matrix and compute $T(2, -1)$.
+2. $T$ sends $\vec{e}_1 \to \langle 2, 1, 0\rangle$ and $\vec{e}_2 \to \langle -1, 0, 3\rangle$. Find its matrix and $T\langle 1, 2\rangle$.
+3. Write the matrix that rotates by $60^\circ$ and apply it to $\langle 2, 0\rangle$.
+4. Find the matrix that first scales x by 2, then rotates by $90^\circ$. Does the order matter here?
+5. Write a $3 \times 3$ homogeneous matrix that rotates by $90^\circ$ and then translates by $(4, 1)$. Apply it to $(1, 0)$.
+6. Basis $B = \{\langle 2, 1\rangle, \langle 1, 1\rangle\}$. Find $[\langle 5, 3\rangle]_B$.
+7. A transformation has determinant 0. What happens to the unit square? Can it be undone?
+
+## Answers
+1. Yes; $\begin{pmatrix} 3 & -1 \\ 1 & 2\end{pmatrix}$; $T(2, -1) = (7, 0)$.
+2. $\begin{pmatrix} 2 & -1 \\ 1 & 0 \\ 0 & 3\end{pmatrix}$; $\langle 0, 1, 6\rangle$.
+3. $\begin{pmatrix} 0.5 & -\frac{\sqrt{3}}{2} \\ \frac{\sqrt{3}}{2} & 0.5\end{pmatrix}$; $\langle 1, \sqrt{3}\rangle$.
+4. $R_{90}S = \begin{pmatrix} 0 & -1 \\ 1 & 0\end{pmatrix}\begin{pmatrix} 2 & 0 \\ 0 & 1\end{pmatrix} = \begin{pmatrix} 0 & -1 \\ 2 & 0\end{pmatrix}$; $SR_{90} = \begin{pmatrix} 0 & -2 \\ 1 & 0\end{pmatrix}$ → yes, order matters.
+5. $T \cdot R = \begin{pmatrix} 0 & -1 & 4 \\ 1 & 0 & 1 \\ 0 & 0 & 1\end{pmatrix}$; $(1, 0) \to (4, 2)$.
+6. $2c_1 + c_2 = 5$, $c_1 + c_2 = 3$ → $c_1 = 2$, $c_2 = 1$ → $\langle 2, 1\rangle$.
+7. It's squashed onto a line or a point (zero area); it can't be undone (not invertible).
+
+## Flashcards
+Q: Columns of a transformation's matrix?
+A: The images of the standard basis vectors.
+
+Q: 2D rotation matrix?
+A: $\begin{pmatrix} \cos\theta & -\sin\theta \\ \sin\theta & \cos\theta\end{pmatrix}$.
+
+Q: Matrix of ""$B$ then $A$""?
+A: $AB$.
+
+Q: Why use homogeneous coordinates?
+A: To express translation as a matrix multiplication."
+1,MODULE,Phase 5 — Eigenvalues and Eigenvectors (Advanced),"Eigenvalues, characteristic polynomial, eigenvectors and eigenspaces, diagonalisation, matrix powers, Markov chains and PageRank",MUST,,"# Phase 5: Eigenvalues and eigenvectors
+
+Most vectors change direction when a matrix acts on them. **Eigenvectors** are the special ones that only get stretched or shrunk; the stretch factor is the **eigenvalue**. They reveal a transformation's ""natural axes"" and explain long-term behaviour: Google's original PageRank, population models, vibration modes of buildings, stability of systems and principal component analysis are all eigenvalue problems."
+2,MODULE,Eigen-analysis,"Eigenvalues, eigenvectors, diagonalisation, applications",MUST,,"Find the directions a matrix leaves unrotated, and everything about it becomes simpler."
+3,TOPIC,Eigenvalues and the characteristic polynomial,"Av = λv, det(A − λI) = 0, trace and determinant shortcuts, complex eigenvalues",MUST,FALSE,"# Eigenvalues and the characteristic polynomial
+
+## 1. What it covers
+- The eigen-equation $A\vec{v} = \lambda\vec{v}$.
+- Finding eigenvalues from the **characteristic equation** $\det(A - \lambda I) = 0$.
+- Shortcuts: sum of eigenvalues = **trace**, product = **determinant**.
+- Triangular matrices; complex eigenvalues (rotations).
+
+## 2. Where it is used
+- **Engineering:** natural frequencies of bridges and buildings (eigenvalues of the stiffness/mass system) to avoid resonance.
+- **Stability:** a system $\vec{x}_{k+1} = A\vec{x}_k$ settles down if all $\lvert\lambda\rvert < 1$.
+- **Machine learning:** PCA uses eigenvalues of the covariance matrix; the Hessian's eigenvalues describe the shape of a loss surface.
+- **Quantum mechanics:** measurable quantities are eigenvalues.
+
+## 3. What it means
+Apply $A$ to most vectors and they turn to point somewhere new. An **eigenvector** $\vec{v}$ (non-zero) stays on its own line: $A\vec{v}$ is just $\vec{v}$ scaled by $\lambda$.
+- $\lambda > 1$: stretched; $0 < \lambda < 1$: shrunk; $\lambda < 0$: flipped; $\lambda = 0$: squashed to zero.
+
+Imagine stretching a rubber sheet: most marks on it turn as well as move, but along certain directions the marks only slide outward. Those are the eigen-directions.
+
+**Finding eigenvalues:** $A\vec{v} = \lambda\vec{v}$ means $(A - \lambda I)\vec{v} = \vec{0}$ has a non-zero solution, so $A - \lambda I$ must be **non-invertible**: $\det(A - \lambda I) = 0$. This polynomial equation in $\lambda$ is the characteristic equation.
+
+For a $2 \times 2$ matrix: $\lambda^2 - (\text{trace})\lambda + \det = 0$.
+
+## 4. Formula & worked example
+$$
+A\vec{v} = \lambda\vec{v} \qquad \det(A - \lambda I) = 0 \qquad \lambda_1 + \cdots + \lambda_n = \text{tr}(A) \qquad \lambda_1\cdots\lambda_n = \det A
+$$
+
+**Example 1.** $A = \begin{pmatrix} 4 & 1 \\ 2 & 3\end{pmatrix}$: trace 7, det 10 → $\lambda^2 - 7\lambda + 10 = 0$ → $\lambda = 5, 2$.
+
+**Example 2 (triangular).** $\begin{pmatrix} 3 & 7 \\ 0 & -1\end{pmatrix}$: eigenvalues are the diagonal entries, $3$ and $-1$.
+
+**Example 3 (rotation).** $R_{90} = \begin{pmatrix} 0 & -1 \\ 1 & 0\end{pmatrix}$: $\lambda^2 + 1 = 0$ → $\lambda = \pm i$. Complex eigenvalues: no real direction is left unrotated (makes sense for a rotation).
+
+**Example 4 (check).** $A\begin{pmatrix} 1 \\ 1\end{pmatrix} = \begin{pmatrix} 5 \\ 5\end{pmatrix} = 5\begin{pmatrix} 1 \\ 1\end{pmatrix}$ ✓ for Example 1.
+
+**Example 5 (code).**
+```python
+import numpy as np
+A = np.array([[4, 1], [2, 3]], dtype=float)
+vals, vecs = np.linalg.eig(A)
+print(vals)                # [5. 2.]
+print(vecs)                # columns are unit eigenvectors
+```
+`np.linalg.eig` returns the eigenvalues and a matrix whose **columns** are the corresponding eigenvectors (normalised to length 1). For symmetric matrices, use `np.linalg.eigh`, which is faster and more accurate.
+
+## 5. Common mistakes
+- Solving $\det(A) - \lambda = 0$ instead of $\det(A - \lambda I) = 0$.
+- Allowing $\vec{v} = \vec{0}$ as an eigenvector (it's excluded by definition).
+- Reading eigenvectors from rows of NumPy's output instead of columns.
+
+## 6. Practice
+Q: Definition of an eigenvector?
+A: A non-zero $\vec{v}$ with $A\vec{v} = \lambda\vec{v}$.
+
+Q: Eigenvalues of $\begin{pmatrix} 2 & 0 \\ 0 & 7\end{pmatrix}$?
+A: $2$ and $7$.
+
+Q: Eigenvalues of $\begin{pmatrix} 1 & 2 \\ 2 & 1\end{pmatrix}$?
+A: $\lambda^2 - 2\lambda - 3 = 0$ → $3$ and $-1$.
+
+Q: Sum and product of the eigenvalues equal?
+A: The trace and the determinant.
+
+Q: What does an eigenvalue of 0 tell you?
+A: The matrix is not invertible."
+3,TOPIC,Eigenvectors and eigenspaces,"Solving (A − λI)v = 0, eigenspaces as null spaces, geometric meaning, symmetric matrices",MUST,FALSE,"# Eigenvectors and eigenspaces
+
+## 1. What it covers
+- Finding eigenvectors by solving $(A - \lambda I)\vec{v} = \vec{0}$.
+- The **eigenspace** of $\lambda$: the null space of $A - \lambda I$.
+- Geometric interpretation of eigenvectors for common transformations.
+- Symmetric matrices: real eigenvalues and **orthogonal** eigenvectors.
+
+## 2. Where it is used
+- **PCA:** eigenvectors of the covariance matrix are the principal directions of the data.
+- **Vibration analysis:** eigenvectors are the mode shapes (how a structure wobbles).
+- **Graphs:** eigenvectors of a graph's Laplacian are used for spectral clustering and community detection.
+- **Computer vision:** ""eigenfaces"" for face recognition.
+
+## 3. What it means
+Once you have an eigenvalue $\lambda$, its eigenvectors are the non-zero solutions of $(A - \lambda I)\vec{v} = \vec{0}$: a null-space problem. Any non-zero multiple of an eigenvector is also an eigenvector (same line), so we usually give one representative.
+
+**Geometric examples:**
+- Projection onto a line: vectors **on** the line have $\lambda = 1$; vectors **perpendicular** have $\lambda = 0$.
+- Reflection across a line: on the line $\lambda = 1$; perpendicular $\lambda = -1$.
+- Scaling by 3: every vector is an eigenvector with $\lambda = 3$.
+
+**Symmetric matrices** ($A = A^T$) always have real eigenvalues, and eigenvectors for different eigenvalues are perpendicular. This is the basis of PCA.
+
+## 4. Formula & worked example
+$$
+E_\lambda = \text{Nul}(A - \lambda I)
+$$
+
+**Example 1.** $A = \begin{pmatrix} 4 & 1 \\ 2 & 3\end{pmatrix}$ ($\lambda = 5, 2$).
+- $\lambda = 5$: $A - 5I = \begin{pmatrix} -1 & 1 \\ 2 & -2\end{pmatrix}$ → $-v_1 + v_2 = 0$ → $\vec{v} = \langle 1, 1\rangle$.
+- $\lambda = 2$: $A - 2I = \begin{pmatrix} 2 & 1 \\ 2 & 1\end{pmatrix}$ → $2v_1 + v_2 = 0$ → $\vec{v} = \langle 1, -2\rangle$.
+
+**Example 2 (symmetric).** $\begin{pmatrix} 2 & 1 \\ 1 & 2\end{pmatrix}$: $\lambda = 3$ with $\langle 1, 1\rangle$; $\lambda = 1$ with $\langle 1, -1\rangle$. These are perpendicular ✓.
+
+**Example 3 (reflection).** Reflection in $y = x$: $\begin{pmatrix} 0 & 1 \\ 1 & 0\end{pmatrix}$ has $\lambda = 1$ with $\langle 1, 1\rangle$ (on the mirror) and $\lambda = -1$ with $\langle 1, -1\rangle$ (across it).
+
+**Example 4 (repeated eigenvalue).** $\begin{pmatrix} 2 & 1 \\ 0 & 2\end{pmatrix}$: $\lambda = 2$ (twice), but $A - 2I = \begin{pmatrix} 0 & 1 \\ 0 & 0\end{pmatrix}$ gives only one eigenvector direction $\langle 1, 0\rangle$ (a shear).
+
+## 5. Common mistakes
+- Arithmetic errors in $A - \lambda I$ (subtract $\lambda$ only on the diagonal).
+- Expecting $n$ independent eigenvectors always (Example 4 has only one).
+- Treating different scalings of the same eigenvector as different eigenvectors.
+
+## 6. Practice
+Q: How do you find eigenvectors for a known $\lambda$?
+A: Solve $(A - \lambda I)\vec{v} = \vec{0}$.
+
+Q: Eigenvector of $\begin{pmatrix} 3 & 0 \\ 0 & 5\end{pmatrix}$ for $\lambda = 5$?
+A: $\langle 0, 1\rangle$.
+
+Q: Eigenvalues of a projection matrix?
+A: $0$ and $1$.
+
+Q: What's special about eigenvectors of symmetric matrices?
+A: Eigenvalues are real and eigenvectors of distinct eigenvalues are orthogonal.
+
+Q: Eigenvector of $\begin{pmatrix} 1 & 2 \\ 2 & 1\end{pmatrix}$ for $\lambda = 3$?
+A: $\langle 1, 1\rangle$."
+3,TOPIC,Diagonalisation and matrix powers,"A = PDP⁻¹, when a matrix is diagonalisable, computing Aᵏ, Fibonacci, long-run behaviour",MUST,FALSE,"# Diagonalisation and matrix powers
+
+## 1. What it covers
+- **Diagonalisation** $A = PDP^{-1}$ ($P$ = eigenvectors as columns, $D$ = eigenvalues on the diagonal).
+- When it's possible ($n$ independent eigenvectors).
+- Fast **matrix powers**: $A^k = PD^kP^{-1}$.
+- Long-run behaviour from the largest eigenvalue; closed form for Fibonacci numbers.
+
+## 2. Where it is used
+- **Dynamical systems:** population models, Markov chains, economic models $\vec{x}_{k+1} = A\vec{x}_k$.
+- **Differential equations:** systems $\vec{x}' = A\vec{x}$ decouple in the eigenbasis (roadmap 08).
+- **Algorithms:** computing the $n$th Fibonacci number or linear recurrences quickly.
+- **PCA and spectral methods:** symmetric matrices diagonalise with orthogonal $P$.
+
+## 3. What it means
+In the basis of eigenvectors, $A$ acts by simply **scaling each axis** by its eigenvalue: it's a diagonal matrix there. $P$ converts eigen-coordinates to standard coordinates; $P^{-1}$ converts back:
+$$
+A = PDP^{-1}
+$$
+
+**Powers:** $A^k = PD^kP^{-1}$, and $D^k$ just raises each diagonal entry to the $k$th power. Applying $A$ a thousand times becomes trivial.
+
+**Long-run behaviour:** after many steps, the component along the eigenvector with the **largest $\lvert\lambda\rvert$** dominates. If that $\lambda > 1$, things grow; if all $\lvert\lambda\rvert < 1$, everything decays to 0.
+
+## 4. Formula & worked example
+$$
+A = PDP^{-1} \qquad A^k = PD^kP^{-1}
+$$
+
+**Example 1.** $A = \begin{pmatrix} 4 & 1 \\ 2 & 3\end{pmatrix}$: $P = \begin{pmatrix} 1 & 1 \\ 1 & -2\end{pmatrix}$, $D = \begin{pmatrix} 5 & 0 \\ 0 & 2\end{pmatrix}$.
+- $A^{10} = P\begin{pmatrix} 5^{10} & 0 \\ 0 & 2^{10}\end{pmatrix}P^{-1}$: dominated by $5^{10}$; long-run vectors point along $\langle 1, 1\rangle$.
+
+**Example 2 (population).** Juveniles and adults: $\vec{x}_{k+1} = \begin{pmatrix} 0 & 2 \\ 0.3 & 0.5\end{pmatrix}\vec{x}_k$ (adults have 2 young per year; 30% of juveniles survive to adulthood; 50% of adults survive).
+- $\lambda^2 - 0.5\lambda - 0.6 = 0$ → $\lambda \approx 1.06$ and $-0.56$ → the population grows about 6% per year in the long run.
+
+**Example 3 (Fibonacci).** $\begin{pmatrix} F_{n+1} \\ F_n\end{pmatrix} = \begin{pmatrix} 1 & 1 \\ 1 & 0\end{pmatrix}\begin{pmatrix} F_n \\ F_{n-1}\end{pmatrix}$; eigenvalues $\frac{1 \pm \sqrt{5}}{2}$ → $F_n = \frac{\varphi^n - \psi^n}{\sqrt{5}}$ with $\varphi \approx 1.618$ (the golden ratio). The ratio of consecutive Fibonacci numbers approaches $\varphi$.
+
+**Example 4 (not diagonalisable).** $\begin{pmatrix} 2 & 1 \\ 0 & 2\end{pmatrix}$ has only one independent eigenvector → can't be diagonalised.
+
+**Example 5 (code).**
+```python
+import numpy as np
+A = np.array([[0, 2], [0.3, 0.5]])
+vals, P = np.linalg.eig(A)
+print(vals)                                    # [-0.56..  1.06..]
+x = np.array([100, 100.])
+for _ in range(50): x = A @ x
+print(x / x.sum())                             # stable age distribution (along the dominant eigenvector)
+```
+After many steps the proportions of juveniles and adults stop changing: the vector has lined up with the eigenvector of the largest eigenvalue.
+
+## 5. Common mistakes
+- Putting eigenvectors in $P$ in a different order than their eigenvalues in $D$.
+- Assuming every matrix is diagonalisable.
+- Writing $A^k = P^kD^kP^{-k}$ (only $D$ is raised to the power).
+
+## 6. Practice
+Q: In $A = PDP^{-1}$, what are the columns of $P$ and the entries of $D$?
+A: Eigenvectors of $A$; the matching eigenvalues.
+
+Q: When is an $n \times n$ matrix diagonalisable?
+A: When it has $n$ linearly independent eigenvectors.
+
+Q: Why is $A^k$ easy after diagonalising?
+A: $A^k = PD^kP^{-1}$ and $D^k$ just powers the diagonal entries.
+
+Q: A system's largest eigenvalue is 0.9 (others smaller). Long-run behaviour?
+A: It decays to zero.
+
+Q: Is a matrix with distinct eigenvalues always diagonalisable?
+A: Yes."
+3,TOPIC,Eigenvector applications: Markov chains and PageRank,"Transition matrices, steady-state vectors as eigenvectors for λ = 1, Google PageRank",SHOULD,FALSE,"# Eigenvector applications: Markov chains and PageRank
+
+## 1. What it covers
+- **Markov chains**: systems that move between states with fixed probabilities.
+- **Transition matrices** (columns sum to 1).
+- The **steady state**: the eigenvector for $\lambda = 1$.
+- **PageRank**: ranking web pages as a Markov chain.
+
+## 2. Where it is used
+- **Search engines:** Google's original PageRank algorithm.
+- **Customer analytics:** churn and brand-switching models; customer lifetime value.
+- **Natural language:** early text generators and autocomplete (n-gram Markov models).
+- **Finance:** credit-rating transitions.
+- **Queueing and reliability:** machine states (working, degraded, broken).
+
+## 3. What it means
+A **Markov chain** has a set of states, and each step it moves randomly according to fixed probabilities that depend only on the current state. Write them in a **transition matrix** $P$ where column $j$ holds the probabilities of moving **from** state $j$ (so each column sums to 1). Then
+$$
+\vec{x}_{k+1} = P\vec{x}_k
+$$
+where $\vec{x}_k$ is the probability distribution after $k$ steps.
+
+**Steady state:** for many chains, the distribution settles to $\vec{q}$ with $P\vec{q} = \vec{q}$: an eigenvector with eigenvalue 1, scaled so its entries sum to 1.
+
+**PageRank:** imagine a random surfer clicking links. A page's rank is the long-run fraction of time the surfer spends there: the steady state of the ""web Markov chain"". With a small chance of jumping to a random page (damping, usually 0.85 follow / 0.15 jump), the steady state always exists and is unique.
+
+## 4. Formula & worked example
+$$
+P\vec{q} = \vec{q},\quad \sum q_i = 1 \qquad \text{PageRank: } \vec{r} = dM\vec{r} + \frac{1 - d}{n}\vec{1}
+$$
+
+**Example 1 (brand switching).** Each month 90% of brand A users stay and 10% switch to B; 80% of B users stay and 20% switch to A.
+- $P = \begin{pmatrix} 0.9 & 0.2 \\ 0.1 & 0.8\end{pmatrix}$. Steady state: $(P - I)\vec{q} = 0$ → $-0.1q_A + 0.2q_B = 0$ → $q_A = 2q_B$ → $\vec{q} = \langle \frac{2}{3}, \frac{1}{3}\rangle$.
+- Long-run market share: A 66.7%, B 33.3%, whatever the starting shares.
+
+**Example 2 (one step).** Start $\langle 0.5, 0.5\rangle$ → $P\vec{x} = \langle 0.55, 0.45\rangle$ after one month.
+
+**Example 3 (PageRank, code).**
+```python
+import numpy as np
+# links: A->B, A->C, B->C, C->A, D->C   (column j = outgoing links of page j, split evenly)
+M = np.array([[0, 0, 1, 0],
+              [0.5, 0, 0, 0],
+              [0.5, 1, 0, 1],
+              [0, 0, 0, 0]])
+d, n = 0.85, 4
+r = np.ones(n) / n
+for _ in range(100):
+    r = d * M @ r + (1 - d) / n          # follow a link, or jump to a random page
+print(dict(zip(""ABCD"", r.round(3))))      # C ranks highest (most incoming links)
+```
+Repeatedly applying the matrix (the **power method**) converges to the dominant eigenvector, which is how PageRank was computed for billions of pages. Page C, linked from three pages, gets the highest rank; page D, with no incoming links, gets only the random-jump share.
+
+## 5. Common mistakes
+- Mixing up row and column conventions (here columns sum to 1; some books use rows).
+- Forgetting to normalise the steady-state vector to sum to 1.
+- Assuming every chain has a unique steady state (damping fixes this for PageRank).
+
+## 6. Practice
+Q: What do the columns of a (column-stochastic) transition matrix sum to?
+A: $1$.
+
+Q: The steady state is an eigenvector for which eigenvalue?
+A: $\lambda = 1$.
+
+Q: Steady state of $P = \begin{pmatrix} 0.5 & 0.5 \\ 0.5 & 0.5\end{pmatrix}$?
+A: $\langle 0.5, 0.5\rangle$.
+
+Q: What does the damping factor in PageRank model?
+A: The chance the surfer jumps to a random page instead of following a link.
+
+Q: How is PageRank computed at scale?
+A: With the power method: repeatedly multiply by the matrix until it converges."
+3,TOPIC,Practice & review: Eigenvalues and eigenvectors,Mixed problem set with worked answers,MUST,FALSE,"# Practice & review: Eigenvalues and eigenvectors
+
+**How to use this:** 40 minutes; verify with `np.linalg.eig`.
+
+## Problems
+1. Find the eigenvalues and eigenvectors of $\begin{pmatrix} 5 & 2 \\ 2 & 2\end{pmatrix}$.
+2. Eigenvalues of $\begin{pmatrix} 1 & 4 & 7 \\ 0 & -2 & 3 \\ 0 & 0 & 6\end{pmatrix}$?
+3. A $3 \times 3$ matrix has eigenvalues 2, $-1$, 4. Find its trace and determinant. Is it invertible?
+4. Diagonalise $\begin{pmatrix} 3 & 1 \\ 0 & 2\end{pmatrix}$ and use it to describe $A^{20}$.
+5. Without calculating, give the eigenvalues and eigenvectors of the projection onto the x-axis in $\mathbb{R}^2$.
+6. Weather: if sunny today, tomorrow is sunny with probability 0.8; if rainy, rainy with probability 0.6. Find the long-run fraction of sunny days.
+7. Why do rotation matrices (other than 0° and 180°) have no real eigenvectors?
+
+## Answers
+1. trace 7, det 6 → $\lambda = 6, 1$; $\lambda = 6$: $\langle 2, 1\rangle$; $\lambda = 1$: $\langle 1, -2\rangle$ (perpendicular, since the matrix is symmetric).
+2. $1, -2, 6$.
+3. Trace 5; det $-8$; invertible (no zero eigenvalue).
+4. $\lambda = 3$: $\langle 1, 0\rangle$; $\lambda = 2$: $\langle 1, -1\rangle$. $P = \begin{pmatrix} 1 & 1 \\ 0 & -1\end{pmatrix}$, $D = \text{diag}(3, 2)$; $A^{20} = PD^{20}P^{-1} = \begin{pmatrix} 3^{20} & 3^{20} - 2^{20} \\ 0 & 2^{20}\end{pmatrix}$, dominated by $3^{20}$.
+5. $\lambda = 1$ with $\langle 1, 0\rangle$; $\lambda = 0$ with $\langle 0, 1\rangle$.
+6. $P = \begin{pmatrix} 0.8 & 0.4 \\ 0.2 & 0.6\end{pmatrix}$; $-0.2q_S + 0.4q_R = 0$ → $q_S = 2q_R$ → $\frac{2}{3}$ sunny.
+7. A rotation turns every non-zero vector off its own line, so no real direction is only scaled; the eigenvalues are complex.
+
+## Flashcards
+Q: Characteristic equation?
+A: $\det(A - \lambda I) = 0$.
+
+Q: Diagonalisation?
+A: $A = PDP^{-1}$ with eigenvectors in $P$ and eigenvalues in $D$.
+
+Q: Steady state of a Markov chain?
+A: The eigenvector for $\lambda = 1$, normalised to sum to 1.
+
+Q: Long-run behaviour of $\vec{x}_{k+1} = A\vec{x}_k$?
+A: Dominated by the eigenvector of the largest $\lvert\lambda\rvert$."
+1,MODULE,"Phase 6 — Orthogonality, Least Squares, SVD and PCA (Advanced)","Orthonormal bases, orthogonal matrices, projections onto subspaces, Gram–Schmidt and QR, least squares regression, SVD, PCA",SHOULD,,"# Phase 6: Orthogonality, least squares, SVD and PCA
+
+The final phase connects linear algebra directly to data science:
+- **Orthogonality** (perpendicularity) makes computations simple and numerically stable.
+- **Least squares** fits models to noisy data when there's no exact solution: it's linear regression.
+- **SVD** (singular value decomposition) is the ""Swiss army knife"" of matrices: compression, recommendation systems, noise removal.
+- **PCA** finds the most informative directions in high-dimensional data."
+2,MODULE,Orthogonality and least squares,"Orthogonal bases and matrices, projections, Gram–Schmidt, least squares",SHOULD,,"Perpendicular directions don't interfere with each other, which makes everything easier."
+3,TOPIC,"Orthogonal and orthonormal bases, orthogonal matrices","Orthogonal sets, easy coordinates via dot products, orthogonal matrices Qᵀ = Q⁻¹",SHOULD,FALSE,"# Orthogonal and orthonormal bases, orthogonal matrices
+
+## 1. What it covers
+- **Orthogonal** sets (all pairs perpendicular) and **orthonormal** sets (also unit length).
+- Easy coordinates: $c_i = \vec{x} \cdot \vec{u}_i$ in an orthonormal basis.
+- **Orthogonal matrices** $Q$: orthonormal columns, $Q^TQ = I$, $Q^{-1} = Q^T$.
+- They preserve lengths and angles (rotations and reflections).
+
+## 2. Where it is used
+- **Numerical computing:** orthogonal matrices don't amplify rounding errors, so stable algorithms (QR, SVD) are built on them.
+- **Graphics and robotics:** rotation matrices are orthogonal; their inverse is just the transpose (cheap).
+- **Signal processing:** sine/cosine (Fourier) and wavelet bases are orthogonal, so coefficients are computed with simple dot products.
+- **PCA:** principal components form an orthonormal basis.
+
+## 3. What it means
+In an orthonormal basis, finding coordinates is easy: the coordinate along $\vec{u}_i$ is just the dot product $\vec{x} \cdot \vec{u}_i$ (the projection onto that axis). No system of equations needed, because the axes don't interfere with each other.
+
+An **orthogonal matrix** $Q$ has orthonormal columns. Then $Q^TQ = I$, so the inverse is simply the transpose. Geometrically it's a rigid motion: rotation, reflection, or a combination; lengths and angles are preserved ($\lVert Q\vec{x}\rVert = \lVert\vec{x}\rVert$).
+
+## 4. Formula & worked example
+$$
+\vec{u}_i \cdot \vec{u}_j = 0\ (i \ne j),\ \lVert\vec{u}_i\rVert = 1 \qquad \vec{x} = \sum(\vec{x} \cdot \vec{u}_i)\,\vec{u}_i \qquad Q^TQ = I
+$$
+
+**Example 1.** $\vec{u}_1 = \frac{1}{\sqrt{2}}\langle 1, 1\rangle$, $\vec{u}_2 = \frac{1}{\sqrt{2}}\langle 1, -1\rangle$ is an orthonormal basis of $\mathbb{R}^2$. Coordinates of $\langle 3, 1\rangle$: $\frac{4}{\sqrt{2}} = 2\sqrt{2}$ and $\frac{2}{\sqrt{2}} = \sqrt{2}$.
+
+**Example 2 (orthogonal matrix).** $Q = R_\theta$: $Q^TQ = I$ (check with $\cos^2 + \sin^2 = 1$), so $R_\theta^{-1} = R_\theta^T = R_{-\theta}$.
+
+**Example 3 (length preserved).** $R_{90}\langle 3, 4\rangle = \langle -4, 3\rangle$, still length 5.
+
+**Example 4 (code).**
+```python
+import numpy as np
+Q, _ = np.linalg.qr(np.random.randn(3, 3))     # a random orthogonal matrix
+print(np.allclose(Q.T @ Q, np.eye(3)))         # True
+x = np.array([1., 2., 3.])
+print(np.linalg.norm(x), np.linalg.norm(Q @ x))  # equal lengths
+```
+The QR decomposition (next-but-one topic) produces an orthogonal $Q$. Multiplying by it rotates/reflects without changing lengths.
+
+## 5. Common mistakes
+- Calling a matrix orthogonal when its columns are orthogonal but not unit length.
+- Using the dot-product coordinate shortcut with a non-orthonormal basis.
+- Confusing $Q^T = Q^{-1}$ (orthogonal) with $A^T = A$ (symmetric).
+
+## 6. Practice
+Q: Difference between orthogonal and orthonormal sets?
+A: Orthonormal vectors are also unit length.
+
+Q: Inverse of an orthogonal matrix?
+A: Its transpose.
+
+Q: Coordinate of $\vec{x}$ along an orthonormal basis vector $\vec{u}$?
+A: $\vec{x} \cdot \vec{u}$.
+
+Q: Do orthogonal matrices preserve length?
+A: Yes.
+
+Q: Is $\begin{pmatrix} 0 & 1 \\ 1 & 0\end{pmatrix}$ orthogonal?
+A: Yes (a reflection)."
+3,TOPIC,Orthogonal projections onto subspaces,"Projecting onto a subspace, the projection matrix, closest point, orthogonal complements",SHOULD,FALSE,"# Orthogonal projections onto subspaces
+
+## 1. What it covers
+- Projecting a vector onto a **subspace** (not just a line).
+- The formula using an orthonormal basis, and the projection matrix $A(A^TA)^{-1}A^T$.
+- The projection as the **closest point** in the subspace.
+- The **orthogonal complement** $W^\perp$.
+
+## 2. Where it is used
+- **Least squares regression** (next topics): fitted values are the projection of $\vec{y}$ onto the column space of $X$.
+- **Signal denoising:** project a noisy signal onto a subspace of ""clean"" signals.
+- **Graphics:** projecting 3D points onto a plane (shadows, orthographic views).
+- **Recommender systems and embeddings:** removing a direction (e.g. debiasing word vectors by projecting out a bias direction).
+
+## 3. What it means
+The projection of $\vec{y}$ onto a subspace $W$ is the point $\hat{y}$ in $W$ **closest** to $\vec{y}$. The error $\vec{y} - \hat{y}$ is **perpendicular** to the whole subspace.
+
+Think of a light shining straight down onto a tabletop (the subspace): the shadow of a point is its projection, and the line from point to shadow is perpendicular to the table.
+
+**With an orthonormal basis** $\vec{u}_1, \ldots, \vec{u}_k$ of $W$: add up the projections onto each basis vector.
+
+**With any basis** (columns of $A$): $\hat{y} = A(A^TA)^{-1}A^T\vec{y}$.
+
+**Orthogonal complement** $W^\perp$: all vectors perpendicular to $W$. Every vector splits uniquely into a part in $W$ plus a part in $W^\perp$.
+
+## 4. Formula & worked example
+$$
+\hat{y} = (\vec{y} \cdot \vec{u}_1)\vec{u}_1 + \cdots + (\vec{y} \cdot \vec{u}_k)\vec{u}_k \qquad P = A(A^TA)^{-1}A^T
+$$
+
+**Example 1 (onto a plane).** Project $\vec{y} = \langle 1, 2, 3\rangle$ onto the xy-plane: $\langle 1, 2, 0\rangle$; the error $\langle 0, 0, 3\rangle$ is perpendicular to the plane.
+
+**Example 2 (orthonormal basis).** $W = \text{span}\{\vec{u}_1 = \frac{1}{\sqrt{2}}\langle 1, 1, 0\rangle, \vec{u}_2 = \langle 0, 0, 1\rangle\}$; $\vec{y} = \langle 3, 1, 2\rangle$.
+- $\vec{y} \cdot \vec{u}_1 = \frac{4}{\sqrt{2}}$ → $2\langle 1, 1, 0\rangle = \langle 2, 2, 0\rangle$; $\vec{y} \cdot \vec{u}_2 = 2$ → $\langle 0, 0, 2\rangle$
+- $\hat{y} = \langle 2, 2, 2\rangle$; error $\langle 1, -1, 0\rangle$ (perpendicular to both basis vectors ✓)
+
+**Example 3 (distance).** The distance from $\vec{y}$ to $W$ is the length of the error: $\lVert\langle 1, -1, 0\rangle\rVert = \sqrt{2}$.
+
+**Example 4 (code: removing a direction).**
+```python
+import numpy as np
+v = np.array([0.8, 0.3, 0.5])        # an embedding vector
+b = np.array([1.0, 0.0, 0.0])        # unwanted direction (unit vector)
+v_clean = v - (v @ b) * b            # project out b: keeps the part perpendicular to b
+print(v_clean, v_clean @ b)          # [0.  0.3 0.5]  0.0
+```
+Subtracting the projection onto `b` leaves only the component in the orthogonal complement of `b`, which is the idea behind some embedding debiasing methods.
+
+## 5. Common mistakes
+- Using the orthonormal-basis formula with a basis that isn't orthonormal.
+- Forgetting that the error must be perpendicular to **every** vector in the subspace.
+- Confusing the projection matrix $P$ with a change-of-basis matrix.
+
+## 6. Practice
+Q: What is the projection of $\vec{y}$ onto $W$?
+A: The closest point to $\vec{y}$ in $W$.
+
+Q: How is the error $\vec{y} - \hat{y}$ related to $W$?
+A: It's perpendicular to $W$.
+
+Q: Project $\langle 4, -2, 7\rangle$ onto the xz-plane.
+A: $\langle 4, 0, 7\rangle$.
+
+Q: Projection matrix onto the column space of $A$?
+A: $A(A^TA)^{-1}A^T$.
+
+Q: What is $P^2$ for a projection matrix?
+A: $P$ (projecting twice changes nothing)."
+3,TOPIC,Gram–Schmidt and the QR decomposition,"Turning any basis into an orthonormal one, A = QR, uses in solving and least squares",SHOULD,FALSE,"# Gram–Schmidt and the QR decomposition
+
+## 1. What it covers
+- The **Gram–Schmidt process**: turning a basis into an orthonormal basis.
+- The **QR decomposition** $A = QR$ ($Q$ orthonormal columns, $R$ upper triangular).
+- Why QR is used to solve least squares problems stably.
+
+## 2. Where it is used
+- **Numerical linear algebra:** QR is the standard way to solve least squares (used inside `numpy.linalg.lstsq`-like solvers and statistics packages).
+- **Eigenvalue algorithms:** the QR algorithm computes eigenvalues in practice.
+- **Signal processing and communications:** orthogonalising signals (MIMO wireless).
+- **Robotics and graphics:** re-orthonormalising rotation matrices that drift due to rounding errors.
+
+## 3. What it means
+**Gram–Schmidt:** take the vectors one at a time. From each new vector, **subtract its projections onto the orthonormal vectors already built**; what's left is perpendicular to them. Then normalise it to length 1. Repeat.
+
+It's like building a set of axes: keep the first direction; from the second, remove whatever part points along the first; from the third, remove the parts along the first two; and so on.
+
+**QR:** the orthonormal vectors form $Q$; the coefficients used along the way form the upper triangular $R$, so $A = QR$.
+
+**Least squares with QR:** $A\vec{x} \approx \vec{b}$ becomes $R\vec{x} = Q^T\vec{b}$, a triangular system solved by back substitution, avoiding $A^TA$ (which can lose numerical accuracy).
+
+## 4. Formula & worked example
+$$
+\vec{w}_k = \vec{v}_k - \sum_{j<k}(\vec{v}_k \cdot \vec{u}_j)\vec{u}_j, \qquad \vec{u}_k = \frac{\vec{w}_k}{\lVert\vec{w}_k\rVert} \qquad A = QR
+$$
+
+**Example.** Orthonormalise $\vec{v}_1 = \langle 1, 1, 0\rangle$, $\vec{v}_2 = \langle 1, 0, 1\rangle$.
+- $\vec{u}_1 = \frac{1}{\sqrt{2}}\langle 1, 1, 0\rangle$
+- $\vec{v}_2 \cdot \vec{u}_1 = \frac{1}{\sqrt{2}}$ → subtract $\frac{1}{\sqrt{2}}\vec{u}_1 = \langle 0.5, 0.5, 0\rangle$: $\vec{w}_2 = \langle 0.5, -0.5, 1\rangle$
+- $\lVert\vec{w}_2\rVert = \sqrt{1.5}$ → $\vec{u}_2 = \frac{1}{\sqrt{6}}\langle 1, -1, 2\rangle$
+- Check: $\vec{u}_1 \cdot \vec{u}_2 = \frac{1 - 1 + 0}{\sqrt{12}} = 0$ ✓
+
+**Code.**
+```python
+import numpy as np
+A = np.array([[1, 1], [1, 0], [0, 1]], dtype=float)
+Q, R = np.linalg.qr(A)
+print(Q.round(3)); print(R.round(3))
+print(np.allclose(Q @ R, A), np.allclose(Q.T @ Q, np.eye(2)))   # True True
+```
+NumPy may flip the signs of some columns of $Q$ (and rows of $R$) compared with hand calculation; both are valid. In practice, Householder reflections are used instead of classical Gram–Schmidt for better numerical stability.
+
+## 5. Common mistakes
+- Subtracting projections onto the original vectors instead of the new orthonormal ones.
+- Forgetting to normalise.
+- Using classical Gram–Schmidt for large, nearly dependent sets in floating point (loses orthogonality; use modified Gram–Schmidt or Householder).
+
+## 6. Practice
+Q: Purpose of Gram–Schmidt?
+A: To turn a basis into an orthonormal basis of the same space.
+
+Q: In $A = QR$, what kind of matrices are $Q$ and $R$?
+A: $Q$ has orthonormal columns; $R$ is upper triangular.
+
+Q: First step of Gram–Schmidt?
+A: Normalise the first vector.
+
+Q: Orthonormalise $\langle 3, 0\rangle$, $\langle 1, 2\rangle$.
+A: $\langle 1, 0\rangle$ and $\langle 0, 1\rangle$.
+
+Q: Why use QR for least squares instead of $A^TA$?
+A: It's more numerically stable."
+3,TOPIC,Least squares and linear regression from scratch,"Normal equations AᵀAx = Aᵀb, best-fit lines, connection to projection, normal equation vs gradient descent",SHOULD,FALSE,"# Least squares and linear regression from scratch
+
+## 1. What it covers
+- Inconsistent systems $A\vec{x} = \vec{b}$ (more equations than unknowns).
+- The **least-squares** solution minimising $\lVert A\vec{x} - \vec{b}\rVert$.
+- The **normal equations** $A^TA\hat{x} = A^T\vec{b}$.
+- Fitting lines and polynomials; normal equation vs **gradient descent**.
+
+## 2. Where it is used
+- **Linear regression** in statistics and ML (`sklearn.linear_model.LinearRegression` solves least squares).
+- **Sensor fusion and GPS:** more measurements than unknowns, all noisy.
+- **Curve fitting** in science and engineering (`numpy.polyfit`).
+- **Computer vision:** camera calibration, image alignment.
+
+## 3. What it means
+With 100 data points and a line $y = c_0 + c_1x$ (2 unknowns), there's usually no line through all the points: the system $A\vec{x} = \vec{b}$ has no solution. So find the $\hat{x}$ that makes $A\hat{x}$ as **close** as possible to $\vec{b}$.
+
+**Geometry:** $A\hat{x}$ must be the **projection** of $\vec{b}$ onto the column space of $A$. The error $\vec{b} - A\hat{x}$ is perpendicular to every column of $A$:
+$$
+A^T(\vec{b} - A\hat{x}) = \vec{0} \Rightarrow A^TA\hat{x} = A^T\vec{b}
+$$
+These are the **normal equations**. Minimising the sum of squared residuals (the statistics view) gives exactly the same equations.
+
+**Normal equation vs gradient descent:** the normal equation gives the exact answer in one step but needs solving a $p \times p$ system (fine for up to thousands of features). Gradient descent takes many cheap steps and scales to huge data, which is why it's used for neural networks.
+
+## 4. Formula & worked example
+$$
+A^TA\hat{x} = A^T\vec{b} \qquad \hat{x} = (A^TA)^{-1}A^T\vec{b}
+$$
+
+**Example (line through 4 points).** Points $(0, 1)$, $(1, 3)$, $(2, 4)$, $(3, 4)$; model $y = c_0 + c_1x$.
+- $A = \begin{pmatrix} 1 & 0 \\ 1 & 1 \\ 1 & 2 \\ 1 & 3\end{pmatrix}$, $\vec{b} = \begin{pmatrix} 1 \\ 3 \\ 4 \\ 4\end{pmatrix}$
+- $A^TA = \begin{pmatrix} 4 & 6 \\ 6 & 14\end{pmatrix}$, $A^T\vec{b} = \begin{pmatrix} 12 \\ 23\end{pmatrix}$
+- Solve: $\det = 20$ → $\hat{x} = \frac{1}{20}\begin{pmatrix} 14 & -6 \\ -6 & 4\end{pmatrix}\begin{pmatrix} 12 \\ 23\end{pmatrix} = \frac{1}{20}\begin{pmatrix} 30 \\ 20\end{pmatrix} = \begin{pmatrix} 1.5 \\ 1\end{pmatrix}$
+- Best line: $y = 1.5 + x$.
+
+**Code: normal equation vs gradient descent.**
+```python
+import numpy as np
+x = np.array([0, 1, 2, 3.]); y = np.array([1, 3, 4, 4.])
+A = np.column_stack([np.ones_like(x), x])
+
+theta = np.linalg.solve(A.T @ A, A.T @ y)        # normal equations
+print(theta)                                     # [1.5 1. ]
+print(np.linalg.lstsq(A, y, rcond=None)[0])      # same, more stable (uses SVD)
+
+w = np.zeros(2); lr = 0.05
+for _ in range(5000):
+    grad = 2 / len(y) * A.T @ (A @ w - y)        # gradient of the mean squared error
+    w -= lr * grad
+print(w.round(4))                                # [1.5 1. ]  converges to the same answer
+```
+All three agree. The gradient is $\frac{2}{n}A^T(A\vec{w} - \vec{y})$, the derivative of the mean squared error; gradient descent steps against it until it reaches the least-squares solution.
+
+## 5. Common mistakes
+- Trying to solve $A\vec{x} = \vec{b}$ directly when it's inconsistent.
+- Computing $(A^TA)^{-1}$ explicitly for ill-conditioned data (use `lstsq` or QR).
+- Forgetting the column of ones for the intercept.
+
+## 6. Practice
+Q: Normal equations?
+A: $A^TA\hat{x} = A^T\vec{b}$.
+
+Q: What does least squares minimise?
+A: The sum of squared residuals $\lVert A\vec{x} - \vec{b}\rVert^2$.
+
+Q: Geometrically, what is $A\hat{x}$?
+A: The projection of $\vec{b}$ onto the column space of $A$.
+
+Q: Why add a column of ones to $A$?
+A: To fit an intercept term.
+
+Q: When is gradient descent preferred over the normal equation?
+A: For very large numbers of features or data points."
+2,MODULE,Matrix decompositions for data,"Singular value decomposition, low-rank approximation, principal component analysis",NICE,,SVD and PCA turn huge data matrices into a few meaningful directions.
+3,TOPIC,Singular value decomposition (SVD),"A = UΣVᵀ, singular values, low-rank approximation, image compression, recommendations",NICE,FALSE,"# Singular value decomposition (SVD)
+
+## 1. What it covers
+- The **SVD** $A = U\Sigma V^T$ for **any** $m \times n$ matrix.
+- **Singular values** (on the diagonal of $\Sigma$) and their meaning.
+- **Low-rank approximation**: keeping the top $k$ singular values.
+- Applications: compression, noise reduction, recommendation systems, pseudo-inverse.
+
+## 2. Where it is used
+- **Recommender systems:** the Netflix Prize popularised matrix factorisation (closely related to SVD) for predicting ratings.
+- **Image compression:** keep a few singular values of an image matrix.
+- **NLP:** latent semantic analysis (LSA) applies SVD to word–document matrices.
+- **Numerical computing:** `lstsq`, rank and the pseudo-inverse are computed via SVD.
+- **PCA** (next topic) is SVD of centred data.
+
+## 3. What it means
+Every matrix, square or not, can be written as **rotate → stretch → rotate**:
+$$
+A = U\Sigma V^T
+$$
+- $V^T$ rotates (or reflects) the input space so the important directions line up with the axes.
+- $\Sigma$ stretches along those axes by the **singular values** $\sigma_1 \ge \sigma_2 \ge \cdots \ge 0$.
+- $U$ rotates into the output space.
+
+The singular values measure **how important** each direction is. Often a few are large and the rest tiny. Keeping only the top $k$ gives the **best possible rank-$k$ approximation** of $A$ (Eckart–Young theorem). That's compression and denoising in one idea: keep the strong patterns, drop the weak ones (usually noise).
+
+Singular values are the square roots of the eigenvalues of $A^TA$.
+
+## 4. Formula & worked example
+$$
+A = U\Sigma V^T = \sum_{i=1}^{r}\sigma_i\vec{u}_i\vec{v}_i^T \qquad A_k = \sum_{i=1}^{k}\sigma_i\vec{u}_i\vec{v}_i^T
+$$
+
+**Example 1.** $A = \begin{pmatrix} 3 & 0 \\ 0 & 2\end{pmatrix}$: already diagonal; singular values 3 and 2; $U = V = I$.
+
+**Example 2 (rank).** The number of non-zero singular values is the rank of $A$.
+
+**Example 3 (image compression, code).**
+```python
+import numpy as np
+rng = np.random.default_rng(0)
+x = np.linspace(0, 1, 200)
+img = np.sin(6 * np.outer(x, x)) + 0.05 * rng.standard_normal((200, 200))   # smooth image + noise
+U, s, Vt = np.linalg.svd(img, full_matrices=False)
+k = 10
+approx = U[:, :k] @ np.diag(s[:k]) @ Vt[:k]
+print(s[:6].round(1))                                       # first few singular values dominate
+print(np.linalg.norm(img - approx) / np.linalg.norm(img))   # small relative error
+print(""storage:"", k * (200 + 200 + 1), ""vs"", 200 * 200)     # 4010 vs 40000 numbers
+```
+Keeping 10 of 200 singular values stores about 10% of the numbers while capturing almost all of the image (and removing much of the noise).
+
+**Example 4 (recommendations).** A users × movies rating matrix is approximately low-rank because tastes are driven by a few factors (genre, mood, era). A rank-$k$ factorisation predicts missing ratings from those hidden factors.
+
+## 5. Common mistakes
+- Confusing singular values with eigenvalues (they coincide only for symmetric positive semi-definite matrices).
+- Forgetting that NumPy returns $V^T$ (not $V$) and $\Sigma$ as a 1D array.
+- Choosing $k$ arbitrarily; look at how fast the singular values drop (or the fraction of total energy kept).
+
+## 6. Practice
+Q: SVD form of a matrix?
+A: $A = U\Sigma V^T$.
+
+Q: Which matrices have an SVD?
+A: All matrices (any size).
+
+Q: What do large singular values indicate?
+A: The most important directions (strongest patterns) in the matrix.
+
+Q: Number of non-zero singular values equals?
+A: The rank.
+
+Q: How does SVD compress an image?
+A: By keeping only the top $k$ singular values and vectors (a low-rank approximation)."
+3,TOPIC,Principal component analysis (PCA),"Centring data, covariance matrix, principal components as eigenvectors, explained variance, dimensionality reduction",NICE,FALSE,"# Principal component analysis (PCA)
+
+## 1. What it covers
+- **PCA**: finding the directions of greatest variance in data.
+- Steps: centre (and often scale) the data, compute the covariance matrix, find its eigenvectors (or use SVD).
+- **Explained variance ratio** and choosing the number of components.
+- Using PCA for visualisation, compression and preprocessing.
+
+## 2. Where it is used
+- **Data visualisation:** projecting high-dimensional data (e.g. 50 features) to 2D to see clusters.
+- **Preprocessing for ML:** reducing features, removing correlations, speeding up training.
+- **Image and face recognition:** eigenfaces.
+- **Finance:** a few principal components explain most movements of interest rates or stock returns.
+- **Genomics:** visualising population structure from thousands of genetic markers.
+
+## 3. What it means
+Imagine a cloud of data points shaped like a tilted, flattened ellipse. PCA finds:
+- **PC1:** the direction along which the data spread out the most;
+- **PC2:** the direction of most remaining spread, **perpendicular** to PC1;
+- and so on.
+
+These directions are the **eigenvectors of the covariance matrix**, and each eigenvalue is the **variance** along its direction. Because the covariance matrix is symmetric, the components are orthogonal.
+
+If the first few components capture most of the variance, you can describe each point with just those coordinates and lose little information. Think of photographing a 3D object from the angle that shows the most detail.
+
+**Scale first** if features use different units (otherwise ""salary in taka"" dominates ""age in years"").
+
+## 4. Formula & worked example
+$$
+C = \frac{1}{n - 1}X_c^TX_c \qquad C\vec{v}_i = \lambda_i\vec{v}_i \qquad \text{explained variance ratio}_i = \frac{\lambda_i}{\sum_j\lambda_j}
+$$
+
+**Example 1 (2D).** Data with covariance matrix $C = \begin{pmatrix} 5 & 2 \\ 2 & 2\end{pmatrix}$: eigenvalues 6 and 1 (from the eigen practice), eigenvectors $\langle 2, 1\rangle$ and $\langle 1, -2\rangle$.
+- PC1 along $\langle 2, 1\rangle$ explains $\frac{6}{7} \approx 86\%$ of the variance; projecting onto PC1 alone keeps 86% of the information in one number per point.
+
+**Example 2 (code).**
+```python
+import numpy as np
+from sklearn.decomposition import PCA
+from sklearn.preprocessing import StandardScaler
+rng = np.random.default_rng(0)
+latent = rng.normal(size=(500, 2))                         # 2 hidden factors
+X = latent @ rng.normal(size=(2, 6)) + 0.1 * rng.normal(size=(500, 6))   # 6 observed features
+Xs = StandardScaler().fit_transform(X)
+pca = PCA().fit(Xs)
+print(pca.explained_variance_ratio_.round(3))              # first 2 components ≈ 98%+
+X2 = PCA(n_components=2).fit_transform(Xs)                 # 500 x 2: ready to plot
+```
+The 6 features were generated from 2 hidden factors plus noise, and PCA discovers that: the first two components explain nearly all the variance. `fit_transform` gives the 2D coordinates for plotting or for a smaller model.
+
+**Example 3 (from scratch with SVD).**
+```python
+Xc = Xs - Xs.mean(axis=0)
+U, s, Vt = np.linalg.svd(Xc, full_matrices=False)
+components = Vt[:2]                     # principal directions (rows)
+scores = Xc @ components.T              # same as PCA coordinates (up to sign)
+explained = s**2 / np.sum(s**2)         # same ratios as pca.explained_variance_ratio_
+```
+PCA is the SVD of the centred data matrix: the right singular vectors are the principal directions, and squared singular values are proportional to the variances.
+
+## 5. Common mistakes
+- Forgetting to centre (and usually scale) the data.
+- Interpreting components as original features (each is a mix of features).
+- Using PCA when the important structure is non-linear (consider t-SNE or UMAP for visualisation).
+
+## 6. Practice
+Q: What is the first principal component?
+A: The direction of greatest variance in the data.
+
+Q: Principal components are eigenvectors of which matrix?
+A: The covariance matrix of the (centred) data.
+
+Q: Why scale features before PCA?
+A: Otherwise features with large units dominate the variance.
+
+Q: Eigenvalues 8, 1.5, 0.5. Variance explained by PC1?
+A: $\frac{8}{10} = 80\%$.
+
+Q: How is PCA related to SVD?
+A: PCA is the SVD of the centred data matrix."
+3,TOPIC,"Practice & review: Orthogonality, least squares, SVD and PCA",Mixed problem set with worked answers,SHOULD,FALSE,"# Practice & review: Orthogonality, least squares, SVD and PCA
+
+**How to use this:** 45 minutes; verify with NumPy.
+
+## Problems
+1. Is $\left\{\frac{1}{3}\langle 1, 2, 2\rangle, \frac{1}{3}\langle 2, 1, -2\rangle\right\}$ orthonormal? Find the coordinates of $\langle 3, 3, 0\rangle$ along these vectors.
+2. Is $\begin{pmatrix} 0.6 & -0.8 \\ 0.8 & 0.6\end{pmatrix}$ orthogonal? What is its inverse?
+3. Project $\langle 2, 4, 6\rangle$ onto the line spanned by $\langle 1, 1, 1\rangle$ and find the distance from the point to the line.
+4. Apply Gram–Schmidt to $\langle 1, 0, 1\rangle$, $\langle 1, 1, 0\rangle$.
+5. Fit $y = c_0 + c_1x$ to $(1, 2)$, $(2, 3)$, $(3, 5)$ by least squares.
+6. A matrix has singular values 50, 20, 1, 0.5. What is its rank? What does a rank-2 approximation keep?
+7. Covariance eigenvalues 4.5, 3, 1.5, 1. How many components keep at least 75% of the variance?
+
+## Answers
+1. Dot $= \frac{2 + 2 - 4}{9} = 0$; each has length 1 → yes. Coordinates: $\frac{1}{3}(3 + 6) = 3$ and $\frac{1}{3}(6 + 3) = 3$.
+2. Columns are orthonormal ($0.36 + 0.64 = 1$, dot $= 0$) → yes; inverse $=$ transpose $\begin{pmatrix} 0.6 & 0.8 \\ -0.8 & 0.6\end{pmatrix}$.
+3. $\frac{12}{3}\langle 1, 1, 1\rangle = \langle 4, 4, 4\rangle$; error $\langle -2, 0, 2\rangle$, distance $2\sqrt{2}$.
+4. $\vec{u}_1 = \frac{1}{\sqrt{2}}\langle 1, 0, 1\rangle$; $\vec{w}_2 = \langle 1, 1, 0\rangle - \frac{1}{2}\langle 1, 0, 1\rangle = \langle 0.5, 1, -0.5\rangle$ → $\vec{u}_2 = \frac{1}{\sqrt{6}}\langle 1, 2, -1\rangle$.
+5. $A^TA = \begin{pmatrix} 3 & 6 \\ 6 & 14\end{pmatrix}$, $A^T\vec{b} = \begin{pmatrix} 10 \\ 23\end{pmatrix}$ → $\det = 6$ → $\hat{x} = \frac{1}{6}\begin{pmatrix} 14 \cdot 10 - 6 \cdot 23 \\ -6 \cdot 10 + 3 \cdot 23\end{pmatrix} = \frac{1}{6}\begin{pmatrix} 2 \\ 9\end{pmatrix}$ → $y = \frac{1}{3} + 1.5x$.
+6. Rank 4 (all non-zero); the rank-2 approximation keeps the two dominant patterns (σ = 50, 20) and drops the tiny ones.
+7. Total 10: PC1 45%, PC1+PC2 75% → 2 components.
+
+## Flashcards
+Q: Inverse of an orthogonal matrix?
+A: Its transpose.
+
+Q: Normal equations for least squares?
+A: $A^TA\hat{x} = A^T\vec{b}$.
+
+Q: SVD?
+A: $A = U\Sigma V^T$: rotate, stretch, rotate.
+
+Q: Principal components?
+A: Orthogonal directions of maximum variance (eigenvectors of the covariance matrix)."
+2,MODULE,Final review,Cumulative mixed set covering the whole roadmap,MUST,,"Mix everything. After this, continue with Multivariable Calculus (gradients, Jacobians, Hessians use these tools) or apply them in ML projects."
+3,TOPIC,Final review: Linear algebra,Cumulative mixed problems from all phases with answers,MUST,FALSE,"# Final review: Linear algebra
+
+**How to use this:** 75 minutes by hand, then check everything with NumPy.
+
+## Problems
+1. Find the angle between $\langle 1, 0, 1\rangle$ and $\langle 0, 1, 1\rangle$, and a vector perpendicular to both.
+2. Solve $x + y + 2z = 9$, $2x + 4y - 3z = 1$, $3x + 6y - 5z = 0$.
+3. Find the inverse of $\begin{pmatrix} 2 & 3 \\ 1 & 2\end{pmatrix}$ and the area scale factor of the transformation.
+4. For $A = \begin{pmatrix} 1 & 2 & 3 \\ 2 & 4 & 6\end{pmatrix}$, find the rank, nullity, and a basis for the null space.
+5. Give the $2 \times 2$ matrix that reflects across the x-axis and then rotates by $90^\circ$. What single transformation is it?
+6. Find the eigenvalues and eigenvectors of $\begin{pmatrix} 2 & 3 \\ 3 & 2\end{pmatrix}$ and diagonalise it.
+7. A Markov chain has $P = \begin{pmatrix} 0.7 & 0.4 \\ 0.3 & 0.6\end{pmatrix}$. Find the steady state.
+8. Fit $y = c_0 + c_1x$ to $(0, 0)$, $(1, 1)$, $(2, 1)$, $(3, 2)$ by least squares.
+9. Explain in two sentences how SVD and PCA are related.
+
+## Answers
+1. $\cos\theta = \frac{1}{2}$ → $60^\circ$; cross product $\langle 0 - 1, 0 - 1, 1 - 0\rangle = \langle -1, -1, 1\rangle$.
+2. $x = 1$, $y = 2$, $z = 3$.
+3. $\det = 1$ → inverse $\begin{pmatrix} 2 & -3 \\ -1 & 2\end{pmatrix}$; areas are preserved (factor 1).
+4. Rank 1; nullity 2; null space basis $\langle -2, 1, 0\rangle$, $\langle -3, 0, 1\rangle$.
+5. $R_{90}F = \begin{pmatrix} 0 & -1 \\ 1 & 0\end{pmatrix}\begin{pmatrix} 1 & 0 \\ 0 & -1\end{pmatrix} = \begin{pmatrix} 0 & 1 \\ 1 & 0\end{pmatrix}$: reflection across $y = x$.
+6. $\lambda = 5$ with $\langle 1, 1\rangle$; $\lambda = -1$ with $\langle 1, -1\rangle$; $P = \begin{pmatrix} 1 & 1 \\ 1 & -1\end{pmatrix}$, $D = \text{diag}(5, -1)$.
+7. $-0.3q_1 + 0.4q_2 = 0$ → $q_1 = \frac{4}{3}q_2$ → $\vec{q} = \langle \frac{4}{7}, \frac{3}{7}\rangle$.
+8. $A^TA = \begin{pmatrix} 4 & 6 \\ 6 & 14\end{pmatrix}$, $A^T\vec{b} = \begin{pmatrix} 4 \\ 9\end{pmatrix}$ → $\hat{x} = \frac{1}{20}\begin{pmatrix} 56 - 54 \\ -24 + 36\end{pmatrix} = \begin{pmatrix} 0.1 \\ 0.6\end{pmatrix}$ → $y = 0.1 + 0.6x$.
+9. PCA finds the directions of maximum variance of centred data. Computing the SVD of the centred data matrix gives exactly these directions (the right singular vectors), with variances proportional to the squared singular values."

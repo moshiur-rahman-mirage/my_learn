@@ -22,6 +22,9 @@ import java.util.regex.Pattern;
  * item of the same plan by name, ignoring case and spacing, so it survives the target being
  * recreated or the plan being re-imported. The references are stored per note so that an item
  * can show the notes that link to it.
+ *
+ * <p>Changing what this produces for an existing note? Bump {@code NoteIndexes.INDEX_VERSION} so
+ * the next start re-derives every note.
  */
 @Service
 @Transactional(readOnly = true)

@@ -14,7 +14,9 @@ import {
   CircleAlert,
   Check,
   ChevronLeft,
+  ChevronDown,
   ChevronRight,
+  ChevronUp,
   ChevronsRight,
   FileCode2,
   FileText,
@@ -102,6 +104,9 @@ const scale = ref(readNumber('notes.scale', 1))
 const dragging = ref(false)
 watch(maximized, (v) => writePref('notes.maximized', v ? '1' : '0'))
 watch(reading, (v) => writePref('notes.reading', v ? '1' : '0'))
+/** Progress tracker (level map) can be folded away upward. */
+const trackerOpen = ref(readPref('notes.tracker', ['1', '0'] as const, '1') === '1')
+watch(trackerOpen, (v) => writePref('notes.tracker', v ? '1' : '0'))
 watch(scale, (v) => writePref('notes.scale', String(v)))
 
 /** Width the panel may take without covering the left sidebar (matches --notes-avail in CSS). */
@@ -348,6 +353,18 @@ const nextPendingTopic = computed(() => {
   if (topicIndex.value < 0) return null
   return topicOrder.value.slice(topicIndex.value + 1).find((n) => n.checkable && !n.completed) ?? nextTopic.value
 })
+/** Level-map window: a few topics before and after the current one, so you see where you came from and where you go next. */
+const TRAIL = 5
+const trail = computed(() => {
+  const i = topicIndex.value
+  if (i < 0) return []
+  const from = Math.max(0, i - TRAIL)
+  const to = Math.min(topicOrder.value.length - 1, i + TRAIL)
+  return topicOrder.value.slice(from, to + 1).map((n, k) => ({ node: n, index: from + k, offset: from + k - i }))
+})
+const trailMoreBefore = computed(() => topicIndex.value - TRAIL > 0)
+const trailMoreAfter = computed(() => topicIndex.value + TRAIL < topicOrder.value.length - 1)
+
 function goTo(target: TreeNode | null) {
   if (target) emit('open', target)
 }
@@ -546,6 +563,16 @@ watch(
   },
   { immediate: true },
 )
+/**
+ * Wheel over the note scrolls the note, wheel beside it scrolls the page. The note's scroll areas
+ * contain their own scrolling; over the parts that don't scroll (header, level map, footer) the
+ * wheel must not leak to the page behind.
+ */
+function onPanelWheel(e: WheelEvent) {
+  const t = e.target as HTMLElement | null
+  if (t?.closest('[data-scroll-area]')) return
+  e.preventDefault()
+}
 onBeforeUnmount(() => {
   document.removeEventListener('keydown', onKey)
   document.removeEventListener('fullscreenchange', onFullscreenChange)
@@ -578,6 +605,7 @@ onBeforeUnmount(() => {
           },
         ]"
         :style="panelStyle"
+        @wheel="onPanelWheel"
         role="dialog"
         aria-modal="false"
         :aria-label="`Notes for ${node.name}`"
@@ -714,12 +742,59 @@ onBeforeUnmount(() => {
           </div>
         </header>
 
-        <div ref="scroller" class="flex-1 overflow-y-auto" @scroll.passive="onScroll" @click="settingsOpen = false">
+        <!-- reading mode: level map of the topics around this one -->
+        <nav
+          v-if="reading && trail.length > 1"
+          class="level-map relative border-b border-slate-200 bg-slate-50/80 px-3 dark:border-slate-800 dark:bg-slate-900/50"
+          :class="trackerOpen ? 'py-2' : 'py-0.5'"
+          aria-label="Topic progress"
+        >
+          <button
+            type="button"
+            class="muted absolute top-0.5 right-1 z-10 rounded p-0.5 hover:bg-slate-200 dark:hover:bg-slate-800"
+            :class="trackerOpen ? '' : 'static ml-auto flex items-center gap-1 text-xs'"
+            :aria-expanded="trackerOpen"
+            :title="trackerOpen ? 'Collapse progress tracker' : 'Expand progress tracker'"
+            @click="trackerOpen = !trackerOpen"
+          >
+            <ChevronUp v-if="trackerOpen" class="size-4" />
+            <template v-else><ChevronDown class="size-4" /> Progress</template>
+          </button>
+          <ol v-show="trackerOpen" class="flex w-full items-start pr-6">
+            <li v-if="trailMoreBefore" class="level-more muted" aria-hidden="true">…</li>
+            <li
+              v-for="t in trail"
+              :key="t.node.id"
+              class="level-step"
+              :class="[
+                t.offset === 0 ? 'is-current' : '',
+                t.node.completed ? 'is-done' : t.node.hasNotes ? 'is-note' : '',
+                Math.abs(t.offset) > 2 ? 'hidden @md:flex' : Math.abs(t.offset) > 1 ? 'hidden @sm:flex' : '',
+              ]"
+            >
+              <button
+                type="button"
+                class="level-node"
+                :disabled="t.offset === 0"
+                :aria-current="t.offset === 0 ? 'step' : undefined"
+                :title="`${t.index + 1}. ${t.node.name} — ${t.node.completed ? 'completed' : t.node.hasNotes ? 'has a note' : 'no note yet'}`"
+                @click="goTo(t.node)"
+              >
+                <Check v-if="t.node.completed" class="size-3.5" stroke-width="3.5" />
+                <span v-else class="tabular-nums">{{ t.index + 1 }}</span>
+              </button>
+              <span class="level-label" :class="t.offset === 0 ? '' : 'hidden @lg:block'">{{ t.node.name }}</span>
+            </li>
+            <li v-if="trailMoreAfter" class="level-more muted" aria-hidden="true">…</li>
+          </ol>
+        </nav>
+
+        <div ref="scroller" data-scroll-area class="flex-1 overflow-y-auto overscroll-contain" @scroll.passive="onScroll" @click="settingsOpen = false">
           <ItemDetails v-show="!reading" :node="node" :plan-id="planId" :all-tags="allTags" @changed="emit('changed')" />
           <div :class="reading ? 'flex justify-center gap-6 px-2' : ''">
           <nav
             v-if="reading && outline.length >= 2"
-            class="sticky top-0 hidden max-h-[calc(100vh-5rem)] w-60 shrink-0 self-start overflow-y-auto py-6 pr-2 text-sm @4xl:block"
+            class="sticky top-0 hidden max-h-[calc(100vh-5rem)] w-60 shrink-0 self-start overflow-y-auto overscroll-contain py-6 pr-2 text-sm @4xl:block"
             aria-label="Outline"
           >
             <p class="muted mb-2 flex items-center gap-1 text-xs font-semibold tracking-wide uppercase"><ListTree class="size-3.5" /> Outline</p>

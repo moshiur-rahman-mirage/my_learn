@@ -53,6 +53,18 @@ for r in rows:
     if "```" in body and len(prose.strip()) < 200:
         problems.append(f"{r['src']} '{r['name']}': code without enough explanation")
 
+# Optional: <guide_dir>/_sections.txt lists headings every TOPIC must contain (one per line).
+# Topics whose name starts with "Practice" or "Final review" are exempt (they are problem sets).
+SECTIONS = GUIDE / "_sections.txt"
+if SECTIONS.exists():
+    required = [s.strip() for s in SECTIONS.read_text(encoding="utf-8").splitlines() if s.strip()]
+    for r in rows:
+        if r["type"] != "TOPIC" or r["name"].startswith(("Practice", "Final review")):
+            continue
+        missing = [h for h in required if h not in r["content"]]
+        if missing:
+            problems.append(f"{r['src']} '{r['name']}': missing section(s) {missing}")
+
 # A tick only makes sense on a leaf topic: the next row must not be deeper.
 for i, r in enumerate(rows):
     nxt = rows[i + 1] if i + 1 < len(rows) else None
