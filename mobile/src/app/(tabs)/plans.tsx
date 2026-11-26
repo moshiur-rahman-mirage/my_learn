@@ -1,17 +1,19 @@
 import { useState } from 'react'
-import { FlatList, Pressable, RefreshControl, Text, View } from 'react-native'
+import { FlatList, Pressable, RefreshControl, Text, TextInput, View } from 'react-native'
+import Ionicons from '@expo/vector-icons/Ionicons'
 import { router } from 'expo-router'
 import { useDb } from '@/db/DbProvider'
 import { listPlans, overallProgress } from '@/data/plans'
-import { percentLabel } from '@/domain/progress'
+import { percentLabel, remaining } from '@/domain/progress'
 import type { Plan, PlanStatus } from '@/domain/types'
 import { readConfig } from '@/sync/client'
 import { useSync } from '@/sync/useSync'
 import { useQuery } from '@/state/useQuery'
-import { Button, Card, Chip, EmptyState, ErrorText, Loading, ProgressBar } from '@/ui/components'
-import { SyncBanner } from '@/ui/SyncBanner'
+import { Button, Chip, EmptyState, ErrorText, Loading, ProgressBar } from '@/ui/components'
 import { PaceBadge } from '@/ui/PaceBadge'
-import { space, useColors } from '@/ui/theme'
+import { PlanCover } from '@/ui/PlanCover'
+import { SyncBanner } from '@/ui/SyncBanner'
+import { radius, space, useColors } from '@/ui/theme'
 
 const FILTERS: { label: string; value: PlanStatus | null }[] = [
   { label: 'Active', value: 'ACTIVE' },
@@ -19,21 +21,18 @@ const FILTERS: { label: string; value: PlanStatus | null }[] = [
   { label: 'All', value: null },
 ]
 
+/** The library: every plan as a "book" with its cover, progress and pace. */
 export default function PlansScreen() {
   const db = useDb()
   const c = useColors()
   const [status, setStatus] = useState<PlanStatus | null>('ACTIVE')
+  const [search, setSearch] = useState('')
   const { data, error, reload } = useQuery(
-    async (d) => ({ plans: await listPlans(d, { status }), overall: await overallProgress(d), paired: !!(await readConfig(d)).token }),
-    `status:${status}`,
+    async (d) => ({ plans: await listPlans(d, { status, search }), overall: await overallProgress(d), paired: !!(await readConfig(d)).token }),
+    `status:${status}:${search}`,
   )
   const syncing = useSync((s) => s.running)
   const runSync = useSync((s) => s.run)
-
-  const refresh = async () => {
-    if (data?.paired) await runSync(db)
-    else await reload()
-  }
 
   if (!data) return error ? <ErrorText message={error} /> : <Loading />
 
@@ -41,23 +40,34 @@ export default function PlansScreen() {
     <FlatList
       data={data.plans}
       keyExtractor={(p) => String(p.id)}
-      contentContainerStyle={{ padding: space.lg, gap: space.md, flexGrow: 1 }}
-      refreshControl={<RefreshControl refreshing={syncing} onRefresh={refresh} colors={[c.primary]} />}
+      contentContainerStyle={{ padding: space.lg, paddingTop: space.sm, gap: space.md, flexGrow: 1, paddingBottom: space.xl * 2 }}
+      keyboardShouldPersistTaps="handled"
+      refreshControl={<RefreshControl refreshing={syncing} onRefresh={() => void (data.paired ? runSync(db) : reload())} colors={[c.primary]} />}
       ListHeaderComponent={
-        <View style={{ gap: space.md, marginBottom: space.sm }}>
+        <View style={{ gap: space.md, marginBottom: space.xs }}>
           <SyncBanner />
-          <Card style={{ gap: space.sm }}>
-            <Text style={{ color: c.text, fontSize: 16, fontWeight: '700' }}>Overall (active plans)</Text>
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.md }}>
-              <View style={{ flex: 1 }}>
-                <ProgressBar progress={data.overall} height={8} />
+          {/* overall */}
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.lg, padding: space.lg, borderRadius: radius.card, backgroundColor: c.hero }}>
+            <View style={{ flex: 1, gap: 6 }}>
+              <Text style={{ color: c.heroAccent, fontSize: 12, fontWeight: '800', letterSpacing: 0.6 }}>ALL ACTIVE PLANS</Text>
+              <Text style={{ color: c.heroText, fontSize: 22, fontWeight: '800' }}>{data.overall.completed} of {data.overall.total} topics</Text>
+              <View style={{ height: 6, borderRadius: 3, backgroundColor: '#ffffff22', overflow: 'hidden' }}>
+                <View style={{ height: 6, width: `${data.overall.percent ?? 0}%`, backgroundColor: c.heroAccent }} />
               </View>
-              <Text style={{ color: c.primary, fontWeight: '800' }}>{percentLabel(data.overall)}</Text>
             </View>
-            <Text style={{ color: c.muted, fontSize: 12 }}>
-              {data.overall.completed} of {data.overall.total} topics done
-            </Text>
-          </Card>
+            <Text style={{ color: c.heroText, fontSize: 28, fontWeight: '900' }}>{percentLabel(data.overall)}</Text>
+          </View>
+          {/* search + filters */}
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.sm, backgroundColor: c.card, borderRadius: radius.pill, borderWidth: 1, borderColor: c.border, paddingHorizontal: space.lg }}>
+            <Ionicons name="search" size={18} color={c.faint} />
+            <TextInput value={search} onChangeText={setSearch} placeholder="Find a plan" placeholderTextColor={c.faint}
+              style={{ flex: 1, color: c.text, paddingVertical: 12, fontSize: 15 }} accessibilityLabel="Find a plan" autoCorrect={false} />
+            {search ? (
+              <Pressable onPress={() => setSearch('')} hitSlop={10} accessibilityRole="button" accessibilityLabel="Clear">
+                <Ionicons name="close-circle" size={18} color={c.faint} />
+              </Pressable>
+            ) : null}
+          </View>
           <View style={{ flexDirection: 'row', gap: space.sm }} accessibilityRole="radiogroup">
             {FILTERS.map((f) => (
               <Chip key={f.label} label={f.label} on={status === f.value} onPress={() => setStatus(f.value)} />
@@ -68,8 +78,10 @@ export default function PlansScreen() {
       ListEmptyComponent={
         syncing ? (
           <EmptyState title="Downloading your plans…" message="They appear here as they arrive. The first sync can take a minute." />
+        ) : search ? (
+          <EmptyState title="No plan matches" message={`Nothing named or described like “${search}”.`} />
         ) : data.paired ? (
-          <EmptyState title="No plans here" message="Pull down to sync with your computer." />
+          <EmptyState title="No plans here" message="Pull down to sync with your computer, or tap + to start one." />
         ) : (
           <EmptyState
             title="No plans on this phone yet"
@@ -85,33 +97,29 @@ export default function PlansScreen() {
 
 function PlanRow({ plan }: { plan: Plan }) {
   const c = useColors()
+  const left = remaining(plan.progress)
   return (
     <Pressable
       accessibilityRole="button"
-      accessibilityLabel={`${plan.name}, ${percentLabel(plan.progress)} done`}
+      accessibilityLabel={`${plan.name}, ${percentLabel(plan.progress)} done, ${left} topics left`}
       onPress={() => router.push({ pathname: '/plan/[id]', params: { id: String(plan.id) } })}
       style={({ pressed }) => ({
-        backgroundColor: c.card, borderColor: c.border, borderWidth: 1, borderRadius: 20, padding: space.lg, gap: space.sm,
-        shadowColor: '#29213d', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.05, shadowRadius: 12, elevation: 2,
-        opacity: pressed ? 0.8 : 1,
+        flexDirection: 'row', gap: space.lg, alignItems: 'center', backgroundColor: c.card, borderColor: c.border, borderWidth: 1,
+        borderRadius: radius.card, padding: space.md, opacity: pressed ? 0.85 : 1,
       })}
     >
-      <View style={{ flexDirection: 'row', alignItems: 'baseline', gap: space.sm }}>
-        <Text style={{ flex: 1, color: c.text, fontSize: 16, fontWeight: '600' }} numberOfLines={2}>
-          {plan.name}
+      <PlanCover name={plan.name} />
+      <View style={{ flex: 1, gap: 6 }}>
+        <Text style={{ color: c.text, fontSize: 17, fontWeight: '700', fontFamily: 'serif' }} numberOfLines={2}>{plan.name}</Text>
+        {plan.description ? <Text style={{ color: c.muted, fontSize: 12 }} numberOfLines={1}>{plan.description}</Text> : null}
+        <ProgressBar progress={plan.progress} height={5} />
+        <Text style={{ color: c.muted, fontSize: 12 }}>
+          <Text style={{ color: c.primary, fontWeight: '800' }}>{percentLabel(plan.progress)}</Text>
+          {plan.progress.total > 0 ? ` · ${left === 0 ? 'all done' : `${left} topic${left === 1 ? '' : 's'} left`}` : ' · no topics yet'}
+          {plan.status === 'ARCHIVED' ? ' · archived' : ''}
         </Text>
-        <Text style={{ color: plan.progress.percent === null ? c.faint : c.text, fontWeight: '700' }}>{percentLabel(plan.progress)}</Text>
+        <PaceBadge pace={plan.pace} />
       </View>
-      {plan.description ? (
-        <Text style={{ color: c.muted, fontSize: 13 }} numberOfLines={2}>
-          {plan.description}
-        </Text>
-      ) : null}
-      <ProgressBar progress={plan.progress} />
-      <PaceBadge pace={plan.pace} />
-      <Text style={{ color: c.muted, fontSize: 12 }}>
-        {plan.progress.completed}/{plan.progress.total} topics{plan.status === 'ARCHIVED' ? ' · archived' : ''}
-      </Text>
     </Pressable>
   )
 }

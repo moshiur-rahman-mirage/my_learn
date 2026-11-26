@@ -4,6 +4,7 @@ import { Asset } from 'expo-asset'
 import { WebView as RNWebView } from 'react-native-webview'
 import type { AndroidWebViewProps, WebViewMessageEvent } from 'react-native-webview/lib/WebViewTypes'
 import type { NoteFormat } from '@/domain/types'
+import { usePrefs } from '@/state/prefs'
 
 /**
  * Shows a note exactly as the desktop does: the desktop's own Markdown renderer (marked,
@@ -44,7 +45,7 @@ function loadViewer(): Promise<string> {
 }
 
 export function NoteView({
-  content, format, names, onWikiLink, ref, minHeight = 40,
+  content, format, names, onWikiLink, ref, minHeight = 40, mode = 'embedded', onProgress, onTap,
 }: {
   content: string
   format: NoteFormat
@@ -53,8 +54,18 @@ export function NoteView({
   onWikiLink?: (target: string) => void
   ref?: Ref<NoteViewHandle>
   minHeight?: number
+  /** 'page': fills its parent and scrolls itself (the reader); 'embedded': sized to the note */
+  mode?: 'embedded' | 'page'
+  /** page mode: how far through the note (0..1) */
+  onProgress?: (fraction: number) => void
+  /** a tap on the text (not on a link) */
+  onTap?: () => void
 }) {
   const dark = useColorScheme() === 'dark'
+  const font = usePrefs((s) => s.readingFont)
+  const textScale = usePrefs((s) => s.textScale)
+  const lineHeight = usePrefs((s) => s.lineHeight)
+  const readingTheme = usePrefs((s) => s.readingTheme)
   const web = useRef<WebViewRef>(null)
   const [uri, setUri] = useState<string | null>(null)
   const [ready, setReady] = useState(false)
@@ -72,9 +83,14 @@ export function NoteView({
   // (re)render whenever the note or theme changes
   useEffect(() => {
     if (!ready) return
-    const payload = JSON.stringify({ content, format, dark, names, fontScale: PixelRatio.getFontScale() })
+    const payload = JSON.stringify({
+      content, format, dark, names, mode, font, lineHeight,
+      fontScale: PixelRatio.getFontScale() * (mode === 'page' ? textScale : Math.min(textScale, 1.15)),
+      // embedded notes sit on the app's cards, so only the reader paints a reading background
+      readingTheme: mode === 'page' ? readingTheme : 'auto',
+    })
     web.current?.injectJavaScript(`window.renderNote(${payload}); true;`)
-  }, [ready, content, format, dark, names])
+  }, [ready, content, format, dark, names, mode, font, textScale, lineHeight, readingTheme])
 
   useImperativeHandle(ref, () => ({
     toMarkdown: (html: string) =>
@@ -93,6 +109,8 @@ export function NoteView({
     }
     if (msg.type === 'ready') setReady(true)
     else if (msg.type === 'height' && typeof msg.value === 'number') setHeight(Math.max(minHeight, msg.value))
+    else if (msg.type === 'progress' && typeof msg.value === 'number') onProgress?.(msg.value)
+    else if (msg.type === 'tap') onTap?.()
     else if (msg.type === 'wiki' && msg.target) onWikiLink?.(msg.target)
     else if (msg.type === 'link' && msg.href && /^https?:|^mailto:/i.test(msg.href)) void Linking.openURL(msg.href)
     else if (msg.type === 'markdown' && typeof msg.value === 'string') {
@@ -103,7 +121,7 @@ export function NoteView({
 
   if (!uri) return <ActivityIndicator style={{ height: minHeight }} />
   return (
-    <View style={{ height }}>
+    <View style={mode === 'page' ? { flex: 1 } : { height }}>
       <WebView
         ref={web}
         source={{ uri }}

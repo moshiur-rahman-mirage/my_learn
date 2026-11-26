@@ -93,7 +93,7 @@ export function Card({ children, style }: { children: ReactNode; style?: StylePr
       borderWidth: 1,
       borderRadius: radius.card,
       padding: space.lg,
-      shadowColor: '#29213d',
+      shadowColor: '#000000',
       shadowOffset: { width: 0, height: 4 },
       shadowOpacity: 0.06,
       shadowRadius: 12,

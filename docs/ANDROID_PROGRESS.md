@@ -99,8 +99,16 @@ Notes use marked, KaTeX, Mermaid and highlight.js on the desktop. For identical 
 - [x] P2.4 Plan screens: new plan, edit (name, description, target date), archive/activate, delete (type the name to confirm); pace badge on the plan list and plan screen
 - [x] P2.5 E2E: structure edits on the phone sync to the desktop (extend the e2e test); rebuild the APK
 
-### P3 / P4
-- [ ] Break these into tasks when starting P3
+### Stages requested 2026-11-25 (work through without waiting for "go next"; build and try to install after each)
+Design references: `docs/Screenshot 2026-11-25 222136.png` (reading app: dark "Continue reading" hero, library with filter chips and covers with progress, overview stats and bar chart) and `docs/Screenshot 2026-11-25 222158.png` (lavender learning app: "Well done!" banner, week day row, big daily-goal ring, three stat tiles, "Start studying", summary statistics). The theme was already switched to a lavender palette with `radius` tokens (`src/ui/theme.ts`, edited outside these sessions at 22:25).
+- [x] S1 Repeated or switched syncs never duplicate plans (rebuild on a new computer; "Download everything again"; unsent-changes guard)
+- [x] S2 Settings screen: dark mode (system/light/dark), reading font (family, size, line spacing), stored locally; a ThemeProvider replaces `useColorScheme`
+- [x] S3 Reading mode: full-page note reader (`read/[id]`), reading font and theme, progress bar, previous/next topic, mark done
+- [x] S4 Gamification: XP and levels, daily goal ring, streak and week row, achievements (derived from synced data, so the same on every device)
+- [x] S5 Clean dashboard (Home): greeting banner, goal ring, stat tiles, continue-reading hero, due tiles, weekly chart
+- [x] S6 Modern UI pass: library with covers and filter chips, item and cards screens, tab bar; Profile tab (level, badges, settings, sync)
+- [x] S7 (P3) Topic extras on the phone: tags (edit), links (add/remove), time log (+15/+25/+50, delete) and a Pomodoro timer, confidence rating 1–5 (low rating brings a review forward, like the desktop)
+- [x] S8 (P4) Data: share/export a plan as CSV, full local backup file (.db) via the share sheet
 
 ## Log
 
@@ -306,3 +314,77 @@ Notes use marked, KaTeX, Mermaid and highlight.js on the desktop. For identical 
   - **Cause:** `backend/src/main/resources/application-desktop.yml` sets `server.address: 127.0.0.1` (the desktop profile). I had missed this file. **Correction to earlier notes:** the installer never exposed the API on the LAN; that claim in the P0.1/P0.3 log entries was wrong, and SYNC_PROTOCOL §5 is fixed.
   - **Fix:** `server.address: 0.0.0.0` in the desktop profile. `RemoteAccessFilter` keeps everything except `/api/sync` and `/api/sync/ping` this-PC-only. `PhoneSyncIntegrationTest` (19) and `DesktopLauncherTest` (2) pass.
   - **To take effect:** the user runs tray → *Update from source code…* (rebuild, all tests, reinstall, restart), allows the Windows Firewall prompt for **private networks**, then re-pairs the phone: Sync tab → *Pair with a different computer* → scan the QR in desktop Settings → Phone sync (`http://192.168.0.102:38427`).
+- 2026-11-25: **S1 done: no duplicate plans.**
+  - **Cause:** V7 gives each database copy its OWN random plan/link/time-log keys; item keys are shared. The phone held the test copy's plans; the real desktop's same plans had different keys → `freePlanName` would create "Java (2)" and items would be skipped as cross-plan moves. The desktop was unaffected (the phone pushed nothing).
+  - **Fix** (`client.ts`):
+    - New app_meta keys `sync_history_url` (the computer whose data the phone holds, set after a completed sync; kept on unpair) and `sync_rebuild`.
+    - `pair()` to a different computer than the history sets rebuild; with unsent changes it throws `SyncError('unsent-changes')` unless `discardUnsent`. A never-synced phone keeps and uploads its data.
+    - `syncNow` with rebuild sends since 0, epoch null and no changes, wipes in the first page's transaction, and clears the flag after the last page. `report.rebuilt`. `requestRebuild()`.
+    - Pairing a new computer clears `lastSyncAt`.
+  - **UI:** `pair.tsx` asks "Discard and pair"; the Sync tab has a "Download everything again" button and a rebuilt message.
+  - **Tests:** 6 new in `syncClient.test.ts` (switch computers, 5 repeated syncs, re-pair same computer, first pairing uploads, unsent guard, download again). Mobile **101 passing**.
+  - **Lesson:** a test file with a parse error silently drops out of the count; check `Test Files … failed`, not only `Tests … passed`.
+  - **`mobile/scripts/ship-android.sh`:** builds the APK (JDK 21, Windows paths because of `MSYS_NO_PATHCONV`), copies it to dist/, finds the phone (adb restart + mDNS) and installs (`cygpath -w` for the APK path). The S1 install was slow over wireless.
+  - **The user's phone needs to update the APK, then use Sync → "Download everything again"** (or re-pair) to clear any "(2)" plans from the earlier merge.
+- 2026-11-26: **S2–S5 done.**
+  - **S2 Settings:**
+    - `src/state/prefs.ts`: Zustand store plus app_meta `pref_*` keys (local, never synced): theme system/light/dark, reading font sans/serif/mono, textScale, lineHeight, readingTheme auto/paper/sepia/night, dailyGoal.
+    - `src/state/PrefsLoader.tsx` loads prefs and calls **`Appearance.setColorScheme('light'|'dark'|'auto')`** (RN 0.88), so every `useColorScheme()` follows, and sets `SystemUI.setBackgroundColorAsync`.
+    - `src/app/settings.tsx`: segmented controls, background swatches, a live preview through the real `NoteView` in page mode, daily goal.
+  - **S3 Reading mode:**
+    - `src/app/read/[id].tsx`: full-screen page; the controls show and hide on tap. The renderer posts `{type:'tap'}` for taps outside links, because a WebView swallows touches so a `Pressable` around it never fires.
+    - Reading progress bar (renderer posts `progress` in page mode), A−/A+, background cycle, previous/next note in roadmap order (`src/data/reading.ts` `readingNav`), Mark as done.
+    - Remembers `last_read_item` (app_meta).
+    - Renderer payload adds `font`, `lineHeight`, `readingTheme`, `mode`; CSS has sepia/paper/night page themes and serif/mono fonts.
+    - Entry points: the item screen's "Read" button and tapping the note.
+  - **S4 Gamification:**
+    - `src/domain/gamification.ts`: XP = 20/topic you completed (not imports) + 15/note + 10/review stage + 5/flashcard stage; level n starts at 50·n·(n−1) XP; titles; 13 badges; `encouragement()`.
+    - `src/data/stats.ts` `loadStats`: actions per day from completions plus `last_reviewed_at` of cards and reviews (only the latest is stored, so past days are approximate and today is exact), streaks over action days, finished plans.
+    - `src/app/(tabs)/profile.tsx`: level card, lifetime numbers, badge grid, links to Settings and Sync.
+  - **S5 Home** (`src/app/(tabs)/index.tsx`, own header): date and greeting, level circle (→ Profile), settings gear, encouragement banner, card with `WeekRow`, `GoalRing` (react-native-svg), 3 `StatTile`s and `LevelBar`, "Start studying", a dark "Continue reading" hero, due tiles, an inline review list (3, expandable), "Topics this week" `BarChart`, Up next. Components in `src/ui/dashboard.tsx`.
+  - **Tabs:** Home, Plans, Search, Cards, Profile, with filled icons when active. **Sync is no longer a tab**: it's `src/app/sync.tsx` (stack), opened from Profile and Settings.
+  - **Dependencies:** `react-native-svg` added (no config plugin → no prebuild needed).
+  - **Route types:** `.expo/types/router.d.ts` is only regenerated by the dev server: `CI=1 timeout 50 npx expo start --offline --port 8099`. `expo export` does not regenerate it.
+  - **Checks:** mobile **112 tests passing**; tsc and lint clean.
+  - **Installs:** S2–S3 installed 00:01. The S4–S5 install failed (the phone went offline mid-install, then wasn't discoverable); the APK is in dist/.
+- 2026-11-26: **S6 done: modern UI pass.**
+  - `src/ui/PlanCover.tsx`: generated book covers (SVG gradient from a hash of the plan name, so each plan has a stable colour; an icon matched from words in the name — Java, AWS, maths, DSA, Node, Python, design, finance, data…; initials).
+  - **Plans tab** is now a library: a dark "all active plans" hero, a search field (`listPlans` search), filter chips, cover cards with serif titles, progress, "% · N topics left" and the pace badge.
+  - **Plan screen** header: large cover, serif title and description, percentage.
+  - **Item screen:** a title card with a mini cover, breadcrumbs, a serif title, meta chips and a primary **"Read the note"** button; "Mark as done" becomes secondary when there is a note.
+  - **Search** hits have a mini plan cover.
+  - **Checks:** 112 tests passing; tsc and lint clean.
+  - **Install:** skipped (phone not reachable); the APK in dist/ contains S4–S6.
+- 2026-11-26: **S7 done: topic study tools.**
+  - `src/data/extras.ts` ports TagService (normalize, max 20 tags of 40 characters, existing spelling kept, orphan tags removed), LinkService (`https://` added, http(s) only, max 50), TimeLogService (1–1440 minutes) and ConfidenceService (≤2 on a completed leaf topic sets the review to tomorrow unless one is due by then). 7 tests.
+  - `src/state/pomodoro.ts`: one app-wide timer. Only `endsAt` is stored (app_meta 'pomodoro'), so it survives backgrounding or a restart; `finishIfDue` logs the minutes. 2 tests.
+  - `src/ui/PomodoroBar.tsx`: a floating countdown above the tab bar (mounted in the root layout); it checks every second and on resume, and alerts when done.
+  - `src/ui/itemTools.tsx`: `ConfidenceCard` (1–5, "Shaky"…"Solid"; tap again to clear), `TimeCard` (+15/+25/+50, start 25-min focus), `TagsCard` (removable chips, add field, suggestions from `allTags`), `LinksCard` (open, add with optional title, long-press to delete). All are wired into the item screen below the notes.
+  - **Checks:** mobile **121 tests passing**; tsc and lint clean.
+  - **Install:** skipped (phone not reachable).
+  - Note: one vitest run stalled for 5 minutes (system short of memory); the rerun took 0.7 s. Use `timeout` on test commands.
+- 2026-11-26: **S8 done: data export.**
+  - `src/data/exportCsv.ts`: plan CSV in the **desktop's ExportService format** (id, level, type, name, description, priority, completed, version, note_format, note; tree order; RFC quoting; UTF-8 BOM; `
+`), so the desktop can import or sync it. 3 tests, including a strict RFC parser round-trip.
+  - **Slug fix on BOTH sides:** `[^\p{L}\p{M}\p{N}]+`. Without `\p{M}`, Bangla vowel signs were stripped ("বাংলা" became "ব-ল"); the desktop `ExportService` had the same bug. Desktop `ImportExportIntegrationTest` passes (9).
+  - `src/platform/share.ts`: `shareTextFile` (expo-file-system `File` in `Paths.cache` + expo-sharing) and `sharePhoneBackup` (`VACUUM INTO` a cache file, then share as application/vnd.sqlite3).
+  - **UI:** the plan ⋯ menu has "Export as CSV"; Settings has a "Data" section with "Back up this phone". The phone .db isn't restorable by the desktop's Restore (no flyway_schema_history); it's a phone-side spare.
+  - **expo-sharing adds a config plugin → prebuild was re-run and local.properties restored (sdk.dir + cmake.dir).**
+  - **Checks:** mobile **124 tests passing**; tsc and lint clean.
+- 2026-11-26: **The S8 build was stopped by Claude Code under low system memory** (not a build failure). It was not restarted: restart only when the user asks (`bash mobile/scripts/ship-android.sh`; prebuild and local.properties are already done). `dist/Learning Tracker-android.apk` is still the S7 build (S1–S7). The phone holds the S3 build (installed 00:01).
+- 2026-11-26: **Device check of S1–S8 (all installed 06:10; fixes installed afterwards).**
+  - Checked on the phone with screenshots: Home (greeting, streak banner, week row, goal ring, stat tiles, level, Continue reading), the Plans library (covers and icons matched; 224/2417 = 9.3% like the desktop), Profile badges, and Settings (sepia + serif live preview). No JS errors.
+  - **Fixed after the check:**
+    1. **XP was inflated (31,860, level 25).** 1,879 notes × 15 came from imported plans. Measured on the real DB: only **25** notes were saved >5 s / 60 s / 5 min after their topic was created (robust). Notes now count only when written >60 s after the topic's creation; finished-review credit excludes imports. Expected XP ≈ 4,050, level 9.
+    2. The goal ring drew a dot at 0% (round line cap on a zero-length arc); it's now not drawn at 0%.
+    3. "a 11-day" → `article()` ("an" for 8…, 11, 18, and 11/18 thousands).
+    4. Scrolled content ran under the status bar on Home, Profile and Cards → `StatusBarShade` in `src/ui/dashboard.tsx`.
+  - Mobile **126 tests passing**; tsc and lint clean.
+  - **INCIDENT / RULE:** while navigating with `adb input`, a Back key left the app, and the next tap and swipe landed in the user's **Phone app (call log)**. Verified that no call was made (`dumpsys telecom`: no calls; `mCallState=0`). **Rule from now on: no `adb input` on the user's phone at all, unless the user explicitly asks for it in that turn. If asked, check `topResumedActivity` is `com.mylearn.tracker` before EVERY tap, and never send Back (keyevent 4) at the app's main screen.** Install with `adb install -r` and take read-only screenshots only.
+- 2026-11-26: **New study-friendly theme (user: the lavender palette "not suitable for a study app, mainly on dark mode").**
+  - `src/ui/palette.ts` (pure, tested) holds the neutral bases: light = warm off-white `#f6f7f5`; dark = colourless charcoal `#111315` with softened text `#e6e9eb`. Plus "hero" tokens for the dark feature cards and ONE accent from `ACCENTS` (teal default, blue, green, amber, violet), each with a deep light-mode shade and a soft dark-mode shade.
+  - `theme.ts` `useColors()` = `colorsFor(scheme, prefs.accent)`. New pref `accent` (`prefs.ts`); Settings → Appearance has an "Accent colour" picker.
+  - All hard-coded purples were replaced with tokens: Home and Library heroes, PomodoroBar, the card shadow (now black), the reader controls (the progress bar follows the accent; night page `#15181b`), the settings night swatch, and the renderer's night page. Plan covers use muted natural gradients (teal, slate, olive, terracotta, plum, ocean, ochre, graphite, forest, rosewood).
+  - `test/palette.test.ts`: WCAG checks for every accent in both modes — text ≥7:1 (AAA) on bg and card, muted ≥4.5, button text ≥4.5, accent on card ≥3, hero text ≥7, hero accent ≥4.5 — and dark text below 17:1 (softer than white on black). **11 pass.**
+  - Mobile **137 tests passing**; tsc and lint clean. Built and installed on the phone (install only, no screen input).
+  - **Not changed:** the splash screen colours in app.json (`#f8fafc` / dark `#020617`). Changing them needs a prebuild and a full native rebuild; do it with the next native change: light `#f6f7f5`, dark `#111315`.

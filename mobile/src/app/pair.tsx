@@ -1,9 +1,9 @@
 import { useRef, useState } from 'react'
-import { KeyboardAvoidingView, Platform, ScrollView, Text, TextInput, View } from 'react-native'
+import { Alert, KeyboardAvoidingView, Platform, ScrollView, Text, TextInput, View } from 'react-native'
 import { CameraView, useCameraPermissions } from 'expo-camera'
 import { router } from 'expo-router'
 import { useDb } from '@/db/DbProvider'
-import { fetchTransport, pair, parsePairingCode } from '@/sync/client'
+import { fetchTransport, pair, parsePairingCode, SyncError } from '@/sync/client'
 import { useSync } from '@/sync/useSync'
 import { useDataVersion } from '@/state/stores'
 import { Button, Card, ErrorText } from '@/ui/components'
@@ -26,16 +26,23 @@ export default function PairScreen() {
   const [error, setError] = useState<string | null>(null)
   const handled = useRef(false)
 
-  const connect = async (u: string, t: string) => {
+  const connect = async (u: string, t: string, discardUnsent = false) => {
     setBusy(true)
     setError(null)
     try {
-      await pair(db, fetchTransport(15_000), u, t)
+      await pair(db, fetchTransport(15_000), u, t, discardUnsent)
       bump()
       router.back()
       void runSync(db) // first sync: brings the plans over
     } catch (e) {
-      setError(e instanceof Error ? e.message : String(e))
+      if (e instanceof SyncError && e.kind === 'unsent-changes') {
+        Alert.alert('Changes not sent yet', `${e.message}\n\nSync with the previous computer first, or continue and discard them.`, [
+          { text: 'Cancel', style: 'cancel' },
+          { text: 'Discard and pair', style: 'destructive', onPress: () => void connect(u, t, true) },
+        ])
+      } else {
+        setError(e instanceof Error ? e.message : String(e))
+      }
       handled.current = false
     } finally {
       setBusy(false)

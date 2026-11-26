@@ -20,6 +20,13 @@ interface Payload {
   /** wikiKey()s of item names in the plan, to mark [[links]] to missing items */
   names: string[]
   fontScale?: number
+  /** reading font family */
+  font?: 'sans' | 'serif' | 'mono'
+  lineHeight?: number
+  /** page background: 'auto' follows dark/light */
+  readingTheme?: 'auto' | 'paper' | 'sepia' | 'night'
+  /** 'page': the reader, a full-screen scrolling page (reports scroll progress); default: embedded */
+  mode?: 'embedded' | 'page'
 }
 
 declare global {
@@ -42,8 +49,14 @@ function wikiKey(name: string): string {
 const root = document.getElementById('note')!
 
 window.renderNote = async (p: Payload) => {
-  document.documentElement.classList.toggle('dark', p.dark)
-  document.documentElement.style.fontSize = `${16 * (p.fontScale ?? 1)}px`
+  const html = document.documentElement
+  const theme = p.readingTheme && p.readingTheme !== 'auto' ? p.readingTheme : p.dark ? 'night' : 'paper'
+  html.classList.toggle('dark', theme === 'night')
+  html.dataset.theme = theme
+  html.dataset.mode = p.mode ?? 'embedded'
+  html.dataset.font = p.font ?? 'sans'
+  html.style.fontSize = `${(p.mode === 'page' ? 17 : 16) * (p.fontScale ?? 1)}px`
+  html.style.setProperty('--line-height', String(p.lineHeight ?? 1.65))
   const names = new Set(p.names)
   if (p.format === 'MARKDOWN') {
     root.innerHTML = renderMarkdown(p.content, { wikiExists: (n) => names.has(wikiKey(n)) })
@@ -70,7 +83,11 @@ window.convertToMarkdown = (html: string) => {
 // taps: [[links]] open the item in the app, web links open in the browser
 document.addEventListener('click', (e) => {
   const a = (e.target as HTMLElement).closest('a')
-  if (!a) return
+  if (!a) {
+    // a tap on the text itself (not a link, not a checkbox): the reader shows/hides its controls
+    if (!(e.target as HTMLElement).closest('input, summary, pre')) post({ type: 'tap' })
+    return
+  }
   e.preventDefault()
   const wiki = a.getAttribute('data-wiki')
   if (wiki) post({ type: 'wiki', target: wiki })
@@ -92,5 +109,16 @@ function reportHeight() {
   }
 }
 new ResizeObserver(reportHeight).observe(document.body)
+
+// page mode: how far through the note the reader is (0..1)
+let lastProgress = -1
+window.addEventListener('scroll', () => {
+  const max = document.documentElement.scrollHeight - window.innerHeight
+  const p = max <= 0 ? 1 : Math.min(1, Math.max(0, window.scrollY / max))
+  if (Math.abs(p - lastProgress) >= 0.01 || p === 1) {
+    lastProgress = p
+    post({ type: 'progress', value: p })
+  }
+}, { passive: true })
 
 post({ type: 'ready' })

@@ -2,7 +2,7 @@ import { Alert, ScrollView, Text, View } from 'react-native'
 import Ionicons from '@expo/vector-icons/Ionicons'
 import { router } from 'expo-router'
 import { useDb } from '@/db/DbProvider'
-import { pendingCount, readConfig, unpair } from '@/sync/client'
+import { pendingCount, readConfig, requestRebuild, unpair } from '@/sync/client'
 import { useSync } from '@/sync/useSync'
 import { useDataVersion } from '@/state/stores'
 import { useQuery } from '@/state/useQuery'
@@ -27,6 +27,24 @@ export default function SyncScreen() {
 
   if (!data) return <Loading />
   const paired = !!data.cfg.token
+
+  /** Replaces this phone's plans with a fresh copy from the computer (fixes a phone that got out of step). */
+  const confirmRebuild = () => {
+    const go = async (discard: boolean) => {
+      await requestRebuild(db, discard)
+      void run(db)
+    }
+    Alert.alert(
+      'Download everything again?',
+      data.pending > 0
+        ? `This phone's plans are replaced by your computer's. ${data.pending} change(s) on this phone haven't been sent yet and would be lost. Sync first to keep them.`
+        : 'This phone’s plans, notes and progress are replaced by a fresh copy from your computer. Nothing on your computer changes.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { text: data.pending > 0 ? 'Discard and download' : 'Download', style: data.pending > 0 ? 'destructive' : 'default', onPress: () => void go(data.pending > 0) },
+      ],
+    )
+  }
 
   const confirmUnpair = () =>
     Alert.alert('Unpair this phone?', 'Your plans stay on this phone. Changes you make won’t reach the computer until you pair again.', [
@@ -87,6 +105,8 @@ export default function SyncScreen() {
           <Text style={{ color: c.text, fontWeight: '700', fontSize: 16 }}>Last sync</Text>
           {lastReport.reset ? (
             <Text style={{ color: c.warn }}>Your computer’s data was restored from a backup, so this phone was rebuilt from it.</Text>
+          ) : lastReport.rebuilt ? (
+            <Text style={{ color: c.text }}>This phone now holds a fresh copy of your computer’s plans.</Text>
           ) : null}
           <Text style={{ color: c.text }}>Sent {lastReport.pushed} · received {lastReport.pulled}</Text>
           {lastReport.conflicts.length > 0 ? (
@@ -105,6 +125,7 @@ export default function SyncScreen() {
 
       {paired ? (
         <View style={{ gap: space.sm }}>
+          <Button kind="secondary" title="Download everything again" onPress={confirmRebuild} />
           <Button kind="secondary" title="Pair with a different computer" onPress={() => router.push('/pair')} />
           <Button kind="danger" title="Unpair" onPress={confirmUnpair} />
         </View>

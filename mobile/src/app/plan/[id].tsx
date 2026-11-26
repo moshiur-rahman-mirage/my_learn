@@ -6,7 +6,9 @@ import { useDb } from '@/db/DbProvider'
 import { getPlan } from '@/data/plans'
 import { loadTree } from '@/data/tree'
 import { RuleError, setCompletion } from '@/data/items'
+import { exportPlanCsv } from '@/data/exportCsv'
 import { StaleError, updatePlan } from '@/data/structure'
+import { shareTextFile } from '@/platform/share'
 import { percentLabel } from '@/domain/progress'
 import type { Plan, TreeNode } from '@/domain/types'
 import { isDone, parentIds, visibleRows } from '@/domain/visibleRows'
@@ -16,6 +18,7 @@ import { ActionSheet, type SheetAction } from '@/ui/ActionSheet'
 import { Chip, EmptyState, ErrorText, Loading, PriorityBadge, ProgressBar } from '@/ui/components'
 import { itemActions } from '@/ui/itemActions'
 import { PaceBadge } from '@/ui/PaceBadge'
+import { PlanCover } from '@/ui/PlanCover'
 import { space, useColors } from '@/ui/theme'
 
 export default function PlanScreen() {
@@ -78,9 +81,18 @@ export default function PlanScreen() {
         plan.status === 'ACTIVE'
           ? { label: 'Archive plan', icon: 'archive-outline', onPress: () => void toggleArchived() }
           : { label: 'Make active again', icon: 'refresh-outline', onPress: () => void toggleArchived() },
+        { label: 'Export as CSV (for the desktop or Excel)', icon: 'share-outline', onPress: () => void exportCsv() },
         { label: 'Delete plan…', icon: 'trash-outline', destructive: true, onPress: () => router.push({ pathname: '/plan-delete/[id]', params: { id: String(plan.id) } }) },
       ],
     })
+  const exportCsv = async () => {
+    try {
+      const { fileName, content } = await exportPlanCsv(db, plan.id)
+      await shareTextFile(fileName, content, 'text/csv')
+    } catch (e) {
+      Alert.alert('Couldn’t export', e instanceof Error ? e.message : String(e))
+    }
+  }
   const rowMenu = (node: TreeNode) =>
     setSheet({ title: node.name, actions: itemActions(db, { id: node.id, name: node.name, planId, parentId: node.parentId }, bump) })
 
@@ -108,16 +120,19 @@ export default function PlanScreen() {
         initialNumToRender={30}
         windowSize={11}
         ListHeaderComponent={
-          <View style={{ padding: space.lg, gap: space.sm, borderBottomColor: c.border, borderBottomWidth: 1 }}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.md }}>
-              <View style={{ flex: 1 }}>
-                <ProgressBar progress={data.plan.progress} height={8} />
+          <View style={{ padding: space.lg, gap: space.md, borderBottomColor: c.border, borderBottomWidth: 1 }}>
+            <View style={{ flexDirection: 'row', gap: space.lg, alignItems: 'center' }}>
+              <PlanCover name={plan.name} width={78} height={104} />
+              <View style={{ flex: 1, gap: 6 }}>
+                <Text style={{ color: c.text, fontSize: 20, fontWeight: '800', fontFamily: 'serif' }} numberOfLines={3}>{plan.name}</Text>
+                {plan.description ? <Text style={{ color: c.muted, fontSize: 13 }} numberOfLines={2}>{plan.description}</Text> : null}
+                <Text style={{ color: c.muted, fontSize: 12 }}>
+                  <Text style={{ color: c.primary, fontWeight: '900', fontSize: 16 }}>{percentLabel(plan.progress)}</Text>
+                  {`  ${plan.progress.completed} of ${plan.progress.total} topics`}{plan.status === 'ARCHIVED' ? ' · archived' : ''}
+                </Text>
               </View>
-              <Text style={{ color: c.text, fontWeight: '700' }}>{percentLabel(data.plan.progress)}</Text>
             </View>
-            <Text style={{ color: c.muted, fontSize: 12 }}>
-              {plan.progress.completed} of {plan.progress.total} topics done{plan.status === 'ARCHIVED' ? ' · archived' : ''}
-            </Text>
+            <ProgressBar progress={plan.progress} height={8} />
             <PaceBadge pace={plan.pace} detailed />
             <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: space.sm }}>
               <Chip label="Hide done" on={hideDone} onPress={() => setHideDone((h) => !h)} />

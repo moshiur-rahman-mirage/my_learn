@@ -5,6 +5,7 @@ import { router } from 'expo-router'
 import { useDb } from '@/db/DbProvider'
 import { search, type SearchHit, type SearchResult } from '@/data/search'
 import { EmptyState, ErrorText } from '@/ui/components'
+import { PlanCover } from '@/ui/PlanCover'
 import { radius, space, useColors } from '@/ui/theme'
 
 /** Search across all plans: names, descriptions and notes; each word matches as a prefix ("sprin boo"). */
@@ -75,8 +76,10 @@ function Hit({ hit }: { hit: SearchHit }) {
     <Pressable
       onPress={() => router.push({ pathname: '/item/[id]', params: { id: String(hit.itemId) } })}
       accessibilityRole="button"
-      style={({ pressed }) => ({ backgroundColor: c.card, borderColor: c.border, borderWidth: 1, borderRadius: radius.md, padding: space.md, gap: 4, opacity: pressed ? 0.8 : 1 })}
+      style={({ pressed }) => ({ flexDirection: 'row', gap: space.md, backgroundColor: c.card, borderColor: c.border, borderWidth: 1, borderRadius: radius.md, padding: space.md, opacity: pressed ? 0.8 : 1 })}
     >
+      <PlanCover name={hit.planName} width={34} height={46} />
+      <View style={{ flex: 1, gap: 4 }}>
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.xs }}>
         {hit.checkable ? <Ionicons name={hit.completed ? 'checkbox' : 'square-outline'} size={16} color={hit.completed ? c.done : c.faint} /> : null}
         <Text style={{ color: c.text, fontWeight: '600', fontSize: 15, flexShrink: 1 }}>{hit.name}</Text>
@@ -92,6 +95,7 @@ function Hit({ hit }: { hit: SearchHit }) {
           ))}
         </Text>
       ) : null}
+      </View>
     </Pressable>
   )
 }

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Pressable, ScrollView, Text, View } from 'react-native'
 import { router } from 'expo-router'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useDb } from '@/db/DbProvider'
 import { dueCards, reviewCard, type DueCard } from '@/data/flashcards'
 import { NoteView } from '@/note/NoteView'
@@ -8,6 +9,7 @@ import { useDataVersion } from '@/state/stores'
 import { useQuery } from '@/state/useQuery'
 import { Button, Card, EmptyState, ErrorText, Loading } from '@/ui/components'
 import { space, useColors } from '@/ui/theme'
+import { StatusBarShade } from '@/ui/dashboard'
 
 /**
  * Flashcard study: due cards from every active plan, one at a time. Cards come from "Q: / A:"
@@ -17,6 +19,7 @@ import { space, useColors } from '@/ui/theme'
 export default function CardsScreen() {
   const db = useDb()
   const c = useColors()
+  const insets = useSafeAreaInsets()
   const bump = useDataVersion((s) => s.bump)
   const { data, error } = useQuery((d) => dueCards(d), 'cards')
   const [shown, setShown] = useState(false)
@@ -49,36 +52,39 @@ export default function CardsScreen() {
   }
 
   return (
-    <ScrollView contentContainerStyle={{ padding: space.lg, gap: space.lg, flexGrow: 1 }}>
-      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-        <Text style={{ color: c.text, fontSize: 24, fontWeight: '800' }}>Study cards</Text>
-        <Text style={{ color: c.primary, fontSize: 13, fontWeight: '700', backgroundColor: c.chipOn, borderRadius: 999, paddingHorizontal: space.md, paddingVertical: space.xs }}>
-          {data.length} due{doneCount ? ` · ${doneCount} done` : ''}
-        </Text>
-      </View>
-      <Card style={{ gap: space.lg, padding: space.xl }}>
-        <Pressable onPress={() => router.push({ pathname: '/item/[id]', params: { id: String(card.itemId) } })} accessibilityRole="link">
-          <Text style={{ color: c.primary, fontSize: 12, fontWeight: '700' }}>
-            {card.planName} › {card.itemName}
+    <View style={{ flex: 1 }}>
+      <ScrollView contentContainerStyle={{ padding: space.lg, paddingTop: insets.top + space.md, gap: space.lg, flexGrow: 1 }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+          <Text style={{ color: c.text, fontSize: 24, fontWeight: '800' }}>Study cards</Text>
+          <Text style={{ color: c.primary, fontSize: 13, fontWeight: '700', backgroundColor: c.chipOn, borderRadius: 999, paddingHorizontal: space.md, paddingVertical: space.xs }}>
+            {data.length} due{doneCount ? ` · ${doneCount} done` : ''}
           </Text>
-        </Pressable>
-        <Text selectable style={{ color: c.text, fontSize: 22, lineHeight: 30, fontWeight: '700' }}>{card.question}</Text>
-        {shown ? (
-          <View style={{ borderTopColor: c.border, borderTopWidth: 1, paddingTop: space.md }}>
-            {/* answers are Markdown in Markdown notes; HTML notes' answers are plain lines */}
-            <NoteView content={card.answer} format="MARKDOWN" names={[]} />
-          </View>
-        ) : null}
-      </Card>
-      <View style={{ flex: 1 }} />
-      {shown ? (
-        <View style={{ flexDirection: 'row', gap: space.sm }}>
-          <Button style={{ flex: 1 }} kind="secondary" title="Forgot" busy={busy} onPress={() => answer(false)} />
-          <Button style={{ flex: 1 }} title="Remembered" busy={busy} onPress={() => answer(true)} />
         </View>
-      ) : (
-        <Button title="Show answer" onPress={() => setShown(true)} />
-      )}
-    </ScrollView>
+        <Card style={{ gap: space.lg, padding: space.xl }}>
+          <Pressable onPress={() => router.push({ pathname: '/item/[id]', params: { id: String(card.itemId) } })} accessibilityRole="link">
+            <Text style={{ color: c.primary, fontSize: 12, fontWeight: '700' }}>
+              {card.planName} › {card.itemName}
+            </Text>
+          </Pressable>
+          <Text selectable style={{ color: c.text, fontSize: 22, lineHeight: 30, fontWeight: '700' }}>{card.question}</Text>
+          {shown ? (
+            <View style={{ borderTopColor: c.border, borderTopWidth: 1, paddingTop: space.md }}>
+              {/* answers are Markdown in Markdown notes; HTML notes' answers are plain lines */}
+              <NoteView content={card.answer} format="MARKDOWN" names={[]} />
+            </View>
+          ) : null}
+        </Card>
+        <View style={{ flex: 1 }} />
+        {shown ? (
+          <View style={{ flexDirection: 'row', gap: space.sm }}>
+            <Button style={{ flex: 1 }} kind="secondary" title="Forgot" busy={busy} onPress={() => answer(false)} />
+            <Button style={{ flex: 1 }} title="Remembered" busy={busy} onPress={() => answer(true)} />
+          </View>
+        ) : (
+          <Button title="Show answer" onPress={() => setShown(true)} />
+        )}
+      </ScrollView>
+      <StatusBarShade />
+    </View>
   )
 }

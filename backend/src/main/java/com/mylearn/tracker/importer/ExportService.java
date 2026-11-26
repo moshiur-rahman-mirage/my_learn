@@ -155,7 +155,8 @@ public class ExportService {
     }
 
     private static String slug(String name) {
-        String s = name.toLowerCase().replaceAll("[^\\p{L}\\p{N}]+", "-").replaceAll("(^-|-$)", "");
+        // \p{M}: combining marks are part of words in many scripts (Bangla vowel signs, accents)
+        String s = name.toLowerCase().replaceAll("[^\\p{L}\\p{M}\\p{N}]+", "-").replaceAll("(^-|-$)", "");
         return s.isEmpty() ? "export" : s;
     }
 

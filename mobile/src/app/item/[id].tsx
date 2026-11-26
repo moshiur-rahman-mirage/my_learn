@@ -1,8 +1,9 @@
 import { useState } from 'react'
-import { Alert, Linking, Pressable, ScrollView, Text, View } from 'react-native'
+import { Alert, Pressable, ScrollView, Text, View } from 'react-native'
 import Ionicons from '@expo/vector-icons/Ionicons'
 import { router, Stack, useLocalSearchParams } from 'expo-router'
 import { useDb } from '@/db/DbProvider'
+import { allTags } from '@/data/extras'
 import { getItemDetail } from '@/data/itemDetail'
 import { RuleError, setCompletion } from '@/data/items'
 import { resolveLink } from '@/data/notes'
@@ -12,7 +13,9 @@ import { useQuery } from '@/state/useQuery'
 import { ActionSheet } from '@/ui/ActionSheet'
 import { Button, Card, EmptyState, ErrorText, Loading, PriorityBadge } from '@/ui/components'
 import { itemActions } from '@/ui/itemActions'
-import { space, useColors } from '@/ui/theme'
+import { ConfidenceCard, LinksCard, TagsCard, TimeCard } from '@/ui/itemTools'
+import { PlanCover } from '@/ui/PlanCover'
+import { radius, space, useColors } from '@/ui/theme'
 
 function minutesLabel(m: number): string {
   if (m < 60) return `${m} min`
@@ -26,11 +29,13 @@ export default function ItemScreen() {
   const db = useDb()
   const c = useColors()
   const bump = useDataVersion((s) => s.bump)
-  const { data, error } = useQuery((d) => getItemDetail(d, itemId), `item:${itemId}`)
+  const { data: loaded, error } = useQuery(async (d) => ({ detail: await getItemDetail(d, itemId), known: (await allTags(d)).map((t) => t.name) }), `item:${itemId}`)
+  const data = loaded?.detail
+  const known = loaded?.known ?? []
   const [menu, setMenu] = useState(false)
 
-  if (data === undefined) return error ? <ErrorText message={error} /> : <Loading />
-  if (data === null) return <EmptyState title="This topic is gone" message="It was deleted, maybe on your computer." />
+  if (loaded === undefined) return error ? <ErrorText message={error} /> : <Loading />
+  if (!data) return <EmptyState title="This topic is gone" message="It was deleted, maybe on your computer." />
   const { item } = data
 
   const tick = async () => {
@@ -73,23 +78,41 @@ export default function ItemScreen() {
         actions={itemActions(db, { id: item.id, name: item.name, planId: item.planId, parentId: item.parentId }, bump, () => router.back())}
       />
       <ScrollView contentContainerStyle={{ padding: space.lg, gap: space.lg }}>
-        <View style={{ gap: space.xs }}>
-          <Text style={{ color: c.muted, fontSize: 12 }} numberOfLines={2}>
-            {[data.planName, ...data.path].join(' › ')}
-          </Text>
+        <Card style={{ gap: space.sm }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.md }}>
+            <PlanCover name={data.planName} width={40} height={54} />
+            <Text style={{ color: c.muted, fontSize: 12, flex: 1 }} numberOfLines={2}>
+              {[data.planName, ...data.path].join(' › ')}
+            </Text>
+          </View>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.sm, flexWrap: 'wrap' }}>
-            <Text selectable style={{ color: c.text, fontSize: 22, fontWeight: '700', flexShrink: 1 }}>{item.name}</Text>
+            <Text selectable style={{ color: c.text, fontSize: 24, fontWeight: '800', flexShrink: 1, fontFamily: 'serif' }}>{item.name}</Text>
             <PriorityBadge priority={item.priority} />
           </View>
-          {meta.length ? <Text style={{ color: c.muted, fontSize: 13 }}>{meta.join(' · ')}</Text> : null}
-        </View>
+          {meta.length ? (
+            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: space.xs }}>
+              {meta.map((m) => (
+                <Text key={m} style={{ color: c.primary, backgroundColor: c.chipOn, borderRadius: radius.pill, paddingHorizontal: 10, paddingVertical: 3, fontSize: 12, fontWeight: '600' }}>{m}</Text>
+              ))}
+            </View>
+          ) : null}
+          {data.note.content ? (
+            <Button
+              title="Read the note"
+              onPress={() => router.push({ pathname: '/read/[id]', params: { id: String(item.id) } })}
+              icon={<Ionicons name="book" size={18} color={c.primaryText} />}
+              style={{ marginTop: space.xs }}
+            />
+          ) : null}
+        </Card>
 
         {data.checkable ? (
           <Button
-            kind={item.completed ? 'secondary' : 'primary'}
+            kind={item.completed || data.note.content ? 'secondary' : 'primary'}
             title={item.completed ? 'Done ✓  (tap to undo)' : 'Mark as done'}
             onPress={tick}
-            icon={<Ionicons name={item.completed ? 'checkbox' : 'square-outline'} size={20} color={item.completed ? c.done : c.primaryText} />}
+            icon={<Ionicons name={item.completed ? 'checkmark-circle' : 'checkmark-circle-outline'} size={20}
+              color={item.completed ? c.done : data.note.content ? c.text : c.primaryText} />}
           />
         ) : data.childCount > 0 ? (
           <Text style={{ color: c.muted, fontSize: 13 }}>
@@ -99,30 +122,21 @@ export default function ItemScreen() {
 
         {item.description ? <Text selectable style={{ color: c.text, fontSize: 15 }}>{item.description}</Text> : null}
 
-        {data.tags.length ? (
-          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: space.xs }}>
-            {data.tags.map((t) => (
-              <Text key={t} style={{ color: c.muted, borderColor: c.border, borderWidth: 1, borderRadius: 999, paddingHorizontal: 10, paddingVertical: 2, fontSize: 12 }}>
-                #{t}
-              </Text>
-            ))}
-          </View>
-        ) : null}
-
-        {data.links.length ? (
-          <View style={{ gap: space.xs }}>
-            {data.links.map((l) => (
-              <Pressable key={l.id} onPress={() => Linking.openURL(l.url)} accessibilityRole="link" style={{ flexDirection: 'row', gap: space.sm, alignItems: 'center', minHeight: 36 }}>
-                <Ionicons name="open-outline" size={16} color={c.link} />
-                <Text style={{ color: c.link, flexShrink: 1 }} numberOfLines={1}>{l.title || l.url}</Text>
-              </Pressable>
-            ))}
-          </View>
-        ) : null}
-
         <Card style={{ gap: space.md }}>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             <Text style={{ color: c.text, fontWeight: '600', fontSize: 16, flex: 1 }}>Notes</Text>
+            {data.note.content ? (
+              <Pressable
+                onPress={() => router.push({ pathname: '/read/[id]', params: { id: String(item.id) } })}
+                accessibilityRole="button"
+                accessibilityLabel="Read the note full screen"
+                hitSlop={8}
+                style={{ flexDirection: 'row', alignItems: 'center', gap: 4, minHeight: 36, marginRight: space.md }}
+              >
+                <Ionicons name="book-outline" size={18} color={c.primary} />
+                <Text style={{ color: c.primary, fontWeight: '600' }}>Read</Text>
+              </Pressable>
+            ) : null}
             <Pressable
               onPress={() => router.push({ pathname: '/note/[id]', params: { id: String(item.id) } })}
               accessibilityRole="button"
@@ -134,11 +148,17 @@ export default function ItemScreen() {
             </Pressable>
           </View>
           {data.note.content && data.note.format ? (
-            <NoteView content={data.note.content} format={data.note.format} names={data.planNames} onWikiLink={openWiki} />
+            <NoteView content={data.note.content} format={data.note.format} names={data.planNames} onWikiLink={openWiki}
+              onTap={() => router.push({ pathname: '/read/[id]', params: { id: String(item.id) } })} />
           ) : (
             <Text style={{ color: c.muted }}>No notes yet. Write what you learned, as Markdown. “Q: … / A: …” lines become flashcards.</Text>
           )}
         </Card>
+
+        {data.checkable ? <ConfidenceCard itemId={item.id} level={data.confidence} /> : null}
+        <TimeCard itemId={item.id} itemName={item.name} minutes={data.minutes} />
+        <TagsCard itemId={item.id} tags={data.tags} known={known} />
+        <LinksCard itemId={item.id} links={data.links} />
 
         {data.backlinks.length ? (
           <View style={{ gap: space.xs }}>
