@@ -1,8 +1,9 @@
+import { useState } from 'react'
 import { Alert, ScrollView, Text, View } from 'react-native'
 import Ionicons from '@expo/vector-icons/Ionicons'
 import { router } from 'expo-router'
 import { useDb } from '@/db/DbProvider'
-import { pendingCount, readConfig, requestRebuild, unpair } from '@/sync/client'
+import { fetchTransport, pair, pendingCount, readConfig, readSavedConnections, requestRebuild, SyncError, unpair, type SavedConnection } from '@/sync/client'
 import { useSync } from '@/sync/useSync'
 import { useDataVersion } from '@/state/stores'
 import { useQuery } from '@/state/useQuery'
@@ -23,10 +24,35 @@ export default function SyncScreen() {
   const c = useColors()
   const bump = useDataVersion((s) => s.bump)
   const { running, lastReport, lastError, errorKind, run } = useSync()
-  const { data } = useQuery(async (d) => ({ cfg: await readConfig(d), pending: await pendingCount(d) }), 'sync')
+  const [switchingUrl, setSwitchingUrl] = useState<string | null>(null)
+  const { data, error } = useQuery(async (d) => ({
+    cfg: await readConfig(d),
+    pending: await pendingCount(d),
+    connections: await readSavedConnections(d),
+  }), 'sync')
 
   if (!data) return <Loading />
   const paired = !!data.cfg.token
+
+  const activateConnection = async (connection: SavedConnection, discardUnsent = false) => {
+    setSwitchingUrl(connection.url)
+    try {
+      await pair(db, fetchTransport(15_000), connection.url, connection.token, discardUnsent, connection.label)
+      bump()
+      void run(db)
+    } catch (e) {
+      if (e instanceof SyncError && e.kind === 'unsent-changes') {
+        Alert.alert('Changes not sent yet', `${e.message}\n\nSync with the previous computer first, or continue and discard them.`, [
+          { text: 'Cancel', style: 'cancel' },
+          { text: 'Discard and switch', style: 'destructive', onPress: () => void activateConnection(connection, true) },
+        ])
+      } else {
+        Alert.alert('Could not connect', e instanceof Error ? e.message : String(e))
+      }
+    } finally {
+      setSwitchingUrl(null)
+    }
+  }
 
   /** Replaces this phone's plans with a fresh copy from the computer (fixes a phone that got out of step). */
   const confirmRebuild = () => {
@@ -91,6 +117,33 @@ export default function SyncScreen() {
         )}
       </Card>
 
+      {data.connections.length > 0 ? (
+        <View style={{ gap: space.sm }}>
+          <Text style={{ color: c.text, fontSize: 17, fontWeight: '700' }}>Saved networks</Text>
+          <Text style={{ color: c.muted, fontSize: 13 }}>
+            Save an address for each Wi-Fi network so you can reconnect to the same computer without pairing again.
+          </Text>
+          {data.connections.map((connection) => {
+            const active = data.cfg.url === connection.url
+            return (
+              <Card key={connection.url} style={{ gap: space.sm }}>
+                <View style={{ gap: 3 }}>
+                  <Text style={{ color: c.text, fontWeight: '700' }}>{connection.label || connection.url}</Text>
+                  <Text selectable style={{ color: c.muted, fontSize: 12 }}>{connection.url}</Text>
+                </View>
+                <Button
+                  kind="secondary"
+                  title={active ? 'Current network' : 'Use this network'}
+                  onPress={() => void activateConnection(connection)}
+                  disabled={active}
+                  busy={switchingUrl === connection.url}
+                />
+              </Card>
+            )
+          })}
+        </View>
+      ) : null}
+
       {lastError ? (
         <Card style={{ gap: space.sm, borderColor: c.danger }}>
           <Text style={{ color: c.danger, fontWeight: '600' }}>Sync didn’t finish</Text>
@@ -122,6 +175,8 @@ export default function SyncScreen() {
           ) : null}
         </Card>
       ) : null}
+
+      <ErrorText message={error} />
 
       {paired ? (
         <View style={{ gap: space.sm }}>

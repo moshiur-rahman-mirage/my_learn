@@ -45,8 +45,11 @@ export default function CardsScreen() {
   if (!card) {
     return (
       <EmptyState
-        title={doneCount ? `Done: ${doneCount} card${doneCount === 1 ? '' : 's'} reviewed` : 'No cards due'}
-        message="Write “Q: question” and “A: answer” lines in a note and they become flashcards. Due cards show up here."
+        title={doneCount ? `Done: ${doneCount} card${doneCount === 1 ? '' : 's'} reviewed` : 'No flashcards due'}
+        message={doneCount
+          ? 'Nice work. Cards will appear here again when they are due.'
+          : 'Add these lines to a topic note to make a flashcard:\nQ: What does JVM do?\nA: Runs Java bytecode.'}
+        action={!doneCount ? <Button title="Browse plans" onPress={() => router.push('/plans')} /> : undefined}
       />
     )
   }
@@ -55,7 +58,7 @@ export default function CardsScreen() {
     <View style={{ flex: 1 }}>
       <ScrollView contentContainerStyle={{ padding: space.lg, paddingTop: insets.top + space.md, gap: space.lg, flexGrow: 1 }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-          <Text style={{ color: c.text, fontSize: 24, fontWeight: '800' }}>Study cards</Text>
+          <Text style={{ color: c.text, fontSize: 24, fontWeight: '800' }}>Flashcards</Text>
           <Text style={{ color: c.primary, fontSize: 13, fontWeight: '700', backgroundColor: c.chipOn, borderRadius: 999, paddingHorizontal: space.md, paddingVertical: space.xs }}>
             {data.length} due{doneCount ? ` · ${doneCount} done` : ''}
           </Text>

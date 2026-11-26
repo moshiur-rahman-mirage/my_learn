@@ -23,6 +23,8 @@ const K = {
   lastSyncAt: 'sync_last_at',
   /** the computer whose data this phone holds (set by a completed sync; kept when unpairing) */
   historyUrl: 'sync_history_url',
+  historyEpoch: 'sync_history_epoch',
+  connections: 'sync_saved_connections',
   /** '1': the next sync discards the phone's synced data and downloads everything again */
   rebuild: 'sync_rebuild',
 } as const
@@ -37,6 +39,12 @@ export interface SyncConfig {
   lastSyncAt: string | null
   /** the next sync will download everything again */
   rebuild: boolean
+}
+
+export interface SavedConnection {
+  label: string | null
+  url: string
+  token: string
 }
 
 export interface SyncReport {
@@ -90,6 +98,19 @@ export async function readConfig(db: Db): Promise<SyncConfig> {
   }
 }
 
+export async function readSavedConnections(db: Db): Promise<SavedConnection[]> {
+  const value = await meta(db, K.connections)
+  if (!value) return []
+  const connections: unknown = JSON.parse(value)
+  if (!Array.isArray(connections) || connections.some((entry) =>
+    !entry || typeof entry !== 'object' ||
+    (entry.label !== null && typeof entry.label !== 'string') ||
+    typeof entry.url !== 'string' || typeof entry.token !== 'string')) {
+    throw new Error('Saved sync connections are invalid. Remove and add the connection again.')
+  }
+  return connections as SavedConnection[]
+}
+
 /** Normalizes what the user typed or scanned: "192.168.1.20:38427" → "http://192.168.1.20:38427". */
 export function normalizeUrl(raw: string): string {
   let url = raw.trim().replace(/\/+$/, '')
@@ -116,7 +137,14 @@ export function parsePairingCode(text: string): { url: string; token: string } |
  * previous computer would be lost, so that needs `discardUnsent`; without it a SyncError of kind
  * 'unsent-changes' is thrown. A phone that never synced keeps its data and uploads it.
  */
-export async function pair(db: Db, transport: Transport, rawUrl: string, token: string, discardUnsent = false): Promise<Ping> {
+export async function pair(
+  db: Db,
+  transport: Transport,
+  rawUrl: string,
+  token: string,
+  discardUnsent = false,
+  label: string | null = null,
+): Promise<Ping> {
   const url = normalizeUrl(rawUrl)
   const ping = await transport<Ping>(`${url}/api/sync/ping`, { method: 'GET', token })
   if (ping.app !== 'learning-tracker') throw new SyncError('That address is not a Learning Tracker.', 'protocol')
@@ -125,7 +153,9 @@ export async function pair(db: Db, transport: Transport, rawUrl: string, token: 
   }
   const old = await readConfig(db)
   const history = await meta(db, K.historyUrl)
-  const otherComputer = history !== null && history !== url
+  const historyEpoch = await meta(db, K.historyEpoch)
+  const sameComputer = history !== null && (history === url || historyEpoch === ping.epoch)
+  const otherComputer = history !== null && !sameComputer
   if (otherComputer && !discardUnsent) {
     const unsent = await pendingCount(db)
     if (unsent > 0) {
@@ -136,7 +166,7 @@ export async function pair(db: Db, transport: Transport, rawUrl: string, token: 
     }
   }
   await db.transaction(async () => {
-    if (old.url !== url) {
+    if (old.url !== url && !sameComputer) {
       await setMeta(db, K.since, '0')
       await setMeta(db, K.serverEpoch, null)
       await setMeta(db, K.lastSyncAt, null)
@@ -144,6 +174,12 @@ export async function pair(db: Db, transport: Transport, rawUrl: string, token: 
     if (otherComputer) await setMeta(db, K.rebuild, '1')
     await setMeta(db, K.url, url)
     await setMeta(db, K.token, token)
+    const connections = await readSavedConnections(db)
+    const next: SavedConnection = { label: label?.trim() || null, url, token }
+    const existing = connections.findIndex((connection) => connection.url === url)
+    if (existing < 0) connections.push(next)
+    else connections[existing] = next
+    await setMeta(db, K.connections, JSON.stringify(connections))
   })
   return ping
 }
@@ -274,6 +310,7 @@ async function performSync(
         await setMeta(db, K.serverEpoch, res.epoch)
         await setMeta(db, K.lastSyncAt, nowIso())
         await setMeta(db, K.historyUrl, cfg.url)
+        await setMeta(db, K.historyEpoch, res.epoch)
         await setMeta(db, K.rebuild, null)
       }
     })

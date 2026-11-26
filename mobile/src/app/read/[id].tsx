@@ -8,6 +8,7 @@ import { getItemDetail } from '@/data/itemDetail'
 import { RuleError, setCompletion } from '@/data/items'
 import { resolveLink } from '@/data/notes'
 import { readingNav, rememberReading } from '@/data/reading'
+import { isShortReadRead, markShortRead } from '@/data/shortRead'
 import { NoteView } from '@/note/NoteView'
 import { TEXT_SCALES, usePrefs, type Accent, type ReadingTheme } from '@/state/prefs'
 import { useDataVersion } from '@/state/stores'
@@ -58,7 +59,11 @@ export default function ReaderScreen() {
   const progress = read.itemId === itemId ? read.fraction : 0
   const setProgress = (fraction: number) => setRead({ itemId, fraction })
   const [chrome, setChrome] = useState(true)
-  const { data, error } = useQuery(async (d) => ({ detail: await getItemDetail(d, itemId), nav: await readingNav(d, itemId) }), `read:${itemId}`)
+  const { data, error } = useQuery(async (d) => ({
+    detail: await getItemDetail(d, itemId),
+    nav: await readingNav(d, itemId),
+    shortReadRead: await isShortReadRead(d, itemId),
+  }), `read:${itemId}`)
 
   useEffect(() => {
     void rememberReading(db, itemId)
@@ -91,6 +96,14 @@ export default function ReaderScreen() {
       bump()
     } catch (e) {
       Alert.alert('Can’t tick this', e instanceof RuleError ? e.message : String(e))
+    }
+  }
+  const markAsRead = async () => {
+    try {
+      await markShortRead(db, item.id)
+      bump()
+    } catch (e) {
+      Alert.alert('Can’t mark as read', e instanceof Error ? e.message : String(e))
     }
   }
 
@@ -130,20 +143,48 @@ export default function ReaderScreen() {
 
       {chrome ? (
         <View style={{
-          flexDirection: 'row', alignItems: 'center', gap: space.sm, paddingHorizontal: space.md, paddingTop: space.sm,
+          gap: space.xs, paddingHorizontal: space.md, paddingTop: space.sm,
           paddingBottom: insets.bottom + space.sm, borderTopWidth: 1, borderTopColor: theme === 'night' ? '#2a2638' : '#00000012',
         }}>
-          <IconButton color={ui.fg} name="chevron-back" label="Previous note" onPress={() => go(nav?.prevId ?? null)} disabled={!nav?.prevId} />
-          <Text style={{ color: ui.muted, fontSize: 12, minWidth: 56, textAlign: 'center' }}>
-            {nav && nav.index > 0 ? `${nav.index} / ${nav.count}` : ''}
-          </Text>
-          <IconButton color={ui.fg} name="chevron-forward" label="Next note" onPress={() => go(nav?.nextId ?? null)} disabled={!nav?.nextId} />
-          <View style={{ flex: 1 }} />
-          {detail.checkable ? (
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.sm }}>
+            <IconButton color={ui.fg} name="chevron-back" label="Previous note" onPress={() => go(nav?.prevId ?? null)} disabled={!nav?.prevId} />
+            <Text style={{ color: ui.muted, fontSize: 12, minWidth: 56, textAlign: 'center' }}>
+              {nav && nav.index > 0 ? `${nav.index} / ${nav.count}` : ''}
+            </Text>
+            <IconButton color={ui.fg} name="chevron-forward" label="Next note" onPress={() => go(nav?.nextId ?? null)} disabled={!nav?.nextId} />
+            <View style={{ flex: 1 }} />
+          </View>
+          {detail.note.content ? (
+            <View style={{ flexDirection: 'row', gap: space.sm }}>
+              <Pressable onPress={() => void markAsRead()} disabled={data.shortReadRead} accessibilityRole="button"
+                accessibilityState={{ disabled: data.shortReadRead }}
+                accessibilityLabel={data.shortReadRead ? 'Note marked as read' : 'Mark note as read'}
+                style={{
+                  flex: 1, minHeight: 44, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6,
+                  paddingHorizontal: space.md, borderRadius: radius.pill, borderWidth: 1, borderColor: ui.bar,
+                  opacity: data.shortReadRead ? 0.75 : 1,
+                }}>
+                <Ionicons name={data.shortReadRead ? 'checkmark-circle' : 'book-outline'} size={18} color={ui.bar} />
+                <Text style={{ color: ui.bar, fontWeight: '700' }}>{data.shortReadRead ? 'Read' : 'Mark as read'}</Text>
+              </Pressable>
+              {detail.checkable ? (
+                <Pressable onPress={markDone} accessibilityRole="checkbox" accessibilityState={{ checked: item.completed }}
+                  style={{
+                    flex: 1, minHeight: 44, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6,
+                    paddingHorizontal: space.md, borderRadius: radius.pill, backgroundColor: item.completed ? 'transparent' : ui.bar,
+                    borderWidth: item.completed ? 1 : 0, borderColor: ui.bar,
+                  }}>
+                  <Ionicons name={item.completed ? 'checkmark-circle' : 'checkmark'} size={18} color={item.completed ? ui.bar : ui.bg} />
+                  <Text style={{ color: item.completed ? ui.bar : ui.bg, fontWeight: '700' }}>{item.completed ? 'Done' : 'Mark as done'}</Text>
+                </Pressable>
+              ) : null}
+            </View>
+          ) : detail.checkable ? (
             <Pressable onPress={markDone} accessibilityRole="checkbox" accessibilityState={{ checked: item.completed }}
               style={{
-                flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: space.lg, minHeight: 44, borderRadius: radius.pill,
-                backgroundColor: item.completed ? 'transparent' : ui.bar, borderWidth: item.completed ? 1 : 0, borderColor: ui.bar,
+                alignSelf: 'flex-end', flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: space.lg,
+                minHeight: 44, borderRadius: radius.pill, backgroundColor: item.completed ? 'transparent' : ui.bar,
+                borderWidth: item.completed ? 1 : 0, borderColor: ui.bar,
               }}>
               <Ionicons name={item.completed ? 'checkmark-circle' : 'checkmark'} size={18} color={item.completed ? ui.bar : ui.bg} />
               <Text style={{ color: item.completed ? ui.bar : ui.bg, fontWeight: '700' }}>{item.completed ? 'Done' : 'Mark as done'}</Text>

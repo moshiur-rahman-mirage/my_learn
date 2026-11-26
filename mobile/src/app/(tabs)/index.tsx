@@ -43,7 +43,7 @@ function SectionTitle({ title, action }: { title: string; action?: { label: stri
   )
 }
 
-/** Home: today's goal, streak and level, what to continue, what's due, and the week at a glance. */
+/** Home: daily progress, what to continue, what's due, and the week at a glance. */
 export default function HomeScreen() {
   const db = useDb()
   const c = useColors()
@@ -124,25 +124,6 @@ export default function HomeScreen() {
           </View>
         </View>
 
-        {/* daily goal */}
-        <Card style={{ gap: space.lg }}>
-          <WeekRow week={s.week} goal={s.goal} />
-          <View style={{ alignItems: 'center' }}>
-            <GoalRing value={s.actionsToday} goal={s.goal}>
-              <Text style={{ color: c.text, fontSize: 36, fontWeight: '900' }}>{pct}%</Text>
-              <Text style={{ color: c.muted, fontSize: 12 }}>{s.actionsToday} of {s.goal} today</Text>
-            </GoalRing>
-          </View>
-          <View style={{ flexDirection: 'row', gap: space.sm }}>
-            <StatTile icon="flame" value={`${s.totals.currentStreak}`} label={s.totals.currentStreak === 1 ? 'day streak' : 'days streak'} tint="#f97316" />
-            <StatTile icon="time-outline" value={`${t.minutesToday}′`} label="studied today" />
-            <StatTile icon="star" value={`${s.xp}`} label="total XP" tint="#eab308" />
-          </View>
-          <LevelBar level={s.level.level} title={s.level.title} into={s.level.into} span={s.level.span} />
-          <Button title={t.dueCards > 0 ? `Start studying · ${t.dueCards} cards` : 'Start studying'} onPress={startStudying}
-            icon={<Ionicons name="play" size={18} color={c.primaryText} />} />
-        </Card>
-
         {/* continue reading */}
         {last ? (
           <Pressable onPress={() => (last.note.content ? openReader(last.item.id) : openItem(last.item.id))} accessibilityRole="button"
@@ -196,6 +177,25 @@ export default function HomeScreen() {
             ))}
           </View>
         ) : null}
+
+        {/* daily goal */}
+        <Card style={{ gap: space.lg }}>
+          <WeekRow week={s.week} goal={s.goal} />
+          <View style={{ alignItems: 'center' }}>
+            <GoalRing value={s.actionsToday} goal={s.goal}>
+              <Text style={{ color: c.text, fontSize: 36, fontWeight: '900' }}>{pct}%</Text>
+              <Text style={{ color: c.muted, fontSize: 12 }}>{s.actionsToday} of {s.goal} today</Text>
+            </GoalRing>
+          </View>
+          <View style={{ flexDirection: 'row', gap: space.sm }}>
+            <StatTile icon="flame" value={`${s.totals.currentStreak}`} label={s.totals.currentStreak === 1 ? 'day streak' : 'days streak'} tint="#f97316" />
+            <StatTile icon="time-outline" value={`${t.minutesToday}′`} label="studied today" />
+            <StatTile icon="star" value={`${s.xp}`} label="total XP" tint="#eab308" />
+          </View>
+          <LevelBar level={s.level.level} title={s.level.title} into={s.level.into} span={s.level.span} />
+          <Button title={t.dueCards > 0 ? `Start studying · ${t.dueCards} cards` : 'Start studying'} onPress={startStudying}
+            icon={<Ionicons name="play" size={18} color={c.primaryText} />} />
+        </Card>
 
         {/* the week */}
         <Card style={{ gap: space.md }}>

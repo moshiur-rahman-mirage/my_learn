@@ -1,5 +1,9 @@
 # Local database & backups — never commit
 data/
+# The mobile app's data layer is source code, not local database data.
+!mobile/src/data/
+mobile/src/data/*
+!mobile/src/data/shortRead.ts
 *.db
 *.db-shm
 *.db-wal

@@ -22,6 +22,7 @@ export default function PairScreen() {
   const [scanning, setScanning] = useState(false)
   const [url, setUrl] = useState('')
   const [token, setToken] = useState('')
+  const [label, setLabel] = useState('')
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const handled = useRef(false)
@@ -30,7 +31,7 @@ export default function PairScreen() {
     setBusy(true)
     setError(null)
     try {
-      await pair(db, fetchTransport(15_000), u, t, discardUnsent)
+      await pair(db, fetchTransport(15_000), u, t, discardUnsent, label)
       bump()
       router.back()
       void runSync(db) // first sync: brings the plans over
@@ -103,6 +104,18 @@ export default function PairScreen() {
 
         <Card style={{ gap: space.md }}>
           <Text style={{ color: c.text, fontWeight: '600' }}>Or type it in</Text>
+          <View style={{ gap: space.xs }}>
+            <Text style={{ color: c.muted, fontSize: 13 }}>Network name (optional)</Text>
+            <TextInput
+              value={label}
+              onChangeText={setLabel}
+              placeholder="Home or Office"
+              placeholderTextColor={c.faint}
+              autoCapitalize="words"
+              style={inputStyle}
+              accessibilityLabel="Network name"
+            />
+          </View>
           <View style={{ gap: space.xs }}>
             <Text style={{ color: c.muted, fontSize: 13 }}>Address</Text>
             <TextInput

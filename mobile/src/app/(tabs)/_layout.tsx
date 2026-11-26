@@ -51,8 +51,16 @@ export default function TabsLayout() {
           ),
         }}
       />
+      <Tabs.Screen
+        name="short-read"
+        options={{
+          title: 'Short Read',
+          tabBarAccessibilityLabel: 'Short Read',
+          tabBarIcon: icon('book', 'book-outline'),
+        }}
+      />
       <Tabs.Screen name="search" options={{ title: 'Search', tabBarAccessibilityLabel: 'Search', tabBarIcon: icon('search', 'search-outline') }} />
-      <Tabs.Screen name="cards" options={{ title: 'Cards', headerShown: false, tabBarAccessibilityLabel: 'Flashcards', tabBarIcon: icon('albums', 'albums-outline') }} />
+      <Tabs.Screen name="cards" options={{ title: 'Flashcards', headerShown: false, tabBarAccessibilityLabel: 'Flashcards', tabBarIcon: icon('albums', 'albums-outline') }} />
       <Tabs.Screen
         name="profile"
         options={{

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { setCompletion } from '../src/data/items'
-import { normalizeUrl, pair, parsePairingCode, pendingCount, readConfig, requestRebuild, syncNow, type Transport } from '../src/sync/client'
+import { normalizeUrl, pair, parsePairingCode, pendingCount, readConfig, readSavedConnections, requestRebuild, syncNow, type Transport } from '../src/sync/client'
 import type { Change, SyncRequest, SyncResponse } from '../src/sync/protocol'
 import { phoneName } from '../src/sync/phoneName'
 import { insertItem, insertPlan, T0 } from './fixtures'
@@ -13,10 +13,10 @@ function response(changes: Change[], extra: Partial<SyncResponse> = {}): SyncRes
 }
 
 /** A scripted desktop: answers each POST from the list and records the requests. */
-function fakeServer(answers: ((req: SyncRequest) => Promise<SyncResponse> | SyncResponse)[]) {
+function fakeServer(answers: ((req: SyncRequest) => Promise<SyncResponse> | SyncResponse)[], pingEpoch = 'e1') {
   const requests: SyncRequest[] = []
   const transport: Transport = async <T,>(path: string, init: { method: string; body?: unknown }) => {
-    if (path.endsWith('/ping')) return ping as T
+    if (path.endsWith('/ping')) return { ...ping, epoch: pingEpoch } as T
     const req = init.body as SyncRequest
     requests.push(JSON.parse(JSON.stringify(req)))
     return (await answers[requests.length - 1](req)) as T
@@ -192,7 +192,7 @@ describe('switching computers never duplicates plans', () => {
 
   it("pairing with another computer replaces the phone's data instead of merging it", async () => {
     const db = await phoneSyncedWith('test-server:1')
-    const second = fakeServer([() => response(javaOn('plan-key-B'), { epoch: 'real' })])
+    const second = fakeServer([() => response(javaOn('plan-key-B'), { epoch: 'real' })], 'real')
     await pair(db, second.transport, 'real-desktop:2', 't')
     expect((await readConfig(db)).rebuild).toBe(true)
 
@@ -218,6 +218,20 @@ describe('switching computers never duplicates plans', () => {
     expect((await readConfig(db)).rebuild).toBe(false)
   })
 
+  it('switches saved network addresses for the same computer without rebuilding local progress', async () => {
+    const db = await phoneSyncedWith('pc-home:1')
+    const localPlan = await insertPlan(db, 'Local progress')
+
+    await pair(db, fakeServer([]).transport, 'pc-office:1', 'office-token', false, 'Office')
+
+    expect(await readConfig(db)).toMatchObject({ url: 'http://pc-office:1', since: 10, serverEpoch: 'e1', rebuild: false })
+    expect(await db.first('SELECT name FROM learning_plan WHERE id = ?', [localPlan])).toEqual({ name: 'Local progress' })
+    expect(await readSavedConnections(db)).toEqual([
+      { label: null, url: 'http://pc-home:1', token: 't' },
+      { label: 'Office', url: 'http://pc-office:1', token: 'office-token' },
+    ])
+  })
+
   it('a phone that never synced uploads its own plans when first paired', async () => {
     const db = await migratedDb()
     await insertPlan(db, 'Made offline')
@@ -231,9 +245,9 @@ describe('switching computers never duplicates plans', () => {
   it('refuses to drop unsent changes when switching, unless told to', async () => {
     const db = await phoneSyncedWith('test-server:1')
     await insertPlan(db, 'Unsent')
-    await expect(pair(db, fakeServer([]).transport, 'real-desktop:2', 't')).rejects.toMatchObject({ kind: 'unsent-changes' })
+    await expect(pair(db, fakeServer([], 'e2').transport, 'real-desktop:2', 't')).rejects.toMatchObject({ kind: 'unsent-changes' })
     expect((await readConfig(db)).url).toBe('http://test-server:1') // unchanged
-    await pair(db, fakeServer([]).transport, 'real-desktop:2', 't', true)
+    await pair(db, fakeServer([], 'e2').transport, 'real-desktop:2', 't', true)
     expect((await readConfig(db)).rebuild).toBe(true)
   })
 

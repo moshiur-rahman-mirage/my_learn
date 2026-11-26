@@ -1,9 +1,10 @@
 import { useMemo, useState } from 'react'
-import { Alert, FlatList, Pressable, Text, View } from 'react-native'
+import { Alert, FlatList, Pressable, Switch, Text, View } from 'react-native'
 import Ionicons from '@expo/vector-icons/Ionicons'
 import { router, Stack, useLocalSearchParams } from 'expo-router'
 import { useDb } from '@/db/DbProvider'
 import { getPlan } from '@/data/plans'
+import { isShortReadPlanIncluded, setShortReadPlanIncluded } from '@/data/shortRead'
 import { loadTree } from '@/data/tree'
 import { RuleError, setCompletion } from '@/data/items'
 import { exportPlanCsv } from '@/data/exportCsv'
@@ -29,7 +30,11 @@ export default function PlanScreen() {
   const bump = useDataVersion((s) => s.bump)
   const [hideDone, setHideDone] = useState(false)
   const [sheet, setSheet] = useState<{ title: string; actions: SheetAction[] } | null>(null)
-  const { data, error } = useQuery(async (d) => ({ plan: await getPlan(d, planId), tree: await loadTree(d, planId) }), `plan:${planId}`)
+  const { data, error } = useQuery(async (d) => ({
+    plan: await getPlan(d, planId),
+    tree: await loadTree(d, planId),
+    shortReadIncluded: await isShortReadPlanIncluded(d, planId),
+  }), `plan:${planId}`)
 
   const expandedIds = useExpanded((s) => s.byPlan[planId])
   const setExpanded = useExpanded((s) => s.set)
@@ -70,6 +75,14 @@ export default function PlanScreen() {
       bump()
     } catch (e) {
       Alert.alert(e instanceof StaleError ? 'Changed meanwhile' : 'Can’t change it', e instanceof Error ? e.message : String(e))
+    }
+  }
+  const toggleShortReadIncluded = async (included: boolean) => {
+    try {
+      await setShortReadPlanIncluded(db, plan.id, included)
+      bump()
+    } catch (e) {
+      Alert.alert('Can’t update Short Read', e instanceof Error ? e.message : String(e))
     }
   }
   const planMenu = () =>
@@ -134,6 +147,19 @@ export default function PlanScreen() {
             </View>
             <ProgressBar progress={plan.progress} height={8} />
             <PaceBadge pace={plan.pace} detailed />
+            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: space.md }}>
+              <View style={{ flex: 1 }}>
+                <Text style={{ color: c.text, fontWeight: '700' }}>Include in Short Read</Text>
+                <Text style={{ color: c.muted, fontSize: 12 }}>Allow topics from this plan in home recommendations</Text>
+              </View>
+              <Text style={{ color: c.muted, fontWeight: '700' }}>{data.shortReadIncluded ? 'Yes' : 'No'}</Text>
+              <Switch
+                value={data.shortReadIncluded}
+                onValueChange={(included) => void toggleShortReadIncluded(included)}
+                trackColor={{ false: c.border, true: c.primary }}
+                accessibilityLabel="Include this plan in Short Read recommendations"
+              />
+            </View>
             <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: space.sm }}>
               <Chip label="Hide done" on={hideDone} onPress={() => setHideDone((h) => !h)} />
               <Chip label="Expand all" on={false} onPress={() => setExpanded(planId, allIds)} />
@@ -228,6 +254,11 @@ function TreeRow({ node, depth, expanded, onToggle, onTick, onMenu }: {
         ) : node.type === 'MODULE' ? (
           <Text style={{ color: c.faint, fontSize: 11 }}>Empty module · N/A</Text>
         ) : null}
+      </Pressable>
+      <Pressable onPress={() => onMenu(node)} hitSlop={8} accessibilityRole="button"
+        accessibilityLabel={`Actions for ${node.name}`}
+        style={{ width: 40, height: 44, alignItems: 'center', justifyContent: 'center' }}>
+        <Ionicons name="ellipsis-vertical" size={18} color={c.muted} />
       </Pressable>
     </View>
   )

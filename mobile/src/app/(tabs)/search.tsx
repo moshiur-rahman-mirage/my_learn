@@ -13,15 +13,19 @@ export default function SearchScreen() {
   const db = useDb()
   const c = useColors()
   const [text, setText] = useState('')
-  const [result, setResult] = useState<SearchResult | null>(null)
-  const [error, setError] = useState<string | null>(null)
+  const [result, setResult] = useState<{ query: string; value: SearchResult } | null>(null)
+  const [error, setError] = useState<{ query: string; message: string } | null>(null)
 
   useEffect(() => {
+    if (!text.trim()) return
     let alive = true
     const timer = setTimeout(() => {
       search(db, text)
-        .then((r) => alive && (setResult(r), setError(null)))
-        .catch((e: unknown) => alive && setError(e instanceof Error ? e.message : String(e)))
+        .then((value) => alive && (setResult({ query: text.trim(), value }), setError(null)))
+        .catch((e: unknown) => alive && setError({
+          query: text.trim(),
+          message: e instanceof Error ? e.message : String(e),
+        }))
     }, 150)
     return () => {
       alive = false
@@ -29,6 +33,9 @@ export default function SearchScreen() {
     }
   }, [db, text])
 
+  const query = text.trim()
+  const currentResult = result?.query === query ? result.value : null
+  const currentError = error?.query === query ? error.message : null
   return (
     <View style={{ flex: 1 }}>
       <View style={{ padding: space.lg, paddingBottom: space.sm }}>
@@ -51,18 +58,24 @@ export default function SearchScreen() {
             </Pressable>
           ) : null}
         </View>
-        <ErrorText message={error} />
+        <ErrorText message={currentError} />
       </View>
       <FlatList
-        data={result?.hits ?? []}
+        data={currentResult?.hits ?? []}
         keyExtractor={(h) => String(h.itemId)}
         keyboardShouldPersistTaps="handled"
         contentContainerStyle={{ paddingHorizontal: space.lg, paddingBottom: space.xl, gap: space.sm }}
         ListEmptyComponent={
-          text.trim() && result ? <EmptyState title="Nothing found" message="Words match as prefixes: “sprin boo” finds “Spring Boot”." /> : undefined
+          !text.trim() ? (
+            <EmptyState title="Search your learning library" message="Find topics by name or search words inside your notes. Try “Java” or “hash map”." />
+          ) : currentError ? undefined : !currentResult ? (
+            <EmptyState title="Searching…" />
+          ) : (
+            <EmptyState title="Nothing found" message="Words match as prefixes: “sprin boo” finds “Spring Boot”." />
+          )
         }
         ListFooterComponent={
-          result?.more ? <Text style={{ color: c.muted, textAlign: 'center', padding: space.md }}>More matches: type more words to narrow it down.</Text> : undefined
+          currentResult?.more ? <Text style={{ color: c.muted, textAlign: 'center', padding: space.md }}>More matches: type more words to narrow it down.</Text> : undefined
         }
         renderItem={({ item }) => <Hit hit={item} />}
       />
